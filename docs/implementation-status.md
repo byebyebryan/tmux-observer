@@ -6,7 +6,7 @@ The design/backlog baseline is commit `a4fba75`.
 | Delivery | State | Evidence |
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
-| B: owner service | In progress: T07 state/scheduling foundation | Deterministic receipt/job/hint tests; IPC and native G2 acceptance pending |
+| B: owner service | In progress: T07 foundation and T08 endpoint primitives | Deterministic state tests; private endpoint and noncollecting bounded exchange; running publisher/G2 pending |
 | C: fleet service | Planned | None |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
@@ -62,3 +62,11 @@ Hints coalesce into one successor, spaced from the actual native start. Stopped
 or mismatched job results cannot update a new publisher. Source gate now passes
 42 test methods. These state tests do not establish live multi-reader sharing,
 socket ownership, refresh tickets or daemon recovery; T08/T09 own those gates.
+
+T08 endpoint primitives add a held publisher lease, private parent/socket modes,
+same-UID peers, conservative abandoned-socket recovery and noncollecting bounded
+exchange. Reads reject wrong host, UID, publisher, clock domain or request nonce.
+Endpoint tests verify duplicate admission preserves the original socket, a live
+unleased endpoint is never replaced, symlink/permission rejection, cleanup inode
+ownership and oversized/incomplete responses. The source gate passes 48 methods.
+The publisher event loop, fan-out and stdio bridge remain the next T08 work.
