@@ -1,0 +1,842 @@
+{
+  "status": "Historical measurements from the earlier Tmux Plus review in this conversation; not rerun for this documentation checkpoint and not Tmux Observer acceptance.",
+  "sourceCommit": "407ae58ba422ba88fed7da2f9d845ff274830f0e",
+  "measurementTool": "rofi-tmux-plus scripts/measure-refresh",
+  "runs": [
+    {
+      "runtimeDigest": "sha256:cbec5a4623130bbc293ee7ccd9611002c1abe0a0426a567540d3a3033b3eb41f",
+      "collectedAt": "2026-10-07T17:42:02Z",
+      "version": "0.6.0",
+      "endpoint": "snap",
+      "hostCount": 2,
+      "displayEnvironment": false,
+      "sessionRows": 5,
+      "frameBytes": 4634,
+      "scope": "Prepared frames, real owner reads and passive viewer observations; no session lifecycle action.",
+      "measurementContext": "snap",
+      "measurements": {
+        "warmPreparedFrame": {
+          "samples": 20,
+          "medianMs": 104.194,
+          "p95Ms": 109.275,
+          "maximumMs": 110.338,
+          "durationsMs": [
+            99.774,
+            105.875,
+            108.995,
+            107.114,
+            99.242,
+            104.795,
+            104.203,
+            100.114,
+            107.187,
+            107.389,
+            109.275,
+            105.133,
+            99.421,
+            99.442,
+            102.78,
+            104.185,
+            99.087,
+            103.438,
+            101.879,
+            110.338
+          ]
+        },
+        "coldPreparedFrame": {
+          "samples": 5,
+          "medianMs": 98.953,
+          "p95Ms": null,
+          "maximumMs": 102.857,
+          "durationsMs": [
+            97.773,
+            102.857,
+            96.262,
+            99.367,
+            98.953
+          ]
+        },
+        "refresh": {
+          "samples": 5,
+          "medianMs": 856.944,
+          "p95Ms": null,
+          "maximumMs": 871.879,
+          "durationsMs": [
+            871.879,
+            841.437,
+            870.227,
+            831.162,
+            856.944
+          ]
+        },
+        "ownerRefresh": {
+          "samples": 5,
+          "medianMs": 662.95,
+          "p95Ms": null,
+          "maximumMs": 675.142,
+          "durationsMs": [
+            669.083,
+            646.391,
+            675.142,
+            635.313,
+            662.95
+          ]
+        },
+        "viewerRefresh": {
+          "samples": 5,
+          "medianMs": 195.085,
+          "p95Ms": null,
+          "maximumMs": 202.795,
+          "durationsMs": [
+            202.795,
+            195.045,
+            195.085,
+            195.849,
+            193.993
+          ]
+        },
+        "forcedPreparedFrame": {
+          "samples": 5,
+          "medianMs": 199.98,
+          "p95Ms": null,
+          "maximumMs": 208.979,
+          "durationsMs": [
+            199.98,
+            200.857,
+            196.128,
+            208.979,
+            199.176
+          ]
+        }
+      },
+      "phases": {
+        "local_inventory": {
+          "samples": 38,
+          "medianMs": 1.902,
+          "p95Ms": 2.223,
+          "maximumMs": 2.305
+        },
+        "mesh_list": {
+          "samples": 65,
+          "medianMs": 97.747,
+          "p95Ms": 104.349,
+          "maximumMs": 108.729
+        },
+        "remote_command": {
+          "samples": 7,
+          "medianMs": 320.845,
+          "p95Ms": null,
+          "maximumMs": 333.179
+        },
+        "remote_host": {
+          "samples": 7,
+          "medianMs": 452.41,
+          "p95Ms": null,
+          "maximumMs": 476.895
+        },
+        "route_report": {
+          "samples": 7,
+          "medianMs": 136.722,
+          "p95Ms": null,
+          "maximumMs": 148.64
+        },
+        "render_frame": {
+          "samples": 30,
+          "medianMs": 1.351,
+          "p95Ms": 1.939,
+          "maximumMs": 2.049
+        },
+        "viewer_scan": {
+          "samples": 8,
+          "medianMs": 0.103,
+          "p95Ms": null,
+          "maximumMs": 0.193
+        }
+      },
+      "sshEffectiveConfig": [
+        {
+          "hostId": "starship",
+          "controlmaster": "false",
+          "controlpersist": "no"
+        }
+      ]
+    },
+    {
+      "runtimeDigest": "sha256:cbec5a4623130bbc293ee7ccd9611002c1abe0a0426a567540d3a3033b3eb41f",
+      "collectedAt": "2026-10-07T17:44:34Z",
+      "version": "0.6.0",
+      "endpoint": "snap",
+      "hostCount": 2,
+      "displayEnvironment": true,
+      "sessionRows": 5,
+      "frameBytes": 4544,
+      "scope": "Prepared frames, real owner reads and passive viewer observations; no session lifecycle action.",
+      "measurementContext": "snap-desktop",
+      "measurements": {
+        "warmPreparedFrame": {
+          "samples": 20,
+          "medianMs": 103.671,
+          "p95Ms": 116.601,
+          "maximumMs": 122.966,
+          "durationsMs": [
+            98.048,
+            105.096,
+            116.601,
+            104.209,
+            100.613,
+            103.663,
+            107.443,
+            103.678,
+            101.712,
+            99.088,
+            104.778,
+            98.724,
+            100.726,
+            98.298,
+            103.8,
+            122.966,
+            112.303,
+            104.263,
+            101.167,
+            102.472
+          ]
+        },
+        "coldPreparedFrame": {
+          "samples": 5,
+          "medianMs": 102.246,
+          "p95Ms": null,
+          "maximumMs": 104.453,
+          "durationsMs": [
+            97.658,
+            104.453,
+            98.397,
+            104.18,
+            102.246
+          ]
+        },
+        "refresh": {
+          "samples": 5,
+          "medianMs": 1178.754,
+          "p95Ms": null,
+          "maximumMs": 1307.157,
+          "durationsMs": [
+            1307.157,
+            1183.619,
+            1036.625,
+            1110.342,
+            1178.754
+          ]
+        },
+        "ownerRefresh": {
+          "samples": 5,
+          "medianMs": 968.582,
+          "p95Ms": null,
+          "maximumMs": 1096.609,
+          "durationsMs": [
+            1096.609,
+            968.582,
+            820.68,
+            896.338,
+            968.992
+          ]
+        },
+        "viewerRefresh": {
+          "samples": 5,
+          "medianMs": 214.003,
+          "p95Ms": null,
+          "maximumMs": 215.945,
+          "durationsMs": [
+            210.546,
+            215.036,
+            215.945,
+            214.003,
+            209.761
+          ]
+        },
+        "forcedPreparedFrame": {
+          "samples": 5,
+          "medianMs": 202.806,
+          "p95Ms": null,
+          "maximumMs": 216.092,
+          "durationsMs": [
+            216.092,
+            202.806,
+            201.508,
+            201.455,
+            208.568
+          ]
+        }
+      },
+      "phases": {
+        "local_inventory": {
+          "samples": 38,
+          "medianMs": 1.873,
+          "p95Ms": 2.23,
+          "maximumMs": 2.356
+        },
+        "mesh_list": {
+          "samples": 63,
+          "medianMs": 99.508,
+          "p95Ms": 109.598,
+          "maximumMs": 118.629
+        },
+        "remote_command": {
+          "samples": 6,
+          "medianMs": 613.13,
+          "p95Ms": null,
+          "maximumMs": 845.132
+        },
+        "remote_host": {
+          "samples": 6,
+          "medianMs": 761.286,
+          "p95Ms": null,
+          "maximumMs": 951.661
+        },
+        "route_report": {
+          "samples": 6,
+          "medianMs": 136.98,
+          "p95Ms": null,
+          "maximumMs": 154.414
+        },
+        "render_frame": {
+          "samples": 30,
+          "medianMs": 1.202,
+          "p95Ms": 1.918,
+          "maximumMs": 2.046
+        },
+        "viewer_scan": {
+          "samples": 8,
+          "medianMs": 7.469,
+          "p95Ms": null,
+          "maximumMs": 8.965
+        }
+      },
+      "sshEffectiveConfig": [
+        {
+          "hostId": "starship",
+          "controlmaster": "false",
+          "controlpersist": "no"
+        }
+      ]
+    },
+    {
+      "runtimeDigest": "sha256:cbec5a4623130bbc293ee7ccd9611002c1abe0a0426a567540d3a3033b3eb41f",
+      "collectedAt": "2026-10-07T17:42:24Z",
+      "version": "0.6.0",
+      "endpoint": "starship",
+      "hostCount": 2,
+      "displayEnvironment": false,
+      "sessionRows": 11,
+      "frameBytes": 9342,
+      "scope": "Prepared frames, real owner reads and passive viewer observations; no session lifecycle action.",
+      "measurementContext": "starship",
+      "measurements": {
+        "warmPreparedFrame": {
+          "samples": 20,
+          "medianMs": 68.783,
+          "p95Ms": 71.67,
+          "maximumMs": 72.458,
+          "durationsMs": [
+            67.372,
+            66.178,
+            69.447,
+            72.458,
+            70.29,
+            68.086,
+            69.625,
+            67.957,
+            68.461,
+            66.358,
+            70.533,
+            69.736,
+            71.67,
+            69.439,
+            69.105,
+            67.682,
+            68.174,
+            66.229,
+            69.155,
+            67.757
+          ]
+        },
+        "coldPreparedFrame": {
+          "samples": 5,
+          "medianMs": 67.171,
+          "p95Ms": null,
+          "maximumMs": 69.277,
+          "durationsMs": [
+            69.277,
+            67.252,
+            66.947,
+            66.75,
+            67.171
+          ]
+        },
+        "refresh": {
+          "samples": 5,
+          "medianMs": 640.238,
+          "p95Ms": null,
+          "maximumMs": 703.884,
+          "durationsMs": [
+            703.884,
+            636.812,
+            640.238,
+            668.789,
+            634.908
+          ]
+        },
+        "ownerRefresh": {
+          "samples": 5,
+          "medianMs": 517.288,
+          "p95Ms": null,
+          "maximumMs": 578.419,
+          "durationsMs": [
+            578.419,
+            513.624,
+            517.288,
+            548.891,
+            508.823
+          ]
+        },
+        "viewerRefresh": {
+          "samples": 5,
+          "medianMs": 123.187,
+          "p95Ms": null,
+          "maximumMs": 126.084,
+          "durationsMs": [
+            125.464,
+            123.187,
+            122.949,
+            119.897,
+            126.084
+          ]
+        },
+        "forcedPreparedFrame": {
+          "samples": 5,
+          "medianMs": 125.176,
+          "p95Ms": null,
+          "maximumMs": 129.926,
+          "durationsMs": [
+            125.226,
+            129.926,
+            124.622,
+            124.108,
+            125.176
+          ]
+        }
+      },
+      "phases": {
+        "local_inventory": {
+          "samples": 38,
+          "medianMs": 9.762,
+          "p95Ms": 10.525,
+          "maximumMs": 10.935
+        },
+        "mesh_list": {
+          "samples": 63,
+          "medianMs": 55.713,
+          "p95Ms": 58.218,
+          "maximumMs": 59.109
+        },
+        "remote_command": {
+          "samples": 6,
+          "medianMs": 362.005,
+          "p95Ms": null,
+          "maximumMs": 407.238
+        },
+        "remote_host": {
+          "samples": 6,
+          "medianMs": 419.619,
+          "p95Ms": null,
+          "maximumMs": 464.536
+        },
+        "route_report": {
+          "samples": 6,
+          "medianMs": 56.552,
+          "p95Ms": null,
+          "maximumMs": 58.357
+        },
+        "render_frame": {
+          "samples": 30,
+          "medianMs": 2.21,
+          "p95Ms": 2.344,
+          "maximumMs": 2.375
+        },
+        "viewer_scan": {
+          "samples": 8,
+          "medianMs": 0.093,
+          "p95Ms": null,
+          "maximumMs": 0.111
+        }
+      },
+      "sshEffectiveConfig": [
+        {
+          "hostId": "snap",
+          "controlmaster": "false",
+          "controlpersist": "no"
+        }
+      ]
+    }
+  ],
+  "callbackTrace": {
+    "scope": "Earlier callback-protocol reproduction, not a native graphical timing measurement.",
+    "records": [
+      {
+        "atSeconds": 0.106,
+        "kind": "initial",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395957,
+        "cachedOwner": "running",
+        "cachedViewer": null,
+        "markers": {
+          "owner": {
+            "state": "running",
+            "ageMs": 2
+          }
+        }
+      },
+      {
+        "atSeconds": 1.127,
+        "kind": "idle-timer",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395957,
+        "cachedOwner": "complete",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 285
+          },
+          "viewer": {
+            "state": "running",
+            "ageMs": 3
+          }
+        }
+      },
+      {
+        "atSeconds": 2.142,
+        "kind": "idle-timer",
+        "refreshingMessage": false,
+        "refreshDeadline": null,
+        "cachedOwner": "complete",
+        "cachedViewer": "complete",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 1300
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 690
+          }
+        }
+      },
+      {
+        "atSeconds": 3.004,
+        "kind": "idle-timer",
+        "refreshingMessage": false,
+        "refreshDeadline": null,
+        "cachedOwner": "complete",
+        "cachedViewer": "complete",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 2162
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 1552
+          }
+        }
+      },
+      {
+        "atSeconds": 4.005,
+        "kind": "idle-timer",
+        "refreshingMessage": false,
+        "refreshDeadline": null,
+        "cachedOwner": "complete",
+        "cachedViewer": "complete",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 3163
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 2553
+          }
+        }
+      },
+      {
+        "atSeconds": 4.254,
+        "kind": "force",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "running",
+            "ageMs": 6
+          },
+          "viewer": {
+            "state": "running",
+            "ageMs": 3
+          }
+        }
+      },
+      {
+        "atSeconds": 4.506,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "running",
+            "ageMs": 258
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 32
+          }
+        }
+      },
+      {
+        "atSeconds": 4.759,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "running",
+            "ageMs": 511
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 285
+          }
+        }
+      },
+      {
+        "atSeconds": 5.015,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 76
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 542
+          }
+        }
+      },
+      {
+        "atSeconds": 5.268,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 329
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 794
+          }
+        }
+      },
+      {
+        "atSeconds": 5.524,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 585
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 1050
+          }
+        }
+      },
+      {
+        "atSeconds": 5.778,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 839
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 1304
+          }
+        }
+      },
+      {
+        "atSeconds": 6.035,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 1096
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 1561
+          }
+        }
+      },
+      {
+        "atSeconds": 6.287,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 1348
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 1813
+          }
+        }
+      },
+      {
+        "atSeconds": 6.544,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 1606
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 2071
+          }
+        }
+      },
+      {
+        "atSeconds": 6.8,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 1861
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 2326
+          }
+        }
+      },
+      {
+        "atSeconds": 7.052,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 2113
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 2578
+          }
+        }
+      },
+      {
+        "atSeconds": 7.309,
+        "kind": "view-arrow",
+        "refreshingMessage": true,
+        "refreshDeadline": 1791395961,
+        "cachedOwner": "running",
+        "cachedViewer": "running",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 2370
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 2835
+          }
+        }
+      },
+      {
+        "atSeconds": 8.567,
+        "kind": "idle-after-arrows",
+        "refreshingMessage": false,
+        "refreshDeadline": null,
+        "cachedOwner": "complete",
+        "cachedViewer": "complete",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 3628
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 4093
+          }
+        }
+      },
+      {
+        "atSeconds": 9.675,
+        "kind": "idle-followup",
+        "refreshingMessage": false,
+        "refreshDeadline": null,
+        "cachedOwner": "complete",
+        "cachedViewer": "complete",
+        "markers": {
+          "owner": {
+            "state": "complete",
+            "ageMs": 4736
+          },
+          "viewer": {
+            "state": "complete",
+            "ageMs": 5201
+          }
+        }
+      }
+    ]
+  }
+}
