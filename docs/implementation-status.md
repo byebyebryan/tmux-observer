@@ -8,7 +8,7 @@ The design/backlog baseline is commit `a4fba75`.
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
 | B: owner service | Planned | None |
 | C: fleet service | Planned | None |
-| D: Rofi client | Planned; early T06 probe to follow contract fixtures | None |
+| D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
 
 Pure validation and `collect --host-id ID` are implemented and accepted for

@@ -1,0 +1,299 @@
+#!/usr/bin/env python3
+"""Owned fixture-backed Rofi experiment; no producer, lifecycle or managed edits."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import shlex
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+
+def callback():
+    root = Path(os.environ["TMUX_OBSERVER_ROFI_PROBE"])
+    feed = json.loads((root / "feed.json").read_text())
+    try:
+        previous = json.loads(os.environ.get("ROFI_DATA", "{}"))
+    except ValueError:
+        previous = {}
+    retv = int(os.environ["ROFI_RETV"])
+    view = previous.get("view", 0)
+    if retv in (11, 12):
+        view = (view + (1 if retv == 11 else -1)) % 4
+    event = {
+        "at": time.monotonic_ns() // 1000000,
+        "retv": retv,
+        "revision": feed["revision"],
+        "input": os.environ.get("ROFI_INPUT"),
+        "selected": os.environ.get("ROFI_INFO"),
+        "argv": sys.argv[1:],
+        "view": view,
+        "notice": feed["notice"],
+    }
+    with (root / "callbacks.jsonl").open("a") as output:
+        output.write(json.dumps(event) + "\n")
+    if retv in (1, 2):
+        return
+    headers = {
+        "prompt": ["All", "Local", "Open", "Attached"][view],
+        "message": feed["notice"],
+        "use-hot-keys": "true",
+        "keep-selection": "true",
+        "keep-filter": "true",
+        "data": json.dumps({"view": view, "revision": feed["revision"]}),
+    }
+    for key, value in headers.items():
+        print("\0" + key + "\x1f" + value)
+    for index, name in enumerate(("azlalpha", "azlbeta", "azlgamma")):
+        reference = {
+            "hostId": "fixture-local",
+            "serverGeneration": "fixture-generation",
+            "sessionId": "$" + str(index),
+            "createdAt": 1700000000 + index,
+        }
+        print(name + "\0info\x1f" + json.dumps(reference, separators=(",", ":")))
+
+
+def run(args, env):
+    result = subprocess.run(args, env=env, capture_output=True, text=True, check=False, timeout=5)
+    if result.returncode:
+        raise RuntimeError(result.stderr[:2048])
+    return result.stdout
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    env = dict(os.environ)
+    manager = run(["systemctl", "--user", "show-environment"], env)
+    for line in manager.splitlines():
+        key, separator, value = line.partition("=")
+        if separator and key in ("DISPLAY", "WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "NIRI_SOCKET"):
+            env[key] = value
+    windows = json.loads(run(["niri", "msg", "--json", "windows"], env))
+    focused = next((w["id"] for w in windows if w.get("is_focused")), None)
+    evidence = {
+        "schemaVersion": 1,
+        "gate": "T06 experiment",
+        "nativeVersion": run(["rofi", "-v"], env).strip(),
+        "scope": "owned Rofi surface; isolated preferences/cache; synthetic rows; no actions/services",
+        "cases": [],
+        "limits": [
+            "Fixture experiment does not establish producer/service/frontend deployment acceptance",
+            "Callback adoption and visible rendering are recorded separately",
+        ],
+    }
+    with tempfile.TemporaryDirectory(prefix="tmux-observer-rofi-probe-") as temporary:
+        root = Path(temporary)
+        env.update(
+            TMUX_OBSERVER_ROFI_PROBE=str(root),
+            XDG_CONFIG_HOME=str(root / "config"),
+            XDG_CACHE_HOME=str(root / "cache"),
+            ROFI_PNG_OUTPUT=str(root / "frame.png"),
+        )
+        for name in ("config", "cache"):
+            (root / name).mkdir(mode=0o700)
+        mode = "observer-probe:" + shlex.join([sys.executable, str(Path(__file__).resolve())])
+        log = root / "callbacks.jsonl"
+
+        def events():
+            return (
+                [json.loads(line) for line in log.read_text().splitlines()] if log.exists() else []
+            )
+
+        def feed(revision, notice):
+            temporary_feed = root / "feed.tmp"
+            temporary_feed.write_text(json.dumps({"revision": revision, "notice": notice}))
+            temporary_feed.replace(root / "feed.json")
+
+        def probe(label, inputchange):
+            log.unlink(missing_ok=True)
+            feed(1, "Refreshing fixture")
+            theme = 'window { width: 600px; } listview { lines: 4; } configuration { timeout { delay: 1; action: "kb-custom-19"; }'
+            if inputchange:
+                theme += ' inputchange { action: "kb-custom-19"; }'
+            theme += " }"
+            command = [
+                "rofi",
+                "-no-config",
+                "-normal-window",
+                "-show",
+                "observer-probe",
+                "-modes",
+                mode,
+                "-selected-row",
+                "1",
+                "-filter",
+                "",
+                "-theme-str",
+                theme,
+                "-kb-custom-2",
+                "Right",
+                "-kb-custom-3",
+                "Left",
+                "-kb-custom-18",
+                "",
+                "-kb-custom-19",
+                "",
+                "-kb-move-char-back",
+                "Control+b",
+                "-kb-move-char-forward",
+                "Control+f",
+                "-kb-accept-custom",
+                "Control+Return",
+                "-kb-screenshot",
+                "F12",
+            ]
+            with (root / "rofi.stderr").open("w") as stderr:
+                process = subprocess.Popen(
+                    command, env=env, stdout=subprocess.DEVNULL, stderr=stderr
+                )
+                owned = None
+                try:
+                    until = time.monotonic() + 5
+                    while time.monotonic() < until:
+                        if process.poll() is not None:
+                            raise RuntimeError((root / "rofi.stderr").read_text())
+                        current = json.loads(run(["niri", "msg", "--json", "windows"], env))
+                        owned = next(
+                            (w["id"] for w in current if w.get("pid") == process.pid), None
+                        )
+                        layers = json.loads(run(["niri", "msg", "--json", "layers"], env))
+                        if (
+                            owned is None
+                            and events()
+                            and any(layer["namespace"] == "rofi" for layer in layers)
+                        ):
+                            owned = "layer"
+                        if owned is not None and events():
+                            break
+                        time.sleep(0.03)
+                    if owned is None:
+                        raise RuntimeError("owned Rofi surface was not observed")
+                    if owned != "layer":
+                        run(["niri", "msg", "action", "focus-window", "--id", str(owned)], env)
+
+                    def keys(*arguments):
+                        current = json.loads(run(["niri", "msg", "--json", "windows"], env))
+                        if owned == "layer":
+                            layers = json.loads(run(["niri", "msg", "--json", "layers"], env))
+                            output = json.loads(
+                                run(["niri", "msg", "--json", "focused-output"], env)
+                            )["name"]
+                            exclusive = [
+                                layer
+                                for layer in layers
+                                if layer["keyboard_interactivity"] == "Exclusive"
+                                and layer["output"] == output
+                            ]
+                            pids = run(["pgrep", "-x", "rofi"], env).split()
+                            if (
+                                pids != [str(process.pid)]
+                                or not exclusive
+                                or any(layer["namespace"] != "rofi" for layer in exclusive)
+                            ):
+                                raise RuntimeError(
+                                    "Rofi has competing exclusive surfaces; no input sent"
+                                )
+                        elif not any(w["id"] == owned and w.get("is_focused") for w in current):
+                            raise RuntimeError("owned Rofi window lost focus; no input sent")
+                        run(["wtype", *arguments], env)
+
+                    time.sleep(0.15)
+                    keys("-M", "ctrl", "-k", "b", "-m", "ctrl")
+                    # The first timer proves idle callbacks; typing must then
+                    # cross the same update without waiting for idle.
+                    time.sleep(1.4)
+                    before = events()
+                    feed(2, "Ready fixture revision 2")
+                    published = time.monotonic_ns() // 1000000
+                    for letter in "al":
+                        keys("-k", letter)
+                        time.sleep(0.12)
+                    for _ in range(10):
+                        keys("-k", "a")
+                        time.sleep(0.06)
+                        keys("-k", "BackSpace")
+                        time.sleep(0.06)
+                    during = events()
+                    keys("-k", "F12")
+                    time.sleep(0.1)
+                    screenshot = root / "frame.png"
+                    during_target = args.output.with_name(
+                        args.output.stem + "-" + label + "-during.png"
+                    )
+                    if screenshot.exists():
+                        during_target.parent.mkdir(parents=True, exist_ok=True)
+                        during_target.write_bytes(screenshot.read_bytes())
+                        screenshot.unlink()
+                    keys("-M", "ctrl", "-k", "b", "-m", "ctrl")
+                    keys("-k", "z")
+                    time.sleep(0.12)
+                    keys("-k", "Right")
+                    time.sleep(0.12)
+                    keys("-k", "Left")
+                    time.sleep(0.12)
+                    keys("-k", "F12")
+                    time.sleep(0.1)
+                    keys("-M", "ctrl", "-k", "Return", "-m", "ctrl")
+                    process.wait(timeout=3)
+                    all_events = events()
+                    captured = [e for e in all_events if e["retv"] == 2]
+                    final_text = (
+                        captured[-1]["argv"][0] if captured and captured[-1]["argv"] else None
+                    )
+                    adopted = [e for e in during if e["revision"] == 2]
+                    result = {
+                        "name": label,
+                        "idleTimerCallbacks": sum(e["retv"] == 28 for e in before),
+                        "duringTypingCallbacks": len(during) - len(before),
+                        "duringTypingAdoptedRevision": bool(adopted),
+                        "firstAdoptionDelayMs": min(
+                            (e["at"] - published for e in all_events if e["revision"] == 2),
+                            default=None,
+                        ),
+                        "finalCustomInput": final_text,
+                        "filterAndCaretPreserved": final_text == "azl",
+                        "callbacks": all_events,
+                        "duringScreenshot": during_target.name if during_target.exists() else None,
+                    }
+                    evidence["cases"].append(result)
+                    screenshot = root / "frame.png"
+                    if screenshot.exists():
+                        target = args.output.with_name(args.output.stem + "-" + label + ".png")
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        target.write_bytes(screenshot.read_bytes())
+                        screenshot.unlink()
+                        result["screenshot"] = target.name
+                    print(
+                        json.dumps(
+                            {key: value for key, value in result.items() if key != "callbacks"}
+                        ),
+                        flush=True,
+                    )
+                finally:
+                    if process.poll() is None:
+                        process.terminate()
+                        process.wait(timeout=3)
+
+        try:
+            probe("idle-only", False)
+            probe("inputchange", True)
+        finally:
+            if focused is not None:
+                run(["niri", "msg", "action", "focus-window", "--id", str(focused)], env)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(evidence, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    if "ROFI_RETV" in os.environ and "TMUX_OBSERVER_ROFI_PROBE" in os.environ:
+        callback()
+    else:
+        main()
