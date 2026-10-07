@@ -20,6 +20,10 @@ at most 1 MiB + 16 KiB. Requests, tickets and operation errors are at most
 
 `observation-v1/schema.json` describes a fresh host-local read. `source` fixes
 the logical host ID, UID and `default` server; native hostname is diagnostic.
+The native adapter fixes `tmux -L default`, clears inherited `TMUX`/`TMUX_PANE`,
+and captures `TMUX_TMPDIR` and the execution environment at adapter startup.
+It never follows an ambient alternate socket. Public CLI requests offer no
+socket, executable or arbitrary tmux format selection.
 The full session reference is `(hostId, serverGeneration, sessionId, createdAt)`.
 Generation is opaque text, preserved exactly. Session IDs are unique within
 an owner document. Creation/activity/attachment times are Unix seconds;
