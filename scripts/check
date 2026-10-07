@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+cd -- "$repo_root"
+export PYTHONPATH="$repo_root/src${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONDONTWRITEBYTECODE=1
+if compgen -G 'tests/test_*.py' >/dev/null; then
+  python3 -m unittest discover -s tests -v
+else
+  printf 'Foundation checkpoint: no executable API tests exist yet.\n'
+fi
+python3 -m compileall -q src
+ruff check src tests
+ruff format --check src tests
+git diff --check
+git diff --cached --check

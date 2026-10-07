@@ -7,9 +7,10 @@ Rofi Tmux Plus will consume its prepared views and retain presentation policy.
 
 ## Status
 
-Design and implementation planning, 2026-10-07. This repository contains no
-implementation, accepted API, running service or deployment. Command names,
-wire fields and initial resource settings below are proposed interfaces.
+Implementation in progress, 2026-10-07; see the
+[status record](docs/implementation-status.md). Packaging/check foundations exist;
+no observation API, running service or deployment has been accepted yet. Command
+names, wire fields and initial resource settings below are proposed interfaces.
 Implementation must pass the gates in the plan before these become supported
 behavior. The review records design decisions and remaining native proof;
 it does not certify runtime acceptance.

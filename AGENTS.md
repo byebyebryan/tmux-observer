@@ -47,8 +47,8 @@
   graphical behavior, sleep/wake, installed bytes or managed service recovery.
 - Native probes use owned disposable sessions, isolated preferences/cache and
   services; preserve ordinary sessions, sockets, hooks and other services.
-- The implementation plan specifies the future `scripts/check` gate. Until
-  that exists, document-only verification checks links, examples, whitespace,
-  decision consistency and source attribution; do not claim runtime tests here.
+- Run `uv run --extra dev ./scripts/check` for the source gate. Package, native,
+  graphical and deployment acceptance require their own evidence. Document-only
+  changes check links/examples, whitespace, decisions and source attribution.
 - Do not publish or promote an artifact merely because a design gate passes.
   User authorization and the concrete task determine when to commit/deploy.

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "producer": "rofi-tmux-plus",
+  "sourceCommit": "407ae58ba422ba88fed7da2f9d845ff274830f0e",
+  "sourceLicense": "MIT",
+  "sourceFiles": {
+    "LICENSE": "09f9adb67e3a6659b19893fbfc583eb5dfc605fea5b8e64202d20c41bdac9fb0",
+    "rofi_tmux_plus/model.py": "09baa5b56fa49049dc2ca5a38c7210ea37baa06524dbf3ceaaf97b16fef1c083",
+    "rofi_tmux_plus/tmux_wire.py": "0ae89d2fd87ee0337731b282a76f6922cd6ca859f0fa07fc8fea97968fc9cb77",
+    "rofi_tmux_plus/tmux.py": "b456d568a1fae033c17216459ebe125346c8ab29a98a525dfbfe2b8e5804aae2",
+    "rofi_tmux_plus/bounded_process.py": "e17f8ad53a6089515146cbe77256d1efb6fb708062fe2cd50772731e8d5463bd",
+    "rofi_tmux_plus/inventory_service.py": "446f1690e8b82c38b735b36c427784e04f9254c7e01a070f1d4c86e09b869804",
+    "rofi_tmux_plus/viewer_service.py": "fecd0332052339b3e708bc1b1793684fc18c9fc9450a7b6d271517eb48da1bb7"
+  },
+  "contractBundles": {
+    "tmux-session-v1": "929aebc003e4af9d0ebe1e2f541c6e45bb03dd996019fbfba425fe5cb454f567",
+    "host-mesh-v1": "258e8df0562aea18a20db5378b3335b03332e3df0c0709faf49ccfbffa5c3e10"
+  },
+  "reusePolicy": "Copy pure types/parsers narrowly; adapt native read logic. Do not copy lifecycle, terminal launch, focus or verified close into the passive core."
+}
