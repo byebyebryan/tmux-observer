@@ -5,14 +5,14 @@ The design/backlog baseline is commit `a4fba75`.
 
 | Delivery | State | Evidence |
 | --- | --- | --- |
-| A: standalone producer | In progress: T01–T04 established; G0 passed, G1 pending | Pure API, exact bundles, independent reader, 32 test methods; narrow direct collector and owned native smoke |
+| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
 | B: owner service | Planned | None |
 | C: fleet service | Planned | None |
 | D: Rofi client | Planned; early T06 probe to follow contract fixtures | None |
 | E: managed rollout | Planned | None |
 
-Pure validation and `collect --host-id ID` are implemented. Native producer
-acceptance, service, GUI migration and deployment are not accepted by this checkpoint. Source, installed/native,
+Pure validation and `collect --host-id ID` are implemented and accepted for
+the Delivery A scope. Service, GUI migration and deployment are not accepted by this checkpoint. Source, installed/native,
 graphical and managed evidence remain separate gates.
 
 The collector rejects generic connection errors as absence. Fast and legacy
@@ -36,4 +36,21 @@ legacy fallback, profile coverage and fixed default-server environment. Owned
 process tests cover output caps, UTF-8, deadlines, descendant cleanup and a
 synthetic BOOTTIME suspend jump. An isolated tmux 3.7c smoke read returned complete
 absence and one complete metadata sample in about 50 ms. Full native comparison,
-passivity/race cases and the installed direct CLI still need T05 acceptance.
+passivity/race cases and installed direct CLI subsequently passed T05.
+
+G1 reviewed producer source is `6a6c412`. The evidence records the tested wheel
+digest and 12 owned native/artifact cases. Separate native reads confirmed full
+identity/metadata, optional panes and null-versus-empty options. Repeated reads
+preserved roster, attachment counts, windows and hooks. Native legacy fallback,
+rename, disappearance, server restart/reused IDs and live-empty/absent distinction
+passed. The installed CLI ignored an ambient alternate socket, returned typed
+invalid-context failure and treated missing tmux as unsupported. Test cleanup
+targeted only disposable sockets. Physical suspend remains untested; the source
+clock-jump test establishes late-output rejection, not hardware sleep recovery.
+
+Delivery A review: read/format allowlist has no lifecycle or format-job execution;
+absence excludes permission failures; both native paths bracket generation and
+full-reference roster; all accepted samples use one start-based BOOTTIME budget;
+installed output was consumed by the independent schema/semantic reader. No
+downstream frontend/service workaround was needed. This closes G1 and permits
+T07; T06 remains an early frontend experiment before networking completion.
