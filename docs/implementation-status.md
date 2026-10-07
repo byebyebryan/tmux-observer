@@ -6,7 +6,7 @@ The design/backlog baseline is commit `a4fba75`.
 | Delivery | State | Evidence |
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
-| B: owner service | In progress: T07 foundation and T08 endpoint primitives | Deterministic state tests; private endpoint and noncollecting bounded exchange; running publisher/G2 pending |
+| B: owner service | In progress: T07 foundation and T08 publisher/IPC | State, private IPC and bounded fan-out tests; CLI/stdio bridge, refresh tickets and native G2 pending |
 | C: fleet service | Planned | None |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
@@ -69,4 +69,10 @@ exchange. Reads reject wrong host, UID, publisher, clock domain or request nonce
 Endpoint tests verify duplicate admission preserves the original socket, a live
 unleased endpoint is never replaced, symlink/permission rejection, cleanup inode
 ownership and oversized/incomplete responses. The source gate passes 48 methods.
-The publisher event loop, fan-out and stdio bridge remain the next T08 work.
+The concrete owner loop and bounded fan-out now pass synthetic-source Unix
+integration tests. Twenty probes share one attempt; watch/probe stream ordering
+and malformed-request isolation pass. Valid near-cap documents exercise partial
+frame preservation, one queued replacement/gap, nonce-reply protection and a
+2-second stalled-reader cutoff. Source gate passes 55 methods. Sequence is per
+connection; reads/control replies do not create global stream gaps. CLI/stdio
+bridge and native sharing/recovery evidence remain the next T08/T09 work.

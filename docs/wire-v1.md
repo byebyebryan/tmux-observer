@@ -41,7 +41,9 @@ are accepted. Observation never exports viewer/action handles or close safety.
 
 `service-v1/schema.json` describes an owner delivery frame. Publisher UUID
 identifies a service incarnation; it is independent of tmux generation. Sequence
-identifies stream order and view revision identifies material changes. Neither
+is per connection, starts at zero and identifies stream order; a skipped queued
+update produces a gap frame. One-shot reads have their own connection/sequence.
+View revision identifies material changes. Neither
 delivery nor heartbeat renews native evidence. A warming publisher has no
 accepted sample and no snapshot. A failed publisher can retain a previous
 complete snapshot as historical data. Ready receipts bind to the retained
