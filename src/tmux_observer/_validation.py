@@ -403,7 +403,7 @@ def validate_service_frame(value: object) -> dict:
             or snapshot["sample"]["coverage"] != "complete"
         ):
             raise ValidationError("invalid retained owner snapshot")
-        if snapshot["capabilities"] != {"panes": False, "options": []}:
+        if snapshot["capabilities"]["panes"] or snapshot["capabilities"]["options"]:
             raise ValidationError("expanded service metadata profile")
     if evidence["state"] == "warming" and snapshot is not None:
         raise ValidationError("warming source has an authoritative snapshot")

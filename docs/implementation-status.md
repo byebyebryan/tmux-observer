@@ -6,7 +6,7 @@ The design/backlog baseline is commit `a4fba75`.
 | Delivery | State | Evidence |
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
-| B: owner service | Planned | None |
+| B: owner service | In progress: T07 state/scheduling foundation | Deterministic receipt/job/hint tests; IPC and native G2 acceptance pending |
 | C: fleet service | Planned | None |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
@@ -54,3 +54,11 @@ full-reference roster; all accepted samples use one start-based BOOTTIME budget;
 installed output was consumed by the independent schema/semantic reader. No
 downstream frontend/service workaround was needed. This closes G1 and permits
 T07; T06 remains an early frontend experiment before networking completion.
+
+T07 source foundation adds one-job ownership, 2-second cadence/budget, 1-second
+minimum spacing, start-based leases, distinct attempted/accepted counters,
+unchanged-sample renewal, failure/history retention and expiry without scheduling.
+Hints coalesce into one successor, spaced from the actual native start. Stopped
+or mismatched job results cannot update a new publisher. Source gate now passes
+42 test methods. These state tests do not establish live multi-reader sharing,
+socket ownership, refresh tickets or daemon recovery; T08/T09 own those gates.

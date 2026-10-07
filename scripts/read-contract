@@ -225,7 +225,10 @@ def service(value):
             and same_scope(snapshot["source"], value["source"]),
             "retained sample",
         )
-        require(snapshot["capabilities"] == {"panes": False, "options": []}, "service profile")
+        require(
+            not snapshot["capabilities"]["panes"] and not snapshot["capabilities"]["options"],
+            "service profile",
+        )
     require(evidence["state"] != "warming" or snapshot is None, "warming snapshot")
     if evidence["state"] == "ready":
         require(

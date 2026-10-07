@@ -77,6 +77,10 @@ class ContractTests(unittest.TestCase):
         value["sessions"][0]["serverGeneration"] = value["serverGeneration"]
         self.accept("observation", value)
 
+        frame = fixture("service-v1", "ready")
+        frame["snapshot"]["capabilities"]["futureDiagnostic"] = "bounded"
+        self.accept("service", frame)
+
     def test_identity_and_coverage_conflicts(self):
         base = fixture("observation-v1", "complete")
         cases = [
