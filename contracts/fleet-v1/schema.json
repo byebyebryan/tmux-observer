@@ -1,0 +1,629 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/fleet-v1/schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "tmux-observer.fleet.v1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "readerId": {
+      "type": "string",
+      "maxLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "clock": {
+      "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Clock"
+    },
+    "contextId": {
+      "type": "string",
+      "maxLength": 32,
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "encodedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "viewRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "mesh": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 71,
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "local_only",
+            "warming",
+            "unavailable",
+            "capacity"
+          ]
+        },
+        "localHostId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "revision",
+        "state",
+        "localHostId"
+      ],
+      "additionalProperties": true
+    },
+    "desktop": {
+      "type": "object",
+      "properties": {
+        "contextId": {
+          "type": "string",
+          "maxLength": 32,
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "warming",
+            "ready",
+            "failed",
+            "unsupported",
+            "expired"
+          ]
+        },
+        "startedAt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptedAt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expiresAt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inputHash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 71,
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contextId",
+        "epoch",
+        "state",
+        "startedAt",
+        "acceptedAt",
+        "expiresAt",
+        "inputHash",
+        "error"
+      ],
+      "additionalProperties": true
+    },
+    "hosts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hostId": {
+            "type": "string",
+            "maxLength": 16384,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "minLength": 1
+          },
+          "display": {
+            "type": "string",
+            "maxLength": 16384,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+            "minLength": 1
+          },
+          "local": {
+            "type": "boolean"
+          },
+          "owner": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "anyOf": [
+                  {
+                    "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Source"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "clock": {
+                "anyOf": [
+                  {
+                    "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Clock"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "publisherId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 36,
+                    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "encodedAt": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9223372036854775807
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "serverGeneration": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 16384,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "sample": {
+                "anyOf": [
+                  {
+                    "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Sample"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "receipt": {
+                "anyOf": [
+                  {
+                    "$ref": "https://tmux-observer.invalid/contracts/service-v1/schema.json#/$defs/Receipt"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "transport": {
+                "type": "string",
+                "enum": [
+                  "local",
+                  "connecting",
+                  "ready",
+                  "failed",
+                  "absent",
+                  "incompatible"
+                ]
+              },
+              "localExpiry": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9223372036854775807
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "proof": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "requestId": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+                      },
+                      "sentAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9223372036854775807
+                      },
+                      "receivedAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9223372036854775807
+                      },
+                      "remainingMs": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      },
+                      "marginMs": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      }
+                    },
+                    "required": [
+                      "requestId",
+                      "sentAt",
+                      "receivedAt",
+                      "remainingMs",
+                      "marginMs"
+                    ],
+                    "additionalProperties": true
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "error": {
+                "anyOf": [
+                  {
+                    "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Error"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "source",
+              "clock",
+              "publisherId",
+              "encodedAt",
+              "serverGeneration",
+              "sample",
+              "receipt",
+              "transport",
+              "localExpiry",
+              "proof",
+              "error"
+            ],
+            "additionalProperties": true
+          },
+          "sessions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "hostId": {
+                  "type": "string",
+                  "maxLength": 16384,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+                  "minLength": 1
+                },
+                "serverGeneration": {
+                  "type": "string",
+                  "maxLength": 16384,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                  "minLength": 1
+                },
+                "sessionId": {
+                  "type": "string",
+                  "maxLength": 16384,
+                  "pattern": "^\\$[0-9]+$"
+                },
+                "createdAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9223372036854775807
+                },
+                "name": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 16384,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "sessionPath": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 16384,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "currentWindow": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 16384,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "currentPath": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "maxLength": 16384,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "activityAt": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9223372036854775807
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "lastAttachedAt": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9223372036854775807
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "attachedClients": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9223372036854775807
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "windowCount": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9223372036854775807
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "pending": {
+                  "type": "boolean"
+                },
+                "localViewer": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "type": "string",
+                      "enum": [
+                        "open",
+                        "none",
+                        "unknown"
+                      ]
+                    },
+                    "reason": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "maxLength": 64,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "confidence": {
+                      "type": "string",
+                      "enum": [
+                        "confirmed",
+                        "matched"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "state",
+                    "reason"
+                  ],
+                  "additionalProperties": true,
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {
+                          "state": {
+                            "const": "open"
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "confidence"
+                        ]
+                      },
+                      "else": {
+                        "not": {
+                          "required": [
+                            "confidence"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "hostId",
+                "serverGeneration",
+                "sessionId",
+                "createdAt",
+                "name",
+                "sessionPath",
+                "currentWindow",
+                "currentPath",
+                "activityAt",
+                "lastAttachedAt",
+                "attachedClients",
+                "windowCount",
+                "pending",
+                "localViewer"
+              ],
+              "additionalProperties": true
+            },
+            "maxItems": 256
+          }
+        },
+        "required": [
+          "hostId",
+          "display",
+          "local",
+          "owner",
+          "sessions"
+        ],
+        "additionalProperties": true
+      },
+      "maxItems": 128
+    },
+    "ticket": {
+      "anyOf": [
+        {
+          "$ref": "https://tmux-observer.invalid/contracts/service-v1/schema.json#/$defs/Ticket"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "readerId",
+    "clock",
+    "contextId",
+    "encodedAt",
+    "viewRevision",
+    "mesh",
+    "desktop",
+    "hosts",
+    "ticket",
+    "error"
+  ],
+  "additionalProperties": true
+}

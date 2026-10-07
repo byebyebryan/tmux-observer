@@ -21,6 +21,14 @@ tmux-observer = "tmux_observer.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.data-files]
+"share/tmux-observer/contracts/observation-v1" = ["contracts/observation-v1/*.json", "contracts/observation-v1/*.md", "contracts/observation-v1/SHA256SUMS"]
+"share/tmux-observer/contracts/observation-v1/fixtures" = ["contracts/observation-v1/fixtures/*.json"]
+"share/tmux-observer/contracts/service-v1" = ["contracts/service-v1/*.json", "contracts/service-v1/*.md", "contracts/service-v1/SHA256SUMS"]
+"share/tmux-observer/contracts/service-v1/fixtures" = ["contracts/service-v1/fixtures/*.json"]
+"share/tmux-observer/contracts/fleet-v1" = ["contracts/fleet-v1/*.json", "contracts/fleet-v1/*.md", "contracts/fleet-v1/SHA256SUMS"]
+"share/tmux-observer/contracts/fleet-v1/fixtures" = ["contracts/fleet-v1/fixtures/*.json"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"

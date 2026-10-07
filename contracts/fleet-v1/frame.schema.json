@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/fleet-v1/frame.schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "tmux-observer.fleet.v1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "status",
+        "view",
+        "heartbeat",
+        "gap",
+        "resync",
+        "error",
+        "refresh_result"
+      ]
+    },
+    "readerId": {
+      "type": "string",
+      "maxLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "clock": {
+      "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Clock"
+    },
+    "contextId": {
+      "type": "string",
+      "maxLength": 32,
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "encodedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "viewRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "snapshot": {
+      "anyOf": [
+        {
+          "$ref": "https://tmux-observer.invalid/contracts/fleet-v1/schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Error"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ticket": {
+      "anyOf": [
+        {
+          "$ref": "https://tmux-observer.invalid/contracts/service-v1/schema.json#/$defs/Ticket"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "kind",
+    "readerId",
+    "clock",
+    "contextId",
+    "encodedAt",
+    "sequence",
+    "viewRevision",
+    "snapshot",
+    "requestId",
+    "error",
+    "ticket"
+  ],
+  "additionalProperties": true
+}

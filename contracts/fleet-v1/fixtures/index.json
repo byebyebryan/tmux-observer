@@ -1,0 +1,13 @@
+{
+  "cases": [
+    {
+      "file": "local.json",
+      "accept": true
+    },
+    {
+      "file": "frame.json",
+      "schema": "frame.schema.json",
+      "accept": true
+    }
+  ]
+}

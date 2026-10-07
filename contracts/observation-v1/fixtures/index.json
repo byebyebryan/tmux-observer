@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {
+      "file": "complete.json",
+      "accept": true
+    },
+    {
+      "file": "no-server.json",
+      "accept": true
+    },
+    {
+      "file": "failed.json",
+      "accept": true
+    }
+  ]
+}

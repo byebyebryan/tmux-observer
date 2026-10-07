@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/observation-v1/operation-error.schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "tmux-observer.observation.v1",
+        "tmux-observer.service.v1",
+        "tmux-observer.fleet.v1"
+      ]
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "kind": {
+      "const": "operation_error"
+    },
+    "error": {
+      "$ref": "https://tmux-observer.invalid/contracts/observation-v1/schema.json#/$defs/Error"
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "kind",
+    "error"
+  ],
+  "additionalProperties": true
+}

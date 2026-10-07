@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""Check exact bundle coverage, dependency pins, schemas and acceptance fixtures."""
+
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+loader = importlib.machinery.SourceFileLoader(
+    "acceptance_reader", str(ROOT / "scripts/read-contract")
+)
+spec = importlib.util.spec_from_loader(loader.name, loader)
+reader = importlib.util.module_from_spec(spec)
+loader.exec_module(reader)
+digests = {}
+count = 0
+for bundle, kind in (
+    ("observation-v1", "observation"),
+    ("service-v1", "service"),
+    ("fleet-v1", "fleet"),
+):
+    directory = ROOT / "contracts" / bundle
+    sums = directory / "SHA256SUMS"
+    entries = {}
+    for line in sums.read_text().splitlines():
+        digest, name = line.split("  ", 1)
+        assert name not in entries and not Path(name).is_absolute() and ".." not in Path(name).parts
+        entries[name] = digest
+        assert hashlib.sha256((directory / name).read_bytes()).hexdigest() == digest, name
+    expected = {
+        str(path.relative_to(directory))
+        for path in directory.rglob("*")
+        if path.is_file() and path != sums
+    }
+    assert set(entries) == expected, "bundle coverage"
+    assert list(entries) == sorted(entries), "bundle order"
+    descriptor = json.loads((directory / "contract.json").read_text())
+    dependencies = {
+        name: digests[name]
+        for name in (
+            ("observation-v1",)
+            if kind == "service"
+            else ("observation-v1", "service-v1")
+            if kind == "fleet"
+            else ()
+        )
+    }
+    assert descriptor["dependencies"] == dependencies, "dependency pins"
+    digests[bundle] = hashlib.sha256(sums.read_bytes()).hexdigest()
+    index = json.loads((directory / "fixtures/index.json").read_text())
+    for case in index["cases"]:
+        value = json.loads((directory / "fixtures" / case["file"]).read_text())
+        fixture_kind = {"request.schema.json": "request", "frame.schema.json": "fleet-frame"}.get(
+            case.get("schema"), kind
+        )
+        reader.verify(fixture_kind, value)
+        count += 1
+print(f"Verified 3 exact contract bundles, dependency digests and {count} independent fixtures")

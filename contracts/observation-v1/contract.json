@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "observation-v1",
+  "protocol": "tmux-observer.observation.v1",
+  "wire": {
+    "encoding": "strict-utf8",
+    "framing": "one-single-line-json-and-one-lf",
+    "documentBytes": 1048576,
+    "envelopeBytes": 16384,
+    "requestBytes": 16384,
+    "maxDepth": 32,
+    "maxNodes": 100000
+  },
+  "extensions": "unknown fields allowed only within all wire/tree bounds; known fields retain their declared semantics",
+  "dependencies": {},
+  "runtimeAcceptance": "requires implementation-status evidence; schemas alone accept no native behavior"
+}

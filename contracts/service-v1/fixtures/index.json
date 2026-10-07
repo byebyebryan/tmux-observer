@@ -1,0 +1,17 @@
+{
+  "cases": [
+    {
+      "file": "ready.json",
+      "accept": true
+    },
+    {
+      "file": "warming.json",
+      "accept": true
+    },
+    {
+      "file": "request.json",
+      "schema": "request.schema.json",
+      "accept": true
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/service-v1/request.schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "tmux-observer.service.v1",
+        "tmux-observer.fleet.v1"
+      ]
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "status",
+        "snapshot",
+        "watch",
+        "probe",
+        "refresh",
+        "refresh_status"
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+    },
+    "expectedHost": {
+      "type": "string",
+      "maxLength": 16384,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "minLength": 1
+    },
+    "contextId": {
+      "type": "string",
+      "maxLength": 32,
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "publisherId": {
+      "type": "string",
+      "maxLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "meshRevision": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 71,
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ticketId": {
+      "type": "string",
+      "maxLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hostId": {
+            "type": "string",
+            "maxLength": 16384,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "minLength": 1
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "desktop"
+            ]
+          }
+        },
+        "required": [
+          "hostId",
+          "source"
+        ],
+        "additionalProperties": true
+      },
+      "maxItems": 32,
+      "minItems": 1
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "operation",
+    "requestId"
+  ],
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "protocol": {
+            "const": "tmux-observer.service.v1"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "expectedHost"
+        ]
+      },
+      "else": {
+        "required": [
+          "contextId"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "refresh"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "sources"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "refresh_status"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "ticketId",
+          "publisherId"
+        ]
+      }
+    }
+  ]
+}

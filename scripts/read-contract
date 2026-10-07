@@ -1,0 +1,432 @@
+#!/usr/bin/env python3
+"""Independent schema and semantic acceptance reader; no producer imports."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import re
+import sys
+from pathlib import Path
+
+from jsonschema import Draft202012Validator, ValidationError
+from jsonschema.validators import extend
+from referencing import Registry, Resource
+
+ROOT = Path(__file__).resolve().parent.parent / "contracts"
+StrictValidator = extend(
+    Draft202012Validator,
+    type_checker=Draft202012Validator.TYPE_CHECKER.redefine(
+        "integer", lambda _checker, value: type(value) is int
+    ),
+)
+SCHEMAS = {
+    "observation": "observation-v1/schema.json",
+    "service": "service-v1/schema.json",
+    "fleet": "fleet-v1/schema.json",
+    "fleet-frame": "fleet-v1/frame.schema.json",
+    "request": "service-v1/request.schema.json",
+    "operation-error": "observation-v1/operation-error.schema.json",
+}
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def wire(raw, limit):
+    require(
+        len(raw) <= limit and raw.endswith(b"\n") and raw.count(b"\n") == 1, "record bound/framing"
+    )
+    require(not raw.startswith(b"\xef\xbb\xbf") and b"\0" not in raw, "BOM/NUL")
+    text = raw[:-1].decode("utf-8", "strict")
+    require(text and text == text.strip(), "outer whitespace")
+    stripped = re.sub(r'"(?:[^"\\]|\\.)*"', '""', text)
+    depth = 0
+    for character in stripped:
+        depth += (character in "[{") - (character in "]}")
+        require(depth <= 32, "nesting bound")
+
+    def pairs(items):
+        require(len(dict(items)) == len(items), "duplicate object key")
+        return dict(items)
+
+    value = json.loads(text, object_pairs_hook=pairs)
+    queue = [(value, 0)]
+    count = 0
+    while queue:
+        item, depth = queue.pop()
+        count += 1
+        require(count <= 100000, "node bound")
+        if isinstance(item, (dict, list)):
+            require(depth < 32, "container bound")
+            children = list(item) + list(item.values()) if isinstance(item, dict) else item
+            queue.extend((child, depth + 1) for child in children)
+        elif isinstance(item, str):
+            require(
+                len(item) <= 16384 and not any(ord(c) < 32 or ord(c) == 127 for c in item),
+                "string bound",
+            )
+            item.encode("utf-8", "strict")
+        elif type(item) is int:
+            require(abs(item) <= 2**63 - 1, "integer bound")
+        elif type(item) is float:
+            require(math.isfinite(item), "finite number")
+    return value
+
+
+def schema_check(kind, value):
+    resources = []
+    for path in ROOT.glob("*/*.json"):
+        document = json.loads(path.read_text())
+        if "$schema" in document:
+            Draft202012Validator.check_schema(document)
+            resources.append((document["$id"], Resource.from_contents(document)))
+    registry = Registry().with_resources(resources)
+    document = json.loads((ROOT / SCHEMAS[kind]).read_text())
+    try:
+        StrictValidator(document, registry=registry).validate(value)
+    except ValidationError as error:
+        raise ValueError(error.message) from error
+
+
+def same_scope(a, b):
+    return all(a[key] == b[key] for key in ("hostId", "uid", "server"))
+
+
+def same_clock(a, b):
+    return all(a[key] == b[key] for key in ("bootId", "timeNamespace"))
+
+
+def observation(value):
+    require(
+        len(json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()) + 1 <= 1048576,
+        "observation bytes",
+    )
+    sample = value["sample"]
+    require(sample["startedAt"] <= sample["finishedAt"], "sample time")
+    complete = sample["coverage"] == "complete"
+    require(complete == (sample["error"] is None), "coverage/error")
+    require(
+        complete or value["serverGeneration"] is None and not value["sessions"], "failed authority"
+    )
+    require(value["serverGeneration"] is not None or not value["sessions"], "absent authority")
+    sessions, panes = set(), set()
+    for row in value["sessions"]:
+        require(
+            row["hostId"] == value["source"]["hostId"]
+            and row["serverGeneration"] == value["serverGeneration"],
+            "owner identity",
+        )
+        require(row["sessionId"] not in sessions, "duplicate session")
+        sessions.add(row["sessionId"])
+        require("viewerId" not in row and "closeSafe" not in row, "action authority")
+        require(("panes" in row) == value["capabilities"]["panes"], "pane profile")
+        require(("options" in row) == bool(value["capabilities"]["options"]), "option profile")
+        require(
+            set(row.get("options", {})) == set(value["capabilities"]["options"]), "option coverage"
+        )
+        for pane in row.get("panes", []):
+            require(pane["paneId"] not in panes, "duplicate pane")
+            panes.add(pane["paneId"])
+    require(len(panes) <= 512, "pane capacity")
+
+
+def receipt(value):
+    require(value["accepted"] <= value["acceptedAttempt"] <= value["attempted"], "attempt counters")
+    require((value["accepted"] == 0) == (value["acceptedAttempt"] == 0), "accepted attempt")
+    require((value["attempted"] == 0) == (value["lastAttemptAt"] is None), "attempt timestamp")
+    require(value["remainingMs"] <= value["leaseMs"], "lease bound")
+    timestamps = [value[k] for k in ("startedAt", "acceptedAt", "expiresAt")]
+    if value["accepted"]:
+        require(all(t is not None for t in timestamps), "accepted timestamps")
+        start, accepted, expiry = timestamps
+        require(start <= accepted < expiry == start + value["leaseMs"], "sample-start lease")
+        require(value["lastAttemptAt"] >= start, "last attempt time")
+        require(
+            value["attempted"] != value["acceptedAttempt"] or value["lastAttemptAt"] == start,
+            "accepted attempt time",
+        )
+    else:
+        require(
+            all(t is None for t in timestamps) and value["state"] != "ready", "unaccepted receipt"
+        )
+    if value["state"] == "ready":
+        require(
+            value["remainingMs"] > 0 and value["lastAttemptResult"] == "complete",
+            "positive receipt",
+        )
+    else:
+        require(value["remainingMs"] == 0, "nonready lease")
+    if value["lastAttemptResult"] == "none":
+        require(
+            not value["accepted"] and (not value["attempted"] or value["inFlight"]),
+            "unfinished attempt",
+        )
+    require(value["attempted"] or not value["inFlight"], "unstarted work")
+    expected = {
+        "warming": {"none"},
+        "failed": {"partial", "failed"},
+        "unsupported": {"unsupported"},
+    }
+    require(
+        value["state"] not in expected or value["lastAttemptResult"] in expected[value["state"]],
+        "state/result",
+    )
+    if value["state"] == "warming":
+        require(
+            not value["accepted"] and (not value["attempted"] or value["inFlight"]),
+            "warming receipt",
+        )
+
+
+def ticket(value, publisher):
+    require(
+        len(json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()) + 1 <= 16384,
+        "ticket bytes",
+    )
+    require(value["publisherId"] == publisher, "ticket incarnation")
+    require(
+        value["requestedAt"] < value["deadlineAt"] <= value["requestedAt"] + 15000,
+        "ticket deadline",
+    )
+    scopes = [(row["hostId"], row["source"]) for row in value["sources"]]
+    require(len(scopes) == len(set(scopes)), "duplicate scope")
+    states = [row["state"] for row in value["sources"]]
+    outstanding = any(state in ("pending", "running") for state in states)
+    require(
+        (value["state"] in ("accepted", "coalesced", "running")) == outstanding, "ticket completion"
+    )
+    if value["state"] == "complete":
+        require(all(state == "complete" for state in states), "mixed success")
+    if value["state"] == "failed":
+        require(any(state != "complete" for state in states), "failed outcome")
+    for row in value["sources"]:
+        require(
+            (row["state"] in ("failed", "stale_scope", "deadline")) == (row["error"] is not None),
+            "source error",
+        )
+        require(
+            row["state"] != "complete" or row["attempt"] is not None and row["attempt"] > 0,
+            "native attempt",
+        )
+
+
+def service(value):
+    evidence = value["receipt"]
+    receipt(evidence)
+    snapshot = value["snapshot"]
+    if snapshot is not None:
+        observation(snapshot)
+        require(
+            snapshot["sample"]["coverage"] == "complete"
+            and same_scope(snapshot["source"], value["source"]),
+            "retained sample",
+        )
+        require(snapshot["capabilities"] == {"panes": False, "options": []}, "service profile")
+    require(evidence["state"] != "warming" or snapshot is None, "warming snapshot")
+    if evidence["state"] == "ready":
+        require(
+            snapshot is not None and same_clock(snapshot["clock"], value["clock"]), "source clock"
+        )
+        require(
+            snapshot["sample"]["startedAt"] == evidence["startedAt"]
+            and snapshot["sample"]["finishedAt"] <= evidence["acceptedAt"] <= value["encodedAt"],
+            "native binding",
+        )
+        require(
+            evidence["remainingMs"] == max(0, evidence["expiresAt"] - value["encodedAt"]),
+            "encoded validity",
+        )
+
+
+def fleet(value):
+    require(
+        len(json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()) + 1 <= 1048576,
+        "fleet bytes",
+    )
+    mesh, desktop, now = value["mesh"], value["desktop"], value["encodedAt"]
+    require(desktop["contextId"] == value["contextId"], "desktop context")
+    desktop_ready = desktop["state"] == "ready"
+    if desktop_ready:
+        require(
+            all(
+                desktop[k] is not None
+                for k in ("startedAt", "acceptedAt", "expiresAt", "inputHash")
+            ),
+            "desktop receipt",
+        )
+        require(
+            desktop["startedAt"]
+            <= desktop["acceptedAt"]
+            <= now
+            < desktop["expiresAt"]
+            <= desktop["startedAt"] + 10000
+            and desktop["error"] is None,
+            "desktop lease",
+        )
+    hosts = value["hosts"]
+    require(len({h["hostId"] for h in hosts}) == len(hosts), "duplicate host")
+    active_mesh = mesh["state"] in ("ready", "local_only")
+    if active_mesh:
+        require(
+            0 < len(hosts) <= 16
+            and hosts[0]["local"]
+            and hosts[0]["hostId"] == mesh["localHostId"]
+            and sum(h["local"] for h in hosts) == 1,
+            "local order/capacity",
+        )
+        require(
+            mesh["revision"] is not None
+            if mesh["state"] == "ready"
+            else len(hosts) == 1 and mesh["revision"] is None,
+            "mesh revision",
+        )
+    for host in hosts:
+        owner = host["owner"]
+        evidence, proof, expiry = owner["receipt"], owner["proof"], owner["localExpiry"]
+        if evidence is not None:
+            receipt(evidence)
+        if owner["source"] is not None:
+            require(owner["source"]["hostId"] == host["hostId"], "source relabel")
+        if proof is not None:
+            rtt = proof["receivedAt"] - proof["sentAt"]
+            require(
+                0 <= rtt <= 2000 and proof["receivedAt"] <= now and proof["marginMs"] >= 100,
+                "probe timing",
+            )
+            bound = proof["receivedAt"] + max(0, proof["remainingMs"] - rtt - proof["marginMs"])
+            require(expiry is None or expiry <= bound, "remote expiry")
+        current = (
+            evidence is not None
+            and evidence["state"] == "ready"
+            and expiry is not None
+            and expiry > now
+        )
+        if current:
+            require(
+                active_mesh
+                and all(
+                    owner[k] is not None
+                    for k in ("source", "clock", "publisherId", "sample", "encodedAt")
+                ),
+                "current provenance",
+            )
+            sample = owner["sample"]
+            require(
+                sample["coverage"] == "complete"
+                and sample["error"] is None
+                and sample["startedAt"] == evidence["startedAt"]
+                and sample["finishedAt"] <= evidence["acceptedAt"] <= owner["encodedAt"],
+                "projection sample",
+            )
+            require(
+                owner["error"] is None
+                and evidence["remainingMs"] == max(0, evidence["expiresAt"] - owner["encodedAt"]),
+                "projection receipt",
+            )
+            if host["local"]:
+                require(
+                    owner["transport"] == "local"
+                    and same_clock(owner["clock"], value["clock"])
+                    and expiry <= evidence["expiresAt"],
+                    "local lease",
+                )
+            else:
+                require(
+                    owner["transport"] == "ready"
+                    and proof is not None
+                    and proof["remainingMs"] == evidence["remainingMs"],
+                    "remote proof",
+                )
+        ids = set()
+        for row in host["sessions"]:
+            require(
+                row["hostId"] == host["hostId"]
+                and row["serverGeneration"] == owner["serverGeneration"]
+                and row["sessionId"] not in ids,
+                "fleet identity",
+            )
+            ids.add(row["sessionId"])
+            require(
+                not any(k in row for k in ("panes", "options", "viewerId", "closeSafe")),
+                "fleet profile",
+            )
+            viewer = row["localViewer"]
+            require(not any(k in viewer for k in ("viewerId", "closeSafe")), "viewer authority")
+            require(
+                viewer["state"] == "unknown" or current and desktop_ready,
+                "independent viewer evidence",
+            )
+            require(
+                viewer.get("confidence") != "matched"
+                or row["attachedClients"] is not None
+                and row["attachedClients"] > 0,
+                "matched attachment",
+            )
+
+
+def verify(kind, value):
+    schema_check(kind, value)
+    if kind in ("service", "fleet-frame"):
+        envelope = {**value, "snapshot": None}
+        require(
+            len(json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode()) + 1
+            <= 16384,
+            "envelope bound",
+        )
+    if kind in ("observation", "service", "fleet"):
+        {"observation": observation, "service": service, "fleet": fleet}[kind](value)
+    if kind == "fleet-frame" and value["snapshot"] is not None:
+        fleet(value["snapshot"])
+        require(
+            all(
+                value[k] == value["snapshot"][k]
+                for k in ("readerId", "contextId", "encodedAt", "viewRevision")
+            )
+            and same_clock(value["clock"], value["snapshot"]["clock"]),
+            "frame binding",
+        )
+    if kind in ("service", "fleet", "fleet-frame"):
+        publisher = value.get("publisherId", value.get("readerId"))
+        if value["ticket"] is not None:
+            ticket(value["ticket"], publisher)
+        require(
+            value.get("kind") != "refresh_result" or value["ticket"] is not None, "missing ticket"
+        )
+        require(value.get("kind") != "error" or value["error"] is not None, "missing error")
+    if kind == "request":
+        if "ticketId" in value:
+            require("publisherId" in value, "ticket publisher")
+        if "sources" in value:
+            pairs = [(s["hostId"], s["source"]) for s in value["sources"]]
+            require(len(set(pairs)) == len(pairs), "duplicate requested scope")
+            if value["protocol"] == "tmux-observer.service.v1":
+                require(pairs == [(value["expectedHost"], "owner")], "fixed owner scope")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--schema", choices=SCHEMAS, required=True)
+    args = parser.parse_args()
+    limit = (
+        1064960
+        if args.schema in ("service", "fleet-frame")
+        else 16384
+        if args.schema in ("request", "operation-error")
+        else 1048576
+    )
+    try:
+        value = wire(sys.stdin.buffer.read(limit + 1), limit)
+        verify(args.schema, value)
+    except (ValueError, KeyError, TypeError, RecursionError) as error:
+        print(str(error), file=sys.stderr)
+        return 1
+    print("accepted " + args.schema)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

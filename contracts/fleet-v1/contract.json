@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "name": "fleet-v1",
+  "protocol": "tmux-observer.fleet.v1",
+  "wire": {
+    "encoding": "strict-utf8",
+    "framing": "one-single-line-json-and-one-lf",
+    "documentBytes": 1048576,
+    "envelopeBytes": 16384,
+    "requestBytes": 16384,
+    "maxDepth": 32,
+    "maxNodes": 100000
+  },
+  "extensions": "unknown fields allowed only within all wire/tree bounds; known fields retain their declared semantics",
+  "dependencies": {
+    "observation-v1": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c",
+    "service-v1": "1229737bda758c66dea4762e933e2ba15c8ff79e1fdd3f4bc473b03adc386c89"
+  },
+  "runtimeAcceptance": "requires implementation-status evidence; schemas alone accept no native behavior"
+}

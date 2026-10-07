@@ -1,0 +1,621 @@
+#!/usr/bin/env python3
+"""Maintain explicit schema/fixture bundles, independently of runtime serializers."""
+
+import copy
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+BASE = "https://tmux-observer.invalid/contracts/"
+LIMIT = 2**63 - 1
+TEXT = {"type": "string", "maxLength": 16384, "pattern": r"^[^\u0000-\u001f\u007f]*$"}
+INTEGER = {"type": "integer", "minimum": 0, "maximum": LIMIT}
+BOOLEAN = {"type": "boolean"}
+UUID = {
+    **TEXT,
+    "pattern": r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "maxLength": 36,
+}
+HOST = {**TEXT, "pattern": r"^[A-Za-z0-9][A-Za-z0-9_.-]*$", "minLength": 1}
+TOKEN = {**TEXT, "pattern": r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$", "maxLength": 64}
+OPTION = {**TEXT, "pattern": r"^@[A-Za-z0-9_.-]+$"}
+HASH = {**TEXT, "pattern": r"^sha256:[0-9a-f]{64}$", "maxLength": 71}
+CONTEXT = {**TEXT, "pattern": r"^[0-9a-f]{32}$", "maxLength": 32}
+OBS = "tmux-observer.observation.v1"
+SERVICE = "tmux-observer.service.v1"
+FLEET = "tmux-observer.fleet.v1"
+
+
+def nullable(schema):
+    return {"anyOf": [schema, {"type": "null"}]}
+
+
+def array(schema, maximum):
+    return {"type": "array", "items": schema, "maxItems": maximum}
+
+
+def choice(*values):
+    return {"type": "string", "enum": list(values)}
+
+
+def obj(properties, optional=()):
+    return {
+        "type": "object",
+        "properties": properties,
+        "required": [key for key in properties if key not in optional],
+        "additionalProperties": True,
+    }
+
+
+def ref(bundle, definition):
+    return {"$ref": BASE + bundle + "/schema.json#/$defs/" + definition}
+
+
+def schema(bundle, shape, definitions=None, filename="schema.json"):
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": BASE + bundle + "/" + filename,
+        **shape,
+        **({"$defs": definitions} if definitions else {}),
+    }
+
+
+def write(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+
+
+def sums(bundle):
+    files = sorted(
+        (p for p in bundle.rglob("*") if p.is_file() and p.name != "SHA256SUMS"),
+        key=lambda p: p.relative_to(bundle).as_posix().encode(),
+    )
+    content = "".join(
+        hashlib.sha256(p.read_bytes()).hexdigest() + "  " + p.relative_to(bundle).as_posix() + "\n"
+        for p in files
+    )
+    (bundle / "SHA256SUMS").write_text(content)
+    return hashlib.sha256(content.encode()).hexdigest()
+
+
+def main():
+    observation = "observation-v1"
+    definitions = {}
+    definitions["Error"] = obj({"code": TOKEN, "message": {**TEXT, "maxLength": 4096}})
+    definitions["Clock"] = obj(
+        {"bootId": UUID, "timeNamespace": {**TEXT, "pattern": r"^time:[0-9]+$", "maxLength": 64}}
+    )
+    definitions["Source"] = obj(
+        {
+            "hostId": HOST,
+            "uid": {**INTEGER, "maximum": 2**32 - 1},
+            "server": {"const": "default"},
+            "nativeHostname": nullable({**TEXT, "minLength": 1}),
+        }
+    )
+    definitions["Sample"] = obj(
+        {
+            "startedAt": INTEGER,
+            "finishedAt": INTEGER,
+            "observedAt": INTEGER,
+            "coverage": choice("complete", "partial", "failed", "unsupported"),
+            "error": nullable(ref(observation, "Error")),
+        }
+    )
+    reference = {
+        "hostId": HOST,
+        "serverGeneration": {**TEXT, "minLength": 1},
+        "sessionId": {**TEXT, "pattern": r"^\$[0-9]+$"},
+        "createdAt": INTEGER,
+    }
+    definitions["Reference"] = obj(reference)
+    definitions["Pane"] = obj(
+        {
+            "paneId": {**TEXT, "pattern": r"^%[0-9]+$"},
+            "pid": nullable(INTEGER),
+            "currentPath": nullable({**TEXT, "minLength": 1}),
+            "currentCommand": nullable({**TEXT, "minLength": 1}),
+        }
+    )
+    fields = {
+        **reference,
+        **{
+            key: nullable({**TEXT, "minLength": 1})
+            for key in ("name", "sessionPath", "currentWindow", "currentPath")
+        },
+        **{
+            key: nullable(INTEGER)
+            for key in ("activityAt", "lastAttachedAt", "attachedClients", "windowCount")
+        },
+        "pending": BOOLEAN,
+    }
+    definitions["Session"] = obj(
+        {
+            **fields,
+            "panes": array(ref(observation, "Pane"), 512),
+            "options": {
+                "type": "object",
+                "propertyNames": OPTION,
+                "additionalProperties": nullable(TEXT),
+            },
+        },
+        optional=("panes", "options"),
+    )
+    owner = obj(
+        {
+            "protocol": {"const": OBS},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "source": ref(observation, "Source"),
+            "clock": ref(observation, "Clock"),
+            "sample": ref(observation, "Sample"),
+            "serverGeneration": nullable({**TEXT, "minLength": 1}),
+            "sessions": array(ref(observation, "Session"), 256),
+            "capabilities": obj(
+                {"panes": BOOLEAN, "options": {**array(OPTION, 100000), "uniqueItems": True}}
+            ),
+        }
+    )
+    directory = ROOT / "contracts" / observation
+    write(directory / "schema.json", schema(observation, owner, definitions))
+    operation_error = obj(
+        {
+            "protocol": choice(OBS, SERVICE, FLEET),
+            "schemaVersion": {"type": "integer", "const": 1},
+            "kind": {"const": "operation_error"},
+            "error": ref(observation, "Error"),
+        }
+    )
+    write(
+        directory / "operation-error.schema.json",
+        schema(observation, operation_error, filename="operation-error.schema.json"),
+    )
+
+    # Hand-assembled synthetic inputs; never call production validation/encoding.
+    source = {
+        "hostId": "fixture-local",
+        "uid": 1000,
+        "server": "default",
+        "nativeHostname": "fixture-local",
+    }
+    clock = {"bootId": "00000000-0000-4000-8000-000000000000", "timeNamespace": "time:10"}
+    generation = "tmux-v1:1700000000:4321:/tmp/tmux-fixture/default"
+    row = {
+        "hostId": "fixture-local",
+        "serverGeneration": generation,
+        "sessionId": "$2",
+        "createdAt": 1700000001,
+        "name": "fixture",
+        "activityAt": 1700000002,
+        "lastAttachedAt": None,
+        "attachedClients": 0,
+        "pending": False,
+        "windowCount": 1,
+        "sessionPath": "/tmp",
+        "currentWindow": "fixture",
+        "currentPath": "/tmp",
+    }
+    accepted = {
+        "protocol": OBS,
+        "schemaVersion": 1,
+        "source": source,
+        "clock": clock,
+        "sample": {
+            "startedAt": 100,
+            "finishedAt": 120,
+            "observedAt": 1700000000000,
+            "coverage": "complete",
+            "error": None,
+        },
+        "serverGeneration": generation,
+        "sessions": [row],
+        "capabilities": {"panes": False, "options": []},
+    }
+    write(directory / "fixtures/complete.json", accepted)
+    empty = copy.deepcopy(accepted)
+    empty["serverGeneration"] = None
+    empty["sessions"] = []
+    write(directory / "fixtures/no-server.json", empty)
+    failed = copy.deepcopy(empty)
+    failed["sample"]["coverage"] = "failed"
+    failed["sample"]["error"] = {"code": "collection_failed", "message": "native read unavailable"}
+    write(directory / "fixtures/failed.json", failed)
+    write(
+        directory / "fixtures/index.json",
+        {
+            "cases": [
+                {"file": name + ".json", "accept": True}
+                for name in ("complete", "no-server", "failed")
+            ]
+        },
+    )
+
+    service = "service-v1"
+    definitions = {}
+    definitions["Receipt"] = obj(
+        {
+            "state": choice("warming", "ready", "failed", "unsupported", "expired"),
+            **{key: INTEGER for key in ("attempted", "accepted", "acceptedAttempt")},
+            **{
+                key: nullable(INTEGER)
+                for key in ("startedAt", "acceptedAt", "expiresAt", "lastAttemptAt")
+            },
+            "lastAttemptResult": choice("none", "complete", "partial", "failed", "unsupported"),
+            "leaseMs": {**INTEGER, "minimum": 1, "maximum": 10000},
+            "remainingMs": {**INTEGER, "maximum": 10000},
+            "inFlight": BOOLEAN,
+        }
+    )
+    scope = obj({"hostId": HOST, "source": choice("owner", "desktop")})
+    child = obj(
+        {
+            **scope["properties"],
+            "state": choice("pending", "running", "complete", "failed", "stale_scope", "deadline"),
+            "attempt": nullable(INTEGER),
+            "error": nullable(ref(observation, "Error")),
+        }
+    )
+    definitions["Ticket"] = obj(
+        {
+            "id": UUID,
+            "publisherId": UUID,
+            "state": choice(
+                "accepted", "coalesced", "running", "complete", "failed", "stale_scope", "deadline"
+            ),
+            "requestedAt": INTEGER,
+            "deadlineAt": INTEGER,
+            "sources": {**array(child, 32), "minItems": 1},
+        }
+    )
+    frame = obj(
+        {
+            "protocol": {"const": SERVICE},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "kind": choice(
+                "status", "view", "heartbeat", "gap", "resync", "error", "refresh_result"
+            ),
+            "publisherId": UUID,
+            "source": ref(observation, "Source"),
+            "clock": ref(observation, "Clock"),
+            **{key: INTEGER for key in ("encodedAt", "sequence", "viewRevision")},
+            "receipt": ref(service, "Receipt"),
+            "snapshot": nullable({"$ref": BASE + observation + "/schema.json"}),
+            "requestId": nullable(TOKEN),
+            "error": nullable(ref(observation, "Error")),
+            "ticket": nullable(ref(service, "Ticket")),
+        }
+    )
+    directory = ROOT / "contracts" / service
+    write(directory / "schema.json", schema(service, frame, definitions))
+    request = obj(
+        {
+            "protocol": choice(SERVICE, FLEET),
+            "schemaVersion": {"type": "integer", "const": 1},
+            "operation": choice(
+                "status", "snapshot", "watch", "probe", "refresh", "refresh_status"
+            ),
+            "requestId": TOKEN,
+            "expectedHost": HOST,
+            "contextId": CONTEXT,
+            "publisherId": UUID,
+            "meshRevision": nullable(HASH),
+            "ticketId": UUID,
+            "sources": {**array(scope, 32), "minItems": 1},
+        },
+        optional=(
+            "expectedHost",
+            "contextId",
+            "publisherId",
+            "meshRevision",
+            "ticketId",
+            "sources",
+        ),
+    )
+    request["allOf"] = [
+        {
+            "if": {"properties": {"protocol": {"const": SERVICE}}},
+            "then": {"required": ["expectedHost"]},
+            "else": {"required": ["contextId"]},
+        },
+        {
+            "if": {"properties": {"operation": {"const": "refresh"}}},
+            "then": {"required": ["sources"]},
+        },
+        {
+            "if": {"properties": {"operation": {"const": "refresh_status"}}},
+            "then": {"required": ["ticketId", "publisherId"]},
+        },
+    ]
+    write(
+        directory / "request.schema.json", schema(service, request, filename="request.schema.json")
+    )
+    publisher = "11111111-1111-4111-8111-111111111111"
+    evidence = {
+        "state": "ready",
+        "attempted": 1,
+        "accepted": 1,
+        "acceptedAttempt": 1,
+        "startedAt": 100,
+        "acceptedAt": 125,
+        "expiresAt": 10100,
+        "lastAttemptAt": 100,
+        "lastAttemptResult": "complete",
+        "leaseMs": 10000,
+        "remainingMs": 9970,
+        "inFlight": False,
+    }
+    ready = {
+        "protocol": SERVICE,
+        "schemaVersion": 1,
+        "kind": "status",
+        "publisherId": publisher,
+        "source": source,
+        "clock": clock,
+        "encodedAt": 130,
+        "sequence": 0,
+        "viewRevision": 1,
+        "receipt": evidence,
+        "snapshot": accepted,
+        "requestId": "fixture-1",
+        "error": None,
+        "ticket": None,
+    }
+    write(directory / "fixtures/ready.json", ready)
+    warming = copy.deepcopy(ready)
+    warming["snapshot"] = None
+    warming["viewRevision"] = 0
+    warming["receipt"].update(
+        state="warming",
+        attempted=0,
+        accepted=0,
+        acceptedAttempt=0,
+        startedAt=None,
+        acceptedAt=None,
+        expiresAt=None,
+        lastAttemptAt=None,
+        lastAttemptResult="none",
+        remainingMs=0,
+    )
+    write(directory / "fixtures/warming.json", warming)
+    write(
+        directory / "fixtures/request.json",
+        {
+            "protocol": SERVICE,
+            "schemaVersion": 1,
+            "operation": "snapshot",
+            "requestId": "fixture-1",
+            "expectedHost": "fixture-local",
+        },
+    )
+    write(
+        directory / "fixtures/index.json",
+        {
+            "cases": [
+                {"file": "ready.json", "accept": True},
+                {"file": "warming.json", "accept": True},
+                {"file": "request.json", "schema": "request.schema.json", "accept": True},
+            ]
+        },
+    )
+
+    fleet = "fleet-v1"
+    viewer = obj(
+        {
+            "state": choice("open", "none", "unknown"),
+            "reason": nullable(TOKEN),
+            "confidence": choice("confirmed", "matched"),
+        },
+        optional=("confidence",),
+    )
+    viewer["allOf"] = [
+        {
+            "if": {"properties": {"state": {"const": "open"}}},
+            "then": {"required": ["confidence"]},
+            "else": {"not": {"required": ["confidence"]}},
+        }
+    ]
+    owner_projection = obj(
+        {
+            "source": nullable(ref(observation, "Source")),
+            "clock": nullable(ref(observation, "Clock")),
+            "publisherId": nullable(UUID),
+            "encodedAt": nullable(INTEGER),
+            "serverGeneration": nullable({**TEXT, "minLength": 1}),
+            "sample": nullable(ref(observation, "Sample")),
+            "receipt": nullable(ref(service, "Receipt")),
+            "transport": choice("local", "connecting", "ready", "failed", "absent", "incompatible"),
+            "localExpiry": nullable(INTEGER),
+            "proof": nullable(
+                obj(
+                    {
+                        "requestId": TOKEN,
+                        "sentAt": INTEGER,
+                        "receivedAt": INTEGER,
+                        "remainingMs": {**INTEGER, "maximum": 10000},
+                        "marginMs": {**INTEGER, "maximum": 10000},
+                    }
+                )
+            ),
+            "error": nullable(ref(observation, "Error")),
+        }
+    )
+    fleet_row = obj({**fields, "localViewer": viewer})
+    host = obj(
+        {
+            "hostId": HOST,
+            "display": {**TEXT, "minLength": 1},
+            "local": BOOLEAN,
+            "owner": owner_projection,
+            "sessions": array(fleet_row, 256),
+        }
+    )
+    fleet_shape = obj(
+        {
+            "protocol": {"const": FLEET},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "readerId": UUID,
+            "clock": ref(observation, "Clock"),
+            "contextId": CONTEXT,
+            "encodedAt": INTEGER,
+            "viewRevision": INTEGER,
+            "mesh": obj(
+                {
+                    "revision": nullable(HASH),
+                    "state": choice("ready", "local_only", "warming", "unavailable", "capacity"),
+                    "localHostId": nullable(HOST),
+                }
+            ),
+            "desktop": obj(
+                {
+                    "contextId": CONTEXT,
+                    "epoch": INTEGER,
+                    "state": choice("warming", "ready", "failed", "unsupported", "expired"),
+                    **{key: nullable(INTEGER) for key in ("startedAt", "acceptedAt", "expiresAt")},
+                    "inputHash": nullable(HASH),
+                    "error": nullable(ref(observation, "Error")),
+                }
+            ),
+            "hosts": array(host, 128),
+            "ticket": nullable(ref(service, "Ticket")),
+            "error": nullable(ref(observation, "Error")),
+        }
+    )
+    directory = ROOT / "contracts" / fleet
+    write(directory / "schema.json", schema(fleet, fleet_shape))
+    fleet_frame = obj(
+        {
+            "protocol": {"const": FLEET},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "kind": choice(
+                "status", "view", "heartbeat", "gap", "resync", "error", "refresh_result"
+            ),
+            "readerId": UUID,
+            "clock": ref(observation, "Clock"),
+            "contextId": CONTEXT,
+            **{key: INTEGER for key in ("encodedAt", "sequence", "viewRevision")},
+            "snapshot": nullable({"$ref": BASE + fleet + "/schema.json"}),
+            "requestId": nullable(TOKEN),
+            "error": nullable(ref(observation, "Error")),
+            "ticket": nullable(ref(service, "Ticket")),
+        }
+    )
+    write(directory / "frame.schema.json", schema(fleet, fleet_frame, filename="frame.schema.json"))
+    projected = {
+        "source": source,
+        "clock": clock,
+        "publisherId": publisher,
+        "encodedAt": 130,
+        "serverGeneration": generation,
+        "sample": accepted["sample"],
+        "receipt": evidence,
+        "transport": "local",
+        "localExpiry": 10100,
+        "proof": None,
+        "error": None,
+    }
+    fleet_fixture = {
+        "protocol": FLEET,
+        "schemaVersion": 1,
+        "readerId": "33333333-3333-4333-8333-333333333333",
+        "clock": clock,
+        "contextId": "0" * 32,
+        "encodedAt": 130,
+        "viewRevision": 1,
+        "mesh": {"revision": None, "state": "local_only", "localHostId": "fixture-local"},
+        "desktop": {
+            "contextId": "0" * 32,
+            "epoch": 0,
+            "state": "unsupported",
+            "startedAt": None,
+            "acceptedAt": None,
+            "expiresAt": None,
+            "inputHash": None,
+            "error": {"code": "unsupported_desktop", "message": "fixture headless context"},
+        },
+        "hosts": [
+            {
+                "hostId": "fixture-local",
+                "display": "Fixture local",
+                "local": True,
+                "owner": projected,
+                "sessions": [
+                    {**row, "localViewer": {"state": "unknown", "reason": "unsupported_desktop"}}
+                ],
+            }
+        ],
+        "ticket": None,
+        "error": None,
+    }
+    write(directory / "fixtures/local.json", fleet_fixture)
+    write(
+        directory / "fixtures/frame.json",
+        {
+            "protocol": FLEET,
+            "schemaVersion": 1,
+            "kind": "status",
+            "readerId": fleet_fixture["readerId"],
+            "clock": clock,
+            "contextId": fleet_fixture["contextId"],
+            "encodedAt": 130,
+            "sequence": 0,
+            "viewRevision": 1,
+            "snapshot": fleet_fixture,
+            "requestId": "fixture-1",
+            "error": None,
+            "ticket": None,
+        },
+    )
+    write(
+        directory / "fixtures/index.json",
+        {
+            "cases": [
+                {"file": "local.json", "accept": True},
+                {"file": "frame.json", "schema": "frame.schema.json", "accept": True},
+            ]
+        },
+    )
+
+    digest = {}
+    for bundle, protocol in ((observation, OBS), (service, SERVICE), (fleet, FLEET)):
+        directory = ROOT / "contracts" / bundle
+        dependencies = {
+            key: digest[key]
+            for key in (
+                (observation,)
+                if bundle == service
+                else (observation, service)
+                if bundle == fleet
+                else ()
+            )
+        }
+        write(
+            directory / "contract.json",
+            {
+                "schemaVersion": 1,
+                "name": bundle,
+                "protocol": protocol,
+                "wire": {
+                    "encoding": "strict-utf8",
+                    "framing": "one-single-line-json-and-one-lf",
+                    "documentBytes": 1048576,
+                    "envelopeBytes": 16384,
+                    "requestBytes": 16384,
+                    "maxDepth": 32,
+                    "maxNodes": 100000,
+                },
+                "extensions": "unknown fields allowed only within all wire/tree bounds; known fields retain their declared semantics",
+                "dependencies": dependencies,
+                "runtimeAcceptance": "requires implementation-status evidence; schemas alone accept no native behavior",
+            },
+        )
+        (directory / "contract.md").write_text(
+            "# "
+            + bundle
+            + "\n\nVersion 1 schema/fixture boundary. Runtime acceptance is separate.\n\nUse structural validation and the semantic rules in `docs/wire-v1.md`\ntogether. Unknown fields are bounded extensions, never source/action authority.\nBundle SHA256SUMS covers every file except itself; dependency digests bind the\nother canonical bundles. All fixture hosts and paths are synthetic.\n"
+        )
+        digest[bundle] = sums(directory)
+    print("Updated three explicit schema/fixture bundles and dependency digests")
+
+
+if __name__ == "__main__":
+    main()
