@@ -1,19 +1,31 @@
 # Tmux Observer
 
-Proposed shared observation foundation for local and remote tmux clients.
-Tmux Observer will publish session identity, owner inventory, attachment facts,
-observation health and freshness without owning tmux session lifecycle.
+Shared observation foundation under development for local and remote tmux clients.
+Tmux Observer publishes host-local session metadata through a passive direct
+collector. Shared services and prepared remote views are the next deliveries.
 Rofi Tmux Plus will consume its prepared views and retain presentation policy.
 
 ## Status
 
 Implementation in progress, 2026-10-07; see the
-[status record](docs/implementation-status.md). Packaging/check foundations exist;
-no observation API, running service or deployment has been accepted yet. Command
-names, wire fields and initial resource settings below are proposed interfaces.
-Implementation must pass the gates in the plan before these become supported
-behavior. The review records design decisions and remaining native proof;
-it does not certify runtime acceptance.
+[status record](docs/implementation-status.md). Pure contracts and the direct
+collector are implemented; native/artifact acceptance is recorded separately.
+No running service, frontend migration or deployment is accepted yet. The design
+describes later interfaces that must pass their delivery gates.
+
+```sh
+uv run tmux-observer collect --host-id snap
+uv run tmux-observer collect --host-id snap --panes --option @example
+uv run --extra dev ./scripts/check
+uv run --extra dev python scripts/accept-native-collector --output /tmp/tmux-observer-native.json
+```
+
+`collect` is a fresh read of the default server. It does not start a service,
+attach a client or create a server/session. Use a configured logical Host Mesh ID.
+The pure Python API is `tmux_observer.public`; it imports no native collection,
+networking or lifecycle code. Wire schemas and semantic rules are documented in
+[wire v1](docs/wire-v1.md). The independent development reader is
+`scripts/read-contract --schema observation` (JSON record on stdin).
 
 The extraction baseline is released `rofi-tmux-plus 0.6.0`, source
 `407ae58ba422ba88fed7da2f9d845ff274830f0e`. Its public Tmux Session v1 and
@@ -67,13 +79,10 @@ collection is polling; local and SSH subscribers still receive published views
 without each subscriber running a collector. Delivery push and native event
 observation are separate capabilities.
 
-## Next concrete action
+## Current implementation
 
-Begin G0 in the [implementation plan](docs/implementation-plan.md): turn the
-reviewed semantics into strict schemas, raw-wire fixtures and an independent
-reader, then pin the extraction baseline. Do not start by moving whole modules
-or changing the managed Rofi launcher.
-
-The first implementation batch is [Delivery A, T01–T05](docs/implementation-backlog.md#delivery-a-first-implementation-pass):
-package/provenance, executable contracts, an independent reader, direct collector
-and native producer acceptance. The backlog specifies the remaining dependencies.
+[Delivery A, T01–T05](docs/implementation-backlog.md#delivery-a-first-implementation-pass)
+establishes package/provenance, contracts, an independent reader, direct collection
+and native producer acceptance. After G1, the loop proceeds to the shared owner
+service and the early fixture-backed Rofi interaction probe. The backlog and
+status record specify the remaining dependencies and acceptance evidence.
