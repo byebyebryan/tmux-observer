@@ -13,6 +13,25 @@ recorded; optimization and a clean rerun are required. Cached RPC p95 was
 Actual SSH capacity, physical sleep, frontend migration and managed rollout
 remain open.
 
+Optimizations now retain batched generation bracketing, use equivalent compiled
+control-character validation and share identical unsolicited encodings within
+one broadcast clock instant. Source validation passes 146 methods. The changed
+wire/hub paths passed clean [G1](evidence/2026-10-07-native-optimized-g1.json) and
+[G2](evidence/2026-10-07-native-optimized-g2.json) reruns at `3aaff35`; the local
+desktop join passed nine [native cases](evidence/2026-10-07-native-desktop-fast-t12.json)
+at `ab69e9d`. The latter source also passed ten [SSH capacity cases](evidence/2026-10-07-installed-ssh-capacity-t12-partial.json):
+16 synthetic logical owners, 15 actual SSH links, 32 simultaneous near-cap
+readers and a 501.24 MiB conservative sampled peak against 768 MiB. The healthy
+subscriber's prepared round trips stayed within 250 ms. Source facts/catalog
+remain synthetic in this capacity profile; ordinary native/managed configuration
+was untouched. A subsequent clean ten-minute [normal rerun](evidence/2026-10-07-native-optimized-normal-g3-partial.json)
+at `ab69e9d` passed the selected 96 MiB fleet/64 MiB owner ceilings and unchanged
+5% combined CPU target: fleet/associated-bridge sampled peaks 80.88/75.91 MiB,
+CPU 4.66%/1.96%, and no new observer SSH starts. Native commands on Snap fell
+from 2,475 to 2,082 without slower collection or weaker validity. Physical sleep,
+frontend migration and managed rollout remain pending; sampling and synthetic
+capacity-source limits remain explicit.
+
 | Delivery | State | Evidence |
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-collector-utf8-g1.json) |

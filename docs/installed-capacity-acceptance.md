@@ -70,8 +70,11 @@ logical scopes on two physical hosts, not sixteen native tmux/Host Mesh sources.
 Actual remote clock domains, process layout and transport costs are exercised.
 
 After the existing small-frame checks, thirty-two readers simultaneously receive
-complete near-cap frames. They then stop reading while healthy cached RPCs retain
-their 250 ms deadline. The test requires actual stalled-reader retirement and
+complete near-cap frames. Thirty-one then stop reading while the remaining
+subscriber issues nonce-bound prepared snapshot requests with a 250 ms deadline,
+including the installed decoder and semantic validation. Independent schema
+verification runs separately, so it cannot stall that designated healthy reader.
+The test requires actual stalled-reader retirement and
 checks unchanged queue/retention caps, rather than inferring retirement from
 fully buffered small frames. A seventeenth source still fails catalog authority.
 
@@ -88,3 +91,15 @@ Shutdown must reap the fleet's owned SSH children, verify attributed remote
 bridges have exited, and preserve all synthetic owners until fixture cleanup.
 Only root-qualified recorded bridge incarnations and explicitly owned publisher
 processes may be signalled. Both private directories are removed after cleanup.
+
+Clean source `ab69e9d` passed all ten included cases in the
+[captured SSH profile](evidence/2026-10-07-installed-ssh-capacity-t12-partial.json).
+The conservative sum of local fleet/SSH and associated remote bridge sampled
+maxima was 501.24 MiB, below the selected 768 MiB ceiling. All thirty-two readers
+received complete near-cap frames; the healthy subscriber's ten round trips took
+78–186 ms including installed validation, while the other thirty-one were retired.
+Reader thirty-three and catalog owner seventeen failed explicitly. The stop case
+preserved all synthetic owners and reaped the owned SSH/bridge tree; both private
+directories were removed. These results establish the declared logical capacity
+and included real transport/process costs, with the synthetic/source and sampling
+limits above. They do not establish native facts on sixteen physical hosts.

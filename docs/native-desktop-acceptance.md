@@ -47,3 +47,10 @@ client/window/reference join, final frame and preserved native facts. The previo
 row after client switching correctly remained unknown because its original attach
 argv conflicted with the current native client; the current reference was confirmed
 open. The owned fixture directory and viewer processes were absent after completion.
+
+After the final generation check retained the already supported batched mode,
+clean source `ab69e9d` passed the same nine cases in the
+[optimized local-desktop evidence](evidence/2026-10-07-native-desktop-fast-t12.json).
+The source regression still rejects a generation change in both batched and
+legacy modes. This reduces the normal join from five native commands to three
+without changing the creation-time/PID checks, budget or receipt cadence.

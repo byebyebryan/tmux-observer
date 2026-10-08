@@ -1,0 +1,310 @@
+{
+  "gate": "T12-installed-ssh-capacity-partial",
+  "sourceCommit": "ab69e9d7aefb10114d0b0b00b812fa7eb5cd5430",
+  "sourceTreeDirty": false,
+  "cases": [
+    {
+      "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+      "result": "passed",
+      "frameBytes": 22803
+    },
+    {
+      "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_two_watchers_share_sixteen_owner_connections",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_third_reader_receives_explicit_capacity_error",
+      "result": "passed"
+    },
+    {
+      "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+      "result": "passed",
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 728896,
+        "retainedBytes": 35472,
+        "connections": 16,
+        "perPeerBytes": 22805
+      }
+    },
+    {
+      "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+      "result": "passed",
+      "frameBytes": 918291
+    },
+    {
+      "name": "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners",
+      "result": "passed"
+    },
+    {
+      "name": "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
+      "result": "passed",
+      "rpcMs": [
+        78.27973196981475,
+        185.7627799618058,
+        80.87672799592838,
+        80.34338598372415,
+        96.49609599728137,
+        115.01121701439843,
+        123.83845797739923,
+        89.8167269770056,
+        94.49592098826542,
+        80.67859301809222
+      ],
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 51423706,
+        "retainedBytes": 931088,
+        "connections": 16,
+        "perPeerBytes": 1836653
+      }
+    },
+    {
+      "name": "seventeenth_catalog_owner_fails_authority_without_truncated_success",
+      "result": "passed"
+    },
+    {
+      "name": "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+      "result": "passed",
+      "elapsedMs": 77.506
+    }
+  ],
+  "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+  "limits": [
+    "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints",
+    "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+    "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+    "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included",
+    "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI"
+  ],
+  "wheelSha256": "cfbec526ae40e40a1046de17e67c9a95c92d311794a140a6b6a6bca503021bfd",
+  "remoteEndpoint": {
+    "wheelSha256": "cfbec526ae40e40a1046de17e67c9a95c92d311794a140a6b6a6bca503021bfd",
+    "clock": {
+      "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+      "timeNamespace": "time:4026531834"
+    },
+    "owners": 15
+  },
+  "profile": {
+    "sampleIntervalMs": 100,
+    "sampleCount": 231,
+    "durationMs": 30425,
+    "fleetAndBridgePeak": {
+      "at": 477922054,
+      "rssBytes": 231669760,
+      "processes": [
+        {
+          "pid": 1307441,
+          "incarnation": "47790625",
+          "name": "python",
+          "rssBytes": 60018688
+        },
+        {
+          "pid": 1307484,
+          "incarnation": "47790747",
+          "name": "ssh",
+          "rssBytes": 11595776
+        },
+        {
+          "pid": 1307483,
+          "incarnation": "47790747",
+          "name": "ssh",
+          "rssBytes": 11657216
+        },
+        {
+          "pid": 1307482,
+          "incarnation": "47790747",
+          "name": "ssh",
+          "rssBytes": 11612160
+        },
+        {
+          "pid": 1307469,
+          "incarnation": "47790720",
+          "name": "ssh",
+          "rssBytes": 11399168
+        },
+        {
+          "pid": 1307456,
+          "incarnation": "47790714",
+          "name": "ssh",
+          "rssBytes": 11358208
+        },
+        {
+          "pid": 1307455,
+          "incarnation": "47790709",
+          "name": "ssh",
+          "rssBytes": 11366400
+        },
+        {
+          "pid": 1307454,
+          "incarnation": "47790709",
+          "name": "ssh",
+          "rssBytes": 11292672
+        },
+        {
+          "pid": 1307453,
+          "incarnation": "47790682",
+          "name": "ssh",
+          "rssBytes": 11280384
+        },
+        {
+          "pid": 1307452,
+          "incarnation": "47790677",
+          "name": "ssh",
+          "rssBytes": 11280384
+        },
+        {
+          "pid": 1307451,
+          "incarnation": "47790672",
+          "name": "ssh",
+          "rssBytes": 11288576
+        },
+        {
+          "pid": 1307450,
+          "incarnation": "47790672",
+          "name": "ssh",
+          "rssBytes": 11587584
+        },
+        {
+          "pid": 1307447,
+          "incarnation": "47790635",
+          "name": "ssh",
+          "rssBytes": 11403264
+        },
+        {
+          "pid": 1307446,
+          "incarnation": "47790635",
+          "name": "ssh",
+          "rssBytes": 11325440
+        },
+        {
+          "pid": 1307445,
+          "incarnation": "47790635",
+          "name": "ssh",
+          "rssBytes": 11599872
+        },
+        {
+          "pid": 1307444,
+          "incarnation": "47790635",
+          "name": "ssh",
+          "rssBytes": 11603968
+        }
+      ]
+    },
+    "targetBytes": 805306368,
+    "memoryTarget": "passed",
+    "associatedRemoteBridges": {
+      "sampleIntervalMs": 100,
+      "sampleCount": 302,
+      "peak": {
+        "atBootTimeMs": 478346203,
+        "rssBytes": 293916672,
+        "processes": [
+          {
+            "pid": 694056,
+            "incarnation": "47832058",
+            "name": "tmux-observer",
+            "rssBytes": 19607552
+          },
+          {
+            "pid": 694004,
+            "incarnation": "47832055",
+            "name": "tmux-observer",
+            "rssBytes": 19562496
+          },
+          {
+            "pid": 694002,
+            "incarnation": "47832052",
+            "name": "tmux-observer",
+            "rssBytes": 19554304
+          },
+          {
+            "pid": 693987,
+            "incarnation": "47832022",
+            "name": "tmux-observer",
+            "rssBytes": 19554304
+          },
+          {
+            "pid": 693985,
+            "incarnation": "47832017",
+            "name": "tmux-observer",
+            "rssBytes": 19595264
+          },
+          {
+            "pid": 693982,
+            "incarnation": "47832014",
+            "name": "tmux-observer",
+            "rssBytes": 19542016
+          },
+          {
+            "pid": 693975,
+            "incarnation": "47832013",
+            "name": "tmux-observer",
+            "rssBytes": 19525632
+          },
+          {
+            "pid": 693937,
+            "incarnation": "47831987",
+            "name": "tmux-observer",
+            "rssBytes": 19570688
+          },
+          {
+            "pid": 693935,
+            "incarnation": "47831982",
+            "name": "tmux-observer",
+            "rssBytes": 19525632
+          },
+          {
+            "pid": 693931,
+            "incarnation": "47831977",
+            "name": "tmux-observer",
+            "rssBytes": 19652608
+          },
+          {
+            "pid": 693930,
+            "incarnation": "47831976",
+            "name": "tmux-observer",
+            "rssBytes": 19566592
+          },
+          {
+            "pid": 693885,
+            "incarnation": "47831949",
+            "name": "tmux-observer",
+            "rssBytes": 19558400
+          },
+          {
+            "pid": 693883,
+            "incarnation": "47831945",
+            "name": "tmux-observer",
+            "rssBytes": 19546112
+          },
+          {
+            "pid": 693880,
+            "incarnation": "47831942",
+            "name": "tmux-observer",
+            "rssBytes": 19652608
+          },
+          {
+            "pid": 693878,
+            "incarnation": "47831939",
+            "name": "tmux-observer",
+            "rssBytes": 19902464
+          }
+        ]
+      },
+      "current": {
+        "atBootTimeMs": 478349452,
+        "rssBytes": 0,
+        "processes": []
+      },
+      "ownersAlive": 15
+    },
+    "conservativeCombinedPeakBytes": 525586432
+  },
+  "result": "passed_partial"
+}

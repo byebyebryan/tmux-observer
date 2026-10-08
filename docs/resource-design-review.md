@@ -15,6 +15,8 @@ it does not establish acceptance of a replacement budget.
 | Desktop-inclusive normal fleet and associated bridge | Snap 82.49 MiB, Starship 82.40 MiB | [Clean manual-viewer profile](evidence/2026-10-07-native-remote-desktop-normal-g3-partial.json); below the selected 96 MiB ceiling, but one-second RSS sampling can miss transient peaks |
 | Desktop-inclusive combined owner/fleet/bridge CPU | Snap 5.74%, Starship 2.40% | Same profile; Snap fails the unchanged 5% ceiling; exact failed artifact retained |
 | Sixteen synthetic installed owners and local bridges | 307.65 MiB sampled fleet/bridge peak | [Clean capacity fixture](evidence/2026-10-07-installed-capacity-t12-partial.json); includes fifteen plain bridges, omits actual SSH costs; fleet worker includes fixture imports |
+| Optimized desktop-inclusive normal profile | Snap 80.88 MiB / 4.66% CPU; Starship 75.91 MiB / 1.96% CPU | [Clean ten-minute rerun](evidence/2026-10-07-native-optimized-normal-g3-partial.json); meets selected 96 MiB and unchanged 5% CPU targets in this measured profile |
+| Sixteen logical owners over fifteen actual SSH links, with maximum readers/frames | 501.24 MiB conservative fleet/SSH/associated-bridge sampled peak | [Clean SSH capacity profile](evidence/2026-10-07-installed-ssh-capacity-t12-partial.json); below 768 MiB, with synthetic facts/catalog on two physical hosts |
 
 The normal Starship peak contains a 27.32 MiB fleet, 10.95 MiB SSH child and
 20.69 MiB Mesh CLI child. Its associated bridge adds approximately 18.84 MiB.
@@ -66,3 +68,12 @@ The existing headless two-host samples are below 96 MiB, and the installed local
 bridge fixture is below 768 MiB. Neither observation closes the missing native
 desktop/resource or actual SSH capacity profiles. Report the selected target and
 measurement scope explicitly with each new evidence file.
+
+Clean source `ab69e9d` subsequently passed the selected normal and declared
+logical-capacity measurement profiles above. The owner ceilings, normal CPU
+target, RPC deadlines and logical bounds also held. The earlier failed profiles
+remain unchanged. These measured profiles validate the selected direction for
+the initial Python design; sample intervals can miss transient peaks, and the
+capacity facts/catalog are synthetic despite actual SSH/process costs. They do
+not establish physical sleep/wake, sixteen physical native hosts or managed
+rollout. G3 retains those separate acceptance boundaries.

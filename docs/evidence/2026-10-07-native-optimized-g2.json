@@ -1,0 +1,85 @@
+{
+  "gate": "G2",
+  "sourceCommit": "3aaff3587b81a54a1dab2e8fa697c4b6e5be8dc5",
+  "nativeVersion": "tmux 3.7c",
+  "endpoint": "Snap",
+  "scope": "disposable systemd user unit, private IPC and owned TMUX_TMPDIR",
+  "cases": [
+    {
+      "name": "installed prepared read never auto-starts an absent service; packaged unit verified",
+      "result": "passed"
+    },
+    {
+      "name": "installed user-manager publisher observes owned default despite ambient alternate context",
+      "result": "passed"
+    },
+    {
+      "name": "installed owner-only bridge echoes fragmented probe nonce; EOF leaves publisher alive",
+      "result": "passed"
+    },
+    {
+      "name": "12 watchers and 20 probes share one native attempt and preserve native lifetime facts",
+      "result": "passed",
+      "attempted": 1,
+      "queryDurationsMs": [
+        45.736522,
+        45.698888,
+        45.705761,
+        46.858033,
+        46.315308,
+        45.845238,
+        45.916734,
+        45.476206,
+        45.68269,
+        44.754999,
+        45.395047,
+        42.590348,
+        46.09636,
+        44.995395,
+        45.169656,
+        46.334284,
+        44.684742,
+        47.061105,
+        44.616586,
+        45.199401
+      ]
+    },
+    {
+      "name": "explicit refresh completes only post-request native work; terminal lookup does not collect",
+      "result": "passed"
+    },
+    {
+      "name": "duplicate publisher refuses held lease and leaves original readers intact",
+      "result": "passed"
+    },
+    {
+      "name": "last session disappears with watchers alive; publisher verifies absence without restarting tmux",
+      "result": "passed"
+    },
+    {
+      "name": "native restart and reused session ID acquire new generation",
+      "result": "passed"
+    },
+    {
+      "name": "user-manager restart changes publisher incarnation and rejects old refresh lookup",
+      "result": "passed"
+    },
+    {
+      "name": "stop during blocked collection reaps owned descendants, removes IPC and preserves native sessions",
+      "result": "passed",
+      "stopDurationMs": 55.68427097750828
+    },
+    {
+      "name": "installed publisher missing native executable is unsupported, not current empty",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Physical suspend untested; deadline jumps covered synthetically",
+    "No remote fleet, Rofi migration or managed rollout acceptance"
+  ],
+  "wheelSha256": "b9ef8f1a8c186069c6357201df9168e637f0eeb8d801a1d1b4804213eac4aac8",
+  "ownerCgroupMemoryBytes": 11472896,
+  "result": "passed",
+  "observedAtUnixMs": 1791437631152
+}

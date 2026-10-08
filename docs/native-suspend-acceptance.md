@@ -9,6 +9,16 @@ using `[s2idle]` and Starship offering `s2idle [deep]`. Both expose an RTC0
 wakealarm path. These observations establish advertised interfaces, not permission
 to arm an alarm or successful hardware wake. Recheck them at execution time.
 
+A later read-only preflight found no pending RTC0 alarm on either endpoint.
+User-mode `CanSuspend` returned `yes` on Snap and `challenge` on Starship; both
+had sleep-delay inhibitors but no sleep-block inhibitor. Privileged
+`sudo -n rtcwake --dry-run --mode no --seconds 30` succeeded on both hosts.
+The installed util-linux manual defines dry-run as not setting an alarm,
+suspending or waiting. This verifies noninteractive access to the proposed RTC
+interface, not actual wake or an agreed whole-host interruption. No alarm was
+armed. Honour inhibitors explicitly in the eventual logind/systemctl operation;
+root access alone must not bypass them.
+
 ## Concrete execution profile
 
 Use one accepted wheel in the existing two-host disposable default-server/unit

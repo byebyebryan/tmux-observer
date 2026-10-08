@@ -58,3 +58,14 @@ The original failure remains evidence for that exact artifact. It motivates
 optimizing the desktop join's final generation read without changing the cadence,
 lease, scope, native generation bracketing or CPU ceiling; later results require
 their own clean installed measurement.
+
+The optimized clean source `ab69e9d` passed all nine included cases in the
+[new ten-minute profile](evidence/2026-10-07-native-optimized-normal-g3-partial.json).
+Both endpoints met the selected normal targets: conservative fleet/associated
+bridge sampled maxima were 80.88/75.91 MiB, owner maxima stayed below 64 MiB,
+and combined CPU averaged 4.66%/1.96%. No new observer SSH connection started.
+Snap's counted native commands fell from 2,475 to 2,082 over the window while
+the owner/desktop cadence and source budgets stayed unchanged. The independent
+native functional cases, cleanup and profile sampling limits remain as described
+above. This accepts the measured normal resource profile, not physical suspend
+or the later frontend/managed gates.
