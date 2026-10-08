@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "gate": "T06 experiment",
+  "nativeVersion": "Version: 2.0.0-dirty",
+  "backend": "automatic",
+  "sourceCommit": "f11de93069cc63e6b59e98fd98aa9719832232fa",
+  "sourceTreeDirty": false,
+  "scope": "owned Rofi surface; isolated preferences/cache; synthetic rows; no actions/services",
+  "cases": [
+    {
+      "name": "idle-only",
+      "idleTimerCallbacks": 1,
+      "duringTypingCallbacks": 2,
+      "duringTypingAdoptedRevision": true,
+      "firstAdoptionDelayMs": 49,
+      "finalCustomInput": "azl",
+      "filterAndCaretPreserved": true,
+      "callbacks": [
+        {
+          "at": 468079563,
+          "retv": 0,
+          "revision": 1,
+          "input": null,
+          "selected": null,
+          "argv": [],
+          "view": 0,
+          "notice": "Refreshing fixture"
+        },
+        {
+          "at": 468080825,
+          "retv": 28,
+          "revision": 1,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$1\",\"createdAt\":1700000001}",
+          "argv": [
+            "azlbeta"
+          ],
+          "view": 0,
+          "notice": "Refreshing fixture"
+        },
+        {
+          "at": 468081253,
+          "retv": 10,
+          "revision": 1,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$1\",\"createdAt\":1700000001}",
+          "argv": [
+            "azlbeta"
+          ],
+          "view": 0,
+          "notice": "Refreshing fixture"
+        },
+        {
+          "at": 468081314,
+          "retv": 28,
+          "revision": 2,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$1\",\"createdAt\":1700000001}",
+          "argv": [
+            "azlbeta"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 2"
+        },
+        {
+          "at": 468082328,
+          "retv": 28,
+          "revision": 2,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$1\",\"createdAt\":1700000001}",
+          "argv": [
+            "azlbeta"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 2"
+        },
+        {
+          "at": 468083886,
+          "retv": 10,
+          "revision": 2,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 2"
+        },
+        {
+          "at": 468083943,
+          "retv": 28,
+          "revision": 3,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 3"
+        },
+        {
+          "at": 468085711,
+          "retv": 11,
+          "revision": 3,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 1,
+          "notice": "Ready fixture revision 3"
+        },
+        {
+          "at": 468085884,
+          "retv": 12,
+          "revision": 3,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 3"
+        },
+        {
+          "at": 468086215,
+          "retv": 2,
+          "revision": 3,
+          "input": null,
+          "selected": null,
+          "argv": [
+            "azl"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 3"
+        }
+      ],
+      "duringScreenshot": "2026-10-07-rofi-feed-dispatch-t06-idle-only-during.png",
+      "idlePublishedRevisionAdopted": true,
+      "idleFirstAdoptionDelayMs": 52,
+      "duringTypingRevision": 3,
+      "publicationDuringActiveInput": true,
+      "previousInputToPublicationMs": 30,
+      "publicationToNextInputMs": 51,
+      "idleSelectionBefore": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$1",
+        "createdAt": 1700000001
+      },
+      "idleSelectionAfter": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$1",
+        "createdAt": 1700000001
+      },
+      "idleSelectionPreserved": true,
+      "typingSelectionBefore": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$0",
+        "createdAt": 1700000000
+      },
+      "typingSelectionAfter": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$0",
+        "createdAt": 1700000000
+      },
+      "typingSelectionPreserved": true,
+      "screenshot": "2026-10-07-rofi-feed-dispatch-t06-idle-only.png",
+      "duringScreenshotInspection": {
+        "method": "manual native capture inspection",
+        "noticeRevision": 3
+      }
+    },
+    {
+      "name": "inputchange",
+      "idleTimerCallbacks": 0,
+      "duringTypingCallbacks": 2,
+      "duringTypingAdoptedRevision": true,
+      "firstAdoptionDelayMs": 30,
+      "finalCustomInput": "azl",
+      "filterAndCaretPreserved": true,
+      "callbacks": [
+        {
+          "at": 468086302,
+          "retv": 0,
+          "revision": 1,
+          "input": null,
+          "selected": null,
+          "argv": [],
+          "view": 0,
+          "notice": "Refreshing fixture"
+        },
+        {
+          "at": 468087991,
+          "retv": 10,
+          "revision": 1,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$1\",\"createdAt\":1700000001}",
+          "argv": [
+            "azlbeta"
+          ],
+          "view": 0,
+          "notice": "Refreshing fixture"
+        },
+        {
+          "at": 468088057,
+          "retv": 28,
+          "revision": 2,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$1\",\"createdAt\":1700000001}",
+          "argv": [
+            "azlbeta"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 2"
+        },
+        {
+          "at": 468090661,
+          "retv": 10,
+          "revision": 2,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 2"
+        },
+        {
+          "at": 468090692,
+          "retv": 28,
+          "revision": 3,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 3"
+        },
+        {
+          "at": 468092479,
+          "retv": 11,
+          "revision": 3,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 1,
+          "notice": "Ready fixture revision 3"
+        },
+        {
+          "at": 468092649,
+          "retv": 12,
+          "revision": 3,
+          "input": null,
+          "selected": "{\"hostId\":\"fixture-local\",\"serverGeneration\":\"fixture-generation\",\"sessionId\":\"$0\",\"createdAt\":1700000000}",
+          "argv": [
+            "azlalpha"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 3"
+        },
+        {
+          "at": 468092976,
+          "retv": 2,
+          "revision": 3,
+          "input": null,
+          "selected": null,
+          "argv": [
+            "azl"
+          ],
+          "view": 0,
+          "notice": "Ready fixture revision 3"
+        }
+      ],
+      "duringScreenshot": "2026-10-07-rofi-feed-dispatch-t06-inputchange-during.png",
+      "idlePublishedRevisionAdopted": true,
+      "idleFirstAdoptionDelayMs": 57,
+      "duringTypingRevision": 3,
+      "publicationDuringActiveInput": true,
+      "previousInputToPublicationMs": 21,
+      "publicationToNextInputMs": 49,
+      "idleSelectionBefore": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$1",
+        "createdAt": 1700000001
+      },
+      "idleSelectionAfter": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$1",
+        "createdAt": 1700000001
+      },
+      "idleSelectionPreserved": true,
+      "typingSelectionBefore": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$0",
+        "createdAt": 1700000000
+      },
+      "typingSelectionAfter": {
+        "hostId": "fixture-local",
+        "serverGeneration": "fixture-generation",
+        "sessionId": "$0",
+        "createdAt": 1700000000
+      },
+      "typingSelectionPreserved": true,
+      "screenshot": "2026-10-07-rofi-feed-dispatch-t06-inputchange.png",
+      "duringScreenshotInspection": {
+        "method": "manual native capture inspection",
+        "noticeRevision": 3
+      }
+    }
+  ],
+  "limits": [
+    "Fixture experiment does not establish producer/service/frontend deployment acceptance",
+    "Callback adoption and visible rendering are recorded separately",
+    "Private view wakeup is diagnostic only; no managed frontend or plugin is accepted",
+    "One fixture per variant; callback delay is not graphical redraw p95 or G4 acceptance"
+  ],
+  "viewWakeupExperiment": {
+    "sourceSha256": "d6ffcf115b8a397772821a8c7ba446d02359c512de1f03247a14f39e1b47fde1",
+    "librarySha256": "2f8ecdf88328fb95cdfc9ee1ff686498ad24447142c73f944fe1cdbff3ae4bc1",
+    "intervalMs": 25,
+    "api": "private Rofi 2.0 view symbols; experiment only",
+    "dispatch": "fixture_change"
+  },
+  "endpoint": "snap",
+  "result": "diagnostic experiment completed; production integration not accepted"
+}

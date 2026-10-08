@@ -8,7 +8,7 @@ The design/backlog baseline is commit `a4fba75`.
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-collector-utf8-g1.json) |
 | B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-07-native-owner-utf8-g2.json) |
 | C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI/context units | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and explicit context handoff; native fleet G3 pending |
-| D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
+| D: Rofi client | Planned; T06 private dispatch diagnostic succeeds, supported integration unresolved | [Native experiment](rofi-interaction-probe.md); idle/active-input adoption and exact selection observed with private diagnostic; no frontend migration accepted |
 | E: managed rollout | Planned | None |
 
 Pure validation and `collect --host-id ID` are implemented and accepted for
@@ -213,5 +213,35 @@ CLI independently preserves Unicode under a C locale. All eleven installed owner
 sharing, refresh, restart, absence and stop/reap cases pass after the correction.
 The latest evidence links above record each wheel digest; prior acceptance files
 remain historical records. Post-correction two-host CPU/memory/resource acceptance
-has not run. Fleet idle projection work remains the next optimization; freshness,
-source cadence and per-query validation remain required.
+was then rerun at `5eacd1e`, after the fleet stopped rebuilding unchanged
+projections on every 50 ms tick. Freshness, source cadence and per-query validation
+remain required.
+
+The [clean two-host profile](evidence/2026-10-07-native-fleet-optimized-g3-partial.json)
+passes all fourteen included cases. Native reads fall to 1,485/1,480 commands over
+ten minutes, from 5,940/5,920. Cached RPC p95 is 4.03/4.15 ms; installed cached CLI
+p95 is 40.92/35.53 ms on Snap/Starship. Plain installed bridges replace the fault
+relay before measurement. Snap started one additional SSH connection during the
+profile; Starship started none. These numbers do not establish encrypted wire
+overhead, graphical timing or capacity.
+
+Mean combined CPU meets the normal target: Snap 4.82 percent and Starship 2.66
+percent of one core. Each includes its owner/fleet cgroups and the opposite
+endpoint's bridge serving its outbound fleet connection. Fleet cgroup sampled
+peak RSS is 61.46/60.37 MiB; the associated opposite-endpoint bridge adds about
+18 MiB throughout the profile. The 64 MiB fleet/owned-children memory target still
+fails. Peak fleet samples contain three processes, so further investigation must
+identify the actual child and parent footprint before changing process choices.
+G3 remains open for memory, declared capacity, native desktop truth/replacement,
+physical sleep/wake and the other explicitly recorded limits.
+
+At `f11de93`, the [explicit fixture dispatch diagnostic](evidence/2026-10-07-rofi-feed-dispatch-t06.json)
+adopts a revision while idle in 52/57 ms and during sustained typing in 49/30 ms
+on Snap. The selected full fixture reference is preserved in both phases; filter
+and caret remain intact. Native during-input captures show revision 3. The
+[completion-only comparison](evidence/2026-10-07-rofi-view-dispatch-t06.json)
+still shows revision 2 during sustained typing, despite the prepared revision 3.
+This identifies event dispatch as a material UI latency issue. It uses private
+Rofi symbols in a temporary diagnostic library, so it accepts neither a supported
+integration nor T14/G4. All 142 source tests pass; no Rofi or managed candidate
+has been selected.

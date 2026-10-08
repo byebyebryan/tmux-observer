@@ -91,3 +91,14 @@ acceptance checks filter and caret preservation. Publication/input timestamps,
 callback adoption, references and captured native views remain separate evidence.
 An implementation for T14 still needs a reviewed, versioned integration with a
 supported mode boundary or accepted Rofi fix; the preload is not a rollout choice.
+
+Clean-source comparisons at `f11de93` now have native evidence. The
+[completion-only wakeup](evidence/2026-10-07-rofi-view-dispatch-t06.json) preserves
+filter/caret but does not adopt the active-input revision in either variant.
+The [explicit feed dispatch](evidence/2026-10-07-rofi-feed-dispatch-t06.json)
+adopts idle publication in 52/57 ms and publication during ongoing typing in
+49/30 ms. The native captures show revision 3 in both feed-dispatch cases and
+revision 2 in both completion-only cases. Idle and active-input selected full
+references remain equal across the feed update. These are single-fixture callback
+measurements and native rendering observations, not a redraw-latency p95 or
+production/frontend gate. The existing Rofi installation and launcher are unchanged.
