@@ -3,6 +3,22 @@
 Updated: 2026-10-08. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
+The current producer selected for the frontend checks is source `d5a2e97`, wheel
+SHA256 `06c5b77e36901d0de5d62cf2041edf1733ce34c346a6aa574a323bb50889fb0d`.
+Its bounded absent-Mesh hostname/FQDN alias repair passed 28 installed native
+direct cases and four recovery simulations. The other 63 packaged payloads retain
+the accepted always-on G3 bytes documented below; [direct acceptance](native-direct-acceptance.md)
+records that scope and parity. Current source checks pass 188 methods.
+
+Delivery D is in progress: the installed frontend fresh facade passed 30 cases
+on Snap/Starship, preserving the unchanged v1 CLI and native passivity. Production
+picker acceptance is running on Starship; the user reserves Snap for active work.
+See [the consumer migration record](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/observer-migration.md)
+for exact frontend artifacts and its independent graphical gate. Managed selection
+remains pending. Physical sleep/wake remains optional.
+
+## Accepted T12 checkpoint
+
 Current clean candidate `3beab8a` passes 183 source methods and 96 installed/native
 cases on one [frozen wheel](evidence/2026-10-08-final-candidate-artifact.json).
 Clean harness `791df63` passes 186 source methods and four additional
@@ -63,7 +79,7 @@ and pending-intent acceptance before migration; frontend code remains unchanged.
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and [14 installed/native cases](evidence/2026-10-08-final-candidate-g1.json) |
 | B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and [11 installed/native cases](evidence/2026-10-08-final-candidate-g2.json) |
 | C: fleet service | Accepted: T10–T12; G3 passed for always-on hosts | Same-wheel awake native/resources and [four installed recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json); physical suspend optional/unverified |
-| D: Rofi client | Planned; T06 passes and production boundary reviewed | [Integration review](rofi-integration-review.md); no frontend migration accepted |
+| D: Rofi client | T13 installed facade passed; T14 production graphical acceptance in progress on Starship | Exact consumer artifact and acceptance remain separate from producer G3 |
 | E: managed rollout | Planned | None |
 
 ## Prior checkpoint history
