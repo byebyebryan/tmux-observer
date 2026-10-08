@@ -318,6 +318,22 @@ class ContractTests(unittest.TestCase):
 
 
 class WireTests(unittest.TestCase):
+    def test_long_unicode_strings_keep_exact_control_character_and_scalar_bounds(self):
+        clean = '界é😀\\"' * 2000
+        raw = public.encode_document({"value": clean})
+        self.assertEqual(public.decode_document(raw), {"value": clean})
+        self.assertEqual(reader.wire(raw, public.DOCUMENT_LIMIT), {"value": clean})
+        for codepoint in (*range(32), 127, 0xD800, 0xDFFF):
+            value = {"value": "x" * 8000 + chr(codepoint) + "x" * 8000}
+            with self.subTest(codepoint=codepoint):
+                with self.assertRaises(ValueError):
+                    public.encode_document(value)
+                invalid = json.dumps(value).encode() + b"\n"
+                with self.assertRaises(ValueError):
+                    public.decode_document(invalid)
+                with self.assertRaises(ValueError):
+                    reader.wire(invalid, public.DOCUMENT_LIMIT)
+
     def test_adversarial_bytes(self):
         records = [
             b"{}",

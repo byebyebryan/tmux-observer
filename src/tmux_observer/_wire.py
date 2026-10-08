@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 
 DOCUMENT_LIMIT = 1_048_576
 ENVELOPE_LIMIT = 16_384
@@ -16,6 +17,7 @@ STRING_LIMIT = 16_384
 MAX_DEPTH = 32
 MAX_NODES = 100_000
 MAX_INT = 2**63 - 1
+_CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
 
 
 class WireError(ValueError):
@@ -93,7 +95,7 @@ def validate_tree(value: object) -> None:
         if nodes > MAX_NODES or depth > MAX_DEPTH:
             raise WireError("JSON structure exceeds the wire bound")
         if isinstance(item, str):
-            if len(item) > STRING_LIMIT or any(ord(c) < 32 or ord(c) == 127 for c in item):
+            if len(item) > STRING_LIMIT or _CONTROL_CHARACTERS.search(item) is not None:
                 raise WireError("unclean or oversized string")
             try:
                 item.encode("utf-8", "strict")
