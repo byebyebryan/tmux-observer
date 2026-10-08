@@ -1,0 +1,101 @@
+{
+  "scope": "Read-only installed Rofi binary/header/symbol inspection on Snap and Starship; isolated local prototype compilation; no mode loading, GUI, actions, services, deployment or suspend",
+  "sourceCommit": "56cdad52ffee292fa6e165d82430c0159b64ff9c",
+  "prototypeSource": "scripts/experiments/rofi-script-notify.c",
+  "prototypeSourceSha256": "a166d8f650f2b092000dd974dffb9aaecb102110eb5bab4eab9067bb8382d29d",
+  "endpoints": {
+    "snap": {
+      "machine": "x86_64",
+      "version": "Version: 2.0.0-dirty",
+      "package": "rofi 2.0.0-1",
+      "executableSha256": "4f8dcd3a87d4c41af3e7c5f3ab4891a0926f21ab659072e5471e7332cf30a1ca",
+      "headers": {
+        "/usr/include/rofi/mode.h": "292355951931209c898ee31c33d9a76ea8d0e8a104e0cad88bd5201c5dd2ef48",
+        "/usr/include/rofi/mode-private.h": "9b4b0148c1feae2bae7e4afc30e848fa5ee11d56d9eecdffecad4c00eadee55b"
+      },
+      "requiredPrivateSymbols": {
+        "script_mode_parse_setup": true,
+        "rofi_view_get_active": true,
+        "rofi_view_get_mode": true,
+        "rofi_view_get_completed": true,
+        "rofi_view_maybe_update": true,
+        "rofi_view_trigger_action": true,
+        "key_binding_get_action_from_name": true
+      }
+    },
+    "starship": {
+      "machine": "x86_64",
+      "version": "Version: 2.0.0-dirty",
+      "package": "rofi 2.0.0-1",
+      "executableSha256": "4f8dcd3a87d4c41af3e7c5f3ab4891a0926f21ab659072e5471e7332cf30a1ca",
+      "headers": {
+        "/usr/include/rofi/mode.h": "292355951931209c898ee31c33d9a76ea8d0e8a104e0cad88bd5201c5dd2ef48",
+        "/usr/include/rofi/mode-private.h": "9b4b0148c1feae2bae7e4afc30e848fa5ee11d56d9eecdffecad4c00eadee55b"
+      },
+      "requiredPrivateSymbols": {
+        "script_mode_parse_setup": true,
+        "rofi_view_get_active": true,
+        "rofi_view_get_mode": true,
+        "rofi_view_get_completed": true,
+        "rofi_view_maybe_update": true,
+        "rofi_view_trigger_action": true,
+        "key_binding_get_action_from_name": true
+      }
+    }
+  },
+  "limits": [
+    "Binary/header/symbol equality does not establish Starship native GUI acceptance",
+    "Successful compilation and exported symbols do not establish runtime ABI or failure safety",
+    "The prototype is still experimental; the review is a plan, not a production artifact selection"
+  ],
+  "compile": {
+    "flags": [
+      "-shared",
+      "-fPIC",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I/usr/include/pango-1.0",
+      "-I/usr/include/harfbuzz",
+      "-I/usr/include/glib-2.0",
+      "-I/usr/lib/glib-2.0/include",
+      "-I/usr/include/libmount",
+      "-I/usr/include/blkid",
+      "-I/usr/include/fribidi",
+      "-I/usr/include/cairo",
+      "-I/usr/include/freetype2",
+      "-I/usr/include/libpng16",
+      "-I/usr/include/pixman-1",
+      "-I/usr/include/sysprof-6",
+      "-pthread",
+      "-Wl,--export-dynamic",
+      "-lpango-1.0",
+      "-lharfbuzz",
+      "-lgobject-2.0",
+      "-lgmodule-2.0",
+      "-pthread",
+      "-lglib-2.0",
+      "-lcairo",
+      "-ldl"
+    ],
+    "librarySha256": "ff941dd30833c51fb123662ded686b02b729476ebaeceeb7bb501e767698f11f",
+    "modeAbi": 7,
+    "result": "passed_compile_only"
+  },
+  "matchesPriorPrototypeSource": true,
+  "matchesPriorPrototypeLibrary": true,
+  "compiler": "cc (GCC) 16.2.1 20260810",
+  "libraryBuildVersions": {
+    "glib-2.0": "2.90.1",
+    "gmodule-2.0": "2.90.1",
+    "cairo": "1.18.6",
+    "pango": "1.58.2"
+  },
+  "sourceTreeDirty": false,
+  "inspectionMethod": {
+    "binary": "SHA256 of /usr/bin/rofi bytes; rofi -version; pacman -Q rofi; platform.machine",
+    "headers": "SHA256 of installed /usr/include/rofi/mode.h and mode-private.h",
+    "symbols": "Required names extracted from prototype dlsym(RTLD_DEFAULT, literal) calls; membership checked against nm -D exported names",
+    "compile": "Owned TemporaryDirectory; cc source -o library with recorded flags; library SHA256 compared to the prior T06 record; directory removed on completion"
+  }
+}

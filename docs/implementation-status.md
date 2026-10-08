@@ -39,6 +39,14 @@ finds no owned candidate root directories or active candidate units on either
 host. Per-case native/session/child cleanup assertions also passed; retained
 temporary diagnostic files are not live fixture roots.
 
+The independent [Rofi integration review](rofi-integration-review.md) prepares the
+next implementation boundary: both hosts currently have identical Rofi binary
+and header bytes, all seven required private symbols, and an isolated compile
+reproduces the prior T06 library. This is read-only/compile evidence, not another
+GUI or production gate. The review defines version/artifact checks, watcher
+lifetime and BOOTTIME invalidation, read-only callbacks, terminal-ticket handling
+and pending-intent acceptance before migration; frontend code remains unchanged.
+
 [Candidate artifact preparation](candidate-artifacts.md) now builds committed
 snapshots with an exact hashed backend constraint, verifies complete packaged
 source coverage and writes an unaccepted content descriptor. Eleven focused

@@ -135,3 +135,9 @@ filter and caret survived. Inspected native captures show revision 3 during typi
 and the final `azl` input. These observations close the early T06 interaction
 experiment for this installed build; production integration and T14 acceptance
 remain separate, including actual service tickets and native intent safety.
+
+The [production integration review](rofi-integration-review.md) now records the
+version-pinned native-mode direction, current two-host binary/header/symbol and
+compile evidence, and the ownership, failure, expiry, ticket and intent work that
+must precede G4 acceptance. It changes no frontend or managed selection and does
+not waive the deferred G3 producer gate.
