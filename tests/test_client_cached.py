@@ -6,13 +6,80 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from tmux_observer._clock import domain
 from tmux_observer._ipc import Endpoint, IPCError
+from tmux_observer.public import validate_fleet_frame
 from tmux_observer_client.public import owner_current, read_cached
 
 
 class CachedTests(unittest.TestCase):
+    def test_validation_finishing_at_or_after_deadline_cannot_return_success(self):
+        fixture = json.loads(
+            (
+                Path(__file__).resolve().parent.parent / "contracts/fleet-v1/fixtures/frame.json"
+            ).read_text()
+        )
+        fixture["clock"] = domain()
+        fixture["snapshot"]["clock"] = domain()
+        for host in fixture["snapshot"]["hosts"]:
+            if host["local"]:
+                host["owner"]["clock"] = domain()
+        context = fixture["contextId"]
+        for finished in (1249, 1250, 1251):
+            with (
+                self.subTest(finished=finished),
+                tempfile.TemporaryDirectory(prefix="tmux-observer-cached-validation-") as temporary,
+            ):
+                path = Path(temporary) / "fleet.sock"
+                clock = [1000]
+                errors = []
+                with Endpoint(path) as endpoint:
+
+                    def serve(errors=errors):
+                        try:
+                            endpoint.socket.settimeout(1)
+                            sock, _ = endpoint.socket.accept()
+                            with sock, sock.makefile("rb") as stream:
+                                request = json.loads(stream.readline())
+                                sock.sendall(
+                                    json.dumps(
+                                        {**fixture, "requestId": request["requestId"]}
+                                    ).encode()
+                                    + b"\n"
+                                )
+                        except (OSError, ValueError) as error:
+                            errors.append(error)
+
+                    def validate(value, clock=clock, finished=finished):
+                        result = validate_fleet_frame(value)
+                        clock[0] = finished
+                        return result
+
+                    thread = threading.Thread(target=serve)
+                    thread.start()
+                    try:
+                        with (
+                            patch(
+                                "tmux_observer._ipc.boottime_ms",
+                                side_effect=lambda clock=clock: clock[0],
+                            ),
+                            patch("tmux_observer._ipc.validate_fleet_frame", side_effect=validate),
+                        ):
+                            if finished < 1250:
+                                self.assertEqual(
+                                    read_cached(context, path=path)["contextId"], context
+                                )
+                            else:
+                                with self.assertRaises(IPCError) as error:
+                                    read_cached(context, path=path)
+                                self.assertEqual(error.exception.code, "deadline")
+                    finally:
+                        thread.join(timeout=2)
+                        self.assertFalse(thread.is_alive())
+                        self.assertFalse(errors, errors)
+
     def test_slow_prepared_reply_has_a_foreground_deadline_without_fallback(self):
         with tempfile.TemporaryDirectory(prefix="tmux-observer-cached-deadline-") as temporary:
             path = Path(temporary) / "fleet.sock"

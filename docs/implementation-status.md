@@ -3,6 +3,23 @@
 Updated: 2026-10-08. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
+Clean frozen candidate `41c6b35` passes [G1](evidence/2026-10-08-optimized-41-g1.json),
+[G2](evidence/2026-10-08-optimized-41-g2.json) and all ten
+[SSH capacity cases](evidence/2026-10-08-optimized-41-capacity.json). Its healthy
+near-cap queries take 47.61–186.41 ms, including installed decoding/validation;
+the conservative sampled fleet/SSH/associated-bridge peak is 500.77 MiB against
+768 MiB. Earlier failures remain recorded. A ten-minute desktop-inclusive
+normal profile of that same frozen wheel is in progress.
+
+Review also found the prepared RPC deadline was checked before decoding but not
+after validation and scope checks. The client now rejects a validated reply that
+finishes at or after its deadline. A real private-IPC regression checks 249/250/251
+ms completion with a controlled validation clock; source validation passes 183
+methods. This client correction needs a new frozen artifact and installed/native
+checks; the running profile remains attributed to `41c6b35`. Physical sleep is
+deferred on both hosts, and T12/G3, frontend migration and managed rollout remain
+open.
+
 [Candidate artifact preparation](candidate-artifacts.md) now builds committed
 snapshots with an exact hashed backend constraint, verifies complete packaged
 source coverage and writes an unaccepted content descriptor. Eleven focused

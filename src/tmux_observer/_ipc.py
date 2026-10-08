@@ -230,4 +230,6 @@ def exchange(request: dict, *, path: Path | None = None, budget_ms=2000) -> dict
                             raise IPCError("scope_mismatch", "publisher clock domain differs")
                         if "publisherId" in request and incarnation != request["publisherId"]:
                             raise IPCError("stale_scope", "publisher incarnation changed")
+                        if boottime_ms() >= deadline:
+                            raise IPCError("deadline", "publisher validation exceeded its deadline")
                         return value
