@@ -3,6 +3,7 @@
 import json
 import tempfile
 import threading
+import time
 import unittest
 from pathlib import Path
 
@@ -12,6 +13,28 @@ from tmux_observer_client.public import owner_current, read_cached
 
 
 class CachedTests(unittest.TestCase):
+    def test_slow_prepared_reply_has_a_foreground_deadline_without_fallback(self):
+        with tempfile.TemporaryDirectory(prefix="tmux-observer-cached-deadline-") as temporary:
+            path = Path(temporary) / "fleet.sock"
+            with Endpoint(path) as endpoint:
+
+                def serve():
+                    endpoint.socket.settimeout(1)
+                    sock, _address = endpoint.socket.accept()
+                    with sock:
+                        sock.recv(16384)
+                        time.sleep(0.4)
+
+                thread = threading.Thread(target=serve)
+                thread.start()
+                began = time.monotonic()
+                with self.assertRaises(IPCError) as error:
+                    read_cached("0" * 32, path=path)
+                self.assertEqual(error.exception.code, "deadline")
+                self.assertLess(time.monotonic() - began, 0.35)
+                thread.join(timeout=1)
+                self.assertFalse(thread.is_alive())
+
     def test_missing_reader_creates_nothing(self):
         with tempfile.TemporaryDirectory(prefix="tmux-observer-cached-missing-") as temporary:
             path = Path(temporary) / "absent" / "fleet.sock"

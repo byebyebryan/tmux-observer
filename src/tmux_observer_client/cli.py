@@ -53,6 +53,13 @@ def main(argv=None):
     parser = argparse.ArgumentParser(prog="tmux-observer-client")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("context", help="print the current captured desktop context ID")
+    for operation in ("prepare-context", "start-context", "stop-context"):
+        selected = commands.add_parser(operation, help="explicit per-desktop service " + operation)
+        selected.add_argument("--json", action="store_true", required=True)
+        if operation == "stop-context":
+            selected.add_argument("--context-id")
+        else:
+            selected.add_argument("--host-id", required=True)
     fleet = commands.add_parser("fleet", help="explicitly run one prepared fleet publisher")
     fleet.add_argument("--host-id", required=True, help="fixed configured local owner ID")
     fleet.add_argument("--context-id")
@@ -83,6 +90,16 @@ def main(argv=None):
 
         if args.command == "context":
             print(desktop_context_id())
+            return 0
+        if args.command in ("prepare-context", "start-context", "stop-context"):
+            from ._context import prepare_context, stop_context
+
+            value = (
+                stop_context(args.context_id or desktop_context_id())
+                if args.command == "stop-context"
+                else prepare_context(args.host_id, start=args.command == "start-context")
+            )
+            sys.stdout.buffer.write(encode_document(value, limit=REQUEST_LIMIT))
             return 0
         context = args.context_id or desktop_context_id()
         if args.command == "fleet":

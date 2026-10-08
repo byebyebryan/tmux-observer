@@ -7,7 +7,7 @@ The design/backlog baseline is commit `a4fba75`.
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
 | B: owner service | Accepted: T07–T09; G2 passed | 64 source test methods, bounded tickets/stdio, 11 installed/native cases; [G2 evidence](evidence/2026-10-07-native-owner-g2.json) |
-| C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI | Shared aggregate, independent desktop jobs, causal grouped refresh and prepared CLI; units/context handoff and native fleet G3 pending |
+| C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI/context units | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and explicit context handoff; native fleet G3 pending |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
 
@@ -159,3 +159,13 @@ output within its existing budget and accepts no buffered input after EOF.
 Live read-only preflight confirmed Starship's Mesh selects `snap`, and that its
 selected SSH route reaches Snap (`80H1VV3`) with ordinary strict host-key policy.
 This is route connectivity evidence, not installed fleet G3 acceptance.
+
+The candidate fleet template and explicit prepare/start/stop context operations
+now capture a bounded private environment per desktop. They do not alter global
+manager environment or enable old boot-bound instances. Scope conflicts, unsafe
+files/FIFOs, registry contention and capacity fail explicitly. Stop preserves
+other contexts and does not address native sessions or owner units. The source
+gate passes 137 methods. Review also corrected the prepared RPC facade's default
+deadline to the planned 250 ms; the owner/probe budgets remain independent.
+Installed systemd environment parsing and two-host native G3 are not established
+by these source checks. See [service contexts](service-contexts.md).

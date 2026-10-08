@@ -58,7 +58,7 @@ def read_cached(
         request["sources"] = sources
     if ticket_id is not None:
         request["ticketId"] = ticket_id
-    return exchange(request, path=fleet_socket(context_id) if path is None else path)
+    return exchange(request, path=fleet_socket(context_id) if path is None else path, budget_ms=250)
 
 
 def owner_current(view, host, *, now=None):

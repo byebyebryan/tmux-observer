@@ -56,9 +56,10 @@ bridge path. Cached snapshot/status/probe/watch and ticket lookup use the privat
 fleet endpoint; they never activate services or fall back to direct collection.
 Fresh inventory retains Tmux Session v1, while prepared operations return Fleet v1
 frames. Desktop absence or unsupported contexts leave viewer membership unknown
-without changing owner attachment facts. The fleet unit and desktop environment
-handoff remain pending; these commands are development interfaces, not a managed
-rollout selection.
+without changing owner attachment facts. The candidate fleet unit and explicit
+desktop environment handoff are documented in [service contexts](docs/service-contexts.md).
+Their installed/native acceptance is pending; these development interfaces are
+not a managed rollout selection.
 
 The extraction baseline is released `rofi-tmux-plus 0.6.0`, source
 `407ae58ba422ba88fed7da2f9d845ff274830f0e`. Its public Tmux Session v1 and

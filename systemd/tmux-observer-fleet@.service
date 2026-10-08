@@ -1,0 +1,17 @@
+[Unit]
+Description=Prepared tmux fleet for desktop context %i
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=exec
+Environment=NIRI_SOCKET= DISPLAY= WAYLAND_DISPLAY= SSH_AUTH_SOCK= TMUX_TMPDIR=
+EnvironmentFile=%t/tmux-observer-client/context-%i.env
+ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer-client fleet --host-id ${TMUX_OBSERVER_HOST_ID} --context-id %i
+UnsetEnvironment=TMUX TMUX_PANE
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=5
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
