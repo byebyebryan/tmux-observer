@@ -82,6 +82,11 @@ def main():
         action="store_true",
         help="compare explicit fixture-change dispatch through private Rofi view symbols",
     )
+    experiment.add_argument(
+        "--native-mode-experiment",
+        action="store_true",
+        help="compile an isolated Mode ABI 7 plugin with explicit private view/factory dependencies",
+    )
     args = parser.parse_args()
     env = dict(os.environ)
     manager = run(["systemctl", "--user", "show-environment"], env)
@@ -112,6 +117,11 @@ def main():
             "Callback adoption and visible rendering are recorded separately",
         ],
     }
+    if args.native_mode_experiment and evidence["nativeVersion"] not in (
+        "Version: 2.0.0",
+        "Version: 2.0.0-dirty",
+    ):
+        raise RuntimeError("native mode experiment requires the reviewed Rofi 2.0.0 build")
     with tempfile.TemporaryDirectory(prefix="tmux-observer-rofi-probe-") as temporary:
         root = Path(temporary)
         env.update(
@@ -122,6 +132,9 @@ def main():
         )
         for name in ("config", "cache"):
             (root / name).mkdir(mode=0o700)
+        script = shlex.join([sys.executable, str(Path(__file__).resolve())])
+        mode = "observer-probe:" + script
+        plugin_arguments = []
         if args.view_wakeup_experiment or args.feed_wakeup_experiment:
             source = Path(__file__).parent / "experiments/rofi-view-wakeup.c"
             library = root / "view-wakeup.so"
@@ -155,7 +168,60 @@ def main():
             evidence["limits"].append(
                 "Private view wakeup is diagnostic only; no managed frontend or plugin is accepted"
             )
-        mode = "observer-probe:" + shlex.join([sys.executable, str(Path(__file__).resolve())])
+        if args.native_mode_experiment:
+            source = Path(__file__).parent / "experiments/rofi-script-notify.c"
+            plugins = root / "plugins"
+            plugins.mkdir(mode=0o700)
+            library = plugins / "observer-probe.so"
+            flags = shlex.split(
+                run(
+                    [
+                        "pkg-config",
+                        "--cflags",
+                        "--libs",
+                        "glib-2.0",
+                        "gmodule-2.0",
+                        "cairo",
+                        "pango",
+                    ],
+                    env,
+                )
+            )
+            run(
+                [
+                    "cc",
+                    "-shared",
+                    "-fPIC",
+                    "-Wall",
+                    "-Wextra",
+                    "-Werror",
+                    str(source),
+                    "-o",
+                    str(library),
+                    *flags,
+                    "-ldl",
+                ],
+                env,
+            )
+            env.pop("LD_PRELOAD", None)
+            env.update(
+                TMUX_OBSERVER_ROFI_SCRIPT=script,
+                TMUX_OBSERVER_ROFI_FEED=str(root / "feed.json"),
+            )
+            mode = "observer-probe"
+            plugin_arguments = ["-plugin-path", str(plugins)]
+            evidence["nativeModeExperiment"] = {
+                "sourceSha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                "librarySha256": hashlib.sha256(library.read_bytes()).hexdigest(),
+                "modeAbi": 7,
+                "intervalMs": 25,
+                "api": "installed Mode interface plus private Rofi 2.0 script factory/view symbols",
+                "dispatch": "fixture_change",
+                "preload": False,
+            }
+            evidence["limits"].append(
+                "Mode ABI loading is native; private factory/view hooks still need integration review"
+            )
         log = root / "callbacks.jsonl"
 
         def events():
@@ -205,8 +271,13 @@ def main():
                 "Control+Return",
                 "-kb-screenshot",
                 "F12",
+                *plugin_arguments,
             ]
-            if args.view_wakeup_experiment or args.feed_wakeup_experiment:
+            if (
+                args.view_wakeup_experiment
+                or args.feed_wakeup_experiment
+                or args.native_mode_experiment
+            ):
                 command.extend(["-kb-custom-1", "Control+Shift+s"])
             if args.x11:
                 command.insert(1, "-x11")
@@ -277,7 +348,11 @@ def main():
                     # cross the same update without waiting for idle.
                     time.sleep(1.4)
                     before = events()
-                    experimental = args.view_wakeup_experiment or args.feed_wakeup_experiment
+                    experimental = (
+                        args.view_wakeup_experiment
+                        or args.feed_wakeup_experiment
+                        or args.native_mode_experiment
+                    )
 
                     def checkpoint():
                         start = len(events())

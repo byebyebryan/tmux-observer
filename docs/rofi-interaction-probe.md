@@ -102,3 +102,27 @@ revision 2 in both completion-only cases. Idle and active-input selected full
 references remain equal across the feed update. These are single-fixture callback
 measurements and native rendering observations, not a redraw-latency p95 or
 production/frontend gate. The existing Rofi installation and launcher are unchanged.
+
+## Native mode prototype
+
+```sh
+uv run --extra dev scripts/probe-rofi-interaction --native-mode-experiment --output /tmp/rofi-native-mode.json
+```
+
+This builds a temporary external plugin against the installed Mode ABI 7 headers
+and loads it from a private plugin directory. It delegates fixture row, matching,
+prompt and callback semantics to Rofi's script mode. Its own GLib source notices
+atomic feed changes and dispatches the fixed read-only callback while that mode is
+active. It also processes completed views. It has no preload, synthesized input,
+producer/service action or ordinary launcher installation. The existing guarded
+fixture input still establishes filter/caret and exact selection behavior.
+
+The public installed mode interface is only part of this prototype. The
+[pinned script factory](https://github.com/davatorium/rofi/blob/2.0.0/source/modes/script.c)
+and view dispatch functions are private dependencies resolved explicitly; missing
+symbols fail initialization. The experiment rejects other Rofi versions and Mode
+ABIs. The delegate's prompt is borrowed only while its script state exists, and
+its mode/timer/feed allocation is released on destruction. This establishes a
+testable native integration boundary, not a supported portable notification API.
+Before T14, review a versioned supported notification hook or an explicitly accepted
+version-pinned integration, including packaging, failure behavior and rebuilds.
