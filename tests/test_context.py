@@ -141,3 +141,29 @@ class ContextTests(unittest.TestCase):
             self.assertEqual(error.exception.code, "capacity")
             _context, raw = render("snap", {"XDG_RUNTIME_DIR": "/run/a separate runtime"})
             self.assertIn(b'XDG_RUNTIME_DIR="/run/a separate runtime"', raw)
+
+    def test_new_unloaded_instance_can_start_but_start_failure_is_not_success(self):
+        calls = []
+
+        def runner(argv, **_kwargs):
+            calls.append(argv[2])
+            return SimpleNamespace(
+                returncode=1 if argv[2] == "reset-failed" else 0,
+                timed_out=False,
+                overflow_streams=set(),
+            )
+
+        with (
+            tempfile.TemporaryDirectory(prefix="tmux-context-") as temporary,
+            patch.dict(os.environ, {"XDG_RUNTIME_DIR": temporary}),
+        ):
+            value = prepare_context("snap", start=True, runner=runner)
+            self.assertEqual(value["state"], "start_requested")
+            self.assertEqual(calls, ["reset-failed", "start"])
+
+            def failed(_argv, **_kwargs):
+                return SimpleNamespace(returncode=1, timed_out=False, overflow_streams=set())
+
+            with self.assertRaises(IPCError):
+                prepare_context("snap", start=True, runner=failed)
+            self.assertTrue(Path(value["environmentFile"]).exists())

@@ -140,14 +140,14 @@ def publish(path, raw):
         Path(temporary).unlink()
 
 
-def manager(operation, context, runner):
+def manager(operation, context, runner, *, required=True):
     value = runner(
         ["systemctl", "--user", operation, unit_name(context)],
         timeout=7,
         stdout_limit=16384,
         stderr_limit=16384,
     )
-    if value.returncode != 0 or value.timed_out or value.overflow_streams:
+    if required and (value.returncode != 0 or value.timed_out or value.overflow_streams):
         raise IPCError("context_operation_failed", "explicit user-unit operation failed")
 
 
@@ -156,7 +156,9 @@ def prepare_context(host_id, *, start=False, runner=run_bounded):
     with registry(context) as path:
         publish(path, raw)
         if start:
-            manager("reset-failed", context, runner)
+            # New instances have no loaded failed/start-limit state to reset.
+            # Start still has to succeed; a reset error cannot establish readiness.
+            manager("reset-failed", context, runner, required=False)
             manager("start", context, runner)
     return {
         "schemaVersion": 1,
