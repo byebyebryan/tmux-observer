@@ -37,6 +37,17 @@ a blocker appearing after arming, an asynchronous suspend enqueue without actual
 sleep, and an unavailable first resumed read. These are safety/source checks,
 not physical acceptance.
 
+Clean source `4465887` passed four preparation cases on both endpoints with the
+same installed wheel; see [captured preparation evidence](evidence/2026-10-07-native-suspend-preparation-g3.json).
+Snap/Starship supervisors captured 30/31 validated prepared responses, with
+observed maxima 11.27/3.77 ms. Native identities, attachment/window counts, hooks
+and pane geometry matched before/after. Both clocks showed no physical suspend
+delta, both alarms stayed empty, and all owned units/children/sockets/backing
+directories were removed. Both RTC wake capabilities were enabled, read-only
+privileged alarm access passed and no sleep-block inhibitor was present.
+This accepts preparation only; actual hardware wake and resume fencing remain
+unexecuted until the agreed whole-host interruption window.
+
 Physical execution is an explicit `--sleep snap` or `--sleep starship` invocation
 with a separate evidence output, after the agreed interruption window. Each
 invocation sleeps one endpoint; the other supervises it. The helper sets a

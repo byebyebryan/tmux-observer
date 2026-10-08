@@ -44,9 +44,10 @@ GUI migration and managed deployment remain pending. Source, installed/native,
 graphical and managed evidence remain separate gates.
 
 The [physical suspend harness](native-suspend-acceptance.md) is now implemented
-with a preparation-only default and five safety regressions. A disposable
-investigation passed two-host preparation without arming alarms or suspending;
-a clean committed preparation run is the next checkpoint. Whole-host execution
+with a preparation-only default and five safety regressions. Clean source
+`4465887` passed four [preparation cases](evidence/2026-10-07-native-suspend-preparation-g3.json)
+without arming alarms or suspending: both native baselines survived, cached read
+maxima were 11.27/3.77 ms and owned fixture cleanup passed. Whole-host execution
 still needs an agreed interruption window. Source validation now covers 151
 methods; the added harness changes no production observation or collection code.
 
