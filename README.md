@@ -2,20 +2,24 @@
 
 Shared observation foundation under development for local and remote tmux clients.
 Tmux Observer publishes host-local session metadata through a passive direct
-collector. Shared services and prepared remote views are the next deliveries.
+collector and shared owner service. Prepared remote fleet views are the next delivery.
 Rofi Tmux Plus will consume its prepared views and retain presentation policy.
 
 ## Status
 
 Implementation in progress, 2026-10-07; see the
 [status record](docs/implementation-status.md). Pure contracts and the direct
-collector are implemented; native/artifact acceptance is recorded separately.
-No running service, frontend migration or deployment is accepted yet. The design
+collector and owner service passed isolated native/artifact acceptance.
+Fleet, frontend migration and managed deployment are not accepted yet. The design
 describes later interfaces that must pass their delivery gates.
 
 ```sh
 uv run tmux-observer collect --host-id snap
 uv run tmux-observer collect --host-id snap --panes --option @example
+uv run tmux-observer owner --host-id snap
+uv run tmux-observer snapshot --expected-host snap
+uv run tmux-observer refresh --expected-host snap
+uv run tmux-observer refresh_status --expected-host snap --publisher-id UUID --ticket-id UUID
 uv run --extra dev ./scripts/check
 uv run --extra dev python scripts/accept-native-collector --output /tmp/tmux-observer-native.json
 ```
@@ -26,6 +30,12 @@ The pure Python API is `tmux_observer.public`; it imports no native collection,
 networking or lifecycle code. Wire schemas and semantic rules are documented in
 [wire v1](docs/wire-v1.md). The independent development reader is
 `scripts/read-contract --schema observation` (JSON record on stdin).
+
+`owner` explicitly runs the publisher. `status`, `snapshot`, `probe` and `watch`
+read prepared state; missing services produce typed failure without activation.
+`bridge` exports only that owner over stdio and accepts bounded requests on stdin.
+`refresh` returns a bounded ticket; `refresh_status` reads its retained outcome.
+The packaged user unit is a candidate, not installed/enabled by package installation.
 
 The extraction baseline is released `rofi-tmux-plus 0.6.0`, source
 `407ae58ba422ba88fed7da2f9d845ff274830f0e`. Its public Tmux Session v1 and

@@ -1,7 +1,8 @@
 # Implementation backlog
 
-Date: 2026-10-07. Status: planned; none of the tasks below has been implemented
-or accepted. This turns the [implementation gates](implementation-plan.md) into
+Date: 2026-10-07. This is the frozen planning baseline; current implementation and
+acceptance are tracked in [implementation status](implementation-status.md).
+This turns the [implementation gates](implementation-plan.md) into
 reviewable work packages. Gate acceptance remains defined by that plan and the
 [validation plan](validation-plan.md).
 
@@ -74,7 +75,7 @@ direct/network/native paths only for explicitly selected operations.
 
 ## Tasks and dependencies
 
-All tasks are currently **planned**. “Owned paths” below identify the task's
+Task states below describe the planning baseline. “Owned paths” identify the task's
 change boundary, not authorization to edit every repository immediately.
 Each task produces a focused reviewable patch plus its applicable evidence.
 

@@ -6,13 +6,14 @@ The design/backlog baseline is commit `a4fba75`.
 | Delivery | State | Evidence |
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
-| B: owner service | In progress: T07 foundation and T08 publisher/IPC | State, private IPC and bounded fan-out tests; CLI/stdio bridge, refresh tickets and native G2 pending |
-| C: fleet service | Planned | None |
+| B: owner service | Accepted: T07–T09; G2 passed | 64 source test methods, bounded tickets/stdio, 11 installed/native cases; [G2 evidence](evidence/2026-10-07-native-owner-g2.json) |
+| C: fleet service | In progress: Host Mesh/direct reader | Native Host Mesh discovery and Starship SSH route verified; producer not accepted |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
 
 Pure validation and `collect --host-id ID` are implemented and accepted for
-the Delivery A scope. Service, GUI migration and deployment are not accepted by this checkpoint. Source, installed/native,
+the Delivery A scope. Owner service is accepted in isolated candidate scope; fleet,
+GUI migration and managed deployment remain pending. Source, installed/native,
 graphical and managed evidence remain separate gates.
 
 The collector rejects generic connection errors as absence. Fast and legacy
@@ -76,3 +77,28 @@ frame preservation, one queued replacement/gap, nonce-reply protection and a
 2-second stalled-reader cutoff. Source gate passes 55 methods. Sequence is per
 connection; reads/control replies do not create global stream gaps. CLI/stdio
 bridge and native sharing/recovery evidence remain the next T08/T09 work.
+
+T08/T09 completed with owner-only stdio export, prepared read/refresh CLI and a
+candidate user unit. Fragmented near-cap stream records, replay fencing, fixed
+scope, client EOF and missing-service failure passed. Tickets require a native
+attempt admitted after the request, coalesce on one eligible successor and retain
+terminal outcomes for ten minutes. Admission caps at 64 tickets/1 MiB; terminal
+lookup causes no collection. Source gate now covers 64 test methods.
+
+G2 reviewed candidate source is `8fd7ae5`; the evidence records its installed wheel
+digest. A disposable systemd user unit with owned TMUX_TMPDIR observed the default
+server despite an ambient alternate TMUX context. Twelve watchers and twenty
+probes shared one attempt and preserved roster/attachments/windows/hooks. The
+installed bridge echoed a fragmented probe nonce; EOF left the publisher alive.
+Refresh completed post-request work, repeated terminal lookups did not collect,
+and duplicate publishers preserved the held lease. Watchers held no session
+alive; verified absence and restart/reused IDs were native cases. User-manager
+restart changed publisher UUID and rejected old ticket lookup. Stop during an
+owned blocked native read reaped descendants, removed only owned IPC and preserved
+the native session. Missing tmux was unsupported with no current positives.
+
+The measured owner cgroup used 11,653,120 bytes at one checkpoint; this is not
+fleet capacity/peak acceptance. Reported query durations include independent
+JSONSchema/semantic validation. Physical suspend remains untested; synthetic
+clock-jump rejection is separate evidence. The unit/artifact were exercised in
+temporary paths, not selected by chezmoi. This closes G2 and permits T10–T12.
