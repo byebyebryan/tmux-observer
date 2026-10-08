@@ -9,7 +9,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 from tmux_observer.public import validate_fleet_frame
-from tmux_observer_client._desktop_input import reference
+from tmux_observer_client._desktop_input import input_hash, reference
 from tmux_observer_client._fleet_state import FleetState
 from tmux_observer_client._fleet_tickets import FleetTickets
 from tmux_observer_client.fleet import FleetPublisher
@@ -86,6 +86,7 @@ class ProjectionTests(unittest.TestCase):
         self.assertIsNone(self.fleet.projection_expiry)
 
     def test_validated_owner_update_invalidates_projection_and_old_desktop_join(self):
+        before = self.fleet.current_input_key(200)
         first = self.frame(200)
         value = copy.deepcopy(self.owner_frame)
         value.update(kind="view", sequence=1, requestId=None, encodedAt=1130, viewRevision=2)
@@ -105,17 +106,34 @@ class ProjectionTests(unittest.TestCase):
         matched = owner.receive(value, 1150)
         self.fleet.owner_frame(SimpleNamespace(state=owner), value, matched, 1150)
         changed = self.frame(1150)
+        self.assertNotEqual(self.fleet.current_input_key(1150), before)
         self.assertGreater(changed["viewRevision"], first["viewRevision"])
         self.assertEqual(changed["snapshot"]["hosts"][0]["sessions"][0]["name"], "renamed")
         self.assertEqual(changed["snapshot"]["desktop"]["state"], "warming")
 
     def test_disconnection_invalidates_positives_without_waiting_for_old_expiry(self):
+        self.assertNotEqual(self.fleet.current_input_key(200), input_hash([]))
         first = self.frame(200)
         owner = self.fleet.state.owners[self.host]
         self.fleet.connections[self.host] = SimpleNamespace(state=owner, fail=owner.fail)
         self.fleet.disconnect(300)
         failed = self.frame(300)
+        self.assertEqual(self.fleet.current_input_key(300), input_hash([]))
         self.assertGreater(failed["viewRevision"], first["viewRevision"])
         host = failed["snapshot"]["hosts"][0]
         self.assertEqual(host["owner"]["localExpiry"], 0)
         self.assertEqual(host["sessions"][0]["localViewer"]["state"], "unknown")
+
+    def test_scheduler_reuses_input_hash_but_invalidates_at_owner_expiry(self):
+        self.fleet.fingerprint = lambda _: self.fleet.context_fingerprint
+        self.fleet.last_desktop_start = 10**12
+        self.fleet.desktop_input = self.fleet.state.input_key(200)
+        self.fleet.state.input_key = Mock(wraps=self.fleet.state.input_key)
+        executor = Mock()
+        for now in range(201, 301):
+            self.fleet.desktop_tick(executor, now)
+        self.assertEqual(self.fleet.state.input_key.call_count, 1)
+        self.fleet.desktop_tick(executor, 10100)
+        self.assertEqual(self.fleet.current_input_key(10100), input_hash([]))
+        self.assertEqual(self.fleet.state.input_key.call_count, 2)
+        executor.submit.assert_not_called()

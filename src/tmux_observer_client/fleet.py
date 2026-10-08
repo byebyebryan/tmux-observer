@@ -96,6 +96,9 @@ class FleetPublisher:
         self.projection_dirty = True
         self.projection_expiry = None
         self.publish_needed = False
+        self.input_key_dirty = True
+        self.cached_input_key = None
+        self.input_expiry = None
 
     def handle(self, peer, request, now):
         rid = request["requestId"]
@@ -153,6 +156,20 @@ class FleetPublisher:
             except TicketError as error:
                 self.hub.error(peer, error.code, str(error), request_id=rid, close=not peer.watch)
 
+    def mark_changed(self):
+        self.projection_dirty = True
+        self.input_key_dirty = True
+
+    def current_input_key(self, now):
+        if self.input_key_dirty or self.input_expiry is not None and now >= self.input_expiry:
+            self.cached_input_key = self.state.input_key(now)
+            self.input_key_dirty = False
+            self.input_expiry = min(
+                (owner.expiry for owner in self.state.owners.values() if owner.expiry > now),
+                default=None,
+            )
+        return self.cached_input_key
+
     def project_changed(self, now):
         if not self.projection_dirty and (
             self.projection_expiry is None or now < self.projection_expiry
@@ -173,7 +190,7 @@ class FleetPublisher:
         return self.state.frame(now, **kwargs)
 
     def disconnect(self, now, *, remotes_only=False, code="stale_scope"):
-        self.projection_dirty = True
+        self.mark_changed()
         for host, connection in list(self.connections.items()):
             if remotes_only and connection.state.local_clock is not None:
                 continue
@@ -185,14 +202,14 @@ class FleetPublisher:
         self.retries = {}
 
     def catalog_failure(self, now, code, message):
-        self.projection_dirty = True
+        self.mark_changed()
         self.state.catalog_error(code, message)
         self.tickets.invalidate(now)
         self.disconnect(now)
         self.reports.clear()
 
     def catalog_result(self, result, now):
-        self.projection_dirty = True
+        self.mark_changed()
         started, finished, snapshot, error = result
         if not started <= finished <= now < started + 5000:
             error = {"code": "deadline", "message": "Mesh recheck exceeded its actual-start budget"}
@@ -251,7 +268,7 @@ class FleetPublisher:
             raise ContractError("capacity", "retained owner document pool exceeded its bound")
 
     def owner_frame(self, connection, value, matched, now):
-        self.projection_dirty = True
+        self.mark_changed()
         owner = connection.state
         self.retained[owner.host_id] = sum(
             len(encode_document(frame, limit=FRAME_LIMIT))
@@ -330,7 +347,7 @@ class FleetPublisher:
                 base = min(30000, 1000 * 2 ** min(retry.failures - 1, 5))
                 retry.next_at = now + int(random.uniform(base, min(30000, base * 1.2)))
                 self.tickets.owner_lost(host, now)
-                self.projection_dirty = True
+                self.mark_changed()
                 del self.connections[host]
             elif connection.state.transport == "ready":
                 self.retries.setdefault(host, Retry()).failures = 0
@@ -379,9 +396,9 @@ class FleetPublisher:
                     owner.selected_route = route.destination
                     connecting += 1
                 self.connections[host] = connection
-                self.projection_dirty = True
+                self.mark_changed()
             except (IPCError, ContractError, OSError, ValueError):
-                self.projection_dirty = True
+                self.mark_changed()
                 owner.fail("owner_unavailable", "prepared owner subscription could not start")
                 retry.failures += 1
                 retry.next_at = now + min(30000, 1000 * 2 ** min(retry.failures - 1, 5))
@@ -420,7 +437,7 @@ class FleetPublisher:
         fingerprint = self.fingerprint(self.state.context_id)
         if fingerprint != self.context_fingerprint:
             self.context_fingerprint = fingerprint
-            self.projection_dirty = True
+            self.mark_changed()
             self.state.invalidate_desktop()
             self.tickets.invalidate(now, desktop_only=True)
             self.next_desktop = now
@@ -431,13 +448,13 @@ class FleetPublisher:
             self.last_desktop_start = job.started[0]
             self.tickets.desktop_begin(job.parents, job.attempt, job.started[0], now)
         if self.desktop_future is not None and self.desktop_future.done():
-            self.projection_dirty = True
+            self.mark_changed()
             started, finished, result = self.desktop_future.result()
             state, observations, error = result
             now = boottime_ms()
-            obsolete = job.epoch != self.state.desktop["epoch"] or job.key != self.state.input_key(
-                now
-            )
+            obsolete = job.epoch != self.state.desktop[
+                "epoch"
+            ] or job.key != self.current_input_key(now)
             accepted = self.state.accept_desktop(
                 epoch=job.epoch,
                 key=job.key,
@@ -463,7 +480,7 @@ class FleetPublisher:
         ):
             return
         eligible = self.desktop_eligible(now)
-        changed = self.desktop_input != self.state.input_key(now)
+        changed = self.desktop_input != self.current_input_key(now)
         if now >= self.last_desktop_start + 1000 and (
             now >= self.next_desktop or eligible or changed
         ):
@@ -471,7 +488,7 @@ class FleetPublisher:
             job = DesktopJob(
                 self.desktop_attempt,
                 self.state.desktop["epoch"],
-                self.state.input_key(now),
+                self.current_input_key(now),
                 eligible,
                 self.state.inputs(now),
             )
