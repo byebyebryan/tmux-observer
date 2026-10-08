@@ -26,8 +26,10 @@ class NativeFixture:
             return Completed(0, self.generation if self.fast else "\t\t\n", "")
         if args == ["list-sessions", "-F", format_fields(FIELDS)]:
             return Completed(0, self.row, "")
-        if args == ["list-sessions", "-F", format_fields(FIELDS[:2])]:
-            return Completed(0, self.final, "")
+        if args == ["list-sessions", "-F", format_fields((*FIELDS[:2], *GENERATION))]:
+            return Completed(
+                0, "".join(row + "\t" + self.generation for row in self.final.splitlines()), ""
+            )
         if args[0] == "show-options":
             return Completed(0, "@empty ''\n" if args[-1] == "@empty" else "", "")
         if args == ["list-panes", "-a", "-F", format_fields(PANES)]:
@@ -68,17 +70,49 @@ class CollectorTests(unittest.TestCase):
 
         def change(args):
             nonlocal count
-            if args == ["display-message", "-p", format_fields(GENERATION)]:
+            if args == ["list-sessions", "-F", format_fields((*FIELDS[:2], *GENERATION))]:
                 count += 1
-                if count == 2:
+                if count == 1:
                     native.generation = "/tmp/fixture/default\t103\t204\n"
 
         native.before = change
         value = Collector("fixture", runner=native).collect()
         self.assertEqual(value["sample"]["coverage"], "complete")
-        self.assertEqual(count, 4)
+        self.assertEqual(count, 2)
         self.assertEqual(value["serverGeneration"], "tmux-v1:103:204:/tmp/fixture/default")
         self.assertEqual(len({deadline for _, deadline in native.calls}), 1)
+
+    def test_nonempty_fast_final_bracket_checks_generation_with_one_native_read(self):
+        native = NativeFixture()
+        value = Collector("fixture", runner=native).collect()
+        self.assertEqual(value["sample"]["coverage"], "complete")
+        self.assertEqual(sum(args[0] == "display-message" for args, _ in native.calls), 1)
+        self.assertEqual(sum(args[0] == "list-sessions" for args, _ in native.calls), 2)
+
+    def test_live_empty_fast_final_bracket_still_probes_native_generation(self):
+        native = NativeFixture()
+        native.row = native.final = ""
+        value = Collector("fixture", runner=native).collect()
+        self.assertEqual(value["sample"]["coverage"], "complete")
+        self.assertIsNotNone(value["serverGeneration"])
+        self.assertEqual(value["sessions"], [])
+        self.assertEqual(sum(args[0] == "display-message" for args, _ in native.calls), 2)
+
+    def test_mixed_final_generations_cannot_publish_partial_native_rows(self):
+        native = NativeFixture()
+        native.row += native.row.replace("$1\t", "$2\t", 1)
+        native.before = lambda args: (
+            Completed(
+                0,
+                "$1\t101\t/tmp/fixture/default\t100\t200\n$2\t101\t/tmp/fixture/default\t100\t201\n",
+                "",
+            )
+            if args == ["list-sessions", "-F", format_fields((*FIELDS[:2], *GENERATION))]
+            else None
+        )
+        value = Collector("fixture", runner=native).collect()
+        self.assertEqual(value["sample"]["error"]["code"], "unstable_source")
+        self.assertEqual(value["sessions"], [])
 
     def test_persistent_reference_conflict_is_failed_not_partial_rows(self):
         for final in ("$1\t999\n", "$2\t101\n", ""):

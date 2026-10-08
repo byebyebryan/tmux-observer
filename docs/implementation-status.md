@@ -35,6 +35,15 @@ queries took 71.77–113.36 ms. Cleanup completed and the CLI correctly failed.
 Receive/server work and repeated decode are the next performance investigation;
 the source gate passes 171 methods.
 
+The next producer candidate optimizes JSON preflight by scanning complete string
+tokens with the standard decoder while retaining pre-parser nesting/node limits
+and full post-parse wire checks. The fast collector obtains its final full-reference
+roster and per-row native generation in one read; empty output still needs a
+separate generation probe, and legacy reads retain their existing bracket.
+Six added boundary/race tests bring the source gate to 177 methods. Native and
+resource acceptance for these production changes is pending; prior failures
+remain recorded and the candidate needs a new exact artifact.
+
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The
 normal desktop-inclusive ten-minute profile also passes the unchanged 5%

@@ -112,15 +112,22 @@ class Collector:
             )
             if len(rows) != 1:
                 raise FastUnavailable()
-            path, start, pid = rows[0]
-            if not path or not start.isdecimal() or not pid.isdecimal():
-                raise FastUnavailable()
+            return self.fast_generation(rows[0])
         else:
             path, start, pid = (
                 self.field(None, field, deadline, absent=True) for field in GENERATION
             )
             if not path:
                 raise ProcessError("malformed_metadata", "missing native server identity")
+        number(start, required=True)
+        number(pid, required=True)
+        return f"tmux-v1:{start}:{pid}:{path}"
+
+    @staticmethod
+    def fast_generation(fields):
+        path, start, pid = fields
+        if not path or not start.isdecimal() or not pid.isdecimal():
+            raise FastUnavailable()
         number(start, required=True)
         number(pid, required=True)
         return f"tmux-v1:{start}:{pid}:{path}"
@@ -163,24 +170,33 @@ class Collector:
             result[sid] = number(created, required=True)
         return result
 
-    def final_roster(self, deadline, fast):
+    def final_bracket(self, deadline, fast):
         if fast:
             rows = self.rows(
                 self.read(
-                    ["list-sessions", "-F", format_fields(FIELDS[:2])],
+                    ["list-sessions", "-F", format_fields((*FIELDS[:2], *GENERATION))],
                     deadline,
                     absent=True,
                     empty=True,
                 ),
-                2,
+                5,
             )
+            identities = self.identities(rows)
+            if not rows:
+                # Empty output carries no generation. Keep its separate probe
+                # so a live empty server cannot become verified absence.
+                return identities, self.generation(deadline, True)
+            generations = {self.fast_generation(row[2:]) for row in rows}
+            if len(generations) != 1:
+                raise Race()
+            return identities, generations.pop()
         else:
             ids = self.read(
                 ["list-sessions", "-F", "#{session_id}"], deadline, absent=True, empty=True
             ).splitlines()
             self.identities([(sid, "0") for sid in ids])
             rows = [(sid, self.field(sid, "session_created", deadline)) for sid in ids]
-        return self.identities(rows)
+        return self.identities(rows), self.generation(deadline, False)
 
     def options(self, sid, names, deadline):
         values = {}
@@ -246,8 +262,7 @@ class Collector:
                 if with_panes and rows
                 else {sid: [] for sid in identities}
             )
-            final_ids = self.final_roster(deadline, fast)
-            final_generation = self.generation(deadline, fast)
+            final_ids, final_generation = self.final_bracket(deadline, fast)
         except NoServer as error:
             raise Race() from error
         if generation != final_generation or identities != final_ids:

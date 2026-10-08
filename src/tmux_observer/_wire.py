@@ -18,6 +18,7 @@ MAX_DEPTH = 32
 MAX_NODES = 100_000
 MAX_INT = 2**63 - 1
 _CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
+_ATOM = re.compile(r'[^"{}\[\],:\s]+')
 
 
 class WireError(ValueError):
@@ -54,34 +55,31 @@ def _constant(_value: str) -> object:
 
 
 def _preflight(text: str) -> None:
-    """Bound parser nesting and token allocation before json constructs objects."""
+    """Bound nesting/token counts before json allocates container objects.
+
+    The standard string scanner avoids a Python iteration over every character
+    in large metadata values. It holds only one transient decoded string; the
+    complete tree still undergoes the same wire validation after parsing.
+    """
     depth = nodes = 0
-    quoted = escaped = atom = False
-    for char in text:
-        if quoted:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == '"':
-                quoted = False
-            continue
+    position = 0
+    while position < len(text):
+        char = text[position]
         if char == '"':
-            quoted = True
             nodes += 1
-            atom = False
+            position = json.decoder.scanstring(text, position + 1)[1]
         elif char in "[{":
             depth += 1
             nodes += 1
-            atom = False
+            position += 1
         elif char in "]}":
             depth -= 1
-            atom = False
+            position += 1
         elif char in ",:" or char.isspace():
-            atom = False
-        elif not atom:
+            position += 1
+        else:
             nodes += 1
-            atom = True
+            position = _ATOM.match(text, position).end()
         if depth > MAX_DEPTH or nodes > MAX_NODES:
             raise WireError("JSON structure exceeds the wire bound")
 
