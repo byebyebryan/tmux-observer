@@ -17,6 +17,7 @@ dev = ["ruff==0.16.6", "jsonschema>=4.18,<5"]
 
 [project.scripts]
 tmux-observer = "tmux_observer.cli:main"
+tmux-observer-client = "tmux_observer_client.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
