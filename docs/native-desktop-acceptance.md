@@ -39,3 +39,11 @@ The output remains `T12-native-local-desktop-partial`/`passed_partial`. Actual
 remote manual SSH matches/conflicts, Starship graphical truth, declared capacity,
 physical sleep/wake, resource targets and Rofi/managed rollout need separate
 evidence. This tool is a candidate test and does not activate ordinary services.
+
+Clean installed source `fd47581` passed all nine included cases on Snap with
+tmux 3.7c and Kitty 0.49.2. The [captured evidence](evidence/2026-10-07-native-desktop-t12.json)
+records the installed wheel digest, independent native source identity, exact
+client/window/reference join, final frame and preserved native facts. The previous
+row after client switching correctly remained unknown because its original attach
+argv conflicted with the current native client; the current reference was confirmed
+open. The owned fixture directory and viewer processes were absent after completion.

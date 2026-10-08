@@ -268,3 +268,16 @@ CLI work; the retained record contains process names, not raw argv. The opposite
 endpoint's associated bridge adds about 18.84 MiB. This is an explicit process
 cost, not foreground network latency. Resource budgets/process choices require
 review, and declared capacity remains separate from these two-owner samples.
+
+Clean installed source `fd47581` now passes nine [native local desktop cases](evidence/2026-10-07-native-desktop-t12.json)
+on Snap. Independent native UID/hostname/clock, session identity and tmux client
+reads join an actual owned Kitty window to the complete reference. Live switching,
+rename, owner replacement, actual owned compositor-proxy socket inode replacement,
+endpoint loss and headless context isolation pass. Viewer/service stop preserves
+session creation times, windows, hooks and attachment counts. The previous session
+after switching loses its positive but remains unknown on conflicting original
+argv; this does not claim absence from conflicting evidence. The ordinary Niri
+endpoint was unchanged, and owned fixture/viewer cleanup was verified.
+See [desktop acceptance scope](native-desktop-acceptance.md). This closes those
+local T12 cases, not G3: remote manual SSH truth, capacity, physical sleep/wake,
+memory and other recorded native/managed limits remain open.
