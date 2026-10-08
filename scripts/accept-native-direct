@@ -171,12 +171,11 @@ def worker(root, host):
             )
             package_root = Path(installed).parent.parent
             for member, source in descriptor["sourceFiles"].items():
-                if source.startswith("rofi_tmux_plus/"):
-                    path = package_root / source
-                    assert (
-                        hashlib.sha256(path.read_bytes()).hexdigest()
-                        == descriptor["members"][member]["sha256"]
-                    )
+                path = package_root / (source if source.startswith("rofi_tmux_plus/") else member)
+                assert (
+                    hashlib.sha256(path.read_bytes()).hexdigest()
+                    == descriptor["members"][member]["sha256"]
+                )
             assert (
                 package_root / "rofi_tmux_plus/native/rofi-tmux-plus-mode"
             ).stat().st_mode & 0o111
@@ -473,7 +472,10 @@ def coordinate(output, artifact=None, frontend_artifact=None):
             if frontend_artifact:
                 viewers = direct(host, hosts=[host], withViewers=True)
                 verify_row(viewers["value"]["hosts"][0], baseline[host]["reference"])
-                assert "viewers" in viewers["value"]["hosts"][0]["sessions"][0]
+                assert viewers["value"]["hosts"][0]["sessions"][0]["localViewer"] == {
+                    "state": "unknown",
+                    "reason": "unsupported_desktop",
+                }
                 passed(
                     "installed_frontend_optional_viewers_preserve_fresh_native_identity",
                     endpoint=host,
