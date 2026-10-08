@@ -475,6 +475,17 @@ def coordinate(output, artifact=None):
                 endpoint=host,
                 response=selected,
             )
+            before = control.call("counts")
+            unknown = direct(host, providerAbsent=True, hosts=["not-an-owned-native-host-alias"])
+            assert (
+                unknown["returnCode"] == 1 and unknown["value"]["error"]["code"] == "unknown_host"
+            )
+            assert control.call("counts") == before
+            passed(
+                "bounded_native_alias_lookup_refuses_unknown_before_tmux_or_ssh",
+                endpoint=host,
+                response=unknown,
+            )
         for remote, control in controls.items():
             host = "starship" if remote == "snap" else "snap"
             renamed = control.call("rename_owned")
