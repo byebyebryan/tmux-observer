@@ -43,3 +43,18 @@ are removed. Unit/native cleanup preserves ordinary sessions and services and
 restores the previously focused window when it still exists. This component test
 does not establish Starship graphical truth, physical suspend, simultaneous
 declared-capacity acceptance, Rofi latency or managed rollout.
+
+Clean installed source `3f79975` passed the seven functional cases plus the
+hundred-query and ten-minute collection cases in the [captured result](evidence/2026-10-07-native-remote-desktop-normal-g3-partial.json).
+The result is `failed_resource_target`: conservative fleet/associated-bridge
+sampled maxima were 82.49 MiB on Snap and 82.40 MiB on Starship, below 96 MiB;
+combined CPU was 5.74% and 2.40%, so Snap exceeded the unchanged 5% ceiling.
+The owner's sampled maxima stayed below 64 MiB. Neither endpoint started a new
+observer SSH connection during the idle interval. RPC p95 was 5.77/3.28 ms and
+installed cached CLI p95 was 47.92/36.95 ms; these are not visible Rofi latencies.
+All owned windows, SSH children, units and fixture directories were removed.
+
+The original failure remains evidence for that exact artifact. It motivates
+optimizing the desktop join's final generation read without changing the cadence,
+lease, scope, native generation bracketing or CPU ceiling; later results require
+their own clean installed measurement.

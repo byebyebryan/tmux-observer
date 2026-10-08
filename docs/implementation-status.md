@@ -3,6 +3,16 @@
 Updated: 2026-10-07. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
+Latest continuation: clean source `3f79975` passed seven installed native manual
+SSH/window cases, including ambiguity, rename and owner replacement. Its
+[desktop-inclusive ten-minute profile](evidence/2026-10-07-native-remote-desktop-normal-g3-partial.json)
+stayed below the selected 96 MiB fleet ceiling (82.49/82.40 MiB), but Snap combined
+CPU failed the unchanged 5% target at 5.74% (Starship 2.40%). This failure remains
+recorded; optimization and a clean rerun are required. Cached RPC p95 was
+5.77/3.28 ms and cached CLI p95 47.92/36.95 ms, separate from Rofi rendering.
+Actual SSH capacity, physical sleep, frontend migration and managed rollout
+remain open.
+
 | Delivery | State | Evidence |
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-collector-utf8-g1.json) |

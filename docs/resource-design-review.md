@@ -12,6 +12,8 @@ it does not establish acceptance of a replacement budget.
 | --- | --- | --- |
 | Normal two-host fleet and associated bridge | Snap 67.23 MiB, Starship 77.79 MiB | [Ten-minute clean profile](evidence/2026-10-07-native-fleet-input-cache-g3-partial.json); conservative sum of sampled maxima, includes owned Mesh work and the opposite endpoint's bridge |
 | Normal combined owner/fleet/bridge CPU | Snap 4.40%, Starship 2.43% of one core | Same profile; meets the 5% target; does not establish capacity CPU |
+| Desktop-inclusive normal fleet and associated bridge | Snap 82.49 MiB, Starship 82.40 MiB | [Clean manual-viewer profile](evidence/2026-10-07-native-remote-desktop-normal-g3-partial.json); below the selected 96 MiB ceiling, but one-second RSS sampling can miss transient peaks |
+| Desktop-inclusive combined owner/fleet/bridge CPU | Snap 5.74%, Starship 2.40% | Same profile; Snap fails the unchanged 5% ceiling; exact failed artifact retained |
 | Sixteen synthetic installed owners and local bridges | 307.65 MiB sampled fleet/bridge peak | [Clean capacity fixture](evidence/2026-10-07-installed-capacity-t12-partial.json); includes fifteen plain bridges, omits actual SSH costs; fleet worker includes fixture imports |
 
 The normal Starship peak contains a 27.32 MiB fleet, 10.95 MiB SSH child and
