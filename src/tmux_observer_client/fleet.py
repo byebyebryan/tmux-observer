@@ -482,7 +482,7 @@ class FleetPublisher:
                 observations, dict
             ):
                 raise ValueError("invalid desktop adapter result")
-        except (OSError, ValueError, ContractError):
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, ContractError):
             result = (
                 "failed",
                 {},

@@ -191,6 +191,7 @@ def main(output, artifact=None):
             desktop_env[key] = str(directory)
         native_prefix = ["tmux", "-u", "-f", "/dev/null", "-L", "default"]
         owned_processes = []
+        owned_logs = {}
         proxies = []
         proxy = None
         native_identity = None
@@ -232,6 +233,7 @@ def main(output, artifact=None):
             finally:
                 log.close()
             owned_processes.append(process)
+            owned_logs[process.pid] = Path(log.name)
             return process
 
         def stop(process):
@@ -571,6 +573,23 @@ def main(output, artifact=None):
             passed(
                 "viewer_and_service_stop_preserve_native_sessions_windows_hooks_and_creation_times"
             )
+        except Exception as problem:
+            evidence.update(
+                result="failed",
+                failure=type(problem).__name__,
+                failureMessage=str(problem)[:2048],
+                ownedFixtureRoot=str(root),
+            )
+            evidence["ownedWorkerDiagnostics"] = [
+                {
+                    "pid": process.pid,
+                    "exit": process.poll(),
+                    "log": owned_logs[process.pid].read_bytes()[:8192].decode("utf-8", "replace"),
+                }
+                for process in owned_processes
+                if process.args[0] != "kitty"
+            ]
+            raise
         finally:
             for process in reversed(owned_processes):
                 if process.poll() is None:
@@ -604,6 +623,10 @@ def main(output, artifact=None):
                     env=env,
                     ok=False,
                 )
+            evidence["ownedCleanupCompleted"] = True
+            if evidence.get("result") == "failed":
+                output.parent.mkdir(parents=True, exist_ok=True)
+                output.write_text(json.dumps(evidence, indent=2) + "\n")
     evidence["result"] = "passed_partial"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(evidence, indent=2) + "\n")
@@ -621,6 +644,15 @@ if __name__ == "__main__":
     if args.worker is not None and args.operation is not None:
         worker(args.worker, args.operation)
     elif args.output is not None:
-        main(args.output, args.artifact)
+        try:
+            main(args.output, args.artifact)
+        except Exception:
+            if args.output.is_file():
+                evidence = json.loads(args.output.read_text())
+                evidence["ownedTemporaryRootRemoved"] = not Path(
+                    evidence["ownedFixtureRoot"]
+                ).exists()
+                args.output.write_text(json.dumps(evidence, indent=2) + "\n")
+            raise
     else:
         parser.error("provide --output or a complete private worker invocation")

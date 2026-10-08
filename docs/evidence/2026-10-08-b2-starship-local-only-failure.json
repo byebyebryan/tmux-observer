@@ -1,0 +1,80 @@
+{
+  "gate": "T12-native-local-desktop-partial",
+  "sourceCommit": "723c97e36179b11a0581feba54b9d2943dfca10e",
+  "sourceTreeDirty": false,
+  "endpoint": "starship",
+  "nativeVersion": "tmux 3.7c",
+  "kittyVersion": "kitty 0.49.2 created by Kovid Goyal",
+  "nativeIdentity": {
+    "uid": 1000,
+    "hostname": "starship",
+    "clock": {
+      "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+      "timeNamespace": "time:4026531834"
+    }
+  },
+  "scope": "one installed wheel; private default tmux server, owner/fleets and read-only compositor proxy; owned Kitty viewer",
+  "cases": [],
+  "limits": [
+    "Injected missing Mesh lookup; no remote owner/manual SSH or native Mesh acceptance",
+    "Owned proxy relays actual read-only Niri Windows responses; ordinary compositor socket is unchanged",
+    "Native desktop evidence does not establish Rofi rendering, physical display or managed rollout",
+    "Starship native graphical acceptance and declared-capacity/resource profiles remain separate"
+  ],
+  "harnessCommit": "723c97e36179b11a0581feba54b9d2943dfca10e",
+  "harnessTreeDirty": true,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "723c97e36179b11a0581feba54b9d2943dfca10e",
+      "epoch": 1791503183,
+      "tree": "f1c67c9d3d3e363686e9e42eff4c539c37b861dc"
+    },
+    "wheelSha256": "c6737239e1cca1422d9b24f2e2a7ad7de50fd260f7c80429969902ccac756d3e",
+    "descriptorSha256": "73b470707e1d6cb1d70fe5bf092adc488d6e68989fbd2d616a8db79dd4489a18",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "c6737239e1cca1422d9b24f2e2a7ad7de50fd260f7c80429969902ccac756d3e",
+  "contextId": "eed20b2bfa9933b5ff2b5bf8698f133f",
+  "nativeBaseline": {
+    "generation": "tmux-v1:1791503320:1938585:/tmp/tmux-observer-desktop-mg27i4xc/tmux-1000/default",
+    "sessions": {
+      "$0": {
+        "sessionId": "$0",
+        "createdAt": 1791503320,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-4f5aaec9f51b-first"
+      },
+      "$1": {
+        "sessionId": "$1",
+        "createdAt": 1791503320,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-4f5aaec9f51b-second"
+      }
+    },
+    "hooks": {
+      "$0": "",
+      "$1": ""
+    }
+  },
+  "result": "failed",
+  "failure": "RuntimeError",
+  "failureMessage": "owned native desktop condition did not become true: [Errno 2] No such file or directory",
+  "ownedFixtureRoot": "/tmp/tmux-observer-desktop-mg27i4xc",
+  "ownedWorkerDiagnostics": [
+    {
+      "pid": 1938600,
+      "exit": null,
+      "log": ""
+    },
+    {
+      "pid": 1938601,
+      "exit": 1,
+      "log": "Traceback (most recent call last):\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/accept-native-desktop\", line 645, in <module>\n    worker(args.worker, args.operation)\n    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/accept-native-desktop\", line 123, in worker\n    publisher.run()\n    ~~~~~~~~~~~~~^^\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/venv/lib/python3.13/site-packages/tmux_observer_client/fleet.py\", line 602, in run\n    self.desktop_tick(desktop_executor, now)\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/venv/lib/python3.13/site-packages/tmux_observer_client/fleet.py\", line 509, in desktop_tick\n    started, finished, result = self.desktop_future.result()\n                                ~~~~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/home/bryan/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py\", line 453, in result\n    return self.__get_result()\n           ~~~~~~~~~~~~~~~~~^^\n  File \"/home/bryan/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/concurrent/futures/_base.py\", line 402, in __get_result\n    raise self._exception\n  File \"/home/bryan/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/concurrent/futures/thread.py\", line 59, in run\n    result = self.fn(*self.args, **self.kwargs)\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/venv/lib/python3.13/site-packages/tmux_observer_client/fleet.py\", line 479, in desktop_work\n    result = self.scanner(job.hosts, deadline=started + 2000, **kwargs)\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/venv/lib/python3.13/site-packages/tmux_observer_client/desktop.py\", line 173, in scan\n    batch = observe_local_viewers(\n        targets, config, local_tmux=CachedClients(hosts, deadline), deadline=deadline / 1000\n    )\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/venv/lib/python3.13/site-packages/tmux_observer_client/_desktop_scan.py\", line 108, in observe_local_viewers\n    attachment_executables = {\"tmux\", *(Path(target.remote_executable).name for target in targets)}\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/tmux-observer-desktop-mg27i4xc/venv/lib/python3.13/site-packages/tmux_observer_client/_desktop_scan.py\", line 108, in <genexpr>\n    attachment_executables = {\"tmux\", *(Path(target.remote_executable).name for target in targets)}\n                                        ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/bryan/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/pathlib/_local.py\", line 503, in __init__\n    super().__init__(*args)\n    ~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/home/bryan/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13/pathlib/_local.py\", line 132, in __init__\n    raise TypeError(\n    ...<2 lines>...\n        f\"not {type(path).__name__!r}\")\nTypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'\n"
+    }
+  ],
+  "ownedCleanupCompleted": true,
+  "ownedTemporaryRootRemoved": true
+}

@@ -83,3 +83,16 @@ independent association expiry still revokes positive views. Desktop imports wor
 with native collectors/actions blocked. A headless coordinator loads neither the
 desktop implementation nor a profile reader; explicit `scanner=False` also
 disables the adapter in a captured desktop. No UI or managed selection has changed.
+
+The first installed B2 probe on Starship
+[failed before viewer creation](evidence/2026-10-08-b2-starship-local-only-failure.json).
+Local-only Mesh correctly supplies no remote executable; a new process recheck
+attempted to treat that null as a path. The producer gate is reopened, with a
+local-only scan regression and failure isolation so malformed adapter inputs
+cannot stop the healthy owner reader. The original failing wheel remains
+`c6737239e1cca1422d9b24f2e2a7ad7de50fd260f7c80429969902ccac756d3e`.
+The harness now persists bounded owned-worker diagnostics and completed cleanup
+on failure. Its dependency checker was staged separately in an owned directory
+when Starship's configured registry refused dev dependencies; candidate wheel
+bytes and isolated worker imports remain independently checked. No fixture
+viewer was opened in this failed run; ordinary services and sessions survived.

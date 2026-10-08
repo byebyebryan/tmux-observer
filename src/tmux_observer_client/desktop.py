@@ -141,7 +141,7 @@ def scan(hosts, *, deadline, config=None, context_id=None, epoch=0):
                     host["local"],
                     host["owner"]["source"]["nativeHostname"],
                     host.get("route"),
-                    host.get("remoteExecutable", "ssh"),
+                    host.get("remoteExecutable") or "ssh",
                 )
             )
     if not os.environ.get("NIRI_SOCKET"):

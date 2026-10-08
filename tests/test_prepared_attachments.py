@@ -7,6 +7,7 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from tmux_observer._clock import boottime_ms, domain, pid_namespace
 from tmux_observer.attachments import validate_attachment_delivery
@@ -54,6 +55,27 @@ def prepared():
 
 
 class PreparedAttachmentsTests(unittest.TestCase):
+    def test_local_only_scan_handles_absent_remote_executable(self):
+        from tmux_observer_client.desktop import scan
+
+        host, _frame, now = prepared()
+        host["remoteExecutable"] = None
+        host["sessions"][0].update(
+            activityAt=None,
+            lastAttachedAt=None,
+            windowCount=1,
+            sessionPath="/tmp",
+            currentWindow="shell",
+            currentPath="/tmp",
+        )
+        with (
+            patch.dict(os.environ, NIRI_SOCKET="/owned/fixture"),
+            patch("tmux_observer_client._desktop_scan._niri_windows", return_value=[]),
+        ):
+            result = scan([host], deadline=now + 2000)
+        self.assertEqual(result.state, "ready")
+        self.assertEqual(result.association["rows"][0]["presence"]["state"], "none")
+
     def test_coordinator_rejects_forged_modern_native_facts_and_missing_rows(self):
         from tests.test_attachment_collector import AssociationFixture
         from tmux_observer._attachment_state import AttachmentState

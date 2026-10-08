@@ -105,7 +105,10 @@ def observe_local_viewers(
     # Recheck all relevant process incarnations after the shared capture. Only
     # captured immutable evidence reaches the matching policy.
     changed = set()
-    attachment_executables = {"tmux", *(Path(target.remote_executable).name for target in targets)}
+    attachment_executables = {
+        "tmux",
+        *(Path(target.remote_executable).name for target in targets if target.remote_executable),
+    }
     relevant_pids = (
         set(trees)
         | {
@@ -113,7 +116,7 @@ def observe_local_viewers(
             for pid, proc in index.processes.items()
             if proc is not None and proc.argv and Path(proc.argv[0]).name in attachment_executables
         }
-        | {pid for pids in (clients or {}).values() for pid in pids}
+        | {pid for pids in (clients or {}).values() for pid in pids if pid in index.processes}
     )
     for pid in relevant_pids:
         if not index.revalidate(pid):
