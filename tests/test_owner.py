@@ -215,3 +215,21 @@ class OwnerTests(unittest.TestCase):
                 release.set()
                 publisher.stop()
                 thread.join(timeout=3)
+
+    def test_unchanged_native_acceptance_publishes_receipt_before_periodic_heartbeat(self):
+        with tempfile.TemporaryDirectory(prefix="tmux-observer-renewal-") as temporary:
+            path = Path(temporary) / "owner.sock"
+            publisher, thread, _collector = self.start(path)
+            try:
+                with connect(path, deadline=boottime_ms() + 1000) as sock:
+                    sock.settimeout(2.4)
+                    sock.sendall(encode_document(request("watch")))
+                    with sock.makefile("rb") as stream:
+                        first = validate_service_frame(decode_document(stream.readline()))
+                        next_frame = validate_service_frame(decode_document(stream.readline()))
+                        self.assertEqual(next_frame["viewRevision"], first["viewRevision"])
+                        self.assertEqual(next_frame["receipt"]["acceptedAttempt"], 2)
+                        self.assertEqual(next_frame["kind"], "heartbeat")
+            finally:
+                publisher.stop()
+                thread.join(timeout=3)

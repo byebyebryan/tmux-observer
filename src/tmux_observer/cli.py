@@ -45,6 +45,8 @@ def main(argv: list[str] | None = None) -> int:
             command.add_argument("--publisher-id", required=operation == "refresh_status")
         if operation == "refresh_status":
             command.add_argument("--ticket-id", required=True)
+        if operation in ("watch", "bridge"):
+            command.add_argument("--request-id", help="bounded initial watch nonce")
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
@@ -54,7 +56,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command in ("watch", "bridge"):
         from ._stream import stream_owner
 
-        return stream_owner(args.expected_host, path=args.socket, bridge=args.command == "bridge")
+        return stream_owner(
+            args.expected_host,
+            path=args.socket,
+            bridge=args.command == "bridge",
+            request_id=args.request_id,
+        )
     if args.command == "owner":
         from ._ipc import IPCError
         from .owner import OwnerPublisher

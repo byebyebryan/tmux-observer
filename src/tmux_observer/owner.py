@@ -145,9 +145,11 @@ class OwnerPublisher:
             ) as executor:
                 while not self.stop_event.is_set():
                     now = boottime_ms()
+                    sampled = False
                     self.state.expire(now)
                     self.publish_tickets(self.tickets.expire(now), now)
                     if self.future is not None and self.future.done():
+                        sampled = True
                         result = self.future.result()
                         now = boottime_ms()
                         accepted = self.state.finish(self.token, result, now)
@@ -174,7 +176,7 @@ class OwnerPublisher:
                     if self.state.revision != last_revision:
                         self.hub.broadcast(now, kind="view")
                         last_revision = self.state.revision
-                    elif now >= next_heartbeat:
+                    elif sampled or now >= next_heartbeat:
                         self.hub.broadcast(now, kind="heartbeat")
                     if now >= next_heartbeat:
                         next_heartbeat = now + 3000

@@ -23,8 +23,8 @@ from .public import (
 )
 
 
-def stream_owner(host_id, *, path=None, bridge=False):
-    request_id = uuid.uuid4().hex
+def stream_owner(host_id, *, path=None, bridge=False, request_id=None):
+    request_id = uuid.uuid4().hex if request_id is None else request_id
     watch = {
         "protocol": SERVICE_PROTOCOL,
         "schemaVersion": 1,
