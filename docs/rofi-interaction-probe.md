@@ -56,3 +56,38 @@ Input guards now require a sole owned Rofi process in both surface forms and
 reject competing exclusive layers even when a normal window is focused. The
 [upstream backend option](https://github.com/davatorium/rofi#usage) is documented;
 no launcher backend change is selected by this investigation.
+
+## Private view-dispatch investigation
+
+Two optional diagnostics build a temporary library and preload it only into the
+owned fixture process. Nothing is installed or selected for ordinary Rofi use:
+
+```sh
+uv run --extra dev scripts/probe-rofi-interaction --view-wakeup-experiment --output /tmp/rofi-completed-view.json
+uv run --extra dev scripts/probe-rofi-interaction --feed-wakeup-experiment --output /tmp/rofi-feed-dispatch.json
+```
+
+The first calls `rofi_view_maybe_update` only when Rofi reports a completed view.
+The second also dispatches the fixed fixture callback after an atomic feed-file
+replacement, independent of the inactivity timer. Both use private Rofi 2.0
+symbols; they are diagnostic experiments, not supported frontend dependencies.
+The library ignores callback child processes and is removed with the private
+directory. It synthesizes no keyboard input. The probe's guarded test input still
+requires the sole owned Rofi process and exclusive keyboard surface.
+
+The source of the hypothesis is the pinned
+[theme-action path](https://github.com/davatorium/rofi/blob/2.0.0/source/view.c):
+theme actions mark a view completed, whereas `rofi_view_maybe_update` processes
+completion. The
+[Wayland reload path](https://github.com/davatorium/rofi/blob/2.0.0/source/wayland/view.c)
+calls that update function. Native comparisons must establish behavior; this
+source interpretation alone cannot establish the installed event path.
+
+The strengthened feed experiment first publishes while idle, then publishes
+another revision after several typing/backspace cycles. Read-only checkpoint
+callbacks record the selected full fixture reference before each publication;
+the automatic update callback supplies the after-reference. Later custom-input
+acceptance checks filter and caret preservation. Publication/input timestamps,
+callback adoption, references and captured native views remain separate evidence.
+An implementation for T14 still needs a reviewed, versioned integration with a
+supported mode boundary or accepted Rofi fix; the preload is not a rollout choice.

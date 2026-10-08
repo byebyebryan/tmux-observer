@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shlex
@@ -70,6 +71,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--x11", action="store_true", help="compare the installed XCB backend")
+    experiment = parser.add_mutually_exclusive_group()
+    experiment.add_argument(
+        "--view-wakeup-experiment",
+        action="store_true",
+        help="compile an isolated private-symbol experiment; never install or select it",
+    )
+    experiment.add_argument(
+        "--feed-wakeup-experiment",
+        action="store_true",
+        help="compare explicit fixture-change dispatch through private Rofi view symbols",
+    )
     args = parser.parse_args()
     env = dict(os.environ)
     manager = run(["systemctl", "--user", "show-environment"], env)
@@ -84,6 +96,15 @@ def main():
         "gate": "T06 experiment",
         "nativeVersion": run(["rofi", "-v"], env).strip(),
         "backend": "x11" if args.x11 else "automatic",
+        "sourceCommit": run(
+            ["git", "-C", str(Path(__file__).resolve().parent.parent), "rev-parse", "HEAD"], env
+        ).strip(),
+        "sourceTreeDirty": bool(
+            run(
+                ["git", "-C", str(Path(__file__).resolve().parent.parent), "status", "--porcelain"],
+                env,
+            ).strip()
+        ),
         "scope": "owned Rofi surface; isolated preferences/cache; synthetic rows; no actions/services",
         "cases": [],
         "limits": [
@@ -101,6 +122,39 @@ def main():
         )
         for name in ("config", "cache"):
             (root / name).mkdir(mode=0o700)
+        if args.view_wakeup_experiment or args.feed_wakeup_experiment:
+            source = Path(__file__).parent / "experiments/rofi-view-wakeup.c"
+            library = root / "view-wakeup.so"
+            flags = shlex.split(run(["pkg-config", "--cflags", "--libs", "glib-2.0"], env))
+            run(
+                [
+                    "cc",
+                    "-shared",
+                    "-fPIC",
+                    "-Wall",
+                    "-Wextra",
+                    "-Werror",
+                    str(source),
+                    "-o",
+                    str(library),
+                    *flags,
+                    "-ldl",
+                ],
+                env,
+            )
+            env["LD_PRELOAD"] = str(library)
+            if args.feed_wakeup_experiment:
+                env["TMUX_OBSERVER_ROFI_WAKEUP_FEED"] = str(root / "feed.json")
+            evidence["viewWakeupExperiment"] = {
+                "sourceSha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                "librarySha256": hashlib.sha256(library.read_bytes()).hexdigest(),
+                "intervalMs": 25,
+                "api": "private Rofi 2.0 view symbols; experiment only",
+                "dispatch": "fixture_change" if args.feed_wakeup_experiment else "completed_view",
+            }
+            evidence["limits"].append(
+                "Private view wakeup is diagnostic only; no managed frontend or plugin is accepted"
+            )
         mode = "observer-probe:" + shlex.join([sys.executable, str(Path(__file__).resolve())])
         log = root / "callbacks.jsonl"
 
@@ -152,6 +206,8 @@ def main():
                 "-kb-screenshot",
                 "F12",
             ]
+            if args.view_wakeup_experiment or args.feed_wakeup_experiment:
+                command.extend(["-kb-custom-1", "Control+Shift+s"])
             if args.x11:
                 command.insert(1, "-x11")
             with (root / "rofi.stderr").open("w") as stderr:
@@ -159,6 +215,7 @@ def main():
                     command, env=env, stdout=subprocess.DEVNULL, stderr=stderr
                 )
                 owned = None
+                input_times = []
                 try:
                     until = time.monotonic() + 5
                     while time.monotonic() < until:
@@ -212,6 +269,7 @@ def main():
                                 "owned Rofi window lacks exclusive input focus; no input sent"
                             )
                         run(["wtype", *arguments], env)
+                        input_times.append(time.monotonic_ns() // 1000000)
 
                     time.sleep(0.15)
                     keys("-M", "ctrl", "-k", "b", "-m", "ctrl")
@@ -219,16 +277,46 @@ def main():
                     # cross the same update without waiting for idle.
                     time.sleep(1.4)
                     before = events()
+                    experimental = args.view_wakeup_experiment or args.feed_wakeup_experiment
+
+                    def checkpoint():
+                        start = len(events())
+                        keys("-M", "ctrl", "-M", "shift", "-k", "s", "-m", "shift", "-m", "ctrl")
+                        deadline = time.monotonic() + 0.5
+                        while time.monotonic() < deadline:
+                            values = [event for event in events()[start:] if event["retv"] == 10]
+                            if values:
+                                selected = values[-1]["selected"]
+                                return json.loads(selected) if selected is not None else None
+                            time.sleep(0.01)
+                        raise RuntimeError("owned selection checkpoint callback did not run")
+
+                    idle_selected_before = checkpoint() if experimental else None
                     feed(2, "Ready fixture revision 2")
+                    idle_adopted = []
+                    revision = 2
+                    if experimental:
+                        idle_published = time.monotonic_ns() // 1000000
+                        time.sleep(1.3)
+                        idle_adopted = [e for e in events() if e["revision"] == 2]
+                        revision = 3
                     published = time.monotonic_ns() // 1000000
+                    typing_before = events()
                     for letter in "al":
                         keys("-k", letter)
                         time.sleep(0.12)
-                    for _ in range(10):
+                    publication_input_index = None
+                    typing_selected_before = None
+                    for iteration in range(10):
                         keys("-k", "a")
                         time.sleep(0.06)
                         keys("-k", "BackSpace")
                         time.sleep(0.06)
+                        if experimental and iteration == 3:
+                            typing_selected_before = checkpoint()
+                            publication_input_index = len(input_times) - 1
+                            feed(revision, "Ready fixture revision 3")
+                            published = time.monotonic_ns() // 1000000
                     during = events()
                     keys("-k", "F12")
                     time.sleep(0.1)
@@ -256,14 +344,14 @@ def main():
                     final_text = (
                         captured[-1]["argv"][0] if captured and captured[-1]["argv"] else None
                     )
-                    adopted = [e for e in during if e["revision"] == 2]
+                    adopted = [e for e in during if e["revision"] == revision]
                     result = {
                         "name": label,
                         "idleTimerCallbacks": sum(e["retv"] == 28 for e in before),
-                        "duringTypingCallbacks": len(during) - len(before),
+                        "duringTypingCallbacks": len(during) - len(typing_before),
                         "duringTypingAdoptedRevision": bool(adopted),
                         "firstAdoptionDelayMs": min(
-                            (e["at"] - published for e in all_events if e["revision"] == 2),
+                            (e["at"] - published for e in all_events if e["revision"] == revision),
                             default=None,
                         ),
                         "finalCustomInput": final_text,
@@ -271,6 +359,37 @@ def main():
                         "callbacks": all_events,
                         "duringScreenshot": during_target.name if during_target.exists() else None,
                     }
+                    if experimental:
+                        idle_selected_after = (
+                            json.loads(idle_adopted[0]["selected"])
+                            if idle_adopted and idle_adopted[0]["selected"] is not None
+                            else None
+                        )
+                        typing_selected_after = (
+                            json.loads(adopted[0]["selected"])
+                            if adopted and adopted[0]["selected"] is not None
+                            else None
+                        )
+                        result.update(
+                            idlePublishedRevisionAdopted=bool(idle_adopted),
+                            idleFirstAdoptionDelayMs=min(
+                                (e["at"] - idle_published for e in idle_adopted), default=None
+                            ),
+                            duringTypingRevision=revision,
+                            publicationDuringActiveInput=True,
+                            previousInputToPublicationMs=published
+                            - input_times[publication_input_index],
+                            publicationToNextInputMs=input_times[publication_input_index + 1]
+                            - published,
+                            idleSelectionBefore=idle_selected_before,
+                            idleSelectionAfter=idle_selected_after,
+                            idleSelectionPreserved=idle_selected_before is not None
+                            and idle_selected_before == idle_selected_after,
+                            typingSelectionBefore=typing_selected_before,
+                            typingSelectionAfter=typing_selected_after,
+                            typingSelectionPreserved=typing_selected_before is not None
+                            and typing_selected_before == typing_selected_after,
+                        )
                     evidence["cases"].append(result)
                     screenshot = root / "frame.png"
                     if screenshot.exists():
