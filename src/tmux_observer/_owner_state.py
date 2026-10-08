@@ -40,7 +40,7 @@ class OwnerState:
             "remainingMs": 0,
             "inFlight": False,
         }
-        validate_service_frame(self.frame(0))
+        self.frame(0)
 
     def due(self, now: int) -> bool:
         return self.active and self.job is None and now >= self.next_due
@@ -87,7 +87,7 @@ class OwnerState:
             self.next_due = min(self.next_due, max(now, job_start + MIN_SPACING_MS))
             self.successor = False
         try:
-            validate_observation(observation)
+            self.validate_sample(observation)
             if any(
                 observation["source"][key] != self.source[key]
                 for key in ("hostId", "uid", "server")
@@ -98,8 +98,6 @@ class OwnerState:
             sampled = observation["sample"]
             if not job_start <= sampled["startedAt"] <= sampled["finishedAt"] <= now:
                 raise ValueError("sample is not bound to started job")
-            if observation["capabilities"]["panes"] or observation["capabilities"]["options"]:
-                raise ValueError("expanded shared metadata profile")
         except (ValueError, KeyError, TypeError):
             self.failure("invalid_sample", "native sample violates publisher scope or profile")
             return False
@@ -115,25 +113,9 @@ class OwnerState:
             self.failure(problem["code"], problem["message"], result)
             return False
 
-        def facts(value):
-            return (
-                None
-                if value is None
-                else encode_document(
-                    {
-                        key: value[key]
-                        for key in (
-                            "source",
-                            "clock",
-                            "serverGeneration",
-                            "sessions",
-                            "capabilities",
-                        )
-                    }
-                )
-            )
-
-        if self.evidence["state"] != "ready" or facts(self.snapshot) != facts(observation):
+        if self.evidence["state"] != "ready" or self.facts(self.snapshot) != self.facts(
+            observation
+        ):
             self.revision += 1
         self.snapshot = copy.deepcopy(observation)
         self.problem = None
@@ -147,6 +129,23 @@ class OwnerState:
             lastAttemptResult="complete",
         )
         return True
+
+    def validate_sample(self, observation):
+        validate_observation(observation)
+        if observation["capabilities"]["panes"] or observation["capabilities"]["options"]:
+            raise ValueError("expanded shared metadata profile")
+
+    def facts(self, value):
+        return (
+            None
+            if value is None
+            else encode_document(
+                {
+                    key: value[key]
+                    for key in ("source", "clock", "serverGeneration", "sessions", "capabilities")
+                }
+            )
+        )
 
     def expire(self, now: int) -> None:
         if self.evidence["state"] == "ready" and now >= self.evidence["expiresAt"]:

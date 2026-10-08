@@ -7,6 +7,12 @@
       "accept": true
     },
     {
+      "file": "operation-error.json",
+      "kind": "attachment-error",
+      "schema": "error.schema.json",
+      "accept": true
+    },
+    {
       "file": "complete.json",
       "kind": "attachments",
       "schema": "schema.json",

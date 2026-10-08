@@ -16,9 +16,12 @@ from tmux_observer.native import OBSERVATION_PROTOCOL, validate_observation
 from ._clock import boottime_ms, domain
 from ._models import Pane, Session, SessionReference
 from ._process import ProcessError, ReadRunner
-from ._tmux_wire import TmuxWireError, decode_tmux_argument, parse_explicit_user_options
+from ._tmux_wire import TmuxWireError, decode_tmux_argument
+from .annotations import (
+    PENDING,  # noqa: F401 - retained legacy constant export
+    PlusPendingProfile,
+)
 
-PENDING = "@rofi_tmux_plus_pending"
 FIELDS = (
     "session_id",
     "session_created",
@@ -71,6 +74,7 @@ class Collector:
         }
         self.clock = domain()
         self.runner = ReadRunner() if runner is None else runner
+        self.annotation_profile = PlusPendingProfile()
 
     def read(self, args, deadline, *, absent=False, empty=False):
         result = self.runner(args, deadline)
@@ -200,19 +204,7 @@ class Collector:
         return self.identities(rows), self.generation(deadline, False)
 
     def options(self, sid, names, deadline):
-        values = {}
-        for name in dict.fromkeys((PENDING, *names)):
-            output = self.read(["show-options", "-q", "-t", sid, name], deadline, absent=True)
-            try:
-                _pending, selected = parse_explicit_user_options(
-                    output, [name], pending_name=PENDING
-                )
-            except TmuxWireError as error:
-                raise ProcessError(
-                    "malformed_metadata", "invalid native option metadata"
-                ) from error
-            values[name] = selected[name]
-        return values[PENDING] is not None, {name: values[name] for name in names}
+        return self.annotation_profile.sample(self.read, sid, names, deadline)
 
     def panes(self, ids, deadline, fast):
         result = {sid: [] for sid in ids}

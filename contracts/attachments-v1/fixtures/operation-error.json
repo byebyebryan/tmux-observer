@@ -1,0 +1,9 @@
+{
+  "protocol": "tmux-observer.attachments-delivery.v1",
+  "schemaVersion": 1,
+  "kind": "operation_error",
+  "error": {
+    "code": "capacity",
+    "message": "local reader capacity"
+  }
+}

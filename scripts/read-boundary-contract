@@ -16,6 +16,7 @@ base = importlib.util.module_from_spec(spec)
 loader.exec_module(base)
 SCHEMAS = {
     "attachments": "attachments-v1/schema.json",
+    "attachment-error": "attachments-v1/error.schema.json",
     "attachment-request": "attachments-v1/request.schema.json",
     "attachment-delivery": "attachments-v1/delivery.schema.json",
     "desktop": "desktop-v1/schema.json",
@@ -273,6 +274,7 @@ def verify(kind, value):
     base.schema_check(kind, value)
     validators = {
         "attachments": attachments,
+        "attachment-error": lambda value: None,
         "attachment-request": lambda value: None,
         "attachment-delivery": delivery,
         "desktop": desktop,
@@ -285,6 +287,7 @@ def verify(kind, value):
         "attachment-delivery": 262144 + 16384,
         "action-request": 16384,
         "attachment-request": 16384,
+        "attachment-error": 16384,
     }.get(kind, 1048576)
     encoded = lambda item: (
         len(json.dumps(item, ensure_ascii=False, separators=(",", ":")).encode()) + 1

@@ -69,6 +69,8 @@ There is no additional daemon. It accepts only a closed cached `snapshot` reques
 with protocol/version, `requestId` and `expectedHost`. Requests are at most 16 KiB
 and start no collection or service. Replies echo the request ID and must match
 expected host, UID, boot/time/PID scope and publisher incarnation.
+Admission, scope and absent-endpoint failures use the profile's closed
+`operation_error` envelope (`error.schema.json`), with no retained positive data.
 
 Fixed owner configuration enables the profile; readers cannot enable it or
 change its source/cadence. Owner refresh hints reconcile configured profiles;
@@ -84,6 +86,16 @@ profile explicit. The launch/action client owns the annotation meaning and write
 the read adapter only samples it. No generic native phase, provider status or
 registration repair is inferred. This preserves the accepted v1 field while
 keeping generic native reads separate from annotation policy.
+
+B1 enables this fixed profile with `owner --local-attachments`; the
+`local-attachments --expected-host HOST` command only reads its cached endpoint.
+One native worker publishes the roster before sampling the optional profile.
+Its accepted opening generation/full-reference bracket is shared, with two
+client-membership reads, before/after process incarnation checks and a closing
+generation/full-reference bracket. Both fit the original two-second budget.
+Association failure or timeout invalidates its own receipt only. An existing
+owner refresh ticket still certifies the roster attempt; clients must inspect
+the association receipt separately. No subscriber changes collection cadence.
 
 ## Desktop association
 

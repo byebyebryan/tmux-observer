@@ -45,6 +45,7 @@ def stage_wheel(directory, evidence, *, repo, descriptor=None, env=None):
                 "LICENSE",
                 "src/tmux_observer",
                 "src/tmux_observer_client",
+                "src/tmux_observer_actions",
                 "contracts",
                 "systemd",
             ],

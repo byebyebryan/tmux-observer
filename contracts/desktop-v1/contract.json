@@ -4,7 +4,7 @@
   "protocol": "tmux-observer.desktop.v1",
   "dependencies": {
     "observation-v1": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c",
-    "attachments-v1": "d404ad9e955c25e2e94c77047480559abe885c3008373c00eff9c904ba55e3c7"
+    "attachments-v1": "3635fbf3ecdb545cc8154bde0d13ae1cd12c628c881566ca53e031122cd5eb33"
   },
   "wire": {
     "encoding": "strict-utf8",

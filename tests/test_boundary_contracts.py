@@ -11,6 +11,7 @@ from pathlib import Path
 
 from tmux_observer.attachments import (
     validate_attachment_delivery,
+    validate_attachment_error,
     validate_attachment_request,
     validate_attachments,
 )
@@ -26,6 +27,7 @@ reader = importlib.util.module_from_spec(spec)
 loader.exec_module(reader)
 VALIDATORS = {
     "attachments": validate_attachments,
+    "attachment-error": validate_attachment_error,
     "attachment-request": validate_attachment_request,
     "attachment-delivery": validate_attachment_delivery,
     "desktop": validate_desktop,

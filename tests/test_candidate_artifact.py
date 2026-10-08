@@ -87,6 +87,50 @@ class CandidateArtifactTests(unittest.TestCase):
     def write_descriptor(self):
         self.descriptor.write_text(json.dumps(self.value))
 
+    def test_boundary_descriptor_requires_new_bundle_and_write_package_coverage(self):
+        additions = {"tmux_observer_actions/__init__.py": b"# separate write contract\n"}
+        for bundle in ("attachments-v1", "desktop-v1", "action-v1"):
+            prefix = "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/" + bundle
+            additions[prefix + "/schema.json"] = b"{}\n"
+            additions[prefix + "/SHA256SUMS"] = (
+                artifact.sha256(b"{}\n") + "  schema.json\n"
+            ).encode()
+        for name, raw in additions.items():
+            target = self.source / artifact.source_member(name)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+        self.payload.update(additions)
+        self.write_wheel()
+        members, package = artifact.wheel_contents(self.wheel)
+        self.value.update(
+            schemaVersion=2,
+            members=members,
+            package=package,
+            sourceFiles=artifact.verify_source_payload(self.source, members),
+        )
+        self.value["wheel"].update(
+            bytes=self.wheel.stat().st_size, sha256=artifact.sha256(self.wheel.read_bytes())
+        )
+        self.value["contractBundles"] = {
+            bundle: artifact.sha256(
+                (self.source / "contracts" / bundle / "SHA256SUMS").read_bytes()
+            )
+            for bundle in artifact.BOUNDARY_BUNDLES
+        }
+        self.write_descriptor()
+        artifact.verify(self.descriptor)
+        self.value["schemaVersion"] = 1
+        self.value["contractBundles"] = {
+            bundle: self.value["contractBundles"][bundle] for bundle in artifact.LEGACY_BUNDLES
+        }
+        self.write_descriptor()
+        with self.assertRaisesRegex(ValueError, "legacy descriptor"):
+            artifact.verify(self.descriptor)
+        self.value["schemaVersion"] = 2
+        self.write_descriptor()
+        with self.assertRaisesRegex(ValueError, "bundle set"):
+            artifact.verify(self.descriptor)
+
     def initialize_checkout(self):
         scripts = self.source / "scripts"
         scripts.mkdir()

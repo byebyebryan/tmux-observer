@@ -18,3 +18,10 @@ def domain() -> dict[str, str]:
         "bootId": Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
         "timeNamespace": "time:" + match[1],
     }
+
+
+def pid_namespace() -> str:
+    match = re.fullmatch(r"pid:\[([0-9]+)\]", os.readlink("/proc/self/ns/pid"))
+    if match is None:
+        raise OSError("unsupported local PID namespace")
+    return "pid:" + match[1]

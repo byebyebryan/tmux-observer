@@ -184,6 +184,17 @@ def main():
             ),
         ),
     )
+    local_error = obj(
+        {
+            "protocol": {"const": "tmux-observer.attachments-delivery.v1"},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "kind": {"const": "operation_error"},
+            "requestId": nullable(TOKEN),
+            "error": error,
+        }
+    )
+    local_error["required"].remove("requestId")
+    write(bundle, "error.schema.json", schema(bundle, "error.schema.json", local_error))
     cases[bundle] = []
 
     def case(name, value, *, kind, accept=True, filename="schema.json"):
@@ -203,6 +214,17 @@ def main():
         },
         kind="attachment-request",
         filename="request.schema.json",
+    )
+    case(
+        "operation-error",
+        {
+            "protocol": "tmux-observer.attachments-delivery.v1",
+            "schemaVersion": 1,
+            "kind": "operation_error",
+            "error": {"code": "capacity", "message": "local reader capacity"},
+        },
+        kind="attachment-error",
+        filename="error.schema.json",
     )
     case("complete", valid, kind="attachments")
     empty = copy.deepcopy(valid)

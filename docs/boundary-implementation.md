@@ -9,8 +9,8 @@ operations tuple.
 
 | Gate | State | Evidence / next action |
 | --- | --- | --- |
-| B0 contracts | Contract/source gate passed | Three new bundles, independent corpus, split pure domains and blocked-import checks |
-| B1 native associations | Pending | Owner-scheduled optional local source, incarnation/coverage/passivity/resource proof |
+| B0 contracts | Committed/pushed; CI passed | `bf5f838`; three new bundles, independent corpus, split pure domains and blocked-import checks |
+| B1 native associations | Source and preliminary installed native passed; frozen acceptance pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
 | B2 desktop | Pending | Consume prepared associations; separate compositor/process/matcher, headless injection and C3 projection |
 | B3 actions | Pending | Extract write package, exact native guards, uncertainty/cleanup and independent native proof |
 | B4 frontend | Pending | Narrow clients, compatibility corpus/deltas, remembered/frozen/expiry behavior, Starship GUI |
@@ -24,9 +24,17 @@ consistency are included in this final state.
 Original accepted contract bytes remain unchanged. No native sessions, graphical
 input, installed artifact or managed selection has changed in B0.
 
-Candidate tooling currently recognizes the original packages/bundles. Extend and
-independently validate that coverage before building a new B1/B3 candidate; do not
-reuse the old artifact descriptor to bless extra or omitted payload.
+The B1 source gate passed 208 tests and 25 independent boundary cases. The
+preliminary checkout-built installed probe passed 11 native cases on Snap,
+including actual client switch, server replacement, process UID rejection,
+unchanged counts/last-attachment/geometry/options/hooks and destroy-unattached
+session lifetime. Eight ordinary default-server references survived and owned
+fixtures were removed. This dirty-tree probe is development evidence; the frozen
+committed candidate has its own pending gate. Version 0.2.0a1 is not selected.
+
+Candidate tooling now validates format-2 three-package/six-bundle coverage and
+retains format-1 verification for existing accepted artifacts. Repeated frozen
+builds and both-host native proof precede downstream runtime selection.
 
 Snap receives passive/headless checks only. Graphical acceptance uses isolated
 Starship preferences and disposable sessions/windows, preserving ordinary focus

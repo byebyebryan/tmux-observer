@@ -48,12 +48,21 @@ class Peer:
 
 class SocketHub:
     def __init__(
-        self, path, *, protocol, now, make_frame, handle_request, share_broadcast_body=False
+        self,
+        path,
+        *,
+        protocol,
+        now,
+        make_frame,
+        handle_request,
+        share_broadcast_body=False,
+        request_validator=validate_request,
     ):
         self.endpoint = Endpoint(path)
         self.protocol = protocol
         self.make_frame = make_frame
         self.handle_request = handle_request
+        self.request_validator = request_validator
         self.peers = set()
         self.selector = selectors.DefaultSelector()
         self.selector.register(self.endpoint.socket, selectors.EVENT_READ, None)
@@ -228,7 +237,9 @@ class SocketHub:
             peer.incoming = bytearray(rest)
             peer.incoming_at = peer.incoming_at if rest else None
             try:
-                request = validate_request(decode_document(bytes(raw) + b"\n", limit=REQUEST_LIMIT))
+                request = self.request_validator(
+                    decode_document(bytes(raw) + b"\n", limit=REQUEST_LIMIT)
+                )
                 if request["protocol"] != self.protocol or peer.handled and not peer.watch:
                     raise ValueError("unsupported request stream")
             except (ValueError, TypeError, KeyError):

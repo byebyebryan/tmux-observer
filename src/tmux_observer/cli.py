@@ -21,8 +21,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     owner = commands.add_parser("owner", help="run one shared passive local publisher")
     owner.add_argument("--host-id", required=True, help="fixed logical owner ID")
+    owner.add_argument(
+        "--local-attachments",
+        action="store_true",
+        help="fixed optional host-local native association profile",
+    )
     owner.add_argument("--socket", type=Path, help="private IPC endpoint, not a native tmux socket")
     for operation in (
+        "local-attachments",
         "status",
         "snapshot",
         "probe",
@@ -68,7 +74,9 @@ def main(argv: list[str] | None = None) -> int:
         from .owner import OwnerPublisher
 
         try:
-            publisher = OwnerPublisher(args.host_id, path=args.socket)
+            publisher = OwnerPublisher(
+                args.host_id, path=args.socket, local_attachments=args.local_attachments
+            )
             for selected in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
                 signal.signal(selected, lambda _signal, _frame: publisher.stop())
             publisher.run()
@@ -84,10 +92,13 @@ def main(argv: list[str] | None = None) -> int:
         from ._ipc import IPCError, exchange
 
         try:
+            from .attachments import ATTACHMENT_DELIVERY_PROTOCOL
+
+            local_profile = args.command == "local-attachments"
             request = {
-                "protocol": SERVICE_PROTOCOL,
+                "protocol": ATTACHMENT_DELIVERY_PROTOCOL if local_profile else SERVICE_PROTOCOL,
                 "schemaVersion": 1,
-                "operation": args.command,
+                "operation": "snapshot" if local_profile else args.command,
                 "requestId": uuid.uuid4().hex,
                 "expectedHost": args.expected_host,
             }
@@ -97,10 +108,17 @@ def main(argv: list[str] | None = None) -> int:
                 request["publisherId"] = args.publisher_id
             if args.command == "refresh_status":
                 request["ticketId"] = args.ticket_id
-            value = exchange(request, path=args.socket)
+            selected_path = args.socket
+            if local_profile and selected_path is None:
+                from ._ipc import owner_socket
+
+                selected_path = owner_socket().with_name("attachments.sock")
+            value = exchange(request, path=selected_path)
         except (IPCError, OSError, ValueError, AttributeError) as error:
             value = {
-                "protocol": SERVICE_PROTOCOL,
+                "protocol": ATTACHMENT_DELIVERY_PROTOCOL
+                if args.command == "local-attachments"
+                else SERVICE_PROTOCOL,
                 "schemaVersion": 1,
                 "kind": "operation_error",
                 "error": {

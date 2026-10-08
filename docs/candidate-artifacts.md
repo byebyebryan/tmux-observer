@@ -36,11 +36,18 @@ versions and scope tested rather than infer reproducibility on every platform.
 
 `candidate.json` always has state `built_unaccepted`. Verification checks the
 wheel checksum/size, safe member paths, package layout, exact member manifest,
-source-member mapping and all three bundled contract manifest digests without
+source-member mapping and bundled contract manifest digests without
 importing the candidate. The descriptor is local provenance, not a signature:
 an independent acceptance record and later managed pin must name the reviewed
 wheel checksum. A wheel plus a replaced descriptor is not an authenticated
 source or an accepted release.
+
+Boundary candidates use descriptor format 2: all six contract bundles and the
+native, reader and `tmux_observer_actions` package roots are required. Its wheel
+member limit is 512, with the existing 8 MiB uncompressed byte cap. Format 1
+verification remains available for the accepted three-bundle/two-package
+artifacts; it rejects a write-package payload. This preserves old frozen input
+verification while preventing incomplete new package coverage.
 
 Each native/installed acceptance coordinator accepts `--artifact PATH/candidate.json`.
 It copies and verifies the exact frozen wheel instead of running a build. For

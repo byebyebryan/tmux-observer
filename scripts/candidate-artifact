@@ -22,6 +22,8 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parent.parent
 MAX_WHEEL = 8 * 1024 * 1024
+LEGACY_BUNDLES = ("observation-v1", "service-v1", "fleet-v1")
+BOUNDARY_BUNDLES = (*LEGACY_BUNDLES, "attachments-v1", "desktop-v1", "action-v1")
 
 
 def command(argv, *, env=None):
@@ -59,7 +61,13 @@ def safe_member(name):
 def verify_source_payload(source, members):
     mapping = {name: source_member(name) for name in members if source_member(name)}
     required = {"LICENSE"}
-    for directory in ("src/tmux_observer", "src/tmux_observer_client", "contracts", "systemd"):
+    for directory in (
+        "src/tmux_observer",
+        "src/tmux_observer_client",
+        "src/tmux_observer_actions",
+        "contracts",
+        "systemd",
+    ):
         required.update(
             str(path.relative_to(source))
             for path in (source / directory).rglob("*")
@@ -74,12 +82,12 @@ def verify_source_payload(source, members):
     return mapping
 
 
-def wheel_contents(path):
+def wheel_contents(path, *, member_limit=256):
     info = path.lstat()
     require(stat.S_ISREG(info.st_mode) and info.st_size <= MAX_WHEEL, "invalid wheel file")
     members = {}
     with zipfile.ZipFile(path) as wheel:
-        require(len(wheel.infolist()) <= 256, "wheel member capacity exceeded")
+        require(len(wheel.infolist()) <= member_limit, "wheel member capacity exceeded")
         total = 0
         for item in wheel.infolist():
             safe_member(item.filename)
@@ -116,7 +124,7 @@ def wheel_contents(path):
 
 
 def source_member(name):
-    if name.startswith(("tmux_observer/", "tmux_observer_client/")):
+    if name.startswith(("tmux_observer/", "tmux_observer_client/", "tmux_observer_actions/")):
         return "src/" + name
     if ".data/data/share/tmux-observer/" in name:
         suffix = name.split(".data/data/share/tmux-observer/", 1)[1]
@@ -139,7 +147,7 @@ def verify(descriptor):
     require(len(raw) <= 256 * 1024, "candidate descriptor capacity exceeded")
     value = json.loads(raw, object_pairs_hook=pairs)
     require(
-        value["schemaVersion"] == 1 and type(value["schemaVersion"]) is int,
+        value["schemaVersion"] in (1, 2) and type(value["schemaVersion"]) is int,
         "unsupported candidate descriptor",
     )
     require(value["state"] == "built_unaccepted", "builder cannot assert acceptance or promotion")
@@ -168,7 +176,9 @@ def verify(descriptor):
         "wheel byte count differs",
     )
     require(sha256(wheel.read_bytes()) == value["wheel"]["sha256"], "wheel checksum differs")
-    members, package = wheel_contents(wheel)
+    members, package = wheel_contents(
+        wheel, member_limit=256 if value["schemaVersion"] == 1 else 512
+    )
     require(
         members == value["members"] and package == value["package"],
         "wheel content manifest differs",
@@ -179,9 +189,27 @@ def verify(descriptor):
         "source-member mapping differs",
     )
     require(
-        set(value["contractBundles"]) == {"observation-v1", "service-v1", "fleet-v1"},
+        set(value["contractBundles"])
+        == set(LEGACY_BUNDLES if value["schemaVersion"] == 1 else BOUNDARY_BUNDLES),
         "contract bundle set differs",
     )
+    if value["schemaVersion"] == 1:
+        require(
+            not any(name.startswith("tmux_observer_actions/") for name in members),
+            "legacy descriptor cannot acquire write payload",
+        )
+    else:
+        require(
+            all(
+                name in members
+                for name in (
+                    "tmux_observer/__init__.py",
+                    "tmux_observer_client/__init__.py",
+                    "tmux_observer_actions/__init__.py",
+                )
+            ),
+            "boundary descriptor lacks complete package roots",
+        )
     with zipfile.ZipFile(wheel) as zipped:
         for bundle, digest in value["contractBundles"].items():
             suffix = ".data/data/share/tmux-observer/contracts/" + bundle + "/SHA256SUMS"
@@ -281,12 +309,13 @@ def build(repo, revision, output):
         wheels = list(dist.glob("*.whl"))
         require(len(wheels) == 1, "one candidate wheel required")
         wheel = wheels[0]
-        members, package = wheel_contents(wheel)
+        format_version = 2 if (source / "src/tmux_observer_actions").is_dir() else 1
+        members, package = wheel_contents(wheel, member_limit=512 if format_version == 2 else 256)
         require(package["version"] == configuration["project"]["version"], "built version differs")
         require(package["generator"] == "setuptools (" + backend[0] + ")", "built backend differs")
         mapping = verify_source_payload(source, members)
         value = {
-            "schemaVersion": 1,
+            "schemaVersion": format_version,
             "state": "built_unaccepted",
             "source": identity,
             "package": package,
@@ -304,7 +333,7 @@ def build(repo, revision, output):
             },
             "contractBundles": {
                 bundle: sha256((source / "contracts" / bundle / "SHA256SUMS").read_bytes())
-                for bundle in ("observation-v1", "service-v1", "fleet-v1")
+                for bundle in (BOUNDARY_BUNDLES if format_version == 2 else LEGACY_BUNDLES)
             },
             "sourceFiles": mapping,
             "members": members,

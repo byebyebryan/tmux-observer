@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/attachments-v1/error.schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "tmux-observer.attachments-delivery.v1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "kind": {
+      "const": "operation_error"
+    },
+    "requestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 4096,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "kind",
+    "error"
+  ],
+  "additionalProperties": false
+}

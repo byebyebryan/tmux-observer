@@ -14,7 +14,13 @@ from tmux_observer._request_validation import validate_operation_error, validate
 from tmux_observer.delivery import SERVICE_PROTOCOL, validate_service_frame
 from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
 
-from ._clock import boottime_ms, domain
+from ._clock import boottime_ms, domain, pid_namespace
+from .attachments import (
+    ATTACHMENT_DELIVERY_PROTOCOL,
+    validate_attachment_delivery,
+    validate_attachment_error,
+    validate_attachment_request,
+)
 
 
 class IPCError(Exception):
@@ -154,7 +160,8 @@ def connect(path: Path, *, deadline: int) -> socket.socket:
 
 def exchange(request: dict, *, path: Path | None = None, budget_ms=2000) -> dict:
     """One read/control request. The caller explicitly chooses refresh, if any."""
-    validate_request(request)
+    attachment = request.get("protocol") == ATTACHMENT_DELIVERY_PROTOCOL
+    (validate_attachment_request if attachment else validate_request)(request)
     raw = encode_document(request, limit=REQUEST_LIMIT)
     deadline = boottime_ms() + budget_ms
     with (
@@ -185,11 +192,21 @@ def exchange(request: dict, *, path: Path | None = None, budget_ms=2000) -> dict
                             raise IPCError("deadline", "late publisher response rejected")
                         value = decode_document(bytes(buffer), limit=FRAME_LIMIT)
                         if value.get("kind") == "operation_error":
-                            validate_operation_error(value)
+                            (validate_attachment_error if attachment else validate_operation_error)(
+                                value
+                            )
                             if value["protocol"] != request["protocol"]:
                                 raise IPCError("scope_mismatch", "wrong service error protocol")
                             raise IPCError(value["error"]["code"], value["error"]["message"])
-                        if request["protocol"] == SERVICE_PROTOCOL:
+                        if attachment:
+                            validate_attachment_delivery(value)
+                            scope_matches = (
+                                value["source"]["hostId"] == request["expectedHost"]
+                                and value["source"]["uid"] == os.getuid()
+                                and value["pidNamespace"] == pid_namespace()
+                            )
+                            incarnation = value["publisherId"]
+                        elif request["protocol"] == SERVICE_PROTOCOL:
                             validate_service_frame(value)
                             scope_matches = (
                                 value["source"]["hostId"] == request["expectedHost"]
@@ -210,7 +227,8 @@ def exchange(request: dict, *, path: Path | None = None, budget_ms=2000) -> dict
                             value["protocol"] != request["protocol"]
                             or not scope_matches
                             or value["requestId"] != request["requestId"]
-                            or value["sequence"] != 0
+                            or not attachment
+                            and value["sequence"] != 0
                         ):
                             raise IPCError(
                                 "scope_mismatch", "publisher response does not match request scope"

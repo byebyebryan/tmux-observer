@@ -156,12 +156,27 @@ def validate_attachment_request(value):
     return value
 
 
+def validate_attachment_error(value):
+    validate_tree(value)
+    keys = ["protocol", "schemaVersion", "kind", "error"]
+    if isinstance(value, dict) and "requestId" in value:
+        keys.append("requestId")
+        nullable(value["requestId"], lambda item: string(item, TOKEN, maximum=64))
+    value = exact(value, *keys)
+    version(value, ATTACHMENT_DELIVERY_PROTOCOL)
+    if value["kind"] != "operation_error" or error(value["error"]) is None:
+        raise ValidationError("invalid local attachment operation error")
+    encode_document(value, limit=ENVELOPE_LIMIT)
+    return value
+
+
 __all__ = [
     "ATTACHMENTS_LIMIT",
     "ATTACHMENTS_PROTOCOL",
     "ATTACHMENT_DELIVERY_PROTOCOL",
     "CLIENT_LIMIT",
     "validate_attachment_delivery",
+    "validate_attachment_error",
     "validate_attachment_request",
     "validate_attachments",
 ]
