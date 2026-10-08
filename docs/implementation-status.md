@@ -5,6 +5,8 @@ The design/backlog baseline is commit `a4fba75`.
 
 Current clean candidate `3beab8a` passes 183 source methods and 96 installed/native
 cases on one [frozen wheel](evidence/2026-10-08-final-candidate-artifact.json).
+The same wheel also passes four preparation-only cases through the suspend
+harness; those do not establish physical sleep/wake.
 Two committed-source builds have identical wheel bytes and member manifests.
 The wheel includes efficient JSON string preflight, the batched final native
 generation bracket, shared unsolicited broadcast bodies and immediate bounded
@@ -19,6 +21,7 @@ IPC regression covers 249/250/251 ms completion with a controlled validation clo
 | [Fleet](evidence/2026-10-08-final-candidate-fleet.json) / [desktop](evidence/2026-10-08-final-candidate-desktop.json) | 15 two-host transport/provenance/recovery cases and 9 native desktop cases |
 | [SSH capacity](evidence/2026-10-08-final-candidate-capacity.json) | 10 cases; 16 logical owners, 15 real SSH links, 32 near-cap readers; 500.02 MiB conservative sampled peak; healthy replies 46.44–229.61 ms including installed validation |
 | [Desktop-inclusive normal profile](evidence/2026-10-08-final-candidate-normal.json) | 9 cases; at least 600 seconds per host; fleet/associated-bridge peaks 84.00/57.83 MiB, combined CPU 4.9763%/1.9494%, no new observer SSH starts |
+| [Suspend preparation](evidence/2026-10-08-final-candidate-suspend-preparation.json) | 4 preparation-only cases on the same wheel, clean harness `25befbc`; 31 cached samples per endpoint, maxima 9.72/3.68 ms, zero suspend delta, untouched alarms and completed owned cleanup |
 
 The selected 96/768 MiB fleet ceilings, unchanged owner/5% CPU ceilings and query
 deadlines pass in those measured profiles. Snap's CPU margin is narrow. The 100

@@ -55,6 +55,17 @@ privileged alarm access passed and no sleep-block inhibitor was present.
 This accepts preparation only; actual hardware wake and resume fencing remain
 unexecuted until the agreed whole-host interruption window.
 
+On 2026-10-08 the final frozen wheel at source `3beab8a` also passed all four
+[preparation-only cases](evidence/2026-10-08-final-candidate-suspend-preparation.json),
+using clean harness `25befbc` and the coordinator's default mode without
+`--sleep`. The exact wheel SHA256 matches the final candidate's other native
+checks. Each endpoint supplied 31 validated cached samples; Snap/Starship maxima
+were 9.72/3.68 ms and both recorded zero suspend delta. Alarms stayed untouched,
+native baselines/passivity passed, and both endpoints' owned units, children,
+sockets and private roots were removed. This exercises the frozen-artifact input
+of the preparation harness, not physical resume or hardware wake. The user's
+deferral and the G3/consumer/deployment dependencies remain in force.
+
 Physical execution is an explicit `--sleep snap` or `--sleep starship` invocation
 with a separate evidence output, after the agreed interruption window. Each
 invocation sleeps one endpoint; the other supervises it. The helper sets a

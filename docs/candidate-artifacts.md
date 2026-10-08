@@ -134,3 +134,10 @@ resource targets and query deadlines pass. The descriptor remains
 `built_unaccepted`: deferred physical sleep/wake, frontend migration and managed
 rollout have independent remaining gates. Previous failed artifacts retain their
 original results and are not relabeled by this pass.
+
+That same final wheel also passed four
+[suspend preparation cases](evidence/2026-10-08-final-candidate-suspend-preparation.json)
+with clean harness `25befbc`: both endpoints remained awake, alarms were untouched
+and owned cleanup completed. All nine native/installed coordinators have now
+consumed the final descriptor in their applicable awake/preparation scope. This
+adds no physical sleep/wake acceptance and does not promote the artifact.

@@ -1,0 +1,5102 @@
+{
+  "gate": "G3-suspend-preparation",
+  "sourceCommit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+  "sourceTreeDirty": false,
+  "sleepHost": null,
+  "endpoints": {
+    "snap": {
+      "wheelSha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84",
+      "templateSha256": {
+        "tmux-observer-owner@.service": "d21e43859d6ee4c45d27f2b3fb8f01d7f1a8720af80eb6861a74ac00d9b9c319",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+      "nativeReference": {
+        "hostId": "snap",
+        "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+        "sessionId": "$0",
+        "createdAt": 1791453377,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-snap"
+      },
+      "clock": {
+        "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "80H1VV3",
+      "uid": 1000
+    },
+    "starship": {
+      "wheelSha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84",
+      "templateSha256": {
+        "tmux-observer-owner@.service": "d21e43859d6ee4c45d27f2b3fb8f01d7f1a8720af80eb6861a74ac00d9b9c319",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "56f3b556513888c367fd19e975edba47",
+      "nativeReference": {
+        "hostId": "starship",
+        "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+        "sessionId": "$0",
+        "createdAt": 1791453378,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-starship"
+      },
+      "clock": {
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "starship",
+      "uid": 1000
+    }
+  },
+  "cases": [
+    {
+      "name": "same_installed_wheel_ready_sources_native_baselines_and_dry_rtc_preflight",
+      "result": "passed"
+    },
+    {
+      "name": "cached_supervisor_and_native_passivity",
+      "result": "passed",
+      "endpoint": "snap",
+      "samples": 31
+    },
+    {
+      "name": "cached_supervisor_and_native_passivity",
+      "result": "passed",
+      "endpoint": "starship",
+      "samples": 31
+    },
+    {
+      "name": "preparation_left_both_host_power_states_and_rtc_alarms_untouched",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "No Rofi rendering, managed rollout or physical Starship desktop acceptance",
+    "Preparation mode does not arm an alarm or suspend a host",
+    "No automatic reboot, inhibitor bypass or ordinary-session actions"
+  ],
+  "harnessCommit": "25befbc0cfa1e1e572486a7ba82012f4c0d11351",
+  "harnessTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+      "epoch": 1791450852,
+      "tree": "96c96b4febd662c792adfd9dde65213d4f0b3e6b"
+    },
+    "wheelSha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84",
+    "descriptorSha256": "2c954063ff4796fd2e59cb991e018b5d8c6ac5f790c379282a2a8f1777031bd2",
+    "sourceFilesMatchHarness": true
+  },
+  "before": {
+    "snap": {
+      "frame": {
+        "protocol": "tmux-observer.fleet.v1",
+        "schemaVersion": 1,
+        "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+        "clock": {
+          "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+          "timeNamespace": "time:4026531834"
+        },
+        "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+        "encodedAt": 493255006,
+        "sequence": 0,
+        "viewRevision": 10,
+        "snapshot": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "clock": {
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "encodedAt": 493255006,
+          "viewRevision": 10,
+          "mesh": {
+            "state": "ready",
+            "revision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+            "localHostId": "snap"
+          },
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": [
+            {
+              "hostId": "snap",
+              "display": "snap",
+              "local": true,
+              "owner": {
+                "source": {
+                  "hostId": "snap",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "80H1VV3"
+                },
+                "clock": {
+                  "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "encodedAt": 493254712,
+                "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493254662,
+                  "finishedAt": 493254674,
+                  "observedAt": 1791453380239,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 2,
+                  "accepted": 2,
+                  "acceptedAttempt": 2,
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662,
+                  "lastAttemptAt": 493254662,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 9950,
+                  "inFlight": false
+                },
+                "transport": "local",
+                "localExpiry": 493264662,
+                "proof": null,
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "snap",
+                  "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453377,
+                  "name": "owned-snap",
+                  "activityAt": 1791453377,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan/code/tmux-observer",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan/code/tmux-observer",
+                  "localViewer": {
+                    "reason": null,
+                    "state": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "hostId": "starship",
+              "display": "starship",
+              "local": false,
+              "owner": {
+                "source": {
+                  "hostId": "starship",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "starship"
+                },
+                "clock": {
+                  "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "encodedAt": 493667626,
+                "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493666139,
+                  "finishedAt": 493666149,
+                  "observedAt": 1791453378950,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 1,
+                  "accepted": 1,
+                  "acceptedAttempt": 1,
+                  "startedAt": 493666139,
+                  "acceptedAt": 493666189,
+                  "expiresAt": 493676139,
+                  "lastAttemptAt": 493666139,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 8513,
+                  "inFlight": false
+                },
+                "transport": "ready",
+                "localExpiry": 493263271,
+                "proof": {
+                  "requestId": "c9f098549282422e991c07edaa1c384a",
+                  "sentAt": 493254858,
+                  "receivedAt": 493254910,
+                  "remainingMs": 8513,
+                  "marginMs": 100
+                },
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "starship",
+                  "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453378,
+                  "name": "owned-starship",
+                  "activityAt": 1791453378,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan",
+                  "localViewer": {
+                    "reason": null,
+                    "state": "none"
+                  }
+                }
+              ]
+            }
+          ],
+          "ticket": null,
+          "error": null
+        },
+        "requestId": "d6ea96c719c7440ca558f72b288d8b73",
+        "error": null,
+        "ticket": null,
+        "kind": "view"
+      },
+      "native": {
+        "reference": {
+          "hostId": "snap",
+          "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+          "sessionId": "$0",
+          "createdAt": 1791453377,
+          "attachedClients": 0,
+          "windowCount": 1,
+          "name": "owned-snap"
+        },
+        "roster": "$0|1791453377|0|1",
+        "hooks": "",
+        "geometry": "@0|80|24|%0|80|24"
+      },
+      "preflight": {
+        "clock": {
+          "boottimeMs": 493255108,
+          "monotonicMs": 493255108,
+          "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+          "timeNamespace": "time:4026531834"
+        },
+        "powerState": "freeze mem disk",
+        "memSleep": "[s2idle]",
+        "wakealarmBefore": "",
+        "inhibitors": [
+          {
+            "what": "sleep",
+            "mode": "delay",
+            "uid": 0
+          },
+          {
+            "what": "handle-power-key",
+            "mode": "block",
+            "uid": 1000
+          },
+          {
+            "what": "shutdown",
+            "mode": "delay",
+            "uid": 1000
+          },
+          {
+            "what": "sleep",
+            "mode": "delay",
+            "uid": 0
+          },
+          {
+            "what": "shutdown",
+            "mode": "delay",
+            "uid": 1000
+          },
+          {
+            "what": "sleep",
+            "mode": "delay",
+            "uid": 0
+          }
+        ],
+        "canSuspend": [
+          "yes"
+        ],
+        "rtcWakeup": "enabled",
+        "rtcDryRun": "passed_without_alarm_or_suspend",
+        "privilegedAlarmAccess": "read_only_check_passed"
+      }
+    },
+    "starship": {
+      "frame": {
+        "protocol": "tmux-observer.fleet.v1",
+        "schemaVersion": 1,
+        "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+        "clock": {
+          "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+          "timeNamespace": "time:4026531834"
+        },
+        "contextId": "56f3b556513888c367fd19e975edba47",
+        "encodedAt": 493668066,
+        "sequence": 0,
+        "viewRevision": 6,
+        "snapshot": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "clock": {
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "56f3b556513888c367fd19e975edba47",
+          "encodedAt": 493668066,
+          "viewRevision": 6,
+          "mesh": {
+            "state": "ready",
+            "revision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+            "localHostId": "starship"
+          },
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": [
+            {
+              "hostId": "starship",
+              "display": "starship",
+              "local": true,
+              "owner": {
+                "source": {
+                  "hostId": "starship",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "starship"
+                },
+                "clock": {
+                  "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "encodedAt": 493666407,
+                "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493666139,
+                  "finishedAt": 493666149,
+                  "observedAt": 1791453378950,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 1,
+                  "accepted": 1,
+                  "acceptedAttempt": 1,
+                  "startedAt": 493666139,
+                  "acceptedAt": 493666189,
+                  "expiresAt": 493676139,
+                  "lastAttemptAt": 493666139,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 9732,
+                  "inFlight": false
+                },
+                "transport": "local",
+                "localExpiry": 493676139,
+                "proof": null,
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "starship",
+                  "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453378,
+                  "name": "owned-starship",
+                  "activityAt": 1791453378,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan",
+                  "localViewer": {
+                    "state": "unknown",
+                    "reason": "desktop_unavailable"
+                  }
+                }
+              ]
+            },
+            {
+              "hostId": "snap",
+              "display": "snap",
+              "local": false,
+              "owner": {
+                "source": {
+                  "hostId": "snap",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "80H1VV3"
+                },
+                "clock": {
+                  "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "encodedAt": 493254868,
+                "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493254662,
+                  "finishedAt": 493254674,
+                  "observedAt": 1791453380239,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 2,
+                  "accepted": 2,
+                  "acceptedAttempt": 2,
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662,
+                  "lastAttemptAt": 493254662,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 9794,
+                  "inFlight": false
+                },
+                "transport": "ready",
+                "localExpiry": 493677261,
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668,
+                  "remainingMs": 9794,
+                  "marginMs": 100
+                },
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "snap",
+                  "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453377,
+                  "name": "owned-snap",
+                  "activityAt": 1791453377,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan/code/tmux-observer",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan/code/tmux-observer",
+                  "localViewer": {
+                    "state": "unknown",
+                    "reason": "desktop_unavailable"
+                  }
+                }
+              ]
+            }
+          ],
+          "ticket": null,
+          "error": null
+        },
+        "requestId": "aeb6814c23fd494892e26a2234d55a66",
+        "error": null,
+        "ticket": null,
+        "kind": "view"
+      },
+      "native": {
+        "reference": {
+          "hostId": "starship",
+          "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+          "sessionId": "$0",
+          "createdAt": 1791453378,
+          "attachedClients": 0,
+          "windowCount": 1,
+          "name": "owned-starship"
+        },
+        "roster": "$0|1791453378|0|1",
+        "hooks": "",
+        "geometry": "@0|80|24|%0|80|24"
+      },
+      "preflight": {
+        "clock": {
+          "boottimeMs": 493668174,
+          "monotonicMs": 493668174,
+          "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+          "timeNamespace": "time:4026531834"
+        },
+        "powerState": "freeze mem disk",
+        "memSleep": "s2idle [deep]",
+        "wakealarmBefore": "",
+        "inhibitors": [
+          {
+            "what": "sleep",
+            "mode": "delay",
+            "uid": 0
+          },
+          {
+            "what": "sleep",
+            "mode": "delay",
+            "uid": 0
+          },
+          {
+            "what": "handle-power-key",
+            "mode": "block",
+            "uid": 1000
+          },
+          {
+            "what": "sleep",
+            "mode": "delay",
+            "uid": 0
+          }
+        ],
+        "canSuspend": [
+          "challenge"
+        ],
+        "rtcWakeup": "enabled",
+        "rtcDryRun": "passed_without_alarm_or_suspend",
+        "privilegedAlarmAccess": "read_only_check_passed"
+      }
+    }
+  },
+  "monitorStarts": {
+    "snap": {
+      "started": {
+        "boottimeMs": 493255587,
+        "monotonicMs": 493255587,
+        "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+        "timeNamespace": "time:4026531834"
+      }
+    },
+    "starship": {
+      "started": {
+        "boottimeMs": 493668354,
+        "monotonicMs": 493668354,
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      }
+    }
+  },
+  "after": {
+    "snap": {
+      "frame": {
+        "protocol": "tmux-observer.fleet.v1",
+        "schemaVersion": 1,
+        "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+        "clock": {
+          "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+          "timeNamespace": "time:4026531834"
+        },
+        "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+        "encodedAt": 493261601,
+        "sequence": 0,
+        "viewRevision": 10,
+        "snapshot": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "clock": {
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "encodedAt": 493261601,
+          "viewRevision": 10,
+          "mesh": {
+            "state": "ready",
+            "revision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+            "localHostId": "snap"
+          },
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493260995,
+            "acceptedAt": 493261045,
+            "expiresAt": 493270995,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": [
+            {
+              "hostId": "snap",
+              "display": "snap",
+              "local": true,
+              "owner": {
+                "source": {
+                  "hostId": "snap",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "80H1VV3"
+                },
+                "clock": {
+                  "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "encodedAt": 493260784,
+                "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493260734,
+                  "finishedAt": 493260766,
+                  "observedAt": 1791453386331,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 5,
+                  "accepted": 5,
+                  "acceptedAttempt": 5,
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734,
+                  "lastAttemptAt": 493260734,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 9950,
+                  "inFlight": false
+                },
+                "transport": "local",
+                "localExpiry": 493270734,
+                "proof": null,
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "snap",
+                  "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453377,
+                  "name": "owned-snap",
+                  "activityAt": 1791453377,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan/code/tmux-observer",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan/code/tmux-observer",
+                  "localViewer": {
+                    "reason": null,
+                    "state": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "hostId": "starship",
+              "display": "starship",
+              "local": false,
+              "owner": {
+                "source": {
+                  "hostId": "starship",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "starship"
+                },
+                "clock": {
+                  "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "encodedAt": 493672502,
+                "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493672263,
+                  "finishedAt": 493672274,
+                  "observedAt": 1791453385075,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 4,
+                  "accepted": 4,
+                  "acceptedAttempt": 4,
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263,
+                  "lastAttemptAt": 493672263,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 9761,
+                  "inFlight": false
+                },
+                "transport": "ready",
+                "localExpiry": 493269266,
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804,
+                  "remainingMs": 9761,
+                  "marginMs": 100
+                },
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "starship",
+                  "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453378,
+                  "name": "owned-starship",
+                  "activityAt": 1791453378,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan",
+                  "localViewer": {
+                    "reason": null,
+                    "state": "none"
+                  }
+                }
+              ]
+            }
+          ],
+          "ticket": null,
+          "error": null
+        },
+        "requestId": "227bad89035c46e7bec3e9b055c30b9a",
+        "error": null,
+        "ticket": null,
+        "kind": "view"
+      },
+      "native": {
+        "reference": {
+          "hostId": "snap",
+          "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+          "sessionId": "$0",
+          "createdAt": 1791453377,
+          "attachedClients": 0,
+          "windowCount": 1,
+          "name": "owned-snap"
+        },
+        "roster": "$0|1791453377|0|1",
+        "hooks": "",
+        "geometry": "@0|80|24|%0|80|24"
+      }
+    },
+    "starship": {
+      "frame": {
+        "protocol": "tmux-observer.fleet.v1",
+        "schemaVersion": 1,
+        "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+        "clock": {
+          "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+          "timeNamespace": "time:4026531834"
+        },
+        "contextId": "56f3b556513888c367fd19e975edba47",
+        "encodedAt": 493674433,
+        "sequence": 0,
+        "viewRevision": 6,
+        "snapshot": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "clock": {
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "56f3b556513888c367fd19e975edba47",
+          "encodedAt": 493674433,
+          "viewRevision": 6,
+          "mesh": {
+            "state": "ready",
+            "revision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+            "localHostId": "starship"
+          },
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": [
+            {
+              "hostId": "starship",
+              "display": "starship",
+              "local": true,
+              "owner": {
+                "source": {
+                  "hostId": "starship",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "starship"
+                },
+                "clock": {
+                  "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "encodedAt": 493674315,
+                "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493674265,
+                  "finishedAt": 493674276,
+                  "observedAt": 1791453387077,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 5,
+                  "accepted": 5,
+                  "acceptedAttempt": 5,
+                  "startedAt": 493674265,
+                  "acceptedAt": 493674315,
+                  "expiresAt": 493684265,
+                  "lastAttemptAt": 493674265,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 9950,
+                  "inFlight": false
+                },
+                "transport": "local",
+                "localExpiry": 493684265,
+                "proof": null,
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "starship",
+                  "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453378,
+                  "name": "owned-starship",
+                  "activityAt": 1791453378,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan",
+                  "localViewer": {
+                    "state": "unknown",
+                    "reason": "desktop_unavailable"
+                  }
+                }
+              ]
+            },
+            {
+              "hostId": "snap",
+              "display": "snap",
+              "local": false,
+              "owner": {
+                "source": {
+                  "hostId": "snap",
+                  "uid": 1000,
+                  "server": "default",
+                  "nativeHostname": "80H1VV3"
+                },
+                "clock": {
+                  "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                  "timeNamespace": "time:4026531834"
+                },
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "encodedAt": 493260976,
+                "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                "sample": {
+                  "startedAt": 493260734,
+                  "finishedAt": 493260766,
+                  "observedAt": 1791453386331,
+                  "coverage": "complete",
+                  "error": null
+                },
+                "receipt": {
+                  "state": "ready",
+                  "attempted": 5,
+                  "accepted": 5,
+                  "acceptedAttempt": 5,
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734,
+                  "lastAttemptAt": 493260734,
+                  "lastAttemptResult": "complete",
+                  "leaseMs": 10000,
+                  "remainingMs": 9758,
+                  "inFlight": false
+                },
+                "transport": "ready",
+                "localExpiry": 493683335,
+                "proof": {
+                  "requestId": "07ca8ac0cee94a8b87f8f68a2559505f",
+                  "sentAt": 493673677,
+                  "receivedAt": 493673778,
+                  "remainingMs": 9758,
+                  "marginMs": 100
+                },
+                "error": null
+              },
+              "sessions": [
+                {
+                  "hostId": "snap",
+                  "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sessionId": "$0",
+                  "createdAt": 1791453377,
+                  "name": "owned-snap",
+                  "activityAt": 1791453377,
+                  "lastAttachedAt": null,
+                  "attachedClients": 0,
+                  "pending": false,
+                  "windowCount": 1,
+                  "sessionPath": "/home/bryan/code/tmux-observer",
+                  "currentWindow": "tmux",
+                  "currentPath": "/home/bryan/code/tmux-observer",
+                  "localViewer": {
+                    "state": "unknown",
+                    "reason": "desktop_unavailable"
+                  }
+                }
+              ]
+            }
+          ],
+          "ticket": null,
+          "error": null
+        },
+        "requestId": "fde00112ae5b417d86ce9c8c6aa68dc3",
+        "error": null,
+        "ticket": null,
+        "kind": "view"
+      },
+      "native": {
+        "reference": {
+          "hostId": "starship",
+          "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+          "sessionId": "$0",
+          "createdAt": 1791453378,
+          "attachedClients": 0,
+          "windowCount": 1,
+          "name": "owned-starship"
+        },
+        "roster": "$0|1791453378|0|1",
+        "hooks": "",
+        "geometry": "@0|80|24|%0|80|24"
+      }
+    }
+  },
+  "monitors": {
+    "snap": {
+      "samples": [
+        {
+          "clock": {
+            "boottimeMs": 493255587,
+            "monotonicMs": 493255587,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493255589,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493264662,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493263271,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493666139,
+                  "acceptedAt": 493666189,
+                  "expiresAt": 493676139
+                },
+                "proof": {
+                  "requestId": "c9f098549282422e991c07edaa1c384a",
+                  "sentAt": 493254858,
+                  "receivedAt": 493254910
+                }
+              }
+            }
+          },
+          "durationMs": 5.012685
+        },
+        {
+          "clock": {
+            "boottimeMs": 493255792,
+            "monotonicMs": 493255792,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493255793,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493264662,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 3.25697
+        },
+        {
+          "clock": {
+            "boottimeMs": 493255996,
+            "monotonicMs": 493255996,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493255996,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493264662,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 2.961284
+        },
+        {
+          "clock": {
+            "boottimeMs": 493256199,
+            "monotonicMs": 493256199,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493256200,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493264662,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 2.618131
+        },
+        {
+          "clock": {
+            "boottimeMs": 493256402,
+            "monotonicMs": 493256402,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493256402,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493264662,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 3.256873
+        },
+        {
+          "clock": {
+            "boottimeMs": 493256606,
+            "monotonicMs": 493256606,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493256606,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493264662,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 2.2722
+        },
+        {
+          "clock": {
+            "boottimeMs": 493256808,
+            "monotonicMs": 493256808,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493256810,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 7.631147
+        },
+        {
+          "clock": {
+            "boottimeMs": 493257016,
+            "monotonicMs": 493257016,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493257017,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 5.123715
+        },
+        {
+          "clock": {
+            "boottimeMs": 493257222,
+            "monotonicMs": 493257222,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493257222,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 2.301479
+        },
+        {
+          "clock": {
+            "boottimeMs": 493257425,
+            "monotonicMs": 493257425,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493257425,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 7.148529
+        },
+        {
+          "clock": {
+            "boottimeMs": 493257632,
+            "monotonicMs": 493257632,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493257633,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493265308,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": {
+                  "requestId": "f75d92eb21d0443795f8f51931d51389",
+                  "sentAt": 493255588,
+                  "receivedAt": 493255641
+                }
+              }
+            }
+          },
+          "durationMs": 7.479212
+        },
+        {
+          "clock": {
+            "boottimeMs": 493257840,
+            "monotonicMs": 493257840,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493257841,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493254911,
+            "acceptedAt": 493254962,
+            "expiresAt": 493264911,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 6.945147
+        },
+        {
+          "clock": {
+            "boottimeMs": 493258048,
+            "monotonicMs": 493258048,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493258048,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 6.27736
+        },
+        {
+          "clock": {
+            "boottimeMs": 493258254,
+            "monotonicMs": 493258254,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493258255,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 3.04385
+        },
+        {
+          "clock": {
+            "boottimeMs": 493258458,
+            "monotonicMs": 493258458,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493258458,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 3.073315
+        },
+        {
+          "clock": {
+            "boottimeMs": 493258661,
+            "monotonicMs": 493258661,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493258661,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493266699,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 4.506906
+        },
+        {
+          "clock": {
+            "boottimeMs": 493258866,
+            "monotonicMs": 493258866,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493258868,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 8.118971
+        },
+        {
+          "clock": {
+            "boottimeMs": 493259075,
+            "monotonicMs": 493259075,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493259076,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 7.769698
+        },
+        {
+          "clock": {
+            "boottimeMs": 493259283,
+            "monotonicMs": 493259283,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493259285,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 7.612939
+        },
+        {
+          "clock": {
+            "boottimeMs": 493259492,
+            "monotonicMs": 493259492,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493259492,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 5.990946
+        },
+        {
+          "clock": {
+            "boottimeMs": 493259698,
+            "monotonicMs": 493259698,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493259699,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493267197,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": {
+                  "requestId": "83c25ba18e2e470d85d102e4db7f9e35",
+                  "sentAt": 493257534,
+                  "receivedAt": 493257739
+                }
+              }
+            }
+          },
+          "durationMs": 6.646609
+        },
+        {
+          "clock": {
+            "boottimeMs": 493259905,
+            "monotonicMs": 493259905,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493259906,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 7.228014
+        },
+        {
+          "clock": {
+            "boottimeMs": 493260113,
+            "monotonicMs": 493260113,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493260113,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 2.316225
+        },
+        {
+          "clock": {
+            "boottimeMs": 493260316,
+            "monotonicMs": 493260316,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493260316,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 8.236749
+        },
+        {
+          "clock": {
+            "boottimeMs": 493260524,
+            "monotonicMs": 493260524,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493260525,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 6.65865
+        },
+        {
+          "clock": {
+            "boottimeMs": 493260732,
+            "monotonicMs": 493260732,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493260733,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493268729,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 9.715399
+        },
+        {
+          "clock": {
+            "boottimeMs": 493260942,
+            "monotonicMs": 493260942,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493260942,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493257946,
+            "acceptedAt": 493257996,
+            "expiresAt": 493267946,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493270734,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 2.613066
+        },
+        {
+          "clock": {
+            "boottimeMs": 493261145,
+            "monotonicMs": 493261145,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493261145,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493260995,
+            "acceptedAt": 493261045,
+            "expiresAt": 493270995,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493270734,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 3.348493
+        },
+        {
+          "clock": {
+            "boottimeMs": 493261349,
+            "monotonicMs": 493261349,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493261350,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493260995,
+            "acceptedAt": 493261045,
+            "expiresAt": 493270995,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493270734,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 7.880388
+        },
+        {
+          "clock": {
+            "boottimeMs": 493261557,
+            "monotonicMs": 493261557,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493261559,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493260995,
+            "acceptedAt": 493261045,
+            "expiresAt": 493270995,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493270734,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 9.178129
+        },
+        {
+          "clock": {
+            "boottimeMs": 493261767,
+            "monotonicMs": 493261767,
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493261769,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "desktop": {
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "epoch": 1,
+            "state": "ready",
+            "startedAt": 493260995,
+            "acceptedAt": 493261045,
+            "expiresAt": 493270995,
+            "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+            "error": null
+          },
+          "hosts": {
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493270734,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": null
+              }
+            },
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493269266,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": {
+                  "requestId": "f6bc6020c19443f1b3a7ca3d413355d0",
+                  "sentAt": 493259605,
+                  "receivedAt": 493259804
+                }
+              }
+            }
+          },
+          "durationMs": 8.538628
+        }
+      ],
+      "frames": {
+        "first": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+          "clock": {
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "encodedAt": 493255589,
+          "sequence": 0,
+          "viewRevision": 10,
+          "snapshot": {
+            "protocol": "tmux-observer.fleet.v1",
+            "schemaVersion": 1,
+            "readerId": "c88e058c-ab54-41cb-ae0a-0d26986b5dae",
+            "clock": {
+              "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+              "timeNamespace": "time:4026531834"
+            },
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "encodedAt": 493255589,
+            "viewRevision": 10,
+            "mesh": {
+              "state": "ready",
+              "revision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+              "localHostId": "snap"
+            },
+            "desktop": {
+              "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+              "epoch": 1,
+              "state": "ready",
+              "startedAt": 493254911,
+              "acceptedAt": 493254962,
+              "expiresAt": 493264911,
+              "inputHash": "sha256:e746da109964d41e1f358ce5e204c3ba554449af14f571797660dea14742530a",
+              "error": null
+            },
+            "hosts": [
+              {
+                "hostId": "snap",
+                "display": "snap",
+                "local": true,
+                "owner": {
+                  "source": {
+                    "hostId": "snap",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "80H1VV3"
+                  },
+                  "clock": {
+                    "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                  "encodedAt": 493254712,
+                  "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 493254662,
+                    "finishedAt": 493254674,
+                    "observedAt": 1791453380239,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 2,
+                    "accepted": 2,
+                    "acceptedAttempt": 2,
+                    "startedAt": 493254662,
+                    "acceptedAt": 493254712,
+                    "expiresAt": 493264662,
+                    "lastAttemptAt": 493254662,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 9950,
+                    "inFlight": false
+                  },
+                  "transport": "local",
+                  "localExpiry": 493264662,
+                  "proof": null,
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                    "sessionId": "$0",
+                    "createdAt": 1791453377,
+                    "name": "owned-snap",
+                    "activityAt": 1791453377,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/tmux-observer",
+                    "currentWindow": "tmux",
+                    "currentPath": "/home/bryan/code/tmux-observer",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  }
+                ]
+              },
+              {
+                "hostId": "starship",
+                "display": "starship",
+                "local": false,
+                "owner": {
+                  "source": {
+                    "hostId": "starship",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "starship"
+                  },
+                  "clock": {
+                    "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                  "encodedAt": 493667626,
+                  "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 493666139,
+                    "finishedAt": 493666149,
+                    "observedAt": 1791453378950,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 1,
+                    "accepted": 1,
+                    "acceptedAttempt": 1,
+                    "startedAt": 493666139,
+                    "acceptedAt": 493666189,
+                    "expiresAt": 493676139,
+                    "lastAttemptAt": 493666139,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 8513,
+                    "inFlight": false
+                  },
+                  "transport": "ready",
+                  "localExpiry": 493263271,
+                  "proof": {
+                    "requestId": "c9f098549282422e991c07edaa1c384a",
+                    "sentAt": 493254858,
+                    "receivedAt": 493254910,
+                    "remainingMs": 8513,
+                    "marginMs": 100
+                  },
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                    "sessionId": "$0",
+                    "createdAt": 1791453378,
+                    "name": "owned-starship",
+                    "activityAt": 1791453378,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "tmux",
+                    "currentPath": "/home/bryan",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  }
+                ]
+              }
+            ],
+            "ticket": null,
+            "error": null
+          },
+          "requestId": "f6a167cc7cb54d67b4dd8882e4c360e6",
+          "error": null,
+          "ticket": null,
+          "kind": "view"
+        }
+      }
+    },
+    "starship": {
+      "samples": [
+        {
+          "clock": {
+            "boottimeMs": 493668354,
+            "monotonicMs": 493668354,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493668354,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 2.658941
+        },
+        {
+          "clock": {
+            "boottimeMs": 493668557,
+            "monotonicMs": 493668557,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493668557,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 2.578351
+        },
+        {
+          "clock": {
+            "boottimeMs": 493668760,
+            "monotonicMs": 493668760,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493668760,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 2.355529
+        },
+        {
+          "clock": {
+            "boottimeMs": 493668962,
+            "monotonicMs": 493668962,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493668963,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 2.351829
+        },
+        {
+          "clock": {
+            "boottimeMs": 493669165,
+            "monotonicMs": 493669165,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493669166,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 2.67351
+        },
+        {
+          "clock": {
+            "boottimeMs": 493669368,
+            "monotonicMs": 493669368,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493669368,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 2.250339
+        },
+        {
+          "clock": {
+            "boottimeMs": 493669570,
+            "monotonicMs": 493669570,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493669571,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 3.074532
+        },
+        {
+          "clock": {
+            "boottimeMs": 493669774,
+            "monotonicMs": 493669774,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493669774,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493677261,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493254662,
+                  "acceptedAt": 493254712,
+                  "expiresAt": 493264662
+                },
+                "proof": {
+                  "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                  "sentAt": 493667567,
+                  "receivedAt": 493667668
+                }
+              }
+            }
+          },
+          "durationMs": 2.60226
+        },
+        {
+          "clock": {
+            "boottimeMs": 493669977,
+            "monotonicMs": 493669977,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493669977,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.49514
+        },
+        {
+          "clock": {
+            "boottimeMs": 493670179,
+            "monotonicMs": 493670179,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493670180,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493678177,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493668177,
+                  "acceptedAt": 493668227,
+                  "expiresAt": 493678177
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.200419
+        },
+        {
+          "clock": {
+            "boottimeMs": 493670382,
+            "monotonicMs": 493670382,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493670383,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.56443
+        },
+        {
+          "clock": {
+            "boottimeMs": 493670585,
+            "monotonicMs": 493670585,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493670585,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.240619
+        },
+        {
+          "clock": {
+            "boottimeMs": 493670788,
+            "monotonicMs": 493670788,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493670788,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.180249
+        },
+        {
+          "clock": {
+            "boottimeMs": 493670990,
+            "monotonicMs": 493670990,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493670990,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.139908
+        },
+        {
+          "clock": {
+            "boottimeMs": 493671192,
+            "monotonicMs": 493671192,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493671193,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.230999
+        },
+        {
+          "clock": {
+            "boottimeMs": 493671395,
+            "monotonicMs": 493671395,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493671395,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 2.078158
+        },
+        {
+          "clock": {
+            "boottimeMs": 493671597,
+            "monotonicMs": 493671597,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493671599,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493679302,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493256699,
+                  "acceptedAt": 493256749,
+                  "expiresAt": 493266699
+                },
+                "proof": {
+                  "requestId": "6f7b293fdd394eacadf4ec101cc9eeda",
+                  "sentAt": 493669724,
+                  "receivedAt": 493669976
+                }
+              }
+            }
+          },
+          "durationMs": 3.675454
+        },
+        {
+          "clock": {
+            "boottimeMs": 493671801,
+            "monotonicMs": 493671801,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493671801,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.410539
+        },
+        {
+          "clock": {
+            "boottimeMs": 493672004,
+            "monotonicMs": 493672004,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493672004,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.164158
+        },
+        {
+          "clock": {
+            "boottimeMs": 493672206,
+            "monotonicMs": 493672206,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493672207,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493680222,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493670222,
+                  "acceptedAt": 493670272,
+                  "expiresAt": 493680222
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.50911
+        },
+        {
+          "clock": {
+            "boottimeMs": 493672409,
+            "monotonicMs": 493672409,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493672410,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.34772
+        },
+        {
+          "clock": {
+            "boottimeMs": 493672612,
+            "monotonicMs": 493672612,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493672612,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.069878
+        },
+        {
+          "clock": {
+            "boottimeMs": 493672814,
+            "monotonicMs": 493672814,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493672814,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.177409
+        },
+        {
+          "clock": {
+            "boottimeMs": 493673017,
+            "monotonicMs": 493673017,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493673017,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.383149
+        },
+        {
+          "clock": {
+            "boottimeMs": 493673219,
+            "monotonicMs": 493673219,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493673219,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.125948
+        },
+        {
+          "clock": {
+            "boottimeMs": 493673422,
+            "monotonicMs": 493673422,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493673422,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.267669
+        },
+        {
+          "clock": {
+            "boottimeMs": 493673624,
+            "monotonicMs": 493673624,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493673625,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493681379,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493258729,
+                  "acceptedAt": 493258779,
+                  "expiresAt": 493268729
+                },
+                "proof": {
+                  "requestId": "54d851d3850947c58803e35ffeb7a996",
+                  "sentAt": 493671598,
+                  "receivedAt": 493671650
+                }
+              }
+            }
+          },
+          "durationMs": 2.283899
+        },
+        {
+          "clock": {
+            "boottimeMs": 493673827,
+            "monotonicMs": 493673827,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493673827,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493683335,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": {
+                  "requestId": "07ca8ac0cee94a8b87f8f68a2559505f",
+                  "sentAt": 493673677,
+                  "receivedAt": 493673778
+                }
+              }
+            }
+          },
+          "durationMs": 2.41658
+        },
+        {
+          "clock": {
+            "boottimeMs": 493674029,
+            "monotonicMs": 493674029,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493674030,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493683335,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": {
+                  "requestId": "07ca8ac0cee94a8b87f8f68a2559505f",
+                  "sentAt": 493673677,
+                  "receivedAt": 493673778
+                }
+              }
+            }
+          },
+          "durationMs": 2.010448
+        },
+        {
+          "clock": {
+            "boottimeMs": 493674232,
+            "monotonicMs": 493674232,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493674232,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493682263,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493672263,
+                  "acceptedAt": 493672313,
+                  "expiresAt": 493682263
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493683335,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": {
+                  "requestId": "07ca8ac0cee94a8b87f8f68a2559505f",
+                  "sentAt": 493673677,
+                  "receivedAt": 493673778
+                }
+              }
+            }
+          },
+          "durationMs": 2.110019
+        },
+        {
+          "clock": {
+            "boottimeMs": 493674435,
+            "monotonicMs": 493674435,
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "suspendDeltaMs": 0,
+          "encodedAt": 493674435,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "desktop": {
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "epoch": 1,
+            "state": "unsupported",
+            "startedAt": null,
+            "acceptedAt": null,
+            "expiresAt": null,
+            "inputHash": null,
+            "error": {
+              "code": "unsupported_desktop",
+              "message": "desktop context has no compositor endpoint"
+            }
+          },
+          "hosts": {
+            "starship": {
+              "current": true,
+              "owner": {
+                "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                "localExpiry": 493684265,
+                "transport": "local",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493674265,
+                  "acceptedAt": 493674315,
+                  "expiresAt": 493684265
+                },
+                "proof": null
+              }
+            },
+            "snap": {
+              "current": true,
+              "owner": {
+                "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                "localExpiry": 493683335,
+                "transport": "ready",
+                "receipt": {
+                  "state": "ready",
+                  "startedAt": 493260734,
+                  "acceptedAt": 493260784,
+                  "expiresAt": 493270734
+                },
+                "proof": {
+                  "requestId": "07ca8ac0cee94a8b87f8f68a2559505f",
+                  "sentAt": 493673677,
+                  "receivedAt": 493673778
+                }
+              }
+            }
+          },
+          "durationMs": 1.940347
+        }
+      ],
+      "frames": {
+        "first": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+          "clock": {
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "56f3b556513888c367fd19e975edba47",
+          "encodedAt": 493668354,
+          "sequence": 0,
+          "viewRevision": 6,
+          "snapshot": {
+            "protocol": "tmux-observer.fleet.v1",
+            "schemaVersion": 1,
+            "readerId": "13519451-3bb6-4860-ac2f-9357a9e73cee",
+            "clock": {
+              "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+              "timeNamespace": "time:4026531834"
+            },
+            "contextId": "56f3b556513888c367fd19e975edba47",
+            "encodedAt": 493668354,
+            "viewRevision": 6,
+            "mesh": {
+              "state": "ready",
+              "revision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+              "localHostId": "starship"
+            },
+            "desktop": {
+              "contextId": "56f3b556513888c367fd19e975edba47",
+              "epoch": 1,
+              "state": "unsupported",
+              "startedAt": null,
+              "acceptedAt": null,
+              "expiresAt": null,
+              "inputHash": null,
+              "error": {
+                "code": "unsupported_desktop",
+                "message": "desktop context has no compositor endpoint"
+              }
+            },
+            "hosts": [
+              {
+                "hostId": "starship",
+                "display": "starship",
+                "local": true,
+                "owner": {
+                  "source": {
+                    "hostId": "starship",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "starship"
+                  },
+                  "clock": {
+                    "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "2950a376-97b8-422b-8c6d-da86959b29d7",
+                  "encodedAt": 493668227,
+                  "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 493668177,
+                    "finishedAt": 493668186,
+                    "observedAt": 1791453380988,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 2,
+                    "accepted": 2,
+                    "acceptedAttempt": 2,
+                    "startedAt": 493668177,
+                    "acceptedAt": 493668227,
+                    "expiresAt": 493678177,
+                    "lastAttemptAt": 493668177,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 9950,
+                    "inFlight": false
+                  },
+                  "transport": "local",
+                  "localExpiry": 493678177,
+                  "proof": null,
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1791453378:1048726:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                    "sessionId": "$0",
+                    "createdAt": 1791453378,
+                    "name": "owned-starship",
+                    "activityAt": 1791453378,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "tmux",
+                    "currentPath": "/home/bryan",
+                    "localViewer": {
+                      "state": "unknown",
+                      "reason": "desktop_unavailable"
+                    }
+                  }
+                ]
+              },
+              {
+                "hostId": "snap",
+                "display": "snap",
+                "local": false,
+                "owner": {
+                  "source": {
+                    "hostId": "snap",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "80H1VV3"
+                  },
+                  "clock": {
+                    "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "841817ce-de25-4499-9ba8-080bced73745",
+                  "encodedAt": 493254868,
+                  "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 493254662,
+                    "finishedAt": 493254674,
+                    "observedAt": 1791453380239,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 2,
+                    "accepted": 2,
+                    "acceptedAttempt": 2,
+                    "startedAt": 493254662,
+                    "acceptedAt": 493254712,
+                    "expiresAt": 493264662,
+                    "lastAttemptAt": 493254662,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 9794,
+                    "inFlight": false
+                  },
+                  "transport": "ready",
+                  "localExpiry": 493677261,
+                  "proof": {
+                    "requestId": "55a6fc6c86754e99a18907578b43ba97",
+                    "sentAt": 493667567,
+                    "receivedAt": 493667668,
+                    "remainingMs": 9794,
+                    "marginMs": 100
+                  },
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1791453377:2077913:/tmp/to-fleet-0787a982437b4d48a37306550f34149f/native/tmux-1000/default",
+                    "sessionId": "$0",
+                    "createdAt": 1791453377,
+                    "name": "owned-snap",
+                    "activityAt": 1791453377,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/tmux-observer",
+                    "currentWindow": "tmux",
+                    "currentPath": "/home/bryan/code/tmux-observer",
+                    "localViewer": {
+                      "state": "unknown",
+                      "reason": "desktop_unavailable"
+                    }
+                  }
+                ]
+              }
+            ],
+            "ticket": null,
+            "error": null
+          },
+          "requestId": "823899938dc94fc2b73800fa80bab985",
+          "error": null,
+          "ticket": null,
+          "kind": "view"
+        }
+      }
+    }
+  },
+  "result": "passed_preparation_only",
+  "ownedCleanup": "both_endpoint_units_children_sockets_and_private_roots_removed"
+}
