@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import hashlib
 import importlib.machinery
 import importlib.util
@@ -112,6 +113,7 @@ def serve_fleet(root, host_id):
                         "transport": conn.state.transport,
                         "expiry": conn.state.expiry,
                         "pid": getattr(getattr(conn, "process", None), "pid", None),
+                        "route": getattr(getattr(conn, "route", None), "destination", None),
                     }
                     for key, conn in publisher.connections.items()
                 },
@@ -351,6 +353,7 @@ class Endpoint:
         command(["uv", "pip", "install", "--python", self.python, "--no-deps", str(wheel)])
         actual = json.loads(command(["rofi-ssh-plus", "mesh", "list", "--json"]).stdout)
         assert actual["localHostId"] == self.host_id and len(actual["hosts"]) == 2
+        self.actual_catalog = actual
         # Copy the public catalog to isolated provider preferences, never read its files.
         config = self.root / "config/rofi-ssh-plus"
         config.mkdir(mode=0o700, parents=True)
@@ -652,6 +655,37 @@ class Endpoint:
                 b"schema_version = ?\n" if request["enabled"] else self.config_bytes
             )
             return {}
+        if op == "mesh_membership":
+            from tmux_observer._clock import boottime_ms
+
+            assert request["mode"] in ("remove_remote", "replace_route", "restore")
+            lines = self.config_bytes.decode().splitlines()
+            remote_start = lines.index("[[hosts]]")
+            if request["mode"] == "remove_remote":
+                lines = lines[:remote_start]
+                selected = None
+            elif request["mode"] == "replace_route":
+                remote = next(host for host in self.actual_catalog["hosts"] if not host["local"])
+                routes = [route["destination"] for route in remote["routes"]]
+                prefix = getpass.getuser() + "@"
+                selected = (
+                    routes[0].removeprefix(prefix)
+                    if routes[0].startswith(prefix)
+                    else prefix + routes[0]
+                )
+                routes[0] = selected
+                route_line = next(
+                    index
+                    for index in range(remote_start, len(lines))
+                    if lines[index].startswith("routes = ")
+                )
+                lines[route_line] = "routes = " + json.dumps(routes)
+            else:
+                selected = next(host for host in self.actual_catalog["hosts"] if not host["local"])[
+                    "routes"
+                ][0]["destination"]
+            self.config.write_text("\n".join(lines) + "\n")
+            return {"selectedRoute": selected, "changedAt": boottime_ms()}
         if op == "passivity":
             assert self.roster() == self.baseline and self.native("show-hooks") == self.hooks
             return {"preserved": True}
@@ -1083,6 +1117,103 @@ def coordinate(remote, output, *, profile=False):
         controls["snap"].call("mesh_fault", enabled=False)
         until("snap", lambda value: all(current(value, host) for host in controls), budget=20)
         passed("present_broken_mesh_retains_history_and_recovers_only_after_revalidation")
+        before_membership = frame("snap")
+        before_remote = next(
+            row for row in before_membership["snapshot"]["hosts"] if row["hostId"] == "starship"
+        )
+        before_starts = controls["snap"].call("metrics")["counters"]["sshStarts"]
+        controls["snap"].call("mesh_membership", mode="remove_remote")
+        removed = until(
+            "snap",
+            lambda value: (
+                value["snapshot"]["mesh"]["state"] == "ready"
+                and [row["hostId"] for row in value["snapshot"]["hosts"]] == ["snap"]
+                and current(value, "snap")
+            ),
+            budget=20,
+        )
+        assert current(removed, "snap")
+        assert (
+            removed["snapshot"]["mesh"]["revision"]
+            != before_membership["snapshot"]["mesh"]["revision"]
+        )
+        controls["starship"].call("passivity")
+        restored_at = controls["snap"].call("mesh_membership", mode="restore")["changedAt"]
+        restored = until(
+            "snap",
+            lambda value: (
+                len(value["snapshot"]["hosts"]) == 2
+                and all(current(value, host) for host in controls)
+            ),
+            budget=20,
+        )
+        restored_remote = next(
+            row for row in restored["snapshot"]["hosts"] if row["hostId"] == "starship"
+        )
+        assert restored_remote["owner"]["publisherId"] == before_remote["owner"]["publisherId"]
+        assert (
+            restored_remote["owner"]["proof"]["requestId"]
+            != before_remote["owner"]["proof"]["requestId"]
+        )
+        assert restored_remote["owner"]["proof"]["sentAt"] >= restored_at
+        deadline = time.monotonic() + 3
+        while controls["snap"].call("metrics")["counters"]["sshStarts"] <= before_starts:
+            assert time.monotonic() < deadline
+            time.sleep(0.05)
+        passed(
+            "native_mesh_host_removal_and_restore_require_new_owner_connection_proof",
+            removedHostCount=len(removed["snapshot"]["hosts"]),
+            removedMeshRevision=removed["snapshot"]["mesh"]["revision"],
+            restoredMeshRevision=restored["snapshot"]["mesh"]["revision"],
+            changedAt=restored_at,
+            proof=restored_remote["owner"]["proof"],
+            sshStartsBefore=before_starts,
+            sshStartsAfter=controls["snap"].call("metrics")["counters"]["sshStarts"],
+        )
+        replacement = controls["snap"].call("mesh_membership", mode="replace_route")
+        selected = replacement["selectedRoute"]
+
+        def route_current(value, destination, changed_at):
+            if not current(value, "starship"):
+                return False
+            remote = next(row for row in value["snapshot"]["hosts"] if row["hostId"] == "starship")
+            metrics = controls["snap"].call("metrics")
+            return (
+                remote["owner"]["proof"]["sentAt"] >= changed_at
+                and metrics["owners"].get("starship", {}).get("route") == destination
+            )
+
+        changed_route = until(
+            "snap",
+            lambda value: route_current(value, selected, replacement["changedAt"]),
+            budget=20,
+        )
+        changed_remote = next(
+            row for row in changed_route["snapshot"]["hosts"] if row["hostId"] == "starship"
+        )
+        assert changed_remote["owner"]["publisherId"] == restored_remote["owner"]["publisherId"]
+        assert (
+            changed_remote["owner"]["serverGeneration"]
+            == before_remote["owner"]["serverGeneration"]
+        )
+        assert (
+            changed_remote["owner"]["proof"]["requestId"]
+            != restored_remote["owner"]["proof"]["requestId"]
+        )
+        original = controls["snap"].call("mesh_membership", mode="restore")
+        until(
+            "snap",
+            lambda value: route_current(value, original["selectedRoute"], original["changedAt"]),
+            budget=20,
+        )
+        passed(
+            "native_mesh_route_replacement_fences_prior_proof_without_changing_native_source",
+            selectedRoute=selected,
+            changedAt=replacement["changedAt"],
+            proof=changed_remote["owner"]["proof"],
+            publisherId=changed_remote["owner"]["publisherId"],
+            serverGeneration=changed_remote["owner"]["serverGeneration"],
+        )
         if profile:
             for control in controls.values():
                 control.call("profile_start")

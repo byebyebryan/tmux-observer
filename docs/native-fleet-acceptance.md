@@ -34,6 +34,15 @@ the three delivery/nonce faults, and replaces the owned publisher before returni
 to a plain bridge. It waits for proof of the exact replacement publisher before
 continuing. The resource profile therefore excludes the fault relay process.
 
+Native catalog cases remove and restore the remote host in private provider
+preferences, then replace its selected route with the equivalent user-qualified
+SSH destination. Current membership follows the new Mesh revision. Restoration
+and route replacement require a post-change proof over a new owned connection,
+while preserving publisher/native identity. Bounded diagnostic metrics record the
+actual selected connection route; route values are not added to the public fleet
+frame. These cases exercise this two-host fixture's equivalent routes, not other
+network topologies. The ordinary provider configuration/history stays untouched.
+
 Each endpoint reports 100 warm cached RPC durations including validation and
 100 installed cached CLI durations including process startup. These are not
 Rofi-frame or graphical-open measurements. The optional profile collects at least
