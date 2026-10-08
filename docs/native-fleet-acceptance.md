@@ -29,6 +29,10 @@ Refresh, native failure on live SSH, owner stop/replacement, delayed/trickled
 bytes, wrong nonces and present/broken Mesh recovery exercise actual two-host
 transport. Fault relays change transport bytes/delivery only; they manufacture no
 accepted owner sample. Roster, attachment counts, windows and hooks remain unchanged.
+The harness starts with the installed plain bridge, enables the relay only for
+the three delivery/nonce faults, and replaces the owned publisher before returning
+to a plain bridge. It waits for proof of the exact replacement publisher before
+continuing. The resource profile therefore excludes the fault relay process.
 
 Each endpoint reports 100 warm cached RPC durations including validation and
 100 installed cached CLI durations including process startup. These are not
@@ -36,7 +40,8 @@ Rofi-frame or graphical-open measurements. The optional profile collects at leas
 ten minutes of owner/fleet cgroup CPU, sampled process RSS, inbound owned bridge
 CPU/RSS, native commands, Mesh calls, owner protocol payload/control bytes,
 connection starts and queue counters. Profiler/control processes remain outside
-the service cgroups. RSS is sampled once per second and can miss transient peaks;
+the service cgroups; fleet accounting includes its SSH children and the inbound
+bridge owned by the opposite endpoint. RSS is sampled once per second and can miss transient peaks;
 SSH counters exclude encrypted wire overhead. These limits remain explicit.
 
 The output says `G3-partial`/`passed_partial` even when every included case passes.

@@ -87,12 +87,13 @@ def serve_fleet(root, host_id):
     )
     signal.signal(signal.SIGTERM, lambda *_: publisher.stop())
     signal.signal(signal.SIGINT, lambda *_: publisher.stop())
-    original = publisher.state.material
+    original = publisher.publish_tickets
     next_metrics = 0
     high_water = {"readers": 0, "outputBytes": 0, "retainedBytes": 0, "connections": 0}
 
-    def material(now):
+    def metrics_tick(now):
         nonlocal next_metrics
+        original(now)
         if now >= next_metrics:
             current = {
                 "readers": len(publisher.hub.peers),
@@ -119,9 +120,8 @@ def serve_fleet(root, host_id):
             write(temporary, json.dumps(value))
             temporary.replace(root / "metrics.json")
             next_metrics = now + 1000
-        return original(now)
 
-    publisher.state.material = material
+    publisher.publish_tickets = metrics_tick
     publisher.run()
 
 
@@ -293,6 +293,7 @@ def profile_native(root, seconds):
     }
     output["limits"] = [
         "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
         "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
         "Measurement control/profiler processes are outside the service cgroups",
     ]
@@ -391,17 +392,30 @@ class Endpoint:
             + ' "$@"\n',
             executable=True,
         )
-        write(
-            self.root / "bridge",
-            "#!/bin/sh\necho $$ > "
-            + shlex.quote(str(self.root / "bridge-pid-"))
-            + '"$$"\nexec '
-            + shlex.quote(self.python)
+        relay_program = (
+            shlex.quote(self.python)
             + " "
             + shlex.quote(str(self.root / "accept-native-fleet"))
             + " --bridge-relay "
             + shlex.quote(str(self.root))
-            + ' "$@"\n',
+            + ' "$@"'
+        )
+        plain_program = (
+            shlex.quote(str(self.venv / "bin/tmux-observer"))
+            + ' "$@" --socket '
+            + shlex.quote(str(self.root / "owner.sock"))
+        )
+        write(
+            self.root / "bridge",
+            "#!/bin/sh\necho $$ > "
+            + shlex.quote(str(self.root / "bridge-pid-"))
+            + '"$$"\nif [ -f '
+            + shlex.quote(str(self.root / "relay-enabled"))
+            + " ]; then exec "
+            + relay_program
+            + "; fi\nexec "
+            + plain_program
+            + "\n",
             executable=True,
         )
         self.env["PATH"] = str(binary) + ":" + os.environ["PATH"]
@@ -571,6 +585,13 @@ class Endpoint:
                 assert len(result.stdout) < LIMIT
                 cli_durations.append((time.perf_counter_ns() - start) / 1000000)
             return {"rpcMs": durations, "cliMs": cli_durations, "frame": value["frame"]}
+        if op == "relay":
+            path = self.root / "relay-enabled"
+            if request["enabled"]:
+                write(path, "owned fault tests only\n")
+            else:
+                path.unlink(missing_ok=True)
+            return {}
         if op == "bridge_fault":
             path = self.root / "bridge-fault"
             if request["mode"] is None:
@@ -589,7 +610,28 @@ class Endpoint:
         if op == "owner":
             assert request["action"] in ("start", "stop", "restart")
             manager(request["action"], self.owner_unit)
-            return {}
+            if request["action"] == "stop":
+                return {}
+            from tmux_observer._ipc import IPCError, exchange
+            from tmux_observer.public import SERVICE_PROTOCOL
+
+            deadline = time.monotonic() + 3
+            while time.monotonic() < deadline:
+                try:
+                    value = exchange(
+                        {
+                            "protocol": SERVICE_PROTOCOL,
+                            "schemaVersion": 1,
+                            "operation": "snapshot",
+                            "requestId": uuid.uuid4().hex,
+                            "expectedHost": self.host_id,
+                        },
+                        path=self.root / "owner.sock",
+                    )
+                    return {"publisherId": value["publisherId"]}
+                except IPCError:
+                    time.sleep(0.03)
+            raise RuntimeError("owned restarted publisher endpoint did not appear")
         if op == "mesh_fault":
             self.config.write_bytes(
                 b"schema_version = ?\n" if request["enabled"] else self.config_bytes
@@ -659,7 +701,10 @@ class Endpoint:
                     cmdline = Path(f"/proc/{pid}/cmdline").read_bytes()
                 except FileNotFoundError:
                     continue
-                if str(self.root / "accept-native-fleet").encode() in cmdline:
+                if (
+                    str(self.root / "accept-native-fleet").encode() in cmdline
+                    or str(self.root / "venv/bin/tmux-observer").encode() in cmdline
+                ):
                     alive.append(pid)
             if not alive:
                 break
@@ -977,6 +1022,19 @@ def coordinate(remote, output, *, profile=False):
             and old_owner["serverGeneration"] == new_owner["serverGeneration"]
         )
         passed("publisher_replacement_requires_new_proof_and_preserves_native_generation")
+        controls["starship"].call("relay", enabled=True)
+        relay_owner = controls["starship"].call("owner", action="restart")["publisherId"]
+        until(
+            "snap",
+            lambda value: (
+                current(value, "starship")
+                and next(row for row in value["snapshot"]["hosts"] if row["hostId"] == "starship")[
+                    "owner"
+                ]["publisherId"]
+                == relay_owner
+            ),
+            budget=20,
+        )
         for mode in ("delay", "trickle", "wrong_nonce"):
             controls["starship"].call("bridge_fault", mode=mode)
             invalid = until("snap", lambda value: not current(value, "starship"), budget=8)
@@ -987,6 +1045,20 @@ def coordinate(remote, output, *, profile=False):
             controls["starship"].call("bridge_fault", mode=None)
             until("snap", lambda value: current(value, "starship"), budget=20)
             passed("native_ssh_fault_cannot_renew_remote_authority", mode=mode)
+        controls["starship"].call("relay", enabled=False)
+        plain_owner = controls["starship"].call("owner", action="restart")["publisherId"]
+        for host in controls:
+            until(
+                host,
+                lambda value: (
+                    current(value, "starship")
+                    and next(
+                        row for row in value["snapshot"]["hosts"] if row["hostId"] == "starship"
+                    )["owner"]["publisherId"]
+                    == plain_owner
+                ),
+                budget=20,
+            )
         controls["snap"].call("mesh_fault", enabled=True)
         unavailable = until(
             "snap", lambda value: value["snapshot"]["mesh"]["state"] == "unavailable", budget=20
