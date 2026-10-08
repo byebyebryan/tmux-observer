@@ -5,8 +5,8 @@ The design/backlog baseline is commit `a4fba75`.
 
 | Delivery | State | Evidence |
 | --- | --- | --- |
-| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
-| B: owner service | Accepted: T07–T09; G2 passed | 64 source test methods, bounded tickets/stdio, 11 installed/native cases; [G2 evidence](evidence/2026-10-07-native-owner-g2.json) |
+| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-collector-utf8-g1.json) |
+| B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-07-native-owner-utf8-g2.json) |
 | C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI/context units | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and explicit context handoff; native fleet G3 pending |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
@@ -197,3 +197,21 @@ profile still needs separation from relay overhead; transient RSS peaks and
 encrypted SSH overhead remain unmeasured. Native reads were roughly 20 commands
 per sample, revealing an unintended legacy fallback that is under investigation.
 G3 stays open; no consumer or managed artifact has been selected.
+
+
+The resource investigation reopened T04: under the fixed C locale, tmux's
+read-client output replaced metadata tab delimiters with underscores, causing
+an unintended legacy fallback and potentially changing Unicode metadata. The
+read prefix now forces UTF-8 with `-u` while retaining the C locale for diagnostic
+classification and the explicit default server. This changes no native options,
+hooks or attachment/lifetime ownership.
+
+Reviewed source `84b5767` passes 138 source methods and clean-source G1/G2 reruns.
+The expanded G1 has 14 native/artifact cases, including exact Unicode names and
+five native commands for a simple batched sample (previously twenty). The installed
+CLI independently preserves Unicode under a C locale. All eleven installed owner
+sharing, refresh, restart, absence and stop/reap cases pass after the correction.
+The latest evidence links above record each wheel digest; prior acceptance files
+remain historical records. Post-correction two-host CPU/memory/resource acceptance
+has not run. Fleet idle projection work remains the next optimization; freshness,
+source cadence and per-query validation remain required.
