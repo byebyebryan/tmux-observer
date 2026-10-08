@@ -1,7 +1,12 @@
 # Architecture
 
-Date: 2026-10-07. Status: reviewed first-delivery design; not an implemented API.
-The [implementation plan](implementation-plan.md) owns checkpoint acceptance.
+Date: 2026-10-07. Status: original reviewed first-delivery design. Its problem
+statement and extraction map describe the pre-extraction Tmux Plus 0.6.0 baseline.
+Deliveries A–E subsequently passed their recorded acceptance; see
+[implementation status](implementation-status.md) and [wire v1](wire-v1.md).
+The [2026-10-08 component boundaries](component-boundaries.md) govern the next
+ownership refinement, with a separate [source review](component-boundaries-review.md).
+This baseline is not a new implementation or a second current runtime ledger.
 
 ## Problem and intended behavior
 
@@ -211,6 +216,7 @@ collection; it cannot carry a current lease into a new service incarnation.
 | D11 | Producer acceptance precedes frontend migration and managed selection. |
 | D12 | Rofi continuous-interaction refresh behavior requires a native frontend gate. |
 
-This design is ready for contract and extraction work. It does not accept native
-passivity, SSH lease correctness, service resource settings, graphical latency
-or deployment; those remain concrete gates in the plan.
+This original design did not itself accept native passivity, SSH lease correctness,
+service resource settings, graphical latency or deployment. Subsequent evidence
+is recorded in implementation status, not retroactively attributed to this design.
+New extraction work retains the separate gates in component boundaries.

@@ -1,12 +1,15 @@
 # Service and networking design
 
-Date: 2026-10-07. Status: proposed Service 1 / Fleet 1 behavior; no running
-implementation. The [observation contract](observation-contract.md) defines the
-facts being delivered. [Validation](validation-plan.md) defines the proof gates.
+Date: 2026-10-07. Status: historical first-delivery Service 1 / Fleet 1 design.
+The command table below retains original planning names; use the
+[README](../README.md) and [wire v1](wire-v1.md) for implemented commands/contracts,
+and [implementation status](implementation-status.md) for acceptance. The
+[component boundaries](component-boundaries.md) refine the next networking,
+composition and desktop separation. [Validation](validation-plan.md) owns proof gates.
 
 ## Access modes and proposed commands
 
-The names below are concrete implementation targets, not runnable commands today.
+The names below are the original implementation targets, not today's command recipe.
 
 | Interface | Proposed command | Behavior |
 | --- | --- | --- |

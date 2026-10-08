@@ -3,6 +3,24 @@
 Updated: 2026-10-08. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
+## Current selection and next design
+
+Observer remains the accepted `0.1.0a1` artifact described below. Managed Tmux Plus
+is now `0.7.0a2`, whose [browse renewal repair](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/tmux-plus-0.7.0a2.md)
+has separate source and installed/headless evidence. Its new graphical gate is
+unrun; the original a1 Starship graphical acceptance retains its own scope.
+The exact current tuple and member/rollout evidence are owned by
+[managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md),
+rather than the original a1 identities recorded below.
+
+The [component boundary design](component-boundaries.md) and
+[source review](component-boundaries-review.md) refine the next native association,
+desktop and action-client extraction. B0–B5 are design/implementation gates,
+not additional completed deliveries. This documentation changes no runtime or
+contract. Optional T17/native events and physical sleep/wake remain separate.
+
+## Original first-delivery acceptance
+
 The current producer selected for the frontend checks is source `d5a2e97`, wheel
 SHA256 `06c5b77e36901d0de5d62cf2041edf1733ce34c346a6aa574a323bb50889fb0d`.
 Its bounded absent-Mesh hostname/FQDN alias repair passed 28 installed native

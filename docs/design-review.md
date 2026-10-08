@@ -3,6 +3,11 @@
 Date: 2026-10-07. Primary-led review of the documents and inspected extraction
 baseline. This is not an independent agent review or runtime acceptance report.
 
+This is the historical first-delivery review. Subsequent implementation and
+acceptance are in [implementation status](implementation-status.md); the next
+ownership extraction has its own [component boundary review](component-boundaries-review.md).
+The G0 disposition below records the decision at this original checkpoint.
+
 ## Disposition
 
 Proceed to G0 contract/fixture work. The reviewed architecture has no remaining

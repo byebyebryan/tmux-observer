@@ -1,8 +1,11 @@
 # Observation contract design
 
-Date: 2026-10-07. Status: semantic specification for G0 schemas and independent
-reader fixtures. These are proposed contracts, separate from released Tmux
-Session v1. No field or command here is implemented or accepted.
+Date: 2026-10-07. Status: first-delivery semantic design underlying the separately
+published Observation 1, Service 1 and Fleet 1 contracts. See
+[wire v1](wire-v1.md) and [implementation status](implementation-status.md) for
+implemented interfaces and acceptance. The
+[component boundary refinement](component-boundaries.md#contract-ownership) defines
+the next contract ownership/extraction work; it changes none of these wire schemas.
 
 ## Contract layers
 

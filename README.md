@@ -6,6 +6,12 @@ collector and shared owner service. The prepared fleet service has passed
 two-host awake/native and simulated recovery acceptance for always-on hosts.
 Rofi Tmux Plus consumes its prepared views and retains presentation policy.
 
+The next extraction is defined by the reviewed
+[component boundaries](docs/component-boundaries.md) and
+[source review](docs/component-boundaries-review.md): native tmux facts,
+networking, desktop association, action clients and UI retain separate authority.
+Those refinements are documentation, not another accepted runtime.
+
 ## Status
 
 Deliveries A–E accepted in their recorded scopes, 2026-10-08; see the
@@ -73,6 +79,8 @@ Host Mesh v1 behavior must remain compatible during migration.
 
 | Document | Purpose |
 | --- | --- |
+| [Component boundaries](docs/component-boundaries.md) | Current ownership decisions, contract domains and next extraction sequence |
+| [Component boundary review](docs/component-boundaries-review.md) | Source findings, adversarial cases and remaining implementation gates |
 | [Architecture](docs/architecture.md) | Ownership, process topology, extraction and decisions |
 | [Observation contract](docs/observation-contract.md) | Identity, facts, coverage, clocks and uncertainty |
 | [Service and networking](docs/service-and-networking.md) | Cached reads, subscriptions, SSH, refresh and recovery |
@@ -120,8 +128,9 @@ observation are separate capabilities.
 
 ## Current implementation
 
-[Delivery A, T01–T05](docs/implementation-backlog.md#delivery-a-first-implementation-pass)
-establishes package/provenance, contracts, an independent reader, direct collection
-and native producer acceptance. After G1, the loop proceeds to the shared owner
-service and the early fixture-backed Rofi interaction probe. The backlog and
-status record specify the remaining dependencies and acceptance evidence.
+Deliveries A–E/T01–T15 are complete in the recorded always-on two-host scope;
+[implementation status](docs/implementation-status.md) links their separate
+acceptance. The original backlog remains the first-delivery baseline. T16 action
+extraction is refined by [B0–B5](docs/component-boundaries.md#next-implementation-sequence),
+including native attachment associations and desktop contract cleanup. T17 native
+event collection remains optional. Neither follow-up is implemented by these docs.

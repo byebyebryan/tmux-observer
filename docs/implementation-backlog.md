@@ -2,6 +2,9 @@
 
 Date: 2026-10-07. This is the frozen planning baseline; current implementation and
 acceptance are tracked in [implementation status](implementation-status.md).
+The next T16 ownership refinement uses the separately reviewed
+[component boundaries, B0–B5](component-boundaries.md#next-implementation-sequence).
+It changes neither this historical task ledger nor accepted wire contracts.
 This turns the [implementation gates](implementation-plan.md) into
 reviewable work packages. Gate acceptance remains defined by that plan and the
 [validation plan](validation-plan.md).

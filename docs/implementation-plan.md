@@ -1,7 +1,10 @@
 # Implementation and action plan
 
-Date: 2026-10-07. This is the plan for future implementation. The present
-checkpoint delivers documentation and design review only.
+Date: 2026-10-07. This is the original first-delivery implementation plan.
+Deliveries A–E subsequently passed their recorded gates; see
+[implementation status](implementation-status.md). The next T16 ownership
+extraction is refined by [component boundaries, B0–B5](component-boundaries.md#next-implementation-sequence).
+Original dependencies and proof requirements below remain the baseline.
 
 The [implementation backlog](implementation-backlog.md) turns these gates into
 17 concrete tasks and five deliveries. Begin with Delivery A (T01–T05): contracts,
