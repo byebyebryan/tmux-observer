@@ -29,6 +29,11 @@ The acceptance harness now propagates failed resource status to the CLI and
 preserves capacity failures with receive/decode/validation timings and explicit
 cleanup state. Three CLI regressions exercise status propagation and worker-mode
 rejection without host operations; these changes do not optimize production code.
+The clean [capacity diagnostic](evidence/2026-10-08-frozen-capacity-diagnostic.json)
+at `df949d7` reproduces a two-record reply at 289.60 ms; previous single-record
+queries took 71.77–113.36 ms. Cleanup completed and the CLI correctly failed.
+Receive/server work and repeated decode are the next performance investigation;
+the source gate passes 171 methods.
 
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The

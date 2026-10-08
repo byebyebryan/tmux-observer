@@ -111,3 +111,12 @@ fixture/backing removal only after it succeeds. An incomplete run cannot accept
 memory targets. Near-cap timings separate receive, installed decode and installed
 semantic validation while retaining the existing 250 ms complete-reply deadline.
 This makes a subsequent failure diagnosable without changing the tested workload.
+
+Clean diagnostic harness `df949d7` reproduced the capacity miss on query index
+five: two fully validated records took 289.60 ms, comprising 201.16 ms receive,
+61.54 ms installed decode and 26.80 ms installed semantic validation. Prior
+single-record replies took 71.77–113.36 ms. The [diagnostic record](evidence/2026-10-08-frozen-capacity-diagnostic.json)
+retains the timings, returns failure and marks completed owned fixture cleanup.
+The pressure involves an unsolicited record preceding the matching reply;
+receive time includes server work and socket transfer, so these phases alone
+do not isolate networking cost. Memory acceptance remains incomplete.
