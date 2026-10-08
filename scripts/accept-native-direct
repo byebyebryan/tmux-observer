@@ -351,7 +351,7 @@ def coordinate(output, artifact=None, frontend_artifact=None):
         evidence["lastDirectResponse"] = {"endpoint": host, "response": result}
         error = value.get("ok") is False
         validators["error.schema.json" if error else "inventory.schema.json"].validate(value)
-        assert result["returnCode"] == (1 if error else 0)
+        assert result["returnCode"] == ((2 if frontend_artifact else 1) if error else 0)
         return result
 
     def verify_row(row, truth):
@@ -563,7 +563,8 @@ def coordinate(output, artifact=None, frontend_artifact=None):
             before = control.call("counts")
             unknown = direct(host, providerAbsent=True, hosts=["not-an-owned-native-host-alias"])
             assert (
-                unknown["returnCode"] == 1 and unknown["value"]["error"]["code"] == "unknown_host"
+                unknown["returnCode"] == (2 if frontend_artifact else 1)
+                and unknown["value"]["error"]["code"] == "unknown_host"
             )
             assert control.call("counts") == before
             passed(
