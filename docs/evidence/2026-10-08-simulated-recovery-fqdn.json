@@ -1,0 +1,58 @@
+{
+  "gate": "G3-always-on-simulated-recovery",
+  "result": "passed_simulated_recovery",
+  "hostPowerChanged": false,
+  "cases": [
+    {
+      "name": "test_recovery_simulation.RecoverySimulationTests.test_peer_silence_and_buffered_heartbeat_do_not_hide_expiry_or_block_local",
+      "result": "passed"
+    },
+    {
+      "name": "test_recovery_simulation.RecoverySimulationTests.test_first_read_after_paused_callbacks_rejects_history_and_late_work",
+      "result": "passed"
+    },
+    {
+      "name": "test_ssh.SSHTests.test_complete_reply_buffered_during_pause_is_rejected_before_pipe_read",
+      "result": "passed"
+    },
+    {
+      "name": "test_process.ProcessTests.test_suspend_jump_rejects_output_before_acceptance",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Logical owner/fleet clocks and callback gaps; not physical suspend or hardware wake",
+    "Owned local pipe relay, not new native SSH or two-host acceptance",
+    "Complements existing same-wheel awake-host evidence; not frontend or deployment acceptance"
+  ],
+  "harnessCommit": "d5a2e97a4e5c2a65599d45818680635f5c790c99",
+  "harnessTreeDirty": false,
+  "sourceCommit": "d5a2e97a4e5c2a65599d45818680635f5c790c99",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "d5a2e97a4e5c2a65599d45818680635f5c790c99",
+      "epoch": 1791484706,
+      "tree": "677e3f10b1a665317740de2cea7dab4b02ac9818"
+    },
+    "wheelSha256": "06c5b77e36901d0de5d62cf2041edf1733ce34c346a6aa574a323bb50889fb0d",
+    "descriptorSha256": "4c62c942e7556cc3ced84680d093fc5626b904a24ba19f50bdd872d2ffe42c3a",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "06c5b77e36901d0de5d62cf2041edf1733ce34c346a6aa574a323bb50889fb0d",
+  "installedProbe": {
+    "origins": {
+      "tmux_observer": "/tmp/tmux-observer-simulated-recovery-_q10eu2t/venv/lib/python3.13/site-packages/tmux_observer/__init__.py",
+      "tmux_observer_client": "/tmp/tmux-observer-simulated-recovery-_q10eu2t/venv/lib/python3.13/site-packages/tmux_observer_client/__init__.py"
+    },
+    "verifiedPayloadFiles": 64,
+    "testsRun": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "unexpectedSuccesses": 0
+  },
+  "testOutput": "test_peer_silence_and_buffered_heartbeat_do_not_hide_expiry_or_block_local (test_recovery_simulation.RecoverySimulationTests.test_peer_silence_and_buffered_heartbeat_do_not_hide_expiry_or_block_local) ... ok\ntest_first_read_after_paused_callbacks_rejects_history_and_late_work (test_recovery_simulation.RecoverySimulationTests.test_first_read_after_paused_callbacks_rejects_history_and_late_work) ... ok\ntest_complete_reply_buffered_during_pause_is_rejected_before_pipe_read (test_ssh.SSHTests.test_complete_reply_buffered_during_pause_is_rejected_before_pipe_read) ... ok\ntest_suspend_jump_rejects_output_before_acceptance (test_process.ProcessTests.test_suspend_jump_rejects_output_before_acceptance) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.138s\n\nOK\n",
+  "ownedCleanup": "temporary_install_and_owned_relay_removed"
+}

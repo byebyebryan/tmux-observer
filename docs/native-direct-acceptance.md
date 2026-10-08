@@ -77,6 +77,22 @@ than guessing a host. Cached reads and owner/fleet service paths do not call it.
 Source checks pass 188 tests. The installed direct harness now also selects the
 actual local FQDN on each endpoint with Mesh absent and checks deduplication,
 full native generation/session/creation identity and no SSH. These two new cases
-and the existing 24 cases must pass on the revised frozen artifact before its
-direct-client checkpoint is accepted. The earlier native result remains evidence
+and the existing 24 cases passed on the revised frozen artifact. Two additional
+unknown-local-alias refusals exercise actual bounded identity child execution
+before any tmux/SSH read. All 28 installed/native cases passed on both endpoints;
+see [new direct evidence](evidence/2026-10-08-native-direct-fqdn.json). The earlier native result remains evidence
 for its original artifact; it is not silently relabelled as a new-wheel run.
+
+Runtime source is `d5a2e97a4e5c2a65599d45818680635f5c790c99`, frozen wheel
+SHA256 `06c5b77e36901d0de5d62cf2041edf1733ce34c346a6aa574a323bb50889fb0d`;
+clean native harness is `eb8c0ee`. All owned endpoint units, children, sockets and
+private roots were removed. The four
+[installed recovery simulations](evidence/2026-10-08-simulated-recovery-fqdn.json)
+also passed and verified all 64 payloads before executing them.
+
+[Payload parity](evidence/2026-10-08-fqdn-payload-parity.json) establishes that
+`tmux_observer_client/direct.py` is the only changed payload. The other 63
+owner/fleet/prepared/service/data/license payloads retain their accepted G3
+bytes. Prior native resource/capacity results retain their original artifact
+provenance. This closes the reopened direct-client checkpoint; installed
+frontend, production GUI and managed selection remain separate gates.
