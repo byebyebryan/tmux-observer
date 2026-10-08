@@ -285,10 +285,8 @@ def main():
                         and frame["snapshot"]["serverGeneration"] is None
                     )
                 )
-                assert (
-                    not empty["snapshot"]["sessions"]
-                    and not (directory / f"tmux-{os.getuid()}" / "default").exists()
-                )
+                assert not empty["snapshot"]["sessions"]
+                assert command([*native_prefix, "has-session"], env=env, ok=False).returncode != 0
                 passed(
                     "last session disappears with watchers alive; publisher verifies absence without restarting tmux"
                 )
