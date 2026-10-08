@@ -1,0 +1,628 @@
+#!/usr/bin/env python3
+"""Owned Snap Kitty/manual-SSH observations against installed two-host fixtures."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import os
+import shlex
+import shutil
+import stat
+import subprocess
+import sys
+import time
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def load(path, name):
+    loader = importlib.machinery.SourceFileLoader(name, str(path))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def command(argv, *, env=None, input_data=None, ok=True):
+    value = subprocess.run(
+        argv, env=env, input=input_data, capture_output=True, timeout=30, check=False
+    )
+    if ok and value.returncode:
+        raise RuntimeError(value.stderr.decode(errors="replace")[:2048])
+    return value
+
+
+def desktop_environment(env):
+    result = dict(env)
+    for line in command(["systemctl", "--user", "show-environment"]).stdout.decode().splitlines():
+        key, separator, value = line.partition("=")
+        if separator and key in ("NIRI_SOCKET", "DISPLAY", "WAYLAND_DISPLAY", "XDG_RUNTIME_DIR"):
+            result[key] = value
+    if not result.get("NIRI_SOCKET"):
+        raise RuntimeError("Snap graphical test requires a captured Niri endpoint")
+    return result
+
+
+def worker(root, host_id):
+    helper = load(root / "accept-native-fleet", "remote_desktop_worker")
+    endpoint = helper.Endpoint(root, host_id)
+    if host_id == "snap":
+        endpoint.env = desktop_environment(endpoint.env)
+    try:
+        result = endpoint.start()
+        print(json.dumps({"ok": True, "result": result}), flush=True)
+        while line := sys.stdin.buffer.readline(16385):
+            if len(line) > 16384 or not line.endswith(b"\n"):
+                raise ValueError("invalid owned control record")
+            request = json.loads(line)
+            operation = request["operation"]
+            if operation == "close":
+                break
+            try:
+                if operation == "native_truth":
+                    clients = []
+                    for row in endpoint.native(
+                        "list-clients", "-F", "#{client_pid}|#{session_id}|#{session_created}"
+                    ).splitlines():
+                        pid, sid, created = row.split("|")
+                        clients.append(
+                            {"pid": int(pid), "sessionId": sid, "createdAt": int(created)}
+                        )
+                    result = {"reference": endpoint.independent_native(), "clients": clients}
+                elif operation == "rename_owned":
+                    native = endpoint.independent_native()
+                    assert Path(native["serverGeneration"].split(":", 3)[3]).is_relative_to(root)
+                    endpoint.native(
+                        "rename-session", "-t", native["sessionId"], "owned-" + host_id + "-renamed"
+                    )
+                    result = endpoint.independent_native()
+                else:
+                    result = endpoint.dispatch(request)
+                print(json.dumps({"ok": True, "result": result}), flush=True)
+            except Exception as error:  # noqa: BLE001 - propagate bounded owned-fixture failures
+                print(
+                    json.dumps(
+                        {"ok": False, "code": type(error).__name__, "message": str(error)[:1024]}
+                    ),
+                    flush=True,
+                )
+    finally:
+        endpoint.close()
+
+
+def main(output, *, profile=False):
+    helper = load(ROOT / "scripts/accept-native-fleet", "remote_desktop_fixture")
+    reader = load(ROOT / "scripts/read-contract", "remote_desktop_reader")
+    env = desktop_environment(os.environ)
+    for key in (
+        "TMUX",
+        "TMUX_PANE",
+        "ROFI_TMUX_PLUS_VIEWER_V1",
+        "KITTY_PID",
+        "KITTY_WINDOW_ID",
+        "KITTY_LISTEN_ON",
+        "PYTHONPATH",
+        "PYTHONHOME",
+    ):
+        env.pop(key, None)
+    windows = json.loads(command(["niri", "msg", "--json", "windows"], env=env).stdout)
+    focused = next((window["id"] for window in windows if window.get("is_focused")), None)
+    root = Path("/tmp/to-fleet-" + uuid.uuid4().hex)
+    root.mkdir(mode=0o700)
+    for key in ("XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_STATE_HOME"):
+        directory = root / key.lower()
+        directory.mkdir(mode=0o700)
+        env[key] = str(directory)
+    ssh = [
+        "ssh",
+        "-T",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "ConnectTimeout=2",
+        "-o",
+        "ConnectionAttempts=1",
+        "starship",
+    ]
+    controls, viewers, ssh_children = {}, [], {}
+    remote_created = False
+    evidence = {
+        "gate": "T12-native-remote-desktop-partial",
+        "sourceCommit": command(["git", "-C", str(ROOT), "rev-parse", "HEAD"])
+        .stdout.decode()
+        .strip(),
+        "sourceTreeDirty": bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).stdout),
+        "scope": "one installed wheel; private two-host default servers/units and Mesh; actual Snap Niri and owned Kitty/manual SSH windows",
+        "cases": [],
+        "endpoints": {},
+        "limits": [
+            "Manual SSH observations are qualified display metadata, not verified lifecycle handles",
+            "No Starship graphical, Rofi rendering, physical suspend, managed rollout or declared-capacity acceptance",
+            "Resource profile is optional; terminal/process content and raw argv/environment are never persisted",
+        ],
+    }
+
+    def passed(name, **details):
+        evidence["cases"].append({"name": name, "result": "passed", **details})
+        print("passed " + name, flush=True)
+
+    def frame(host="snap"):
+        value = controls[host].call("snapshot")["frame"]
+        reader.verify("fleet-frame", value)
+        return value
+
+    def remote_row(value):
+        return next(row for row in value["snapshot"]["hosts"] if row["hostId"] == "starship")
+
+    def viewer(value):
+        row = remote_row(value)["sessions"][0]
+        observation = row["localViewer"]
+        assert set(observation) <= {"state", "reason", "confidence"}
+        return observation
+
+    def current(value):
+        return (
+            value["snapshot"]["mesh"]["state"] == "ready"
+            and len(value["snapshot"]["hosts"]) == 2
+            and all(
+                row["owner"]["receipt"] is not None
+                and row["owner"]["receipt"]["state"] == "ready"
+                and row["owner"]["localExpiry"] > value["encodedAt"]
+                for row in value["snapshot"]["hosts"]
+            )
+        )
+
+    def wait(condition, *, budget=15):
+        deadline = time.monotonic() + budget
+        while time.monotonic() < deadline:
+            try:
+                result = condition()
+            except (OSError, RuntimeError, StopIteration):
+                result = None
+            if result:
+                return result
+            time.sleep(0.1)
+        raise RuntimeError("owned remote desktop condition exceeded its budget")
+
+    def until(predicate, *, budget=15):
+        def condition():
+            value = frame()
+            return value if predicate(value) else None
+
+        return wait(condition, budget=budget)
+
+    def native_count(count):
+        def condition():
+            value = controls["starship"].call("native_truth")
+            return (
+                value
+                if value["reference"]["attachedClients"] == count and len(value["clients"]) == count
+                else None
+            )
+
+        return wait(condition)
+
+    def assert_reference(value, truth):
+        row = remote_row(value)["sessions"][0]
+        assert all(
+            row[key] == truth[key]
+            for key in (
+                "hostId",
+                "serverGeneration",
+                "sessionId",
+                "createdAt",
+                "name",
+                "attachedClients",
+                "windowCount",
+            )
+        )
+
+    def visible(process):
+        windows = json.loads(command(["niri", "msg", "--json", "windows"], env=env).stdout)
+        return next(
+            (
+                window
+                for window in windows
+                if window.get("pid") == process.pid and window.get("app_id") == "kitty"
+            ),
+            None,
+        )
+
+    def socket_path(prefix):
+        matches = []
+        for path in root.glob(prefix + "*"):
+            info = path.lstat()
+            if stat.S_ISSOCK(info.st_mode) and info.st_uid == os.getuid():
+                matches.append(path)
+        if len(matches) != 1:
+            return None
+        matches[0].chmod(0o600)
+        return matches[0]
+
+    def kitty_control(item, operation, arguments=(), text=None):
+        process, path, window_id = item
+        window = visible(process)
+        if process.poll() is not None or window is None or window["id"] != window_id:
+            raise RuntimeError("owned Kitty window is unavailable; no input sent")
+        info = path.lstat()
+        assert (
+            path.is_relative_to(root) and stat.S_ISSOCK(info.st_mode) and info.st_uid == os.getuid()
+        )
+        assert info.st_mode & 0o777 == 0o600
+        return command(
+            ["kitty", "@", "--to", "unix:" + str(path), operation, "--match", "all", *arguments],
+            env=env,
+            input_data=text,
+        )
+
+    def open_viewer(index, title, route, session_id):
+        prefix = f"kitty-{index}.sock"
+        with (root / f"kitty-{index}.stderr").open("wb") as log:
+            process = subprocess.Popen(
+                [
+                    "kitty",
+                    "--config",
+                    "NONE",
+                    "--override",
+                    "shell_integration=disabled",
+                    "--override",
+                    "allow_remote_control=socket-only",
+                    "--listen-on",
+                    "unix:" + str(root / prefix),
+                    "ssh",
+                    "-tt",
+                    route,
+                ],
+                env=env,
+                cwd=root,
+                stdout=log,
+                stderr=log,
+                umask=0o077,
+            )
+        # Retain the process before any setup failure; the instance has only its
+        # private control socket and one owned SSH terminal window.
+        viewers.append((process, None, None))
+        window = wait(lambda: visible(process))
+        path = wait(lambda: socket_path(prefix))
+        item = process, path, window["id"]
+        viewers[-1] = item
+        # Launch-time --title locks the OS window title in Kitty 0.49.2.
+        # A private per-window override remains updateable for the rename case.
+        kitty_control(item, "set-window-title", (title,))
+        wait(lambda: (row := visible(process)) and row["title"] == title)
+
+        # Guard the actual local SSH descendant and its literal manual-shell
+        # argv without persisting argv, shell text or process environment.
+        def manual_process():
+            pending, seen = [process.pid], set()
+            while pending:
+                pid = pending.pop()
+                if pid in seen or len(seen) >= 64:
+                    continue
+                seen.add(pid)
+                try:
+                    argv = Path(f"/proc/{pid}/cmdline").read_bytes().rstrip(b"\0").split(b"\0")
+                    children = Path(f"/proc/{pid}/task/{pid}/children").read_text().split()
+                except FileNotFoundError:
+                    continue
+                if (
+                    len(argv) == 3
+                    and Path(os.fsdecode(argv[0])).name == "ssh"
+                    and argv[1:] == [b"-tt", route.encode()]
+                ):
+                    return pid
+                pending.extend(map(int, children))
+            return None
+
+        ssh_pid = wait(manual_process)
+        ssh_children[process.pid] = (
+            ssh_pid,
+            Path(f"/proc/{ssh_pid}/stat").read_text().rpartition(") ")[2].split()[19],
+        )
+        # Input is sent through the owned Kitty socket, never through compositor
+        # focus or a global synthesized keyboard event.
+        line = (
+            shlex.join(
+                [
+                    "env",
+                    "TMUX_TMPDIR=" + str(root / "native"),
+                    "tmux",
+                    "-u",
+                    "-L",
+                    "default",
+                    "attach-session",
+                    "-t",
+                    session_id,
+                ]
+            )
+            + "\n"
+        )
+        kitty_control(item, "send-text", ("--stdin",), line.encode())
+        return item, {"windowId": window["id"], "windowPid": process.pid, "sshPid": ssh_pid}
+
+    def close_viewer(item):
+        process = item[0]
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+        child = ssh_children.get(process.pid)
+        if child is not None:
+            pid, incarnation = child
+
+            def child_gone():
+                try:
+                    fields = Path(f"/proc/{pid}/stat").read_text().rpartition(") ")[2].split()
+                except FileNotFoundError:
+                    return True
+                return fields[19] != incarnation
+
+            wait(child_gone, budget=5)
+
+    try:
+        wheels = root / "wheel"
+        command(["uv", "build", "--wheel", "--out-dir", str(wheels), str(ROOT)])
+        wheel = next(wheels.glob("*.whl"))
+        wheel.rename(root / wheel.name)
+        wheel = root / wheel.name
+        for name in ("accept-native-fleet", "accept-native-remote-desktop"):
+            shutil.copyfile(ROOT / "scripts" / name, root / name)
+        command([*ssh, "mkdir -m 700 -- " + shlex.quote(str(root))])
+        remote_created = True
+        command(
+            [
+                "scp",
+                "-q",
+                "-o",
+                "BatchMode=yes",
+                str(wheel),
+                str(root / "accept-native-fleet"),
+                str(root / "accept-native-remote-desktop"),
+                "starship:" + str(root) + "/",
+            ]
+        )
+        for host in ("snap", "starship"):
+            argv = [
+                sys.executable,
+                str(root / "accept-native-remote-desktop"),
+                "--worker",
+                str(root),
+                "--host-id",
+                host,
+            ]
+            if host == "starship":
+                argv = [*ssh, shlex.join(["python3", *argv[1:]])]
+            controls[host] = helper.Control(argv)
+            evidence["endpoints"][host] = controls[host].receive()
+        assert (
+            evidence["endpoints"]["snap"]["wheelSha256"]
+            == evidence["endpoints"]["starship"]["wheelSha256"]
+            == hashlib.sha256(wheel.read_bytes()).hexdigest()
+        )
+        initial = until(
+            lambda value: (
+                current(value)
+                and value["snapshot"]["desktop"]["state"] == "ready"
+                and viewer(value)["state"] == "none"
+            )
+        )
+        original = controls["starship"].call("native_truth")["reference"]
+        assert_reference(initial, original)
+        passed("installed_fleet_matches_native_unattached_remote_reference_in_actual_snap_desktop")
+        metrics = controls["snap"].call("metrics")
+        route = metrics["owners"]["starship"]["route"]
+        hostname = evidence["endpoints"]["starship"]["nativeHostname"].split(".", 1)[0]
+        title = original["name"] + ": owned fixture @ " + hostname
+        first, first_window = open_viewer(1, title, route, original["sessionId"])
+        attached = native_count(1)
+        matched = until(
+            lambda value: (
+                current(value)
+                and remote_row(value)["sessions"][0]["attachedClients"] == 1
+                and viewer(value) == {"state": "open", "reason": None, "confidence": "matched"}
+            )
+        )
+        assert_reference(matched, attached["reference"])
+        passed(
+            "actual_manual_ssh_window_native_attachment_and_unique_title_prove_only_matched_display_presence",
+            window=first_window,
+            nativeClients=attached["clients"],
+            reference=attached["reference"],
+        )
+        second, second_window = open_viewer(2, title, route, original["sessionId"])
+        duplicated = native_count(2)
+        ambiguous = until(
+            lambda value: (
+                current(value)
+                and remote_row(value)["sessions"][0]["attachedClients"] == 2
+                and viewer(value) == {"state": "unknown", "reason": "ambiguous_match"}
+            )
+        )
+        assert_reference(ambiguous, duplicated["reference"])
+        passed(
+            "two_real_manual_ssh_windows_are_ambiguous_while_native_attached_count_remains_positive",
+            secondWindow=second_window,
+        )
+        close_viewer(second)
+        attached = native_count(1)
+        until(
+            lambda value: current(value)
+            and remote_row(value)["sessions"][0]["attachedClients"] == 1
+            and viewer(value).get("confidence") == "matched"
+        )
+        passed("closing_only_duplicate_owned_window_restores_unique_qualified_match")
+        renamed = controls["starship"].call("rename_owned")
+        assert all(
+            renamed[key] == original[key]
+            for key in ("hostId", "serverGeneration", "sessionId", "createdAt")
+        )
+        changed = until(
+            lambda value: (
+                current(value)
+                and remote_row(value)["sessions"][0]["name"] == renamed["name"]
+                and value["snapshot"]["desktop"]["state"] == "ready"
+                and viewer(value)["state"] != "open"
+            )
+        )
+        assert_reference(changed, renamed)
+        # `none` means no qualifying viewer in a complete supported scan.
+        # A manual SSH process alone does not bind a current session reference;
+        # transient obsolete joins may instead remain unknown. Neither outcome
+        # grants a close handle or contradicts the independent native client.
+        kitty_control(
+            first, "set-window-title", (renamed["name"] + ": owned fixture @ " + hostname,)
+        )
+        wait(
+            lambda: (
+                (window := visible(first[0]))
+                and window["title"] == renamed["name"] + ": owned fixture @ " + hostname
+            )
+        )
+        until(lambda value: current(value) and viewer(value).get("confidence") == "matched")
+        passed("native_owner_rename_revokes_old_qualified_title_then_rejoins_updated_owned_window")
+        before_restart = remote_row(frame())["owner"]["publisherId"]
+        controls["starship"].call("owner", action="stop")
+        lost = until(
+            lambda value: (
+                remote_row(value)["owner"]["localExpiry"] == 0
+                and viewer(value)["state"] == "unknown"
+            )
+        )
+        assert controls["starship"].call("native_truth")["reference"]["attachedClients"] == 1
+        controls["starship"].call("owner", action="start")
+        resumed = until(
+            lambda value: (
+                current(value)
+                and remote_row(value)["owner"]["publisherId"] != before_restart
+                and viewer(value).get("confidence") == "matched"
+            ),
+            budget=20,
+        )
+        assert remote_row(resumed)["owner"]["serverGeneration"] == original["serverGeneration"]
+        assert lost["snapshot"]["desktop"]["state"] != "ready" or viewer(lost)["state"] == "unknown"
+        passed(
+            "remote_owner_loss_and_replacement_require_new_proof_and_desktop_join_without_closing_native_viewer"
+        )
+        if profile:
+            for host, control in controls.items():
+                samples = control.call("benchmark")
+                reader.verify("fleet-frame", samples["frame"])
+                assert len(samples["rpcMs"]) == len(samples["cliMs"]) == 100
+                assert sorted(samples["rpcMs"])[94] <= 50
+                evidence["endpoints"][host]["warmSamples"] = samples
+            passed("hundred_warm_cached_queries_per_endpoint_with_native_remote_viewer_attached")
+            for control in controls.values():
+                control.call("profile_start")
+            print("started ten-minute desktop-inclusive resource profile", flush=True)
+            deadline, profiles = time.monotonic() + 720, {}
+            while len(profiles) < 2:
+                assert time.monotonic() < deadline
+                for host, control in controls.items():
+                    if host not in profiles:
+                        value = control.call("profile_status")
+                        if value["state"] == "complete":
+                            profiles[host] = value
+                if len(profiles) < 2:
+                    time.sleep(10)
+            evidence["backgroundProfiles"] = profiles
+            passed("ten_minute_desktop_inclusive_profiles_collected_without_ui_keyboard_input")
+            assessments = {}
+            for host, value in profiles.items():
+                # The opposite endpoint's inbound bridge serves this fleet's
+                # outbound SSH link and therefore belongs in its accounting.
+                associated = profiles["starship" if host == "snap" else "snap"]
+                fleet_bytes = (
+                    value["serviceMaxObservedRssBytes"]["fleet"]
+                    + associated["maxObservedBridgeRssBytes"]
+                )
+                owner_bytes = value["serviceMaxObservedRssBytes"]["owner"]
+                cpu = sum(value["serviceCpuPercent"].values()) + associated["bridgeCpuPercent"]
+                assessments[host] = {
+                    "fleetTargetMiB": 96,
+                    "ownerTargetMiB": 64,
+                    "combinedCpuTargetPercent": 5,
+                    "fleetAndAssociatedBridgeMaxObservedRssBytes": fleet_bytes,
+                    "ownerMaxObservedRssBytes": owner_bytes,
+                    "combinedCpuPercent": cpu,
+                    "withinSelectedTargets": fleet_bytes <= 96 * 1024**2
+                    and owner_bytes <= 64 * 1024**2
+                    and cpu <= 5,
+                }
+            evidence["normalResourceAssessment"] = assessments
+        close_viewer(first)
+        final_truth = native_count(0)["reference"]
+        closed = until(
+            lambda value: current(value)
+            and remote_row(value)["sessions"][0]["attachedClients"] == 0
+            and viewer(value)["state"] == "none"
+        )
+        assert_reference(closed, final_truth)
+        for host, control in controls.items():
+            control.call("passivity")
+            control.call("stop_fleet")
+            control.call("passivity")
+        passed(
+            "owned_remote_viewers_and_fleets_stop_with_native_sessions_creation_windows_and_hooks_preserved"
+        )
+        evidence["result"] = "passed_partial"
+        if profile and not all(
+            value["withinSelectedTargets"]
+            for value in evidence["normalResourceAssessment"].values()
+        ):
+            evidence["result"] = "failed_resource_target"
+    finally:
+        for item in reversed(viewers):
+            close_viewer(item)
+        for control in reversed(list(controls.values())):
+            control.close()
+        if remote_created:
+            command(
+                [
+                    *ssh,
+                    shlex.join(
+                        [
+                            "python3",
+                            str(root / "accept-native-fleet"),
+                            "--cleanup",
+                            str(root),
+                            "--host-id",
+                            "starship",
+                        ]
+                    ),
+                ]
+            )
+            command([*ssh, "rm -rf -- " + shlex.quote(str(root))])
+        helper.cleanup(root, "snap")
+        shutil.rmtree(root)
+        if focused is not None:
+            command(
+                ["niri", "msg", "action", "focus-window", "--id", str(focused)], env=env, ok=False
+            )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(evidence, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--worker", type=Path)
+    parser.add_argument("--host-id", choices=("snap", "starship"))
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--with-profile", action="store_true")
+    args = parser.parse_args()
+    if args.worker is not None and args.host_id is not None:
+        worker(args.worker, args.host_id)
+    elif args.output is not None:
+        main(args.output, profile=args.with_profile)
+    else:
+        parser.error("provide --output or a complete private worker invocation")

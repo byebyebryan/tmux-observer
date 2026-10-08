@@ -1,0 +1,45 @@
+# Installed remote desktop acceptance
+
+Run on Snap with the actual captured Niri desktop and the ordinary strict SSH
+route to Starship:
+
+```sh
+uv run --extra dev scripts/accept-native-remote-desktop --output /tmp/tmux-remote-desktop.json
+uv run --extra dev scripts/accept-native-remote-desktop --with-profile --output /tmp/tmux-remote-desktop-profile.json
+```
+
+The fixture installs one exact wheel on both endpoints. Default tmux servers,
+owner/fleet units, Mesh preferences and IPC paths belong to its private directory.
+The Snap fleet runs the production scanner against the actual desktop; Starship
+uses an independent headless context. Separate native tmux reads verify complete
+references, names, attachment counts, windows and client PIDs. Returned fleet
+frames pass the independent contract reader.
+
+Two owned Kitty instances run literal `ssh -tt ROUTE` shells. Input attaches only
+to the remote fixture's private default server and exact owned session ID.
+[Kitty remote control](https://sw.kovidgoyal.net/kitty/remote-control/) uses each
+instance's private same-UID mode-0600 Unix socket. Niri queries prove the actual
+owned window/PID; process-tree reads prove its native SSH child. The tool sends
+no global keyboard events and stores no terminal content, argv or environments.
+
+Cases cover initial absence of a qualifying viewer, a unique matched manual
+viewer, two ambiguous windows, recovery after closing only the duplicate, rename
+and updated title, remote owner loss/replacement and viewer/service stop. Manual
+matches remain display-only: observation records contain no action handles.
+After rename, the old title must lose its positive. A complete scan may return
+`none`, meaning no qualifying viewer for the current reference; transient obsolete
+joins may be unknown. This does not mean the independent native client detached.
+
+The optional ten-minute profile keeps one owned remote viewer attached and adds
+actual desktop scanner work to the normal two-host profile. Every fleet-owned
+child and its associated bridge on the opposite endpoint count against the
+selected 96 MiB fleet candidate. Owner RSS retains its 64 MiB target; combined
+owner/fleet/associated-bridge mean CPU retains the 5% one-core target. Raw samples
+and separate per-service peaks remain in the result. One-second sampling can miss
+transient peaks, and protocol byte counters exclude encrypted wire overhead.
+
+Owned Kitty and SSH child incarnations must exit before private backing files
+are removed. Unit/native cleanup preserves ordinary sessions and services and
+restores the previously focused window when it still exists. This component test
+does not establish Starship graphical truth, physical suspend, simultaneous
+declared-capacity acceptance, Rofi latency or managed rollout.
