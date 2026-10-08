@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""Frozen-wheel recovery simulations; no host power or ordinary service changes."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from artifact_input import stage_wheel
+
+ROOT = Path(__file__).resolve().parent.parent
+TESTS = (
+    (
+        "test_recovery_simulation.RecoverySimulationTests."
+        "test_peer_silence_and_buffered_heartbeat_do_not_hide_expiry_or_block_local"
+    ),
+    (
+        "test_recovery_simulation.RecoverySimulationTests."
+        "test_first_read_after_paused_callbacks_rejects_history_and_late_work"
+    ),
+    "test_ssh.SSHTests.test_complete_reply_buffered_during_pause_is_rejected_before_pipe_read",
+    "test_process.ProcessTests.test_suspend_jump_rejects_output_before_acceptance",
+)
+
+PROBE = """
+import hashlib,json,site,sys,unittest
+from pathlib import Path
+import tmux_observer,tmux_observer_client
+root,descriptor,output=map(Path,sys.argv[1:4])
+venv=Path(sys.prefix).resolve()
+origins={module.__name__:str(Path(module.__file__).resolve())
+    for module in (tmux_observer,tmux_observer_client)}
+assert all(Path(origin).is_relative_to(venv) for origin in origins.values())
+manifest=json.loads(descriptor.read_text())
+packages=Path(site.getsitepackages()[0])
+checked=0
+for member in manifest['sourceFiles']:
+    path=(venv/member.split('.data/data/',1)[1]
+        if '.data/data/' in member else packages/member)
+    assert hashlib.sha256(path.read_bytes()).hexdigest()==manifest['members'][member]['sha256'],member
+    checked+=1
+sys.path.insert(0,str(root/'tests'))
+names=json.loads(sys.argv[4])
+suite=unittest.defaultTestLoader.loadTestsFromNames(names)
+result=unittest.TextTestRunner(verbosity=2).run(suite)
+report={'origins':origins,'verifiedPayloadFiles':checked,
+    'testsRun':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),
+    'skipped':len(result.skipped),'unexpectedSuccesses':len(result.unexpectedSuccesses)}
+output.write_text(json.dumps(report,indent=2)+'\\n')
+sys.exit(0 if result.wasSuccessful() and result.testsRun==len(names) and not result.skipped else 1)
+"""
+
+
+def command(argv):
+    result = subprocess.run(argv, cwd=ROOT, capture_output=True, timeout=30, check=False)
+    if result.returncode:
+        raise RuntimeError(result.stderr.decode(errors="replace")[:4096])
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--artifact", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    evidence = {
+        "gate": "G3-always-on-simulated-recovery",
+        "result": "failed",
+        "hostPowerChanged": False,
+        "cases": [],
+        "limits": [
+            "Logical owner/fleet clocks and callback gaps; not physical suspend or hardware wake",
+            "Owned local pipe relay, not new native SSH or two-host acceptance",
+            "Complements existing same-wheel awake-host evidence; not frontend or deployment acceptance",
+        ],
+    }
+    try:
+        with TemporaryDirectory(prefix="tmux-observer-simulated-recovery-") as temporary:
+            directory = Path(temporary)
+            wheel = stage_wheel(directory / "wheel", evidence, repo=ROOT, descriptor=args.artifact)
+            evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
+            venv = directory / "venv"
+            command(["uv", "venv", str(venv)])
+            python = str(venv / "bin/python")
+            command(["uv", "pip", "install", "--python", python, "--no-deps", str(wheel)])
+            report = directory / "report.json"
+            result = command(
+                [
+                    python,
+                    "-I",
+                    "-c",
+                    PROBE,
+                    str(ROOT),
+                    str(directory / "wheel/candidate.json"),
+                    str(report),
+                    json.dumps(TESTS),
+                ]
+            )
+            evidence["installedProbe"] = json.loads(report.read_text())
+            evidence["testOutput"] = result.stderr.decode(errors="replace")
+            evidence["cases"] = [{"name": name, "result": "passed"} for name in TESTS]
+            evidence["result"] = "passed_simulated_recovery"
+        evidence["ownedCleanup"] = "temporary_install_and_owned_relay_removed"
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
+        evidence["error"] = str(error)
+    args.output.write_text(json.dumps(evidence, indent=2) + "\n")
+    print(evidence["result"])
+    return 0 if evidence["result"] == "passed_simulated_recovery" else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

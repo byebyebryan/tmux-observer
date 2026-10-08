@@ -1,15 +1,17 @@
 # Physical suspend acceptance preparation
 
-G3 requires actual host sleep/wake in each direction. Source clock-jump tests,
-SIGSTOP, transport delays and existing headless profiles do not establish this.
-No whole-host suspend was executed by this preparation.
+Updated scope, 2026-10-08: physical sleep/wake is an optional host-specific check.
+The user expects both mesh hosts to remain on and explicitly removed this as a
+hard acceptance requirement. The [always-on acceptance decision](always-on-acceptance.md)
+replaces the original physical G3 prerequisite; source/native/frontend/deployment
+gates otherwise retain their evidence requirements. Simulations do not establish
+physical sleep or hardware wake, and no whole-host suspend has been performed.
 
-The user explicitly deferred sleep on both Snap and Starship because both hosts
-are actively working. Keep both power states and alarms untouched while that
-deferral is in force. Continue independent awake-host acceptance and review;
-the physical G3 cases remain open. This is a deferral, not physical acceptance
-or removal of the producer/frontend/deployment gates. Do not repeat the timing
-request during this pass.
+Snap must remain awake during active work. Starship is remote and may only be
+slept with confidence in unattended wake/recovery. Existing RTC dry-run evidence
+does not establish that confidence, so this pass uses simulations. Keep both
+power states and alarms untouched. Do not repeat the timing request or treat
+the optional procedure below as authorization to suspend either host.
 
 Read-only preflight on 2026-10-07 found `freeze mem disk` on both hosts, Snap
 using `[s2idle]` and Starship offering `s2idle [deep]`. Both expose an RTC0
@@ -63,8 +65,9 @@ checks. Each endpoint supplied 31 validated cached samples; Snap/Starship maxima
 were 9.72/3.68 ms and both recorded zero suspend delta. Alarms stayed untouched,
 native baselines/passivity passed, and both endpoints' owned units, children,
 sockets and private roots were removed. This exercises the frozen-artifact input
-of the preparation harness, not physical resume or hardware wake. The user's
-deferral and the G3/consumer/deployment dependencies remain in force.
+of the preparation harness, not physical resume or hardware wake. The current
+always-on scope makes this physical follow-up optional; the preparation evidence
+is not reclassified as physical acceptance.
 
 Physical execution is an explicit `--sleep snap` or `--sleep starship` invocation
 with a separate evidence output, after the agreed interruption window. Each
@@ -130,5 +133,5 @@ Each direction records source/wheel identity, endpoint/clock scope, armed and
 actual wake times, paired-clock deltas, last pre-sleep positive expiry, first
 post-resume prepared response and the later sample/proof/desktop admission.
 The independent reader verifies captured records; separate native reads verify
-session survival. This is physical G3 evidence only, not Rofi notice latency,
+session survival. This is optional physical evidence only, not Rofi notice latency,
 managed logout/recovery or Starship graphical acceptance.

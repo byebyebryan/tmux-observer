@@ -72,8 +72,9 @@ The next artifact acceptance uses the same frozen wheel across installed
 producer, owner, fleet, direct-reader and frontend checks. Changing packaged
 source requires a new artifact and review of affected evidence. Existing native
 records remain valid within their named source/wheel scope; they cannot silently
-be relabeled as acceptance of a newly built wheel. Physical sleep remains an
-independent G3 case and is deferred by the user on both active hosts.
+be relabeled as acceptance of a newly built wheel. The user-selected
+[always-on scope](always-on-acceptance.md) requires simulated pause/clock recovery;
+physical sleep/wake is an optional follow-up and adds no publication prerequisite.
 
 ## Recorded preparation
 
@@ -131,9 +132,10 @@ cases in the [current status](implementation-status.md) used that exact frozen
 wheel with clean source/harness `3beab8a`. They include G1/G2, context, fresh direct,
 fleet, desktop, actual SSH capacity and ten-minute normal profiling; the measured
 resource targets and query deadlines pass. The descriptor remains
-`built_unaccepted`: deferred physical sleep/wake, frontend migration and managed
-rollout have independent remaining gates. Previous failed artifacts retain their
-original results and are not relabeled by this pass.
+`built_unaccepted`: frontend migration and managed rollout have independent
+remaining gates, and revised G3 requires the clean frozen-wheel simulation record.
+Physical sleep/wake is optional under the always-on scope. Previous failed
+artifacts retain their original results and are not relabeled by this pass.
 
 That same final wheel also passed four
 [suspend preparation cases](evidence/2026-10-08-final-candidate-suspend-preparation.json)

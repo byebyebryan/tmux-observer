@@ -51,10 +51,10 @@ dependency surface. Retain the initial failed results and record the selected
 decision separately from its later native acceptance. No proposed number changes
 logical queue/document caps, authority leases or the foreground deadline.
 
-Physical suspend/wake remains an independent gap. Freezing a process or injecting
-a clock jump does not prove host sleep. Prepare isolated fixtures and verified
-wake/recovery steps before scheduling any whole-host suspend that would interrupt
-ordinary desktop/network work.
+Physical suspend/wake remains unverified but is optional under the user-selected
+[always-on scope](always-on-acceptance.md). Freezing a process or injecting a clock
+jump does not prove host sleep. Any optional physical follow-up needs isolated
+fixtures and confident wake/recovery before interrupting desktop/network work.
 
 ## Selected direction
 
@@ -95,5 +95,6 @@ peaks; no sixteen-physical-host or capacity-CPU claim follows.
 The intervening [frozen-wheel CPU failure](evidence/2026-10-08-frozen-normal-g3-failed-cpu.json)
 and [capacity deadline failures](evidence/2026-10-08-optimized-3a-capacity.json)
 remain recorded alongside this later pass. The selected direction is validated
-within the measured scope; physical sleep/wake remains deferred by the user, and
-G3/consumer migration/managed rollout are still open.
+within the measured scope. Revised G3 requires its clean frozen-wheel recovery
+simulations; physical sleep/wake is optional. Consumer migration and managed
+rollout retain separate gates.

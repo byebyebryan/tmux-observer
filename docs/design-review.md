@@ -41,7 +41,7 @@ Severity here denotes the consequence of implementing the tempting shortcut.
 | R16 | Medium: frame timeout is shorter than heartbeat cadence | Two-second started-record/probe deadlines; ten-second transport-silence bound | G2/G3 idle watch and trickled-frame tests |
 | R17 | Medium: remote publisher dies after logout or desktop context is inherited incorrectly | Explicit user-manager lifetime; private captured desktop instances; no implicit lingering/global display import | G2/G3 boot/logout/context acceptance |
 | R18 | High: healthy SSH conceals a failed Mesh recheck and perpetuates obsolete route authority | Explicit catalog health; retained catalog historical; no new attempts/current fleet positives until revalidation | G3 invalid-provider transition and recovery |
-| R19 | Medium: inherited monotonic timeouts omit suspend despite BOOTTIME leases | BOOTTIME operation budgets; late work rejected and epochs advanced after resume | G1–G3 native sleep/wake and runner audit |
+| R19 | Medium: inherited monotonic timeouts omit elapsed gaps despite BOOTTIME leases | BOOTTIME operation budgets; late work rejected and epochs advanced after resume | G1–G3 simulated clock/pause recovery and runner audit; optional physical sleep |
 
 R03 comes from source inspection: the baseline fast inventory probes generation
 before list/options/panes and does not end with a generation bracket. This is an

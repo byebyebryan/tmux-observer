@@ -81,7 +81,8 @@ relays and disposable service contexts; do not disturb ordinary SSH or tmux.
 | Unsolicited changed view | One coalesced proof; publish the confirmed full response |
 | Owner failure on a live SSH stream | Transport stays distinct from failed native evidence |
 | Lost sequence / EOF / service restart | Invalidate old lease; guarded full resync before positives |
-| Sleep/wake on either host | BOOTTIME consumes leases; discard remote proofs on local resume |
+| Simulated service pause / elapsed-clock gap | First prepared read rejects expired leases and viewer membership; late work/proofs cannot renew them |
+| Optional physical sleep/wake | Host-specific BOOTTIME and transport recovery check; outside required always-on acceptance |
 | One remote hangs or reconnects | Other hosts and cached queries continue independently |
 | Mesh host removed / route replaced | Reject late epochs; update catalog within declared recheck bound |
 | Mesh executable absent versus present/broken | Only absent provider permits local-only fallback |

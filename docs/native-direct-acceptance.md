@@ -60,5 +60,6 @@ local and invalid selection/revision cases used none. Both owned observer servic
 stayed inactive. Native roster, attachment/window counts, geometry, hooks and
 option snapshots matched before/after the operator rename cases. Both fixtures'
 units, owned children, sockets and backing directories were removed. This closes
-the independent T10 native direct checkpoint; the deferred physical G3 gate and
-consumer/managed gates remain open.
+the independent T10 native direct checkpoint. Revised G3 follows the
+[always-on scope](always-on-acceptance.md); physical sleep/wake is optional and
+consumer/managed gates retain their independent requirements.

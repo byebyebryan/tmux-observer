@@ -2,8 +2,9 @@
 
 Date: 2026-10-08. This is a production-boundary review of the accepted T06
 prototype, before T13/T14 implementation. It changes no frontend, launcher,
-service, managed artifact or acceptance dependency. Physical G3 sleep/wake remains
-deferred on both hosts.
+service or managed artifact. The subsequent user-selected
+[always-on scope](always-on-acceptance.md) makes physical sleep/wake optional;
+the accepted-producer dependency still applies before T13/T14 implementation.
 
 ## Decision and evidence
 

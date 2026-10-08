@@ -32,11 +32,15 @@ rollout. Earlier failures remain recorded. The preceding `41c6b35` candidate als
 passed its [normal profile](evidence/2026-10-08-optimized-41-normal.json), with
 CPU 4.7449%/1.9417%; its wheel is distinct and retains its own attribution.
 
-Physical sleep/wake remains deferred by the user on both actively working hosts.
-No alarm or whole-host suspend was performed. T12/G3 stays open on that native
-gate; T13/T14 prepared-read migration and T15 publication/managed rollout retain
-their accepted-producer dependency. The frozen descriptor remains unaccepted for
-promotion, and frontend/managed changes have not begun.
+The user-selected [always-on acceptance scope](always-on-acceptance.md) makes
+physical sleep/wake optional. Snap remains awake during active work; Starship
+has no verified unattended wake/recovery, so this pass uses simulations. No alarm
+or whole-host suspend was performed. Composed owner/fleet first-read and real
+pipe-buffer recovery tests pass against source; their clean-harness frozen-wheel
+run is the next required check before closing revised T12/G3. T13/T14 and T15
+retain their accepted-producer, frontend and managed acceptance dependencies.
+The frozen descriptor remains unaccepted for promotion, and frontend/managed
+changes have not begun.
 The [post-run cleanup check](evidence/2026-10-08-final-candidate-cleanup.json)
 finds no owned candidate root directories or active candidate units on either
 host. Per-case native/session/child cleanup assertions also passed; retained
@@ -49,6 +53,12 @@ reproduces the prior T06 library. This is read-only/compile evidence, not anothe
 GUI or production gate. The review defines version/artifact checks, watcher
 lifetime and BOOTTIME invalidation, read-only callbacks, terminal-ticket handling
 and pending-intent acceptance before migration; frontend code remains unchanged.
+
+## Prior checkpoint history
+
+The following records retain their original evidence and acceptance scope.
+Physical-suspend dependencies recorded before the 2026-10-08 always-on decision
+are superseded by the current scope above, not relabeled as physical acceptance.
 
 [Candidate artifact preparation](candidate-artifacts.md) now builds committed
 snapshots with an exact hashed backend constraint, verifies complete packaged

@@ -136,8 +136,11 @@ and resource evidence. Remote networking and Rofi remain unaccepted.
    current-route publication from a merely retained catalog.
 3. Add strict non-PTY SSH stdio framing and matching-nonce remote age proof.
    Verify on Snap ↔ Starship with delay, buffered frames, disconnects, old scope,
-   route removal, suspend and publisher restart. Measure persistent SSH versus
-   one-shot calls before adding a task-owned connection-sharing optimization.
+   route removal and publisher restart. Under the user-selected
+   [always-on scope](always-on-acceptance.md), simulated callback/clock gaps and
+   buffered-reply rejection are required; physical sleep/wake is optional.
+   Measure persistent SSH versus one-shot calls before adding a task-owned
+   connection-sharing optimization.
 4. Extract display-only desktop observation. Preserve confirmed/matched rules,
    reason codes and independent expiry. No write handles enter the fleet view.
    Test local desktop versus headless contexts and changed owner/route inputs.

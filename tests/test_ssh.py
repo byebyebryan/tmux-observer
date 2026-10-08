@@ -26,11 +26,12 @@ for line in sys.stdin.buffer:
     REPLY
     frame.update(kind="status",requestId=request["requestId"],sequence=frame["sequence"]+1)
     print(json.dumps(frame,separators=(",",":")),flush=True)
+    AFTER_REPLY
 """
 
 
 class SSHTests(unittest.TestCase):
-    def connection(self, temporary, mode="", *, reply="", on_error=None):
+    def connection(self, temporary, mode="", *, reply="", after_reply="", on_error=None):
         root = Path(__file__).resolve().parent.parent
         fixture = root / "contracts/service-v1/fixtures/ready.json"
         host_id = json.loads(fixture.read_text())["source"]["hostId"]
@@ -39,6 +40,7 @@ class SSHTests(unittest.TestCase):
             PROGRAM.replace("INTERPRETER", sys.executable)
             .replace("FIXTURE", repr(str(fixture)))
             .replace("MODE", mode)
+            .replace("AFTER_REPLY", after_reply)
             .replace("REPLY", reply)
         )
         executable.chmod(0o700)
@@ -120,6 +122,29 @@ class SSHTests(unittest.TestCase):
             self.assertTrue(connection.closed)
             self.assertEqual(connection.state.expiry, 0)
             self.assertEqual(connection.state.error["code"], "deadline")
+
+    def test_complete_reply_buffered_during_pause_is_rejected_before_pipe_read(self):
+        with tempfile.TemporaryDirectory(prefix="tmux-observer-ssh-buffered-") as temporary:
+            marker = Path(temporary) / "reply-flushed"
+            connection = self.connection(
+                temporary,
+                after_reply=f"open({str(marker)!r},'w').write('flushed')",
+            )
+            self.pump(connection, lambda: connection.state.pending is not None)
+            # Flush the probe without consuming its response; the child marker
+            # acknowledges a complete status frame already queued in the pipe.
+            self.pump(connection, lambda: not connection.outgoing)
+            deadline = time.monotonic() + 2
+            while not marker.exists() and time.monotonic() < deadline:
+                time.sleep(0.005)
+            self.assertTrue(marker.exists())
+            self.assertEqual(connection.state.sequence, 0)
+            connection.poll(connection.state.pending["sentAt"] + 30_000)
+            self.assertTrue(connection.closed)
+            self.assertEqual(connection.state.expiry, 0)
+            self.assertEqual(connection.state.sequence, 0)
+            self.assertEqual(connection.state.error["code"], "deadline")
+            self.assertIsNotNone(connection.process.returncode)
 
     def test_oversized_and_foreign_frames_fail_with_owned_child_reaped(self):
         cases = (

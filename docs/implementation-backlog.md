@@ -174,7 +174,10 @@ treats failed Mesh authority explicitly. Desktop scanning uses those accepted
 inputs with its own receipt and contributes no focus/close handle.
 
 Accept Snap reading Starship and Starship reading Snap with a remote down,
-publisher restart, delayed/trickled input, suspend and a replaced desktop context.
+publisher restart, delayed/trickled input and a replaced desktop context. The
+user-selected [always-on scope](always-on-acceptance.md) requires simulated
+callback gaps, expiry and late/buffered result rejection; physical sleep/wake is
+an optional follow-up and cannot block T12/T13/T14/T15.
 Measure foreground queries separately from source lag and background cost. The
 initial 16-owner/32-subscriber service limits are new cached-service capacities;
 the old direct CLI/Mesh limits stay compatible.

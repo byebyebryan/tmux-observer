@@ -65,7 +65,8 @@ breakdown diagnoses the footprint; it does not replace the aggregate service/
 owned-child budget or establish peaks shorter than the sampling interval.
 
 The output says `G3-partial`/`passed_partial` even when every included case passes.
-Physical sleep/wake, native desktop truth/replacement, declared capacity, transient
+Physical sleep/wake is optional under the [always-on scope](always-on-acceptance.md).
+Native desktop truth/replacement, declared capacity, transient
 memory peaks, encrypted byte overhead, direct-facade compatibility, Rofi and
 managed deployment still need their own evidence. A clean-source result is required
 before checking an acceptance record into the repository; a dirty-source run is
