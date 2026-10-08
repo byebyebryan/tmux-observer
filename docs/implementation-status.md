@@ -301,3 +301,11 @@ readers and large frames were separate phases, so their simultaneous maximum loa
 and full native capacity remain open. See [capacity scope](installed-capacity-acceptance.md)
 and [resource decision review](resource-design-review.md). Source checks pass 143
 tests and include the new tool; no budget has been silently raised.
+
+The user subsequently selected review and validation of 96/768 MiB fleet budgets
+for the current Python design. The [recorded decision](resource-design-review.md#selected-direction)
+preserves the original failed results and all owner/CPU/freshness/logical bounds.
+Future profiles must name the selected candidate ceiling and retain their scope
+limits. Existing headless/local-bridge samples fitting those ceilings do not close
+normal native desktop work, simultaneous maximum-reader/frame load or actual
+SSH capacity acceptance.

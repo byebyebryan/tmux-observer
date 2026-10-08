@@ -128,6 +128,13 @@ profile; G2/G3 establish viable tuning with evidence before these are supported
 claims. If the normal profile fails, review cadence/bounds/process choices rather
 than weakening freshness or hiding work outside the measurement.
 
+The table preserves the initial targets and failed evidence. The subsequent
+[resource review](resource-design-review.md#selected-direction) records the user's
+selected candidates for further fleet verification: normal fleet plus all owned
+children ≤96 MiB, declared-capacity fleet plus all owned children ≤768 MiB. Owner
+ceilings and CPU/foreground/logical limits retain their initial values. Selecting
+these candidates is not native profile or G3 acceptance.
+
 Use at least 100 warm foreground samples per endpoint for a reported p95, retain
 duration arrays and state conditions, and report cold/service-absent separately.
 Collect at least ten minutes of idle/background counters asynchronously, including

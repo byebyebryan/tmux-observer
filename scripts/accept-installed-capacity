@@ -253,7 +253,7 @@ def process_tree(pid):
     return processes
 
 
-def main(output):
+def main(output, memory_target_mib):
     source_commit = command(["git", "-C", str(ROOT), "rev-parse", "HEAD"]).decode().strip()
     dirty = bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).strip())
     evidence = {
@@ -548,8 +548,10 @@ def main(output):
         "sampleCount": len(samples),
         "durationMs": samples[-1]["at"] - samples[0]["at"],
         "fleetAndBridgePeak": peak,
-        "targetBytes": 256 * 1024 * 1024,
-        "memoryTarget": "passed" if peak["rssBytes"] <= 256 * 1024 * 1024 else "failed",
+        "targetBytes": memory_target_mib * 1024 * 1024,
+        "memoryTarget": "passed"
+        if peak["rssBytes"] <= memory_target_mib * 1024 * 1024
+        else "failed",
     }
     evidence["result"] = (
         "passed_partial"
@@ -572,6 +574,7 @@ def main(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--memory-target-mib", type=int, choices=(256, 768), default=768)
     parser.add_argument("--root", type=Path)
     parser.add_argument("--role", choices=("owner", "fleet", "context"))
     parser.add_argument("--host")
@@ -580,4 +583,4 @@ if __name__ == "__main__":
         raise SystemExit(worker(args.root, args.role, args.host))
     if args.output is None or remaining:
         parser.error("provide --output or a complete private worker invocation")
-    main(args.output)
+    main(args.output, args.memory_target_mib)

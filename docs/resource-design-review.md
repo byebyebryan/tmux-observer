@@ -3,7 +3,8 @@
 The initial memory targets are design candidates. Installed measurements now
 show that the current Python/SSH process layout exceeds them. CPU, cached-query
 latency, logical caps and source freshness remain independent requirements.
-This review proposes alternatives; it does not accept a replacement budget.
+This review records alternatives and the selected candidates for validation;
+it does not establish acceptance of a replacement budget.
 
 ## Measured facts
 
@@ -50,3 +51,16 @@ Physical suspend/wake remains an independent gap. Freezing a process or injectin
 a clock jump does not prove host sleep. Prepare isolated fixtures and verified
 wake/recovery steps before scheduling any whole-host suspend that would interrupt
 ordinary desktop/network work.
+
+## Selected direction
+
+On 2026-10-07 the user selected review and validation of 96/768 MiB budgets for
+the current Python design. Use these candidate fleet ceilings in the next normal
+and declared-capacity profiles. Preserve the original 64/256 MiB failures and
+their exact artifacts. The owner ceilings, normal combined CPU target, clock and
+freshness rules, query deadline and logical queue/retention caps remain unchanged.
+
+The existing headless two-host samples are below 96 MiB, and the installed local
+bridge fixture is below 768 MiB. Neither observation closes the missing native
+desktop/resource or actual SSH capacity profiles. Report the selected target and
+measurement scope explicitly with each new evidence file.

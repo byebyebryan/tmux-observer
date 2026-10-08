@@ -24,8 +24,10 @@ may fit kernel socket buffers and do not prove the stalled-writer cutoff.
 RSS sampling every 100 ms includes the fleet process and its entire owned bridge
 tree. Fixture owners/readers/coordinator stay outside that tree. Samples can miss
 transient peaks; the short fixture does not replace a ten-minute background CPU
-profile. The evidence reports the 256 MiB candidate memory target as failed when
+profile. The evidence records the selected target and reports it as failed when
 the sampled tree exceeds it, even if every included functional case passes.
+`--memory-target-mib 256` reproduces the initial ceiling; the default 768 MiB is
+the subsequently selected candidate from the [resource review](resource-design-review.md#selected-direction).
 Local bridges omit actual SSH process and encrypted network costs, so this cannot
 accept the full native capacity/resource gate.
 
