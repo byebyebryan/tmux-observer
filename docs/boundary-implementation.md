@@ -10,7 +10,7 @@ operations tuple.
 | Gate | State | Evidence / next action |
 | --- | --- | --- |
 | B0 contracts | Committed/pushed; CI passed | `bf5f838`; three new bundles, independent corpus, split pure domains and blocked-import checks |
-| B1 native associations | Source and preliminary installed native passed; frozen acceptance pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
+| B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
 | B2 desktop | Pending | Consume prepared associations; separate compositor/process/matcher, headless injection and C3 projection |
 | B3 actions | Pending | Extract write package, exact native guards, uncertainty/cleanup and independent native proof |
 | B4 frontend | Pending | Narrow clients, compatibility corpus/deltas, remembered/frozen/expiry behavior, Starship GUI |
@@ -30,7 +30,7 @@ including actual client switch, server replacement, process UID rejection,
 unchanged counts/last-attachment/geometry/options/hooks and destroy-unattached
 session lifetime. Eight ordinary default-server references survived and owned
 fixtures were removed. This dirty-tree probe is development evidence; the frozen
-committed candidate has its own pending gate. Version 0.2.0a1 is not selected.
+committed candidate has a separate accepted gate. Version 0.2.0a1 is not selected.
 
 Candidate tooling now validates format-2 three-package/six-bundle coverage and
 retains format-1 verification for existing accepted artifacts. Repeated frozen
@@ -45,3 +45,16 @@ native-event experiments are included. Physical sleep remains optional/unrun.
 Keep accepted 96 MiB normal / 768 MiB capacity memory and 5% CPU budgets. New
 sampling is shared and bounded; no cadence speedup is selected. Measure cached
 query cost, source lag, ticket completion and visible UI adoption separately.
+
+The frozen B1 source `1472eda` produced the same 128-member wheel in two builds:
+`3880d7e59558b7f74c5cbe50a75f36d8f4b153e9441f97dda07e96e96853d7c9`.
+Clean harness `913d50e` passed all 11 installed native cases on
+[Snap](evidence/2026-10-08-b1-associations-snap.json) and
+[Starship](evidence/2026-10-08-b1-associations-starship.json), preserving eight/seven
+ordinary references and removing owned roots. Both verified all 50 Python package
+members and imported the installed implementation. The
+[first Starship failure](evidence/2026-10-08-b1-starship-teardown-race.json) was an
+owned-fixture teardown race: `kill-server` returns before shutdown completes.
+The corrected harness waits for complete native absence before testing the
+no-server profile; it changes no producer code. B1 normal resource acceptance is
+deferred to the final integrated candidate, after B2 removes desktop native reads.
