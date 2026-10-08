@@ -87,12 +87,30 @@ class RemoteState:
                 and value["kind"] not in ("gap", "resync")
             ):
                 raise ValueError("replayed or unmarked skipped sequence")
+            if self.candidate is not None:
+                before, after = self.candidate["receipt"], value["receipt"]
+                if (
+                    value["viewRevision"] < self.candidate["viewRevision"]
+                    or value["encodedAt"] < self.candidate["encodedAt"]
+                    or any(after[key] < before[key] for key in ("attempted", "accepted"))
+                    or before["acceptedAttempt"] is not None
+                    and (
+                        after["acceptedAttempt"] is None
+                        or after["acceptedAttempt"] < before["acceptedAttempt"]
+                    )
+                ):
+                    raise ValueError("owner counters or encoding clock regressed")
             self.sequence = value["sequence"]
             self.last_frame = now  # Liveness only; never renews positive validity.
             # Pushes carry candidates, not a second retained full owner snapshot.
             # A matching probe supplies the full document that becomes confirmed.
             self.candidate = copy.deepcopy({**value, "snapshot": None})
             evidence = value["receipt"]
+            if self.local_clock is None and value["kind"] in ("gap", "resync"):
+                # A missing transition could include a failed source. A full
+                # unsolicited frame alone cannot establish remote freshness.
+                self.expiry = 0
+                self.proof = None
             if evidence["state"] != "ready":
                 self.confirmed = copy.deepcopy(value)
                 self.expiry = 0

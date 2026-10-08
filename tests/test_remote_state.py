@@ -5,6 +5,7 @@ import json
 import unittest
 from pathlib import Path
 
+from tmux_observer.public import validate_service_frame
 from tmux_observer_client._errors import ContractError
 from tmux_observer_client._remote_state import RemoteState
 
@@ -121,10 +122,42 @@ class RemoteTests(unittest.TestCase):
         self.confirm()
         frame = copy.deepcopy(self.frame)
         frame.update(kind="gap", requestId=None, sequence=10)
-        expiry = self.remote.expiry
         self.remote.receive(frame, 300)
-        self.assertEqual(self.remote.expiry, expiry)
+        self.assertEqual(self.remote.expiry, 0)
+        self.assertIsNone(self.remote.proof)
         self.assertIsNotNone(self.remote.probe(301))
+
+    def test_counter_or_encoder_time_regression_is_not_a_new_receipt(self):
+        for key in ("receipt", "encodedAt", "viewRevision"):
+            with self.subTest(key=key):
+                self.setUp()
+                self.handshake()
+                self.confirm()
+                frame = copy.deepcopy(self.remote.confirmed)
+                frame.update(kind="heartbeat", requestId=None, sequence=2)
+                if key == "receipt":
+                    # Individually valid but older receipt from this incarnation.
+                    frame["receipt"].update(
+                        state="warming",
+                        attempted=0,
+                        accepted=0,
+                        acceptedAttempt=0,
+                        startedAt=None,
+                        acceptedAt=None,
+                        expiresAt=None,
+                        lastAttemptAt=None,
+                        lastAttemptResult="none",
+                        remainingMs=0,
+                    )
+                    frame["snapshot"] = None
+                else:
+                    frame[key] -= 1
+                    if key == "encodedAt":
+                        frame["receipt"]["remainingMs"] = frame["receipt"]["expiresAt"] - frame[key]
+                validate_service_frame(frame)
+                with self.assertRaises(ContractError):
+                    self.remote.receive(frame, 300)
+                self.assertEqual(self.remote.expiry, 0)
 
     def test_new_transport_epoch_cannot_reuse_old_handshake_or_proof(self):
         self.handshake()
