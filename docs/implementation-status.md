@@ -245,3 +245,12 @@ This identifies event dispatch as a material UI latency issue. It uses private
 Rofi symbols in a temporary diagnostic library, so it accepts neither a supported
 integration nor T14/G4. All 142 source tests pass; no Rofi or managed candidate
 has been selected.
+
+Follow-on source `fd531c4` also reuses the desktop scheduler's input hash between
+source/health events, with owner lease boundaries invalidating that hash. Frames
+and desktop-result admission still perform current-time validation. Source checks
+pass 143 tests, including expiry, disconnect, changed-owner and publication-order
+regressions. A dirty-source two-host functional investigation passes all thirteen
+included cases. Clean installed source `c413094` is being profiled separately;
+its tool records owned process footprints at each sampled service memory peak.
+No post-cache resource or G3 acceptance is claimed while that run is pending.
