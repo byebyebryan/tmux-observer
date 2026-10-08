@@ -616,6 +616,7 @@ def main(output, *, profile=False, artifact=None):
             )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(evidence, indent=2) + "\n")
+    return 0 if evidence["result"] == "passed_partial" else 1
 
 
 if __name__ == "__main__":
@@ -631,6 +632,6 @@ if __name__ == "__main__":
     if args.worker is not None and args.host_id is not None:
         worker(args.worker, args.host_id)
     elif args.output is not None:
-        main(args.output, profile=args.with_profile, artifact=args.artifact)
+        raise SystemExit(main(args.output, profile=args.with_profile, artifact=args.artifact))
     else:
         parser.error("provide --output or a complete private worker invocation")

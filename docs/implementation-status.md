@@ -25,6 +25,10 @@ Snap combined CPU was 5.1046% against 5%, and a near-cap capacity reply exceeded
 was not captured. These failures remain recorded and this wheel is not accepted
 for promotion. Older resource passes below retain their original source/wheel
 scope. Physical sleep is still deferred, and frontend/managed rollout remain open.
+The acceptance harness now propagates failed resource status to the CLI and
+preserves capacity failures with receive/decode/validation timings and explicit
+cleanup state. Three CLI regressions exercise status propagation and worker-mode
+rejection without host operations; these changes do not optimize production code.
 
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The

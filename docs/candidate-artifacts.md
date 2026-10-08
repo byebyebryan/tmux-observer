@@ -104,3 +104,10 @@ assertion; the failure reconstruction states those limits. Both temporary
 capacity roots were verified absent afterward. Neither failure is superseded by
 the earlier, separately scoped resource passes, and this candidate is not
 accepted for G3 or promotion. Physical sleep remains separately deferred.
+
+The normal/capacity coordinators now return nonzero for a failed resource target.
+Capacity case failures persist a report before cleanup, then mark completed
+fixture/backing removal only after it succeeds. An incomplete run cannot accept
+memory targets. Near-cap timings separate receive, installed decode and installed
+semantic validation while retaining the existing 250 ms complete-reply deadline.
+This makes a subsequent failure diagnosable without changing the tested workload.
