@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import os
 import uuid
 
 from tmux_observer.public import SERVICE_PROTOCOL, remote_expiry, validate_service_frame
@@ -11,8 +12,9 @@ from ._errors import ContractError
 
 
 class RemoteState:
-    def __init__(self, host_id):
+    def __init__(self, host_id, *, local_clock=None):
         self.host_id = host_id
+        self.local_clock = copy.deepcopy(local_clock)
         self.epoch = 0
         self.transport = "absent"
         self.handshake = None
@@ -30,7 +32,7 @@ class RemoteState:
     def start(self, nonce, now):
         self.epoch += 1
         self.transport = "connecting"
-        self.handshake = (nonce, now + 15000)
+        self.handshake = (nonce, now + (2000 if self.local_clock is not None else 15000))
         self.scope = self.sequence = self.pending = self.candidate = None
         self.last_frame = None
         self.expiry = 0
@@ -49,6 +51,14 @@ class RemoteState:
             validate_service_frame(value)
             if value["source"]["hostId"] != self.host_id:
                 raise ValueError("foreign logical host")
+            if self.local_clock is not None and (
+                value["source"]["uid"] != os.getuid()
+                or any(
+                    value["clock"][key] != self.local_clock[key]
+                    for key in ("bootId", "timeNamespace")
+                )
+            ):
+                raise ValueError("foreign local owner clock or UID")
             scope = (
                 value["publisherId"],
                 value["source"]["uid"],
@@ -88,6 +98,11 @@ class RemoteState:
                 self.expiry = 0
                 self.proof = None
                 self.error = copy.deepcopy(value["error"])
+            elif self.local_clock is not None:
+                self.confirmed = copy.deepcopy(value)
+                self.expiry = evidence["expiresAt"]
+                self.proof = None
+                self.error = copy.deepcopy(value["error"])
             matched = self.pending is not None and value["requestId"] == self.pending["requestId"]
             if matched:
                 pending = self.pending
@@ -97,20 +112,32 @@ class RemoteState:
                 remaining = evidence["remainingMs"]
                 expiry = remote_expiry(pending["sentAt"], now, remaining, 100)
                 self.confirmed = copy.deepcopy(value)
-                self.proof = {
-                    "requestId": pending["requestId"],
-                    "sentAt": pending["sentAt"],
-                    "receivedAt": now,
-                    "remainingMs": remaining,
-                    "marginMs": 100,
-                }
-                self.expiry = expiry if evidence["state"] == "ready" else 0
+                self.proof = (
+                    None
+                    if self.local_clock is not None
+                    else {
+                        "requestId": pending["requestId"],
+                        "sentAt": pending["sentAt"],
+                        "receivedAt": now,
+                        "remainingMs": remaining,
+                        "marginMs": 100,
+                    }
+                )
+                self.expiry = (
+                    (evidence["expiresAt"] if self.local_clock is not None else expiry)
+                    if evidence["state"] == "ready"
+                    else 0
+                )
                 self.error = copy.deepcopy(value["error"])
                 self.next_probe = now + 3000
-            elif evidence["state"] == "ready" and (
-                self.confirmed is None
-                or evidence["acceptedAttempt"] != self.confirmed["receipt"]["acceptedAttempt"]
-                or value["kind"] in ("gap", "resync")
+            elif (
+                self.local_clock is None
+                and evidence["state"] == "ready"
+                and (
+                    self.confirmed is None
+                    or evidence["acceptedAttempt"] != self.confirmed["receipt"]["acceptedAttempt"]
+                    or value["kind"] in ("gap", "resync")
+                )
             ):
                 self.next_probe = min(self.next_probe, now)
             return matched
@@ -151,7 +178,9 @@ class RemoteState:
             "serverGeneration": snapshot["serverGeneration"] if snapshot else None,
             "sample": snapshot["sample"] if snapshot else None,
             "receipt": frame["receipt"] if frame else None,
-            "transport": self.transport,
+            "transport": "local"
+            if self.local_clock is not None and self.transport == "ready"
+            else self.transport,
             "localExpiry": self.expiry,
             "proof": self.proof,
             "error": self.error,

@@ -17,6 +17,7 @@ from .public import (
     SERVICE_PROTOCOL,
     decode_document,
     encode_document,
+    validate_fleet_frame,
     validate_operation_error,
     validate_request,
     validate_service_frame,
@@ -192,15 +193,31 @@ def exchange(request: dict, *, path: Path | None = None, budget_ms=2000) -> dict
                         value = decode_document(bytes(buffer), limit=FRAME_LIMIT)
                         if value.get("kind") == "operation_error":
                             validate_operation_error(value)
-                            if value["protocol"] != SERVICE_PROTOCOL:
+                            if value["protocol"] != request["protocol"]:
                                 raise IPCError("scope_mismatch", "wrong service error protocol")
                             raise IPCError(value["error"]["code"], value["error"]["message"])
-                        validate_service_frame(value)
+                        if request["protocol"] == SERVICE_PROTOCOL:
+                            validate_service_frame(value)
+                            scope_matches = (
+                                value["source"]["hostId"] == request["expectedHost"]
+                                and value["source"]["uid"] == os.getuid()
+                            )
+                            incarnation = value["publisherId"]
+                        else:
+                            validate_fleet_frame(value)
+                            scope_matches = value["contextId"] == request["contextId"]
+                            if "expectedHost" in request:
+                                scope_matches &= (
+                                    value["snapshot"] is not None
+                                    and value["snapshot"]["mesh"]["localHostId"]
+                                    == request["expectedHost"]
+                                )
+                            incarnation = value["readerId"]
                         if (
-                            value["protocol"] != SERVICE_PROTOCOL
-                            or value["source"]["hostId"] != request["expectedHost"]
-                            or value["source"]["uid"] != os.getuid()
+                            value["protocol"] != request["protocol"]
+                            or not scope_matches
                             or value["requestId"] != request["requestId"]
+                            or value["sequence"] != 0
                         ):
                             raise IPCError(
                                 "scope_mismatch", "publisher response does not match request scope"
@@ -211,9 +228,6 @@ def exchange(request: dict, *, path: Path | None = None, budget_ms=2000) -> dict
                             for key in ("bootId", "timeNamespace")
                         ):
                             raise IPCError("scope_mismatch", "publisher clock domain differs")
-                        if (
-                            "publisherId" in request
-                            and value["publisherId"] != request["publisherId"]
-                        ):
+                        if "publisherId" in request and incarnation != request["publisherId"]:
                             raise IPCError("stale_scope", "publisher incarnation changed")
                         return value

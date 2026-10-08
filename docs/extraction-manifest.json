@@ -13,7 +13,8 @@
     "rofi_tmux_plus/viewer_service.py": "fecd0332052339b3e708bc1b1793684fc18c9fc9450a7b6d271517eb48da1bb7",
     "rofi_tmux_plus/mesh_adapter.py": "bfec8c2a194eb358f460340b1e2db17e36a70f3156b5659a351785999ffcaca7",
     "rofi_tmux_plus/errors.py": "45f30f856fa1476583cc3e3c4ca279a69f7b9da112d90fe51392cb3c1c7385a6",
-    "tests/fixtures/consumer-inventory-v1.json": "4e0853a16c06ed589a9002d4793cf1669ffe4a2754b6eeaccac850ea7bc2dac8"
+    "tests/fixtures/consumer-inventory-v1.json": "4e0853a16c06ed589a9002d4793cf1669ffe4a2754b6eeaccac850ea7bc2dac8",
+    "tests/test_viewer_service.py": "90e8dcf97344367215f8fc4d550fbb54cbcfa3b17ecee2d61c3320964ea72833"
   },
   "contractBundles": {
     "tmux-session-v1": "929aebc003e4af9d0ebe1e2f541c6e45bb03dd996019fbfba425fe5cb454f567",

@@ -7,7 +7,7 @@ The design/backlog baseline is commit `a4fba75`.
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
 | B: owner service | Accepted: T07–T09; G2 passed | 64 source test methods, bounded tickets/stdio, 11 installed/native cases; [G2 evidence](evidence/2026-10-07-native-owner-g2.json) |
-| C: fleet service | In progress: Host Mesh/direct reader | Native Host Mesh discovery and Starship SSH route verified; producer not accepted |
+| C: fleet service | In progress: T10/T11 source and T12 adapters | Host Mesh/direct client, persistent transport, local stream and passive desktop scan; native fleet G3 pending |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
 
@@ -102,3 +102,30 @@ fleet capacity/peak acceptance. Reported query durations include independent
 JSONSchema/semantic validation. Physical suspend remains untested; synthetic
 clock-jump rejection is separate evidence. The unit/artifact were exercised in
 temporary paths, not selected by chezmoi. This closes G2 and permits T10–T12.
+
+T10 source is `5a31860`: the direct diagnostic client retains the released
+inventory shape and 128-host Mesh limit, fixed ordering/aliases, strict provider
+failure, bounded one-shot SSH and nonce-marked route reports. It does not read
+prepared fleet state. Native local Snap diagnosis succeeded; the Starship route
+was independently reachable. Full installed remote direct acceptance remains G3.
+
+T11 source is `4808f76`: one owned non-PTY SSH bridge, first-byte/silence/control
+bounds, held source epochs and matching send-based probes. Remote push frames
+are candidates; only the matching probe's full snapshot renews conservative
+local validity. Heartbeats/replays/delays cannot renew membership. Failure
+invalidates immediately while retaining historical data. Owned stdio relays
+exercise fragmentation, output caps, silence, child cleanup and clock jumps.
+Review reopened T08 to publish every accepted unchanged receipt without changing
+view revision; the source regression verifies publication before the 3-second
+periodic heartbeat. Actual two-host transport acceptance remains pending.
+
+T12 adapters now cover a local Unix subscription with same-UID/same-clock
+absolute expiry, a prepared IPC facade with context/incarnation guards and a
+display-only desktop scan. The scan contains no launch/focus/close code or handles.
+Local client PID joins bracket tmux generation and creation time against exact
+owner inputs. Niri capture/process child reads are bounded; malformed launch
+metadata is unknown. Twelve inherited display-presence regressions and new join,
+cached-read and import-boundary tests pass; the source suite has 100 methods.
+Fleet scheduling, aggregate refresh tickets, user-manager desktop handoff and
+two-host installed/native G3 are the next T12 work. No Rofi/chezmoi migration has
+occurred.

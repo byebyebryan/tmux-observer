@@ -29,6 +29,7 @@ READ_FIELDS = frozenset(
         "pane_id",
         "pane_pid",
         "pane_current_command",
+        "client_pid",
     )
 )
 
@@ -51,7 +52,7 @@ def allowed_read(args: list[str]) -> bool:
             and args[1:3] == ["-p", "-t"]
             and re.fullmatch(r"[$%][0-9]+", args[3]) is not None
         )
-    elif args[0] == "list-sessions":
+    elif args[0] == "list-sessions" or args[0] == "list-clients":
         valid = len(args) == 3 and args[1] == "-F"
     elif args[0] == "list-panes":
         valid = (
