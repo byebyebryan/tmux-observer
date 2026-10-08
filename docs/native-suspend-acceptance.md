@@ -21,6 +21,43 @@ root access alone must not bypass them.
 
 ## Concrete execution profile
 
+`scripts/accept-native-suspend` now prepares the installed two-host fixture and
+runs independent cached supervisors. Its default mode is preparation only:
+
+```sh
+uv run --extra dev python scripts/accept-native-suspend --output /tmp/suspend-preparation.json
+```
+
+Both private endpoints install the same wheel, capture native references,
+attachment/window counts, hooks and pane geometry, and check logind permission,
+inhibitors, enabled RTC wake capability and noninteractive access. Preparation
+keeps both sources readable for six seconds and verifies empty alarms afterward.
+Five safety regressions cover an existing alarm, blocking versus delay inhibitors,
+a blocker appearing after arming, an asynchronous suspend enqueue without actual
+sleep, and an unavailable first resumed read. These are safety/source checks,
+not physical acceptance.
+
+Physical execution is an explicit `--sleep snap` or `--sleep starship` invocation
+with a separate evidence output, after the agreed interruption window. Each
+invocation sleeps one endpoint; the other supervises it. The helper sets a
+relative `+30` alarm through the
+[kernel RTC sysfs interface](https://github.com/torvalds/linux/blob/master/drivers/rtc/sysfs.c),
+which checks for an already enabled alarm, reads back the deadline and rechecks
+inhibitors. It invokes `systemctl --check-inhibitors=yes suspend`. The
+[systemd command documentation](https://github.com/systemd/systemd/blob/main/man/systemctl.xml)
+describes suspend as an asynchronous enqueue; a successful exit is insufficient.
+The helper instead requires a physical BOOTTIME/MONOTONIC delta exceeding ten
+seconds on the same boot and clock namespace. It clears only a matching owned
+alarm; a changed alarm is preserved and recorded as failure.
+
+The supervisor retains bounded metadata, first invalid/recovered full frames,
+and the first response after its own resume, including typed unavailability.
+Installed validation handles every read; the independent acceptance reader
+checks captured complete frames. Failure and cleanup failures remain evidence.
+An alarm-owning helper is allowed to finish its guarded cleanup; timeout does
+not trigger a reboot or a process kill. Backing paths remain available when
+cleanup cannot be verified.
+
 Use one accepted wheel in the existing two-host disposable default-server/unit
 fixture. Record independent native generation, full references, creation times,
 client/window counts and hooks before sleeping. Keep ordinary sessions and user

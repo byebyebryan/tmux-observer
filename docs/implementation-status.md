@@ -3,15 +3,13 @@
 Updated: 2026-10-07. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
-Latest continuation: clean source `3f79975` passed seven installed native manual
-SSH/window cases, including ambiguity, rename and owner replacement. Its
-[desktop-inclusive ten-minute profile](evidence/2026-10-07-native-remote-desktop-normal-g3-partial.json)
-stayed below the selected 96 MiB fleet ceiling (82.49/82.40 MiB), but Snap combined
-CPU failed the unchanged 5% target at 5.74% (Starship 2.40%). This failure remains
-recorded; optimization and a clean rerun are required. Cached RPC p95 was
-5.77/3.28 ms and cached CLI p95 47.92/36.95 ms, separate from Rofi rendering.
-Actual SSH capacity, physical sleep, frontend migration and managed rollout
-remain open.
+Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
+fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The
+normal desktop-inclusive ten-minute profile also passes the unchanged 5%
+combined CPU target. Physical sleep, frontend migration and managed rollout
+remain open. The first [desktop-inclusive profile](evidence/2026-10-07-native-remote-desktop-normal-g3-partial.json)
+at `3f79975` failed Snap CPU at 5.74%; that failure remains recorded alongside
+the later optimized pass.
 
 Optimizations now retain batched generation bracketing, use equivalent compiled
 control-character validation and share identical unsolicited encodings within
@@ -34,8 +32,8 @@ capacity-source limits remain explicit.
 
 | Delivery | State | Evidence |
 | --- | --- | --- |
-| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-collector-utf8-g1.json) |
-| B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-07-native-owner-utf8-g2.json) |
+| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-optimized-g1.json) |
+| B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-07-native-optimized-g2.json) |
 | C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI/context units | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and explicit context handoff; native fleet G3 pending |
 | D: Rofi client | Planned; T06 native mode interaction prototype passes, production integration unresolved | [Native experiment](rofi-interaction-probe.md); idle/active-input adoption and exact selection observed with version-pinned mode prototype; no frontend migration accepted |
 | E: managed rollout | Planned | None |
@@ -44,6 +42,13 @@ Pure validation and `collect --host-id ID` are implemented and accepted for
 the Delivery A scope. Owner service is accepted in isolated candidate scope; fleet,
 GUI migration and managed deployment remain pending. Source, installed/native,
 graphical and managed evidence remain separate gates.
+
+The [physical suspend harness](native-suspend-acceptance.md) is now implemented
+with a preparation-only default and five safety regressions. A disposable
+investigation passed two-host preparation without arming alarms or suspending;
+a clean committed preparation run is the next checkpoint. Whole-host execution
+still needs an agreed interruption window. Source validation now covers 151
+methods; the added harness changes no production observation or collection code.
 
 The collector rejects generic connection errors as absence. Fast and legacy
 paths check final generation and full-reference roster within one 2-second
