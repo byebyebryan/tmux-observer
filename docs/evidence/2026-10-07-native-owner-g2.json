@@ -1,6 +1,6 @@
 {
   "gate": "G2",
-  "sourceCommit": "8fd7ae53947cc6ea096e70734d6e4b035660f20c",
+  "sourceCommit": "f61359e74487b76cc661de7f1d3040023ab941aa",
   "nativeVersion": "tmux 3.7c",
   "endpoint": "Snap",
   "scope": "disposable systemd user unit, private IPC and owned TMUX_TMPDIR",
@@ -22,26 +22,26 @@
       "result": "passed",
       "attempted": 1,
       "queryDurationsMs": [
-        44.664062,
-        44.24726,
-        44.855863,
-        44.682209,
-        44.933566,
-        43.553895,
-        51.532612,
-        55.926225,
-        47.074207,
-        46.296009,
-        46.698208,
-        49.434229,
-        50.931447,
-        49.670835,
-        48.723058,
-        50.371421,
-        50.284987,
-        49.133644,
-        48.38986,
-        48.585188
+        50.166874,
+        52.792798,
+        53.360071,
+        52.155293,
+        51.648422,
+        46.790353,
+        50.134978,
+        48.570946,
+        47.516387,
+        50.63499,
+        51.969924,
+        51.553335,
+        50.913424,
+        52.740501,
+        51.393641,
+        52.532956,
+        51.241047,
+        53.295718,
+        60.156434,
+        49.210829
       ]
     },
     {
@@ -67,7 +67,7 @@
     {
       "name": "stop during blocked collection reaps owned descendants, removes IPC and preserves native sessions",
       "result": "passed",
-      "stopDurationMs": 56.33742798818275
+      "stopDurationMs": 50.73138599982485
     },
     {
       "name": "installed publisher missing native executable is unsupported, not current empty",
@@ -78,8 +78,8 @@
     "Physical suspend untested; deadline jumps covered synthetically",
     "No remote fleet, Rofi migration or managed rollout acceptance"
   ],
-  "wheelSha256": "4fdce8c1b4dc71e94649aabae0bfcb000c433e32e929992fa03c4450e4378dc0",
-  "ownerCgroupMemoryBytes": 11653120,
+  "wheelSha256": "58cf573b1ef5b3bc66f02c610ed7f392323f0c935ec55cd2edd8b54d62c02e37",
+  "ownerCgroupMemoryBytes": 11112448,
   "result": "passed",
-  "observedAtUnixMs": 1791417996367
+  "observedAtUnixMs": 1791419789462
 }

@@ -85,7 +85,7 @@ attempt admitted after the request, coalesce on one eligible successor and retai
 terminal outcomes for ten minutes. Admission caps at 64 tickets/1 MiB; terminal
 lookup causes no collection. Source gate now covers 64 test methods.
 
-G2 reviewed candidate source is `8fd7ae5`; the evidence records its installed wheel
+G2 reviewed candidate source is `f61359e`; the evidence records its installed wheel
 digest. A disposable systemd user unit with owned TMUX_TMPDIR observed the default
 server despite an ambient alternate TMUX context. Twelve watchers and twenty
 probes shared one attempt and preserved roster/attachments/windows/hooks. The
@@ -97,7 +97,7 @@ restart changed publisher UUID and rejected old ticket lookup. Stop during an
 owned blocked native read reaped descendants, removed only owned IPC and preserved
 the native session. Missing tmux was unsupported with no current positives.
 
-The measured owner cgroup used 11,653,120 bytes at one checkpoint; this is not
+The measured owner cgroup used 11,112,448 bytes at one checkpoint; this is not
 fleet capacity/peak acceptance. Reported query durations include independent
 JSONSchema/semantic validation. Physical suspend remains untested; synthetic
 clock-jump rejection is separate evidence. The unit/artifact were exercised in
@@ -117,7 +117,9 @@ invalidates immediately while retaining historical data. Owned stdio relays
 exercise fragmentation, output caps, silence, child cleanup and clock jumps.
 Review reopened T08 to publish every accepted unchanged receipt without changing
 view revision; the source regression verifies publication before the 3-second
-periodic heartbeat. Actual two-host transport acceptance remains pending.
+periodic heartbeat. The installed/native G2 tool was rerun against `f61359e`
+and all 11 cases passed after that change. Actual two-host transport acceptance
+remains pending.
 
 T12 adapters now cover a local Unix subscription with same-UID/same-clock
 absolute expiry, a prepared IPC facade with context/incarnation guards and a
