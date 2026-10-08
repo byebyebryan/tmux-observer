@@ -286,8 +286,21 @@ def worker(output, installed_root):
         evidence["cases"].append("server_replacement_clears_old_associations")
 
         native("kill-server")
-        absent = collector.collect()
+
+        def absent_server():
+            observation = collector.collect()
+            return (
+                observation
+                if (
+                    observation["sample"]["coverage"] == "complete"
+                    and observation["serverGeneration"] is None
+                )
+                else False
+            )
+
+        absent = wait_for(absent_server, "owned server teardown did not complete")
         empty = associations.sample(absent, boottime_ms() + 2000)
+        evidence["noServerSample"] = empty["sample"]
         assert (
             empty["sample"]["coverage"] == "complete"
             and empty["serverGeneration"] is None
