@@ -90,11 +90,13 @@ class Completed:
 class ReadRunner:
     """Fixed server/environment. A private prefix is injectable for owned tests."""
 
-    def __init__(self, prefix: tuple[str, ...] = ("tmux", "-L", "default")):
+    def __init__(self, prefix: tuple[str, ...] = ("tmux", "-u", "-L", "default")):
         self.prefix = prefix
         self.env = dict(os.environ)
         for key in ("TMUX", "TMUX_PANE"):
             self.env.pop(key, None)
+        # Keep deterministic English diagnostics while preserving UTF-8 names
+        # and the tab separators in metadata formats (the default prefix uses -u).
         self.env["LC_ALL"] = "C"
 
     def __call__(self, args: list[str], deadline: int) -> Completed:

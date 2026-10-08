@@ -43,6 +43,7 @@ def main():
         "schemaVersion": 1,
         "gate": "G1",
         "sourceCommit": command(["git", "rev-parse", "HEAD"]).stdout.decode().strip(),
+        "sourceTreeDirty": bool(command(["git", "status", "--porcelain"]).stdout),
         "nativeVersion": command(["tmux", "-V"]).stdout.decode().strip(),
         "python": platform.python_version(),
         "scope": "owned TMUX_TMPDIR; owned default and alternate servers; no ordinary socket mutations",
@@ -63,8 +64,8 @@ def main():
         env = dict(os.environ, TMUX_TMPDIR=str(directory))
         env.pop("TMUX", None)
         env.pop("TMUX_PANE", None)
-        default = ("tmux", "-f", "/dev/null", "-L", "default")
-        alternate = ("tmux", "-f", "/dev/null", "-L", "alternate")
+        default = ("tmux", "-u", "-f", "/dev/null", "-L", "default")
+        alternate = ("tmux", "-u", "-f", "/dev/null", "-L", "alternate")
         runner = ReadRunner(default)
         runner.env = dict(env, LC_ALL="C")
         collector = Collector("fixture-native", runner=runner)
@@ -142,6 +143,25 @@ def main():
             renamed = collect()["sessions"][0]
             assert renamed["name"] == "renamed" and renamed["createdAt"] == row["createdAt"]
             passed("rename and explicit empty pending marker retain identity")
+            native("rename-session", "-t", sid, "owned-é")
+            read_commands = []
+
+            def counted(arguments, deadline):
+                read_commands.append(arguments[0])
+                return runner(arguments, deadline)
+
+            utf8 = collect(Collector("fixture-native", runner=counted))
+            assert (
+                utf8["sessions"][0]["name"]
+                == native("display-message", "-p", "-t", sid, "#{session_name}")
+                == "owned-é"
+            )
+            assert len(read_commands) <= 8, "native fast read unexpectedly fell back to legacy"
+            passed(
+                "native_C_locale_preserves_unicode_and_uses_batched_metadata",
+                readCommands=len(read_commands),
+            )
+            native("rename-session", "-t", sid, "renamed")
 
             def legacy(arguments, deadline):
                 if arguments == ["display-message", "-p", format_fields(GENERATION)]:
@@ -256,6 +276,12 @@ def main():
             passed(
                 "isolated installed wheel CLI and exact packaged contracts ignore ambient alternate TMUX"
             )
+            native(
+                "rename-session", "-t", installed_value["sessions"][0]["sessionId"], "installed-é"
+            )
+            result, unicode_value = installed(dict(contaminated, LC_ALL="C"))
+            assert result.returncode == 0 and unicode_value["sessions"][0]["name"] == "installed-é"
+            passed("installed_C_locale_preserves_native_unicode_metadata")
             native("kill-server")
             result, installed_empty = installed(contaminated)
             assert (

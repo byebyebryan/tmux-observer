@@ -150,7 +150,7 @@ class CollectorTests(unittest.TestCase):
             "os.environ", {"TMUX": "/tmp/other,1,0", "TMUX_PANE": "%1", "TMUX_TMPDIR": "/tmp/owned"}
         ):
             runner = ReadRunner()
-        self.assertEqual(runner.prefix, ("tmux", "-L", "default"))
+        self.assertEqual(runner.prefix, ("tmux", "-u", "-L", "default"))
         self.assertNotIn("TMUX", runner.env)
         self.assertNotIn("TMUX_PANE", runner.env)
         self.assertEqual(runner.env["TMUX_TMPDIR"], "/tmp/owned")
