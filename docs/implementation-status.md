@@ -44,6 +44,16 @@ Six added boundary/race tests bring the source gate to 177 methods. Native and
 resource acceptance for these production changes is pending; prior failures
 remain recorded and the candidate needs a new exact artifact.
 
+Clean candidate `b7cb2f1` passed [G1](evidence/2026-10-08-optimized-b7-g1.json)
+and [G2](evidence/2026-10-08-optimized-b7-g2.json). Its [capacity retry](evidence/2026-10-08-optimized-b7-capacity.json)
+reduced installed decode to 4.4–5.6 ms per record, but one reply still took
+258.96 ms, including 241.21 ms receive/server work. It remains unaccepted for G3.
+The next shared-hub candidate permits the two concrete publishers to render one
+validated unsolicited body per broadcast clock instant, retaining distinct
+sequence/kind envelopes and nonce replies. Other factories explicitly retain
+their existing behavior. Three regressions cover these boundaries; the source
+gate now passes 180 methods. Native/resource acceptance of that change is pending.
+
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The
 normal desktop-inclusive ten-minute profile also passes the unchanged 5%

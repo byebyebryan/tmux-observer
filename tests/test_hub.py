@@ -91,6 +91,65 @@ class HubTests(unittest.TestCase):
         finally:
             reader.close()
 
+    def extra_peer(self, *, sequence=4, gaps=True):
+        source, reader = socket.socketpair()
+        self.addCleanup(reader.close)
+        source.setblocking(False)
+        peer = Peer(source, 100, watch=True, sequence=sequence, gaps=gaps)
+        self.hub.peers.add(peer)
+        self.hub.selector.register(source, 1, peer)
+        return peer
+
+    def test_opted_in_body_sharing_preserves_independent_envelopes_offsets_and_replies(self):
+        extra = self.extra_peer()
+        self.hub.share_broadcast_body = True
+        with patch.object(self.hub, "make_frame", wraps=self.owner.frame) as render:
+            self.hub.broadcast(130, kind="heartbeat")
+            self.assertEqual(render.call_count, 1)
+            own = validate_service_frame(decode_document(self.peer.started.raw))
+            other = validate_service_frame(decode_document(extra.started.raw))
+            self.assertEqual((own["kind"], own["sequence"]), ("heartbeat", 0))
+            self.assertEqual((other["kind"], other["sequence"]), ("gap", 4))
+            self.assertEqual(own["snapshot"], other["snapshot"])
+            self.assertEqual(own["receipt"], other["receipt"])
+            self.peer.started.offset = 1
+            self.assertEqual(extra.started.offset, 0)
+            self.hub.frame(self.peer, 131, kind="status", request_id="fresh-query")
+            self.assertEqual(render.call_count, 2)
+            reply = validate_service_frame(decode_document(self.peer.queued.raw))
+            reply_raw = self.peer.queued.raw
+            self.assertEqual((reply["requestId"], reply["encodedAt"]), ("fresh-query", 131))
+            self.hub.broadcast(132, kind="heartbeat")
+            self.assertEqual(self.peer.queued.raw, reply_raw)
+            self.assertEqual(decode_document(self.peer.queued.raw), reply)
+
+    def test_shared_body_ends_with_broadcast_and_recomputes_remaining_validity(self):
+        extra = self.extra_peer()
+        self.hub.share_broadcast_body = True
+        self.hub.broadcast(130, kind="heartbeat")
+        before = decode_document(extra.started.raw)
+        with patch.object(self.hub, "make_frame", wraps=self.owner.frame) as render:
+            self.hub.broadcast(230, kind="heartbeat")
+            self.assertEqual(render.call_count, 1)
+        after = validate_service_frame(decode_document(extra.queued.raw))
+        self.assertEqual(after["encodedAt"], 230)
+        self.assertEqual(after["receipt"]["remainingMs"], before["receipt"]["remainingMs"] - 100)
+
+    def test_factories_with_envelope_dependent_bodies_are_not_implicitly_shared(self):
+        extra = self.extra_peer()
+
+        def varied(now, **kwargs):
+            value = self.owner.frame(now, **kwargs)
+            value["snapshot"]["sessions"][0]["name"] = str(kwargs["sequence"])
+            return value
+
+        with patch.object(self.hub, "make_frame", side_effect=varied) as render:
+            self.hub.broadcast(130, kind="heartbeat")
+            self.assertEqual(render.call_count, 2)
+        own = validate_service_frame(decode_document(self.peer.started.raw))
+        other = validate_service_frame(decode_document(extra.started.raw))
+        self.assertNotEqual(own["snapshot"], other["snapshot"])
+
     def test_partial_frame_is_preserved_and_stalled_reader_disconnected(self):
         # A valid producer document close to the byte cap, not arbitrary wire.
         sample = json.loads(

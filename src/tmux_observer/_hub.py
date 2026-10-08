@@ -8,6 +8,7 @@ import socket
 from dataclasses import dataclass, field
 
 from ._ipc import Endpoint, same_user
+from ._wire import MAX_INT
 from .public import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document, validate_request
 
 GLOBAL_OUTPUT_LIMIT = 72 * 1024 * 1024
@@ -44,7 +45,9 @@ class Peer:
 
 
 class SocketHub:
-    def __init__(self, path, *, protocol, now, make_frame, handle_request):
+    def __init__(
+        self, path, *, protocol, now, make_frame, handle_request, share_broadcast_body=False
+    ):
         self.endpoint = Endpoint(path)
         self.protocol = protocol
         self.make_frame = make_frame
@@ -53,6 +56,9 @@ class SocketHub:
         self.selector = selectors.DefaultSelector()
         self.selector.register(self.endpoint.socket, selectors.EVENT_READ, None)
         self.now = now
+        # The concrete publishers' unsolicited bodies depend only on state/now.
+        # Other factories retain per-envelope rendering unless they opt in.
+        self.share_broadcast_body = share_broadcast_body
 
     def close_peer(self, peer):
         if peer not in self.peers:
@@ -99,7 +105,9 @@ class SocketHub:
     def can_reply(self, peer):
         return peer.queued is None or not peer.queued.reply
 
-    def frame(self, peer, now, *, kind="view", request_id=None, ticket=None, encoded=None):
+    def frame(
+        self, peer, now, *, kind="view", request_id=None, ticket=None, encoded=None, body=None
+    ):
         reply = request_id is not None
         if peer.queued is not None and peer.queued.reply:
             if reply:
@@ -117,9 +125,22 @@ class SocketHub:
         key = kind, peer.sequence
         raw = encoded.get(key) if encoded is not None and not reply and ticket is None else None
         if raw is None:
-            value = self.make_frame(
-                now, kind=kind, sequence=peer.sequence, request_id=request_id, ticket=ticket
+            shared = (
+                body is not None
+                and not reply
+                and ticket is None
+                and kind in ("view", "heartbeat", "gap")
+                and type(peer.sequence) is int
+                and 0 <= peer.sequence <= MAX_INT
             )
+            if shared and body:
+                value = {**body[0], "kind": kind, "sequence": peer.sequence}
+            else:
+                value = self.make_frame(
+                    now, kind=kind, sequence=peer.sequence, request_id=request_id, ticket=ticket
+                )
+                if shared:
+                    body.append(value)
             raw = encode_document(value, limit=FRAME_LIMIT)
             if encoded is not None and not reply and ticket is None:
                 encoded[key] = raw
@@ -142,9 +163,10 @@ class SocketHub:
         # unsolicited envelope kinds/sequences can share immutable encoded bytes.
         # This cache ends with the broadcast; replies/tickets never enter it.
         encoded = {}
+        body = [] if self.share_broadcast_body else None
         for peer in list(self.peers):
             if peer.watch and not peer.closing:
-                self.frame(peer, now, kind=kind, encoded=encoded)
+                self.frame(peer, now, kind=kind, encoded=encoded, body=body)
 
     def accept(self, now):
         for _ in range(8):

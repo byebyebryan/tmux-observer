@@ -136,6 +136,7 @@ class OwnerPublisher:
             now=boottime_ms,
             make_frame=self.state.frame,
             handle_request=self.handle,
+            share_broadcast_body=True,
         )
         last_revision = self.state.revision
         next_heartbeat = boottime_ms() + 3000

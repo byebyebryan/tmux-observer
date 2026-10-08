@@ -1,0 +1,99 @@
+{
+  "gate": "G2",
+  "sourceCommit": "b7cb2f14fecb41383c2529643a43a01b94289de9",
+  "nativeVersion": "tmux 3.7c",
+  "endpoint": "Snap",
+  "scope": "disposable systemd user unit, private IPC and owned TMUX_TMPDIR",
+  "cases": [
+    {
+      "name": "installed prepared read never auto-starts an absent service; packaged unit verified",
+      "result": "passed"
+    },
+    {
+      "name": "installed user-manager publisher observes owned default despite ambient alternate context",
+      "result": "passed"
+    },
+    {
+      "name": "installed owner-only bridge echoes fragmented probe nonce; EOF leaves publisher alive",
+      "result": "passed"
+    },
+    {
+      "name": "12 watchers and 20 probes share one native attempt and preserve native lifetime facts",
+      "result": "passed",
+      "attempted": 1,
+      "queryDurationsMs": [
+        50.690094,
+        52.187551,
+        51.643157,
+        51.232023,
+        49.538331,
+        51.150704,
+        51.551599,
+        47.594347,
+        48.100502,
+        48.99985,
+        49.557586,
+        48.607281,
+        45.502242,
+        45.690623,
+        44.271024,
+        43.828908,
+        45.661889,
+        43.53771,
+        43.76031,
+        44.205241
+      ]
+    },
+    {
+      "name": "explicit refresh completes only post-request native work; terminal lookup does not collect",
+      "result": "passed"
+    },
+    {
+      "name": "duplicate publisher refuses held lease and leaves original readers intact",
+      "result": "passed"
+    },
+    {
+      "name": "last session disappears with watchers alive; publisher verifies absence without restarting tmux",
+      "result": "passed"
+    },
+    {
+      "name": "native restart and reused session ID acquire new generation",
+      "result": "passed"
+    },
+    {
+      "name": "user-manager restart changes publisher incarnation and rejects old refresh lookup",
+      "result": "passed"
+    },
+    {
+      "name": "stop during blocked collection reaps owned descendants, removes IPC and preserves native sessions",
+      "result": "passed",
+      "stopDurationMs": 49.65237795840949
+    },
+    {
+      "name": "installed publisher missing native executable is unsupported, not current empty",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Physical suspend untested; deadline jumps covered synthetically",
+    "No remote fleet, Rofi migration or managed rollout acceptance"
+  ],
+  "harnessCommit": "b7cb2f14fecb41383c2529643a43a01b94289de9",
+  "harnessTreeDirty": false,
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "b7cb2f14fecb41383c2529643a43a01b94289de9",
+      "epoch": 1791448109,
+      "tree": "e7a80d99d1d4667b1436131a04ab8166445a6456"
+    },
+    "wheelSha256": "ff87b5f57755024d91265986d7cf3dc4485f0a46e357ad6f196f0a676b2eb907",
+    "descriptorSha256": "b450153ded6a73114c00b6d0356ac9b411055d275cf50f42362998070800ae49",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "ff87b5f57755024d91265986d7cf3dc4485f0a46e357ad6f196f0a676b2eb907",
+  "ownerCgroupMemoryBytes": 11452416,
+  "result": "passed",
+  "observedAtUnixMs": 1791448157412
+}

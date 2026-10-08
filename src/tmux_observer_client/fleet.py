@@ -509,6 +509,7 @@ class FleetPublisher:
             now=boottime_ms,
             make_frame=self.frame,
             handle_request=self.handle,
+            share_broadcast_body=True,
         )
         previous = boottime_ms()
         next_heartbeat = previous + 3000

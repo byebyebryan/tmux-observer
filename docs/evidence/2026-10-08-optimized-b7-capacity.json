@@ -1,0 +1,155 @@
+{
+  "gate": "T12-installed-ssh-capacity-partial",
+  "sourceCommit": "b7cb2f14fecb41383c2529643a43a01b94289de9",
+  "sourceTreeDirty": false,
+  "cases": [
+    {
+      "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+      "result": "passed",
+      "frameBytes": 22803
+    },
+    {
+      "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_two_watchers_share_sixteen_owner_connections",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_third_reader_receives_explicit_capacity_error",
+      "result": "passed"
+    },
+    {
+      "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+      "result": "passed",
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 728896,
+        "retainedBytes": 35472,
+        "connections": 16,
+        "perPeerBytes": 22805
+      }
+    },
+    {
+      "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+      "result": "passed",
+      "frameBytes": 918291
+    }
+  ],
+  "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+  "limits": [
+    "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints",
+    "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+    "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+    "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included",
+    "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
+    "Resource profile incomplete after a failed native case; no memory-target acceptance"
+  ],
+  "harnessCommit": "b7cb2f14fecb41383c2529643a43a01b94289de9",
+  "harnessTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "b7cb2f14fecb41383c2529643a43a01b94289de9",
+      "epoch": 1791448109,
+      "tree": "e7a80d99d1d4667b1436131a04ab8166445a6456"
+    },
+    "wheelSha256": "ff87b5f57755024d91265986d7cf3dc4485f0a46e357ad6f196f0a676b2eb907",
+    "descriptorSha256": "b450153ded6a73114c00b6d0356ac9b411055d275cf50f42362998070800ae49",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "ff87b5f57755024d91265986d7cf3dc4485f0a46e357ad6f196f0a676b2eb907",
+  "remoteEndpoint": {
+    "wheelSha256": "ff87b5f57755024d91265986d7cf3dc4485f0a46e357ad6f196f0a676b2eb907",
+    "clock": {
+      "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+      "timeNamespace": "time:4026531834"
+    },
+    "owners": 15
+  },
+  "nearCapRpcMs": [
+    49.81869802577421,
+    168.90459298156202,
+    52.232117974199355,
+    51.131554995663464,
+    50.577563990373164,
+    258.95741197746247
+  ],
+  "nearCapRpcPhases": [
+    {
+      "index": 0,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 31.6687379963696,
+      "decodeMs": 4.9882419989444315,
+      "validateMs": 13.087361992802471,
+      "elapsedMs": 49.81869802577421
+    },
+    {
+      "index": 1,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 148.70927500305697,
+      "decodeMs": 5.621951015200466,
+      "validateMs": 14.494995004497468,
+      "elapsedMs": 168.90459298156202
+    },
+    {
+      "index": 2,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 35.450499039143324,
+      "decodeMs": 4.513291991315782,
+      "validateMs": 12.083949986845255,
+      "elapsedMs": 52.232117974199355
+    },
+    {
+      "index": 3,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 34.46777502540499,
+      "decodeMs": 4.413977963849902,
+      "validateMs": 12.13807100430131,
+      "elapsedMs": 51.131554995663464
+    },
+    {
+      "index": 4,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 33.15681399544701,
+      "decodeMs": 4.827996017411351,
+      "validateMs": 12.453320960048586,
+      "elapsedMs": 50.577563990373164
+    },
+    {
+      "index": 5,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 241.21107399696484,
+      "decodeMs": 4.722548008430749,
+      "validateMs": 12.973072996828705,
+      "elapsedMs": 258.95741197746247
+    }
+  ],
+  "pendingNearCapQuery": {
+    "index": 5,
+    "phase": "validated_reply",
+    "records": 1,
+    "receiveMs": 241.21107399696484,
+    "decodeMs": 4.722548008430749,
+    "validateMs": 12.973072996828705,
+    "elapsedMs": 258.95741197746247
+  },
+  "result": "failed_native_case",
+  "failure": {
+    "type": "AssertionError",
+    "message": "",
+    "location": {
+      "script": "accept-installed-capacity",
+      "line": 874,
+      "function": "main"
+    }
+  },
+  "cleanup": "completed_owned_fixture_and_backing_removal"
+}
