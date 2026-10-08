@@ -8,7 +8,7 @@ The design/backlog baseline is commit `a4fba75`.
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-collector-utf8-g1.json) |
 | B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-07-native-owner-utf8-g2.json) |
 | C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI/context units | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and explicit context handoff; native fleet G3 pending |
-| D: Rofi client | Planned; T06 private dispatch diagnostic succeeds, supported integration unresolved | [Native experiment](rofi-interaction-probe.md); idle/active-input adoption and exact selection observed with private diagnostic; no frontend migration accepted |
+| D: Rofi client | Planned; T06 native mode interaction prototype passes, production integration unresolved | [Native experiment](rofi-interaction-probe.md); idle/active-input adoption and exact selection observed with version-pinned mode prototype; no frontend migration accepted |
 | E: managed rollout | Planned | None |
 
 Pure validation and `collect --host-id ID` are implemented and accepted for
@@ -281,3 +281,12 @@ endpoint was unchanged, and owned fixture/viewer cleanup was verified.
 See [desktop acceptance scope](native-desktop-acceptance.md). This closes those
 local T12 cases, not G3: remote manual SSH truth, capacity, physical sleep/wake,
 memory and other recorded native/managed limits remain open.
+
+T06's clean [native mode prototype](evidence/2026-10-07-rofi-native-mode-t06.json)
+at `4a2ca8b` loads through installed Mode ABI 7 with no preload. Both fixture
+variants adopt idle publication in 45/26 ms and active-input publication in
+28/50 ms while preserving exact selection, filter and caret. Inspected native
+captures show the new notice. This closes the early interaction experiment for
+the installed Rofi 2.0.0 build. Private script-factory/view hooks remain explicit
+dependencies requiring a reviewed production integration; T14/G4 and end-to-end
+ticket/notice timing remain open. Source checks pass 143 tests.

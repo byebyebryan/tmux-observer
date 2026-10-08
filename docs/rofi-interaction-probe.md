@@ -126,3 +126,12 @@ its mode/timer/feed allocation is released on destruction. This establishes a
 testable native integration boundary, not a supported portable notification API.
 Before T14, review a versioned supported notification hook or an explicitly accepted
 version-pinned integration, including packaging, failure behavior and rebuilds.
+
+Clean source `4a2ca8b` passed both fixture variants on Snap. The
+[native-mode evidence](evidence/2026-10-07-rofi-native-mode-t06.json) records plugin
+source/library digests and no preload. Idle updates were adopted in 45/26 ms and
+updates published during active typing in 28/50 ms. Both selected full references,
+filter and caret survived. Inspected native captures show revision 3 during typing
+and the final `azl` input. These observations close the early T06 interaction
+experiment for this installed build; production integration and T14 acceptance
+remain separate, including actual service tickets and native intent safety.
