@@ -43,6 +43,10 @@ connection starts and queue counters. Profiler/control processes remain outside
 the service cgroups; fleet accounting includes its SSH children and the inbound
 bridge owned by the opposite endpoint. RSS is sampled once per second and can miss transient peaks;
 SSH counters exclude encrypted wire overhead. These limits remain explicit.
+The profile retains the owned PID, incarnation, process name and RSS at each
+service's sampled RSS maximum. It records no process argv or environment. This
+breakdown diagnoses the footprint; it does not replace the aggregate service/
+owned-child budget or establish peaks shorter than the sampling interval.
 
 The output says `G3-partial`/`passed_partial` even when every included case passes.
 Physical sleep/wake, native desktop truth/replacement, declared capacity, transient

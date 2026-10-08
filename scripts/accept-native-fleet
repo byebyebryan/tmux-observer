@@ -173,6 +173,7 @@ def profile_native(root, seconds):
     assert seconds >= 600
     tick = os.sysconf("SC_CLK_TCK")
     groups = {}
+    peaks = {}
     for role in ("owner", "fleet"):
         unit = owned_unit(root, role)
         group = (
@@ -194,6 +195,7 @@ def profile_native(root, seconds):
                 "cpuUsec": (int(fields[11]) + int(fields[12])) * 1000000 / tick,
                 "rssBytes": rss,
                 "incarnation": fields[19],
+                "name": Path(f"/proc/{pid}/comm").read_text()[:64].strip(),
             }
         except (FileNotFoundError, ProcessLookupError):
             return None
@@ -229,12 +231,20 @@ def profile_native(root, seconds):
         for role, group in groups.items():
             cpu = dict(line.split() for line in (group / "cpu.stat").read_text().splitlines())
             pids = [int(pid) for pid in (group / "cgroup.procs").read_text().split()]
+            records = [{"pid": pid, **value} for pid in pids if (value := process(pid))]
+            rss = sum(value["rssBytes"] for value in records)
             services[role] = {
                 "cpuUsec": int(cpu["usage_usec"]),
-                "rssBytes": sum(value["rssBytes"] for pid in pids if (value := process(pid))),
+                "rssBytes": rss,
                 "memoryCurrentBytes": int((group / "memory.current").read_text()),
                 "processes": len(pids),
             }
+            if role not in peaks or rss > peaks[role]["rssBytes"]:
+                peaks[role] = {
+                    "rssBytes": rss,
+                    "atMs": time.clock_gettime_ns(time.CLOCK_BOOTTIME) // 1000000,
+                    "processes": records,
+                }
         metrics = json.loads((root / "metrics.json").read_bytes())
         return {
             "atMs": time.clock_gettime_ns(time.CLOCK_BOOTTIME) // 1000000,
@@ -248,7 +258,12 @@ def profile_native(root, seconds):
 
     first = sample()
     samples = [first]
-    output = {"state": "running", "durationMs": 0, "samples": samples}
+    output = {
+        "state": "running",
+        "durationMs": 0,
+        "samples": samples,
+        "servicePeakProcesses": peaks,
+    }
     destination = root / "profile.json"
     while True:
         now = sample()
