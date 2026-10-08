@@ -99,7 +99,7 @@ class SocketHub:
     def can_reply(self, peer):
         return peer.queued is None or not peer.queued.reply
 
-    def frame(self, peer, now, *, kind="view", request_id=None, ticket=None):
+    def frame(self, peer, now, *, kind="view", request_id=None, ticket=None, encoded=None):
         reply = request_id is not None
         if peer.queued is not None and peer.queued.reply:
             if reply:
@@ -114,11 +114,16 @@ class SocketHub:
         if peer.gaps and not reply:
             kind = "gap"
             peer.gaps = False
-        value = self.make_frame(
-            now, kind=kind, sequence=peer.sequence, request_id=request_id, ticket=ticket
-        )
+        key = kind, peer.sequence
+        raw = encoded.get(key) if encoded is not None and not reply and ticket is None else None
+        if raw is None:
+            value = self.make_frame(
+                now, kind=kind, sequence=peer.sequence, request_id=request_id, ticket=ticket
+            )
+            raw = encode_document(value, limit=FRAME_LIMIT)
+            if encoded is not None and not reply and ticket is None:
+                encoded[key] = raw
         peer.sequence += 1
-        raw = encode_document(value, limit=FRAME_LIMIT)
         record = Record(raw, reply)
         if peer.started is None and not peer.controls:
             peer.started = record
@@ -133,9 +138,13 @@ class SocketHub:
             self.close_peer(peer)
 
     def broadcast(self, now, *, kind):
+        # A broadcast has one publisher state and clock instant. Only identical
+        # unsolicited envelope kinds/sequences can share immutable encoded bytes.
+        # This cache ends with the broadcast; replies/tickets never enter it.
+        encoded = {}
         for peer in list(self.peers):
             if peer.watch and not peer.closing:
-                self.frame(peer, now, kind=kind)
+                self.frame(peer, now, kind=kind, encoded=encoded)
 
     def accept(self, now):
         for _ in range(8):

@@ -5,6 +5,7 @@ import socket
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from tmux_observer._hub import Peer, SocketHub
 from tmux_observer._owner_state import OwnerState
@@ -58,6 +59,37 @@ class HubTests(unittest.TestCase):
         error = decode_document(self.peer.controls[0].raw)
         self.assertEqual(error["error"]["code"], "backpressure")
         self.assertEqual(error["requestId"], "probe-2")
+
+    def test_broadcast_shares_only_identical_unsolicited_sequences_and_preserves_nonce_reply(self):
+        source, reader = socket.socketpair()
+        source.setblocking(False)
+        extra = Peer(source, 100, watch=True)
+        self.hub.peers.add(extra)
+        self.hub.selector.register(source, 1, extra)
+        try:
+            with patch.object(self.hub, "make_frame", wraps=self.owner.frame) as render:
+                self.hub.broadcast(130, kind="heartbeat")
+                self.assertEqual(render.call_count, 1)
+            self.assertIs(self.peer.started.raw, extra.started.raw)
+            self.hub.frame(self.peer, 131, kind="status", request_id="protected-probe")
+            reply = self.peer.queued.raw
+            self.hub.broadcast(132, kind="heartbeat")
+            self.assertEqual(self.peer.queued.raw, reply)
+            self.assertEqual(decode_document(reply)["requestId"], "protected-probe")
+            self.assertTrue(self.peer.gaps)
+            value = validate_service_frame(decode_document(extra.queued.raw))
+            self.assertEqual(
+                (value["sequence"], value["kind"], value["encodedAt"]), (1, "heartbeat", 132)
+            )
+            self.hub.frame(self.peer, 133, request_id="another-probe")
+            self.assertEqual(
+                decode_document(self.peer.controls[-1].raw)["error"]["code"], "backpressure"
+            )
+            self.hub.broadcast(134, kind="heartbeat")
+            gap = validate_service_frame(decode_document(extra.queued.raw))
+            self.assertEqual((gap["sequence"], gap["kind"], gap["encodedAt"]), (2, "gap", 134))
+        finally:
+            reader.close()
 
     def test_partial_frame_is_preserved_and_stalled_reader_disconnected(self):
         # A valid producer document close to the byte cap, not arbitrary wire.
