@@ -176,3 +176,24 @@ with its captured context passed. A native finding corrected new-unit startup:
 succeed. The source gate passes 138 methods. This component evidence does not
 close two-host, native source, desktop truth, resource or managed G3 acceptance.
 See [service contexts](service-contexts.md).
+
+
+The first two-host installed/native baseline at `3455a27` passed 14 included
+functional/measurement cases with one exact wheel on both hosts; see
+[partial G3 evidence](evidence/2026-10-07-native-fleet-g3-partial.json). Independent
+native identities and conservative expiry, both SSH directions, causal refresh,
+headless desktop failure, native failure on live transport, owner replacement,
+delay/trickle/wrong-nonce faults, Mesh failure/recovery and scoped stop passed.
+The ten-minute idle window started no new SSH connection. Warm cached RPC p95 was
+6.26 ms on Snap and 5.50 ms on Starship; installed cached CLI p95 was 43.75/37.62 ms.
+These are prepared-read measurements, not Rofi frame or visible notice acceptance.
+
+Background resource acceptance **failed/pending**. Snap owner/fleet/owned bridge
+mean CPU was 4.66/6.41/0.36 percent of one core; Starship was 2.39/3.01/0.14 percent.
+Each endpoint exceeds the combined 5 percent target. Observed fleet cgroup RSS
+plus the opposite endpoint's owned inbound bridge also exceeds the 64 MiB target.
+The fault relay adds a Python process and is included, so a production-layout
+profile still needs separation from relay overhead; transient RSS peaks and
+encrypted SSH overhead remain unmeasured. Native reads were roughly 20 commands
+per sample, revealing an unintended legacy fallback that is under investigation.
+G3 stays open; no consumer or managed artifact has been selected.
