@@ -457,9 +457,11 @@ def main(output, *, profile=False):
         close_viewer(second)
         attached = native_count(1)
         until(
-            lambda value: current(value)
-            and remote_row(value)["sessions"][0]["attachedClients"] == 1
-            and viewer(value).get("confidence") == "matched"
+            lambda value: (
+                current(value)
+                and remote_row(value)["sessions"][0]["attachedClients"] == 1
+                and viewer(value).get("confidence") == "matched"
+            )
         )
         passed("closing_only_duplicate_owned_window_restores_unique_qualified_match")
         renamed = controls["starship"].call("rename_owned")
@@ -563,9 +565,11 @@ def main(output, *, profile=False):
         close_viewer(first)
         final_truth = native_count(0)["reference"]
         closed = until(
-            lambda value: current(value)
-            and remote_row(value)["sessions"][0]["attachedClients"] == 0
-            and viewer(value)["state"] == "none"
+            lambda value: (
+                current(value)
+                and remote_row(value)["sessions"][0]["attachedClients"] == 0
+                and viewer(value)["state"] == "none"
+            )
         )
         assert_reference(closed, final_truth)
         for host, control in controls.items():
