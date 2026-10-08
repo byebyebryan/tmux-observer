@@ -9,6 +9,10 @@ source coverage and writes an unaccepted content descriptor. Eleven focused
 checks cover source isolation and artifact integrity. This is preparation for
 one frozen wheel across later acceptance; it establishes no additional runtime
 or managed rollout gate. Both hosts' physical sleep remains deferred.
+Clean source `3437633` passed 164 methods; two builds produced identical wheel
+bytes, and isolated same-wheel installs on both hosts verified all 64 packaged
+runtime/data/license files and three contract manifests. The exact scope and
+probe are in the [preparation evidence](evidence/2026-10-08-candidate-artifact-preparation.json).
 
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The

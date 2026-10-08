@@ -48,3 +48,14 @@ source requires a new artifact and review of affected evidence. Existing native
 records remain valid within their named source/wheel scope; they cannot silently
 be relabeled as acceptance of a newly built wheel. Physical sleep remains an
 independent G3 case and is deferred by the user on both active hosts.
+
+## Recorded preparation
+
+Clean source `3437633` passed 164 source tests and two independent builds with
+CPython 3.14.7, uv 0.8.22 and setuptools 84.0.0. Their 69-member wheel bytes were
+identical. The [preparation record](evidence/2026-10-08-candidate-artifact-preparation.json)
+names its SHA-256 and includes the exact isolated installation probe. The same
+wheel installed on Snap and Starship: all 64 runtime/data/license members and
+three contract checksum manifests matched; import origins and both entry-point
+help commands passed. Temporary install roots were removed. No service or native
+collection was requested, and this wheel remains unaccepted for those gates.
