@@ -294,7 +294,15 @@ class SocketHub:
             try:
                 if events & selectors.EVENT_READ:
                     self.read(peer, self.now())
-                if peer in self.peers and events & selectors.EVENT_WRITE:
+                # A read can admit a reply after select captured read-only
+                # readiness. Try its bounded nonblocking write now instead of
+                # waiting behind the publishers' next source-processing tick.
+                if peer in self.peers and (
+                    events & selectors.EVENT_WRITE
+                    or peer.started is not None
+                    or peer.queued is not None
+                    or peer.controls
+                ):
                     self.write(peer, self.now())
             except OSError:
                 self.close_peer(peer)

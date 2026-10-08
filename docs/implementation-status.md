@@ -54,6 +54,20 @@ sequence/kind envelopes and nonce replies. Other factories explicitly retain
 their existing behavior. Three regressions cover these boundaries; the source
 gate now passes 180 methods. Native/resource acceptance of that change is pending.
 
+Clean candidate `3a1f4cb` passed [G1](evidence/2026-10-08-optimized-3a-g1.json)
+and [G2](evidence/2026-10-08-optimized-3a-g2.json), but its uninstrumented
+[capacity run](evidence/2026-10-08-optimized-3a-capacity.json) still failed at
+258.94 ms (238.33 ms receive/server work). Owned cleanup completed; no memory
+acceptance follows that failed run. Separately scoped
+[diagnostics](evidence/2026-10-08-optimized-3a-diagnostics.json) show repeated
+validation/rendering and socket poll work, with scheduling variation; instrumented
+passes are excluded from acceptance. The socket hub now attempts bounded
+nonblocking delivery immediately after admitting a request, so a new reply does
+not wait behind the next source-processing iteration. Same-poll nonce/error
+regressions retain existing framing, slow-reader retirement and reply protection.
+The source gate passes 182 methods. This new candidate needs its own frozen
+artifact and native/resource checks.
+
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The
 normal desktop-inclusive ten-minute profile also passes the unchanged 5%

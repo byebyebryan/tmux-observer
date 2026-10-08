@@ -1,0 +1,5851 @@
+{
+  "kind": "diagnostic_only_not_acceptance",
+  "sourceCommit": "3a1f4cb6a795ff4b1f991420c05102ea09ac7b59",
+  "wheelSha256": "72ea7e3abfd60e7b9cd58c0130828a4cd47023da700be26267988231b4139f6e",
+  "scope": "Temporary copies of clean capacity coordinator; installed frozen wheel; only local Fleet worker instrumented; fifteen actual SSH links to owned synthetic remote publishers",
+  "limits": [
+    "Instrumentation changes scheduling and cannot establish deadline or memory acceptance",
+    "Recorded times over 10 ms include blocking selector wait; nested stages overlap and cannot be summed as CPU or latency attribution",
+    "Full cProfile trace includes interpreter thread internals and is a qualitative diagnostic, not process CPU accounting",
+    "The uninstrumented 3a capacity failure remains the current acceptance result"
+  ],
+  "profileRun": {
+    "gate": "T12-installed-ssh-capacity-partial",
+    "sourceCommit": "3a1f4cb6a795ff4b1f991420c05102ea09ac7b59",
+    "sourceTreeDirty": false,
+    "cases": [
+      {
+        "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+        "result": "passed",
+        "frameBytes": 22803
+      },
+      {
+        "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+        "result": "passed"
+      },
+      {
+        "name": "thirty_two_watchers_share_sixteen_owner_connections",
+        "result": "passed"
+      },
+      {
+        "name": "thirty_third_reader_receives_explicit_capacity_error",
+        "result": "passed"
+      },
+      {
+        "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+        "result": "passed",
+        "highWater": {
+          "readers": 32,
+          "outputBytes": 546672,
+          "retainedBytes": 35504,
+          "connections": 16,
+          "perPeerBytes": 22805
+        }
+      },
+      {
+        "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+        "result": "passed",
+        "frameBytes": 918291
+      }
+    ],
+    "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+    "limits": [
+      "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints",
+      "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+      "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+      "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included",
+      "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
+      "Resource profile incomplete after a failed native case; no memory-target acceptance"
+    ],
+    "harnessCommit": "3a1f4cb6a795ff4b1f991420c05102ea09ac7b59",
+    "harnessTreeDirty": false,
+    "artifactInput": {
+      "state": "built_unaccepted",
+      "source": {
+        "commit": "3a1f4cb6a795ff4b1f991420c05102ea09ac7b59",
+        "epoch": 1791449248,
+        "tree": "1cbd5224bfbe30325e7b6d53d1de6df4128a782f"
+      },
+      "wheelSha256": "72ea7e3abfd60e7b9cd58c0130828a4cd47023da700be26267988231b4139f6e",
+      "descriptorSha256": "39ab1a40814e8ab475b64e713686de4b372a5cfa4ecbcc5857fce34567b618e6",
+      "sourceFilesMatchHarness": true
+    },
+    "wheelSha256": "72ea7e3abfd60e7b9cd58c0130828a4cd47023da700be26267988231b4139f6e",
+    "remoteEndpoint": {
+      "wheelSha256": "72ea7e3abfd60e7b9cd58c0130828a4cd47023da700be26267988231b4139f6e",
+      "clock": {
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      },
+      "owners": 15
+    },
+    "result": "failed_native_case",
+    "failure": {
+      "type": "TimeoutError",
+      "message": "timed out",
+      "location": {
+        "script": "tmux-observer-capacity-profile-3a.py",
+        "line": 366,
+        "function": "record"
+      }
+    },
+    "cleanup": "completed_owned_fixture_and_backing_removal"
+  },
+  "stageRun": {
+    "gate": "T12-installed-ssh-capacity-partial",
+    "sourceCommit": "3a1f4cb6a795ff4b1f991420c05102ea09ac7b59",
+    "sourceTreeDirty": false,
+    "cases": [
+      {
+        "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+        "result": "passed",
+        "frameBytes": 22803
+      },
+      {
+        "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+        "result": "passed"
+      },
+      {
+        "name": "thirty_two_watchers_share_sixteen_owner_connections",
+        "result": "passed"
+      },
+      {
+        "name": "thirty_third_reader_receives_explicit_capacity_error",
+        "result": "passed"
+      },
+      {
+        "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+        "result": "passed",
+        "highWater": {
+          "readers": 32,
+          "outputBytes": 728896,
+          "retainedBytes": 35472,
+          "connections": 16,
+          "perPeerBytes": 22805
+        }
+      },
+      {
+        "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+        "result": "passed",
+        "frameBytes": 918291
+      },
+      {
+        "name": "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners",
+        "result": "passed"
+      },
+      {
+        "name": "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
+        "result": "passed",
+        "rpcMs": [
+          50.64893001690507,
+          51.3941349927336,
+          49.880716018378735,
+          60.91303698485717,
+          49.06623798888177,
+          52.6260839542374,
+          175.2263669623062,
+          55.22606399608776,
+          60.0061749573797,
+          58.407734031789005
+        ],
+        "highWater": {
+          "readers": 32,
+          "outputBytes": 52341999,
+          "retainedBytes": 931088,
+          "connections": 16,
+          "perPeerBytes": 1836563
+        }
+      },
+      {
+        "name": "seventeenth_catalog_owner_fails_authority_without_truncated_success",
+        "result": "passed"
+      },
+      {
+        "name": "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+        "result": "passed",
+        "elapsedMs": 85.876
+      }
+    ],
+    "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+    "limits": [
+      "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints",
+      "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+      "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+      "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included",
+      "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI"
+    ],
+    "harnessCommit": "3a1f4cb6a795ff4b1f991420c05102ea09ac7b59",
+    "harnessTreeDirty": false,
+    "artifactInput": {
+      "state": "built_unaccepted",
+      "source": {
+        "commit": "3a1f4cb6a795ff4b1f991420c05102ea09ac7b59",
+        "epoch": 1791449248,
+        "tree": "1cbd5224bfbe30325e7b6d53d1de6df4128a782f"
+      },
+      "wheelSha256": "72ea7e3abfd60e7b9cd58c0130828a4cd47023da700be26267988231b4139f6e",
+      "descriptorSha256": "39ab1a40814e8ab475b64e713686de4b372a5cfa4ecbcc5857fce34567b618e6",
+      "sourceFilesMatchHarness": true
+    },
+    "wheelSha256": "72ea7e3abfd60e7b9cd58c0130828a4cd47023da700be26267988231b4139f6e",
+    "remoteEndpoint": {
+      "wheelSha256": "72ea7e3abfd60e7b9cd58c0130828a4cd47023da700be26267988231b4139f6e",
+      "clock": {
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      },
+      "owners": 15
+    },
+    "nearCapRpcMs": [
+      50.64893001690507,
+      51.3941349927336,
+      49.880716018378735,
+      60.91303698485717,
+      49.06623798888177,
+      52.6260839542374,
+      175.2263669623062,
+      55.22606399608776,
+      60.0061749573797,
+      58.407734031789005
+    ],
+    "nearCapRpcPhases": [
+      {
+        "index": 0,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 33.153360011056066,
+        "decodeMs": 4.785088996868581,
+        "validateMs": 12.64793099835515,
+        "elapsedMs": 50.64893001690507
+      },
+      {
+        "index": 1,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 34.375249000731856,
+        "decodeMs": 4.345074004959315,
+        "validateMs": 12.526615988463163,
+        "elapsedMs": 51.3941349927336
+      },
+      {
+        "index": 2,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 32.3663130402565,
+        "decodeMs": 4.696741001680493,
+        "validateMs": 12.692404037807137,
+        "elapsedMs": 49.880716018378735
+      },
+      {
+        "index": 3,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 43.46390103455633,
+        "decodeMs": 4.938737023621798,
+        "validateMs": 12.39881501533091,
+        "elapsedMs": 60.91303698485717
+      },
+      {
+        "index": 4,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 32.48454601271078,
+        "decodeMs": 4.451279004570097,
+        "validateMs": 12.021507020108402,
+        "elapsedMs": 49.06623798888177
+      },
+      {
+        "index": 5,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 35.683053953107446,
+        "decodeMs": 4.536231979727745,
+        "validateMs": 12.26143300300464,
+        "elapsedMs": 52.6260839542374
+      },
+      {
+        "index": 6,
+        "phase": "validated_reply",
+        "records": 2,
+        "receiveMs": 140.95088600879535,
+        "decodeMs": 9.289521083701402,
+        "validateMs": 24.93519801646471,
+        "elapsedMs": 175.2263669623062
+      },
+      {
+        "index": 7,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 38.35588198853657,
+        "decodeMs": 4.456809023395181,
+        "validateMs": 12.261813972145319,
+        "elapsedMs": 55.22606399608776
+      },
+      {
+        "index": 8,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 43.4454110218212,
+        "decodeMs": 4.35984501382336,
+        "validateMs": 12.026052980218083,
+        "elapsedMs": 60.0061749573797
+      },
+      {
+        "index": 9,
+        "phase": "validated_reply",
+        "records": 1,
+        "receiveMs": 40.34620302263647,
+        "decodeMs": 4.583843983709812,
+        "validateMs": 13.345950981602073,
+        "elapsedMs": 58.407734031789005
+      }
+    ],
+    "profile": {
+      "sampleIntervalMs": 100,
+      "sampleCount": 238,
+      "durationMs": 30685,
+      "fleetAndBridgePeak": {
+        "at": 489785868,
+        "rssBytes": 232595456,
+        "processes": [
+          {
+            "pid": 1923879,
+            "incarnation": "48977034",
+            "name": "python",
+            "rssBytes": 62214144
+          },
+          {
+            "pid": 1923910,
+            "incarnation": "48977149",
+            "name": "ssh",
+            "rssBytes": 11337728
+          },
+          {
+            "pid": 1923909,
+            "incarnation": "48977144",
+            "name": "ssh",
+            "rssBytes": 11341824
+          },
+          {
+            "pid": 1923908,
+            "incarnation": "48977142",
+            "name": "ssh",
+            "rssBytes": 11378688
+          },
+          {
+            "pid": 1923907,
+            "incarnation": "48977120",
+            "name": "ssh",
+            "rssBytes": 11268096
+          },
+          {
+            "pid": 1923902,
+            "incarnation": "48977115",
+            "name": "ssh",
+            "rssBytes": 11337728
+          },
+          {
+            "pid": 1923901,
+            "incarnation": "48977115",
+            "name": "ssh",
+            "rssBytes": 11194368
+          },
+          {
+            "pid": 1923900,
+            "incarnation": "48977109",
+            "name": "ssh",
+            "rssBytes": 11296768
+          },
+          {
+            "pid": 1923891,
+            "incarnation": "48977088",
+            "name": "ssh",
+            "rssBytes": 11313152
+          },
+          {
+            "pid": 1923890,
+            "incarnation": "48977083",
+            "name": "ssh",
+            "rssBytes": 11247616
+          },
+          {
+            "pid": 1923889,
+            "incarnation": "48977083",
+            "name": "ssh",
+            "rssBytes": 11317248
+          },
+          {
+            "pid": 1923888,
+            "incarnation": "48977077",
+            "name": "ssh",
+            "rssBytes": 11579392
+          },
+          {
+            "pid": 1923885,
+            "incarnation": "48977045",
+            "name": "ssh",
+            "rssBytes": 11370496
+          },
+          {
+            "pid": 1923884,
+            "incarnation": "48977045",
+            "name": "ssh",
+            "rssBytes": 11382784
+          },
+          {
+            "pid": 1923883,
+            "incarnation": "48977045",
+            "name": "ssh",
+            "rssBytes": 11706368
+          },
+          {
+            "pid": 1923882,
+            "incarnation": "48977045",
+            "name": "ssh",
+            "rssBytes": 11309056
+          }
+        ]
+      },
+      "targetBytes": 805306368,
+      "memoryTarget": "passed",
+      "associatedRemoteBridges": {
+        "sampleIntervalMs": 100,
+        "sampleCount": 304,
+        "peak": {
+          "atBootTimeMs": 490213370,
+          "rssBytes": 294465536,
+          "processes": [
+            {
+              "pid": 986685,
+              "incarnation": "49018449",
+              "name": "tmux-observer",
+              "rssBytes": 19550208
+            },
+            {
+              "pid": 986683,
+              "incarnation": "49018445",
+              "name": "tmux-observer",
+              "rssBytes": 19619840
+            },
+            {
+              "pid": 986680,
+              "incarnation": "49018443",
+              "name": "tmux-observer",
+              "rssBytes": 19533824
+            },
+            {
+              "pid": 986674,
+              "incarnation": "49018425",
+              "name": "tmux-observer",
+              "rssBytes": 19623936
+            },
+            {
+              "pid": 986667,
+              "incarnation": "49018419",
+              "name": "tmux-observer",
+              "rssBytes": 19513344
+            },
+            {
+              "pid": 986665,
+              "incarnation": "49018416",
+              "name": "tmux-observer",
+              "rssBytes": 19623936
+            },
+            {
+              "pid": 986663,
+              "incarnation": "49018411",
+              "name": "tmux-observer",
+              "rssBytes": 19664896
+            },
+            {
+              "pid": 986652,
+              "incarnation": "49018390",
+              "name": "tmux-observer",
+              "rssBytes": 19615744
+            },
+            {
+              "pid": 986648,
+              "incarnation": "49018386",
+              "name": "tmux-observer",
+              "rssBytes": 19615744
+            },
+            {
+              "pid": 986645,
+              "incarnation": "49018383",
+              "name": "tmux-observer",
+              "rssBytes": 19587072
+            },
+            {
+              "pid": 986641,
+              "incarnation": "49018379",
+              "name": "tmux-observer",
+              "rssBytes": 19689472
+            },
+            {
+              "pid": 986600,
+              "incarnation": "49018356",
+              "name": "tmux-observer",
+              "rssBytes": 19730432
+            },
+            {
+              "pid": 986597,
+              "incarnation": "49018353",
+              "name": "tmux-observer",
+              "rssBytes": 19562496
+            },
+            {
+              "pid": 986596,
+              "incarnation": "49018351",
+              "name": "tmux-observer",
+              "rssBytes": 19607552
+            },
+            {
+              "pid": 986593,
+              "incarnation": "49018349",
+              "name": "tmux-observer",
+              "rssBytes": 19927040
+            }
+          ]
+        },
+        "current": {
+          "atBootTimeMs": 490213772,
+          "rssBytes": 0,
+          "processes": []
+        },
+        "ownersAlive": 15
+      },
+      "conservativeCombinedPeakBytes": 527060992
+    },
+    "result": "passed_partial"
+  },
+  "stageSummary": {
+    "poll": {
+      "callsOver10Ms": 555,
+      "maxMs": 227.44867
+    },
+    "connection_tick": {
+      "callsOver10Ms": 30,
+      "maxMs": 51.107121
+    },
+    "desktop_tick": {
+      "callsOver10Ms": 6,
+      "maxMs": 17.954498
+    },
+    "frame": {
+      "callsOver10Ms": 153,
+      "maxMs": 42.255846
+    },
+    "process_requests": {
+      "callsOver10Ms": 75,
+      "maxMs": 42.632167
+    },
+    "project_changed": {
+      "callsOver10Ms": 60,
+      "maxMs": 18.788038
+    },
+    "broadcast": {
+      "callsOver10Ms": 2,
+      "maxMs": 35.916008
+    }
+  },
+  "stageSamples": [
+    {
+      "stage": "poll",
+      "started": 489770421.214843,
+      "ms": 31.210249,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489770463.895406,
+      "ms": 50.120973,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770514.105939,
+      "ms": 50.078553,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770569.497487,
+      "ms": 42.496181,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489770617.936847,
+      "ms": 50.100307,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770668.184493,
+      "ms": 50.134366,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770718.496629,
+      "ms": 50.187053,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770780.227679,
+      "ms": 50.198268,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770834.506639,
+      "ms": 50.189009,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770891.973119,
+      "ms": 37.92067,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489770941.451402,
+      "ms": 50.114523,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489770993.817521,
+      "ms": 50.086197,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771044.178235,
+      "ms": 43.453986,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489771101.24251,
+      "ms": 50.063678,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771155.802824,
+      "ms": 50.156997,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771214.703465,
+      "ms": 37.907665,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489771266.935871,
+      "ms": 50.192978,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771320.035992,
+      "ms": 50.209444,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771370.56792,
+      "ms": 44.725825,
+      "readers": 1
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489771415.315516,
+      "ms": 14.660844,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489771445.768508,
+      "ms": 50.178996,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771501.273847,
+      "ms": 50.088648,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771564.144478,
+      "ms": 32.217564,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489771610.482018,
+      "ms": 50.103301,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771664.028758,
+      "ms": 50.103558,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771714.294193,
+      "ms": 44.743344,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489771768.299259,
+      "ms": 50.176802,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771823.632735,
+      "ms": 50.17083,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771874.074084,
+      "ms": 45.441828,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489771929.636361,
+      "ms": 50.068269,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489771980.045651,
+      "ms": 32.503441,
+      "readers": 2
+    },
+    {
+      "stage": "poll",
+      "started": 489772012.660247,
+      "ms": 11.637845,
+      "readers": 3
+    },
+    {
+      "stage": "poll",
+      "started": 489772030.219599,
+      "ms": 48.364587,
+      "readers": 19
+    },
+    {
+      "stage": "poll",
+      "started": 489772078.677991,
+      "ms": 45.636233,
+      "readers": 27
+    },
+    {
+      "stage": "poll",
+      "started": 489772124.521853,
+      "ms": 45.610749,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772170.220699,
+      "ms": 28.625427,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772199.071688,
+      "ms": 50.073749,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772253.481751,
+      "ms": 50.228139,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772316.456294,
+      "ms": 50.115201,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772371.259564,
+      "ms": 50.077521,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772433.966594,
+      "ms": 50.090784,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772484.317042,
+      "ms": 50.077086,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772534.85621,
+      "ms": 50.109885,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772591.656765,
+      "ms": 50.507113,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772642.321804,
+      "ms": 50.289358,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772692.936469,
+      "ms": 50.088058,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772743.191064,
+      "ms": 50.123682,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772793.652114,
+      "ms": 50.087135,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772843.927484,
+      "ms": 50.09044,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772894.358533,
+      "ms": 50.123666,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772944.642204,
+      "ms": 50.221721,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489772995.247095,
+      "ms": 50.183182,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773045.610545,
+      "ms": 50.084811,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773096.044729,
+      "ms": 50.229377,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773146.445249,
+      "ms": 50.124079,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773196.962278,
+      "ms": 50.151085,
+      "readers": 32
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489773247.124047,
+      "ms": 10.602034,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773261.121926,
+      "ms": 50.078963,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773311.513253,
+      "ms": 50.110399,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773365.807609,
+      "ms": 50.077391,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773416.154478,
+      "ms": 50.076848,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773472.694545,
+      "ms": 50.08123,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773523.202607,
+      "ms": 50.09345,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773573.569264,
+      "ms": 50.090915,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773624.046107,
+      "ms": 50.091945,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773681.677473,
+      "ms": 50.123847,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773732.174057,
+      "ms": 31.417274,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773763.696982,
+      "ms": 50.127024,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773813.982644,
+      "ms": 50.08236,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773864.342017,
+      "ms": 50.123263,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773914.59718,
+      "ms": 50.114635,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489773965.040139,
+      "ms": 50.101333,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774015.377564,
+      "ms": 50.088415,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774065.821435,
+      "ms": 50.191389,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774116.201317,
+      "ms": 50.079273,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774166.577683,
+      "ms": 50.093154,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774216.801067,
+      "ms": 50.07897,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774267.153232,
+      "ms": 50.07836,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774329.424171,
+      "ms": 50.10531,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774384.336447,
+      "ms": 50.079731,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774445.743236,
+      "ms": 50.106588,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774499.909805,
+      "ms": 50.200955,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774550.244369,
+      "ms": 50.078148,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774600.613579,
+      "ms": 50.111818,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774650.860528,
+      "ms": 50.207128,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774701.358245,
+      "ms": 50.079565,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774751.566067,
+      "ms": 50.10786,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774801.955406,
+      "ms": 50.128773,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774852.214353,
+      "ms": 50.235485,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774902.76271,
+      "ms": 50.184671,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489774953.088277,
+      "ms": 50.204938,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775003.560493,
+      "ms": 50.116558,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775053.799086,
+      "ms": 50.123609,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775104.204675,
+      "ms": 50.077745,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775154.409366,
+      "ms": 50.077333,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775204.75822,
+      "ms": 50.114093,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775255.014468,
+      "ms": 50.077624,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775305.358344,
+      "ms": 50.121316,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775355.614474,
+      "ms": 50.114761,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775405.988812,
+      "ms": 50.083669,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775456.196099,
+      "ms": 50.18435,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775506.745135,
+      "ms": 50.081384,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775557.321907,
+      "ms": 50.077827,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775614.558745,
+      "ms": 50.081468,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775664.766613,
+      "ms": 50.199136,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775715.255386,
+      "ms": 50.200828,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775765.587767,
+      "ms": 50.194975,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775816.107269,
+      "ms": 50.077501,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775866.313298,
+      "ms": 50.193341,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775916.789482,
+      "ms": 50.201991,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489775967.131699,
+      "ms": 50.080528,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776017.49742,
+      "ms": 50.200505,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776067.839427,
+      "ms": 50.08108,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776118.211619,
+      "ms": 50.082852,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776168.43412,
+      "ms": 50.118006,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776218.836083,
+      "ms": 50.080912,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776282.046093,
+      "ms": 50.088734,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776344.644536,
+      "ms": 50.055526,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776400.759488,
+      "ms": 50.217097,
+      "readers": 32
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489776451.036435,
+      "ms": 23.498672,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776483.353432,
+      "ms": 50.119041,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776544.63219,
+      "ms": 50.107594,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776595.679756,
+      "ms": 50.242808,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776646.267589,
+      "ms": 50.120008,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776697.117405,
+      "ms": 50.129244,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776747.646531,
+      "ms": 50.150813,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776802.048247,
+      "ms": 50.076582,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776852.251423,
+      "ms": 50.075015,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776902.603051,
+      "ms": 50.131438,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489776953.068611,
+      "ms": 50.138057,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777003.948716,
+      "ms": 50.195458,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777054.418353,
+      "ms": 50.152704,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777105.382879,
+      "ms": 50.157977,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777155.919145,
+      "ms": 50.246294,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777207.213857,
+      "ms": 50.146359,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777257.746934,
+      "ms": 50.239314,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777308.794295,
+      "ms": 50.26176,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777359.497674,
+      "ms": 50.164914,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777410.433374,
+      "ms": 50.24615,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777461.174703,
+      "ms": 50.135119,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777512.033607,
+      "ms": 50.113788,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777562.483713,
+      "ms": 50.154433,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777612.923695,
+      "ms": 50.189445,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777663.238052,
+      "ms": 50.077581,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777713.585161,
+      "ms": 50.126439,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777763.850295,
+      "ms": 50.092911,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777814.716129,
+      "ms": 50.099716,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777864.958734,
+      "ms": 50.104174,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777915.370634,
+      "ms": 50.128824,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489777965.812536,
+      "ms": 50.091258,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778016.632111,
+      "ms": 50.237835,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778067.252971,
+      "ms": 50.153745,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778118.265338,
+      "ms": 50.134848,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778168.703167,
+      "ms": 50.23707,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778219.830812,
+      "ms": 50.113613,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778270.104954,
+      "ms": 50.08905,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778328.795538,
+      "ms": 50.198869,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778385.897532,
+      "ms": 50.09253,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778448.805297,
+      "ms": 50.151572,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778512.995292,
+      "ms": 50.200076,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778577.206512,
+      "ms": 50.116177,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778637.927182,
+      "ms": 50.127831,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778688.789419,
+      "ms": 50.150197,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778739.259665,
+      "ms": 50.223096,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778789.865182,
+      "ms": 50.227826,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778840.51758,
+      "ms": 50.122573,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778891.206894,
+      "ms": 50.21764,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778941.766034,
+      "ms": 50.211355,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489778993.047476,
+      "ms": 50.294859,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779043.769469,
+      "ms": 50.292788,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779095.257622,
+      "ms": 50.276482,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779145.907904,
+      "ms": 50.324572,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779197.215825,
+      "ms": 50.168112,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779247.790907,
+      "ms": 50.175149,
+      "readers": 32
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489779298.029409,
+      "ms": 18.561354,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779319.806454,
+      "ms": 50.11503,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779375.302852,
+      "ms": 50.097122,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779426.187367,
+      "ms": 50.12186,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779486.369446,
+      "ms": 50.118117,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779537.178392,
+      "ms": 50.11977,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779587.585239,
+      "ms": 50.142638,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779638.45749,
+      "ms": 50.144987,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779688.875374,
+      "ms": 50.233605,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779739.849872,
+      "ms": 50.253576,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779790.602664,
+      "ms": 50.180276,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779841.741583,
+      "ms": 50.241591,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779892.50387,
+      "ms": 50.22809,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489779954.737549,
+      "ms": 50.117166,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780005.309145,
+      "ms": 50.177474,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780056.146989,
+      "ms": 50.129404,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780106.642384,
+      "ms": 50.227059,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780157.623889,
+      "ms": 50.139285,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780207.988581,
+      "ms": 50.118808,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780258.470346,
+      "ms": 50.200767,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780308.802498,
+      "ms": 50.192092,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780368.308212,
+      "ms": 50.0848,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780426.429647,
+      "ms": 50.117049,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780487.963902,
+      "ms": 50.17258,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780551.377429,
+      "ms": 50.083498,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780607.714403,
+      "ms": 50.24536,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780658.160929,
+      "ms": 50.107781,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780708.989805,
+      "ms": 50.142785,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780759.516735,
+      "ms": 50.240981,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780810.582426,
+      "ms": 50.249896,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780861.238037,
+      "ms": 50.247674,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780912.636162,
+      "ms": 50.247208,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489780963.217898,
+      "ms": 50.133036,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781014.176624,
+      "ms": 50.125556,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781064.565939,
+      "ms": 50.228897,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781115.508446,
+      "ms": 50.154465,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781166.033044,
+      "ms": 50.136626,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781216.553967,
+      "ms": 50.194337,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781266.882597,
+      "ms": 50.190144,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781317.362242,
+      "ms": 50.204395,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781367.702214,
+      "ms": 50.077179,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781418.088791,
+      "ms": 50.145217,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781468.696387,
+      "ms": 50.279914,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781519.835726,
+      "ms": 50.258781,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781570.505875,
+      "ms": 50.157278,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781623.087714,
+      "ms": 50.249709,
+      "readers": 32
+    },
+    {
+      "stage": "desktop_tick",
+      "started": 489781673.669234,
+      "ms": 10.960562,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781687.926001,
+      "ms": 50.208561,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781738.858534,
+      "ms": 50.222829,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781789.441574,
+      "ms": 50.269983,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781840.443842,
+      "ms": 50.127194,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781890.9495,
+      "ms": 50.126872,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781941.717532,
+      "ms": 50.240817,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489781992.282502,
+      "ms": 50.143864,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782043.068971,
+      "ms": 50.230425,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782093.68473,
+      "ms": 50.257632,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782144.726828,
+      "ms": 50.229867,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782195.120472,
+      "ms": 50.102744,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782245.888406,
+      "ms": 50.221743,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782309.721506,
+      "ms": 50.190066,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782369.105072,
+      "ms": 50.171151,
+      "readers": 32
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489782419.297713,
+      "ms": 10.317652,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782432.972853,
+      "ms": 50.200488,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782494.076127,
+      "ms": 50.237919,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782556.035865,
+      "ms": 50.195059,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782614.255239,
+      "ms": 50.199595,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782664.743721,
+      "ms": 50.226596,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489782715.696903,
+      "ms": 48.343381,
+      "readers": 31
+    },
+    {
+      "stage": "frame",
+      "started": 489782765.4394,
+      "ms": 11.219279,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489782765.434578,
+      "ms": 11.891689,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489782765.259359,
+      "ms": 12.071646,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489782765.239474,
+      "ms": 12.092848,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489782777.496465,
+      "ms": 50.167051,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489782827.881485,
+      "ms": 12.689121,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489782846.134094,
+      "ms": 50.101945,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489782896.342148,
+      "ms": 50.191322,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489782947.776287,
+      "ms": 48.064228,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489782996.51591,
+      "ms": 10.124718,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489782996.263565,
+      "ms": 10.382573,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489782996.227436,
+      "ms": 10.420202,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783010.543031,
+      "ms": 50.066216,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783060.803841,
+      "ms": 50.188169,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783111.591737,
+      "ms": 49.631556,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489783162.643827,
+      "ms": 12.018037,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489783162.63315,
+      "ms": 12.610268,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489783162.254278,
+      "ms": 12.994275,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783162.196033,
+      "ms": 13.053632,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783175.38443,
+      "ms": 50.169475,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783225.679561,
+      "ms": 50.193376,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783276.487572,
+      "ms": 50.197718,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489783327.72977,
+      "ms": 10.837417,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489783327.722533,
+      "ms": 11.450479,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489783327.475256,
+      "ms": 11.702179,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783327.445814,
+      "ms": 11.73282,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783339.302017,
+      "ms": 50.068075,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783389.668442,
+      "ms": 50.186261,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783440.024253,
+      "ms": 49.802998,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489783490.952925,
+      "ms": 12.982743,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489783490.945229,
+      "ms": 13.704329,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489783490.71825,
+      "ms": 13.936956,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783490.67213,
+      "ms": 13.984485,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783504.829056,
+      "ms": 50.099299,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783555.057713,
+      "ms": 50.191733,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783605.840017,
+      "ms": 50.108122,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783672.58671,
+      "ms": 50.101309,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783722.912023,
+      "ms": 50.208399,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783773.546947,
+      "ms": 50.105503,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489783825.342762,
+      "ms": 10.869006,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489783825.336081,
+      "ms": 11.421624,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489783825.105731,
+      "ms": 11.656101,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783825.062822,
+      "ms": 11.700076,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489783836.894205,
+      "ms": 50.180703,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783887.191536,
+      "ms": 50.177789,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489783937.910523,
+      "ms": 50.205513,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784000.050789,
+      "ms": 50.170941,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784050.454405,
+      "ms": 50.092354,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784100.835108,
+      "ms": 50.213927,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784162.875672,
+      "ms": 50.065432,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784213.056635,
+      "ms": 50.219645,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784263.650904,
+      "ms": 50.208826,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489784316.279244,
+      "ms": 15.899961,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489784316.269977,
+      "ms": 16.900153,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784315.950018,
+      "ms": 17.226956,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489784315.907694,
+      "ms": 17.271006,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489784333.367973,
+      "ms": 50.167089,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784383.727655,
+      "ms": 50.118517,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784434.132842,
+      "ms": 50.068335,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489784484.212165,
+      "ms": 31.311497,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784542.827207,
+      "ms": 50.064747,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489784592.901462,
+      "ms": 28.973728,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489784623.306629,
+      "ms": 13.077281,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784636.534961,
+      "ms": 50.18501,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489784686.737361,
+      "ms": 16.713667,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489784704.968085,
+      "ms": 15.923602,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489784721.11044,
+      "ms": 25.083991,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489784721.108231,
+      "ms": 29.256126,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784721.049479,
+      "ms": 29.320556,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489784721.040321,
+      "ms": 29.331192,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489784750.996607,
+      "ms": 50.106249,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489784801.20985,
+      "ms": 50.067998,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489784855.067907,
+      "ms": 25.622812,
+      "readers": 2
+    },
+    {
+      "stage": "frame",
+      "started": 489784855.06585,
+      "ms": 29.74923,
+      "readers": 2
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784854.995669,
+      "ms": 29.823239,
+      "readers": 2
+    },
+    {
+      "stage": "poll",
+      "started": 489784854.97027,
+      "ms": 29.850235,
+      "readers": 2
+    },
+    {
+      "stage": "frame",
+      "started": 489784885.064874,
+      "ms": 22.979177,
+      "readers": 10
+    },
+    {
+      "stage": "frame",
+      "started": 489784885.062948,
+      "ms": 26.772672,
+      "readers": 10
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784885.006516,
+      "ms": 26.834006,
+      "readers": 10
+    },
+    {
+      "stage": "poll",
+      "started": 489784884.898346,
+      "ms": 26.943846,
+      "readers": 10
+    },
+    {
+      "stage": "frame",
+      "started": 489784912.156395,
+      "ms": 23.593129,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489784912.154745,
+      "ms": 27.357767,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784912.093083,
+      "ms": 27.423426,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489784939.578588,
+      "ms": 23.46397,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489784939.577051,
+      "ms": 27.162258,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784939.52354,
+      "ms": 27.219096,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489784966.799504,
+      "ms": 23.400164,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489784966.798131,
+      "ms": 27.139828,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784966.749865,
+      "ms": 27.191255,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489784993.996292,
+      "ms": 24.052998,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489784993.994949,
+      "ms": 27.912999,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489784993.947896,
+      "ms": 27.965396,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785021.983701,
+      "ms": 23.660064,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785021.982044,
+      "ms": 27.418088,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785021.923175,
+      "ms": 27.482212,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785049.467114,
+      "ms": 23.563397,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785049.46537,
+      "ms": 27.288964,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785049.413058,
+      "ms": 27.344742,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785076.815396,
+      "ms": 23.740389,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785076.813797,
+      "ms": 27.555028,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785076.764679,
+      "ms": 27.608331,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785104.433228,
+      "ms": 24.053306,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785104.431535,
+      "ms": 28.064469,
+      "readers": 18
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785104.381378,
+      "ms": 28.121478,
+      "readers": 18
+    },
+    {
+      "stage": "poll",
+      "started": 489784911.928852,
+      "ms": 220.576515,
+      "readers": 18
+    },
+    {
+      "stage": "frame",
+      "started": 489785133.275363,
+      "ms": 24.867141,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785133.273111,
+      "ms": 28.81271,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785133.20433,
+      "ms": 28.885976,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785162.160331,
+      "ms": 24.277106,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785162.158549,
+      "ms": 28.201263,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785162.098635,
+      "ms": 28.266563,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785190.437375,
+      "ms": 24.010462,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785190.435464,
+      "ms": 27.938355,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785190.376811,
+      "ms": 28.002206,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785218.450662,
+      "ms": 24.022823,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785218.448936,
+      "ms": 28.131123,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785218.389797,
+      "ms": 28.195711,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785246.662498,
+      "ms": 24.874451,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785246.660722,
+      "ms": 28.713669,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785246.59623,
+      "ms": 28.781519,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785275.439721,
+      "ms": 23.972591,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785275.437897,
+      "ms": 27.767897,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785275.387703,
+      "ms": 27.82181,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785303.27133,
+      "ms": 23.997094,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785303.269481,
+      "ms": 27.849075,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785303.218825,
+      "ms": 27.904531,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785331.192455,
+      "ms": 24.604084,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785331.190699,
+      "ms": 28.550826,
+      "readers": 26
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785331.133136,
+      "ms": 28.612062,
+      "readers": 26
+    },
+    {
+      "stage": "poll",
+      "started": 489785132.74719,
+      "ms": 227.00056,
+      "readers": 26
+    },
+    {
+      "stage": "project_changed",
+      "started": 489785368.771574,
+      "ms": 15.269996,
+      "readers": 26
+    },
+    {
+      "stage": "frame",
+      "started": 489785385.012882,
+      "ms": 25.507934,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785385.010195,
+      "ms": 29.249026,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785384.932924,
+      "ms": 29.329629,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785414.327657,
+      "ms": 24.332618,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785414.326003,
+      "ms": 28.157568,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785414.270397,
+      "ms": 28.21864,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785442.559671,
+      "ms": 23.92931,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785442.557579,
+      "ms": 27.709299,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785442.499435,
+      "ms": 27.770558,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785470.329227,
+      "ms": 23.943257,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785470.327605,
+      "ms": 28.04591,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785470.277899,
+      "ms": 28.100207,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785498.455155,
+      "ms": 25.009301,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785498.452947,
+      "ms": 28.934841,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785498.387982,
+      "ms": 29.004441,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785527.466421,
+      "ms": 24.584376,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785527.464336,
+      "ms": 28.427341,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785527.402453,
+      "ms": 28.492701,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785555.962163,
+      "ms": 24.286962,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785555.960338,
+      "ms": 28.171981,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785555.907935,
+      "ms": 28.227851,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785584.192694,
+      "ms": 23.675308,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785584.191133,
+      "ms": 27.447787,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785584.143723,
+      "ms": 27.498423,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489785384.195709,
+      "ms": 227.44867,
+      "readers": 32
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489785611.664266,
+      "ms": 32.155895,
+      "readers": 32
+    },
+    {
+      "stage": "project_changed",
+      "started": 489785645.570302,
+      "ms": 16.140861,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785661.847404,
+      "ms": 24.524408,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785661.844239,
+      "ms": 28.668668,
+      "readers": 32
+    },
+    {
+      "stage": "broadcast",
+      "started": 489785661.841887,
+      "ms": 28.977633,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785691.818524,
+      "ms": 25.263154,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785691.816795,
+      "ms": 29.47296,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785691.751671,
+      "ms": 29.543982,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785721.370493,
+      "ms": 23.390384,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785721.368506,
+      "ms": 27.14475,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785721.306066,
+      "ms": 27.2118,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785748.588355,
+      "ms": 24.290121,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785748.586302,
+      "ms": 28.015884,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785748.530447,
+      "ms": 28.07563,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785776.677662,
+      "ms": 23.769595,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785776.675674,
+      "ms": 27.557638,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785776.615598,
+      "ms": 27.621708,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785804.300302,
+      "ms": 24.07772,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785804.298658,
+      "ms": 27.929476,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785804.246063,
+      "ms": 27.986021,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785832.294549,
+      "ms": 23.729751,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785832.292718,
+      "ms": 27.663338,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785832.240842,
+      "ms": 27.718303,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489785690.820935,
+      "ms": 169.140246,
+      "readers": 32
+    },
+    {
+      "stage": "desktop_tick",
+      "started": 489785860.091551,
+      "ms": 13.945887,
+      "readers": 32
+    },
+    {
+      "stage": "project_changed",
+      "started": 489785874.040634,
+      "ms": 15.024201,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785927.764611,
+      "ms": 28.210447,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489785927.761247,
+      "ms": 31.717681,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489785927.567653,
+      "ms": 31.916053,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489785926.049613,
+      "ms": 33.435369,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489785960.362592,
+      "ms": 50.071987,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786010.80543,
+      "ms": 50.206445,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786061.144076,
+      "ms": 50.230018,
+      "readers": 32
+    },
+    {
+      "stage": "project_changed",
+      "started": 489786117.576798,
+      "ms": 14.131325,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786131.892022,
+      "ms": 50.227981,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786182.537288,
+      "ms": 50.173548,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786233.285064,
+      "ms": 50.119221,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786283.765963,
+      "ms": 50.259409,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489786382.299606,
+      "ms": 29.461569,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489786382.292803,
+      "ms": 33.178907,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489786381.998136,
+      "ms": 33.478438,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786334.867557,
+      "ms": 80.610723,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786416.09043,
+      "ms": 50.111864,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786466.452129,
+      "ms": 50.111971,
+      "readers": 32
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489786516.571387,
+      "ms": 41.968337,
+      "readers": 32
+    },
+    {
+      "stage": "project_changed",
+      "started": 489786559.980117,
+      "ms": 14.61687,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786574.602544,
+      "ms": 50.199014,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786625.408258,
+      "ms": 50.104579,
+      "readers": 32
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489786675.529163,
+      "ms": 41.426013,
+      "readers": 32
+    },
+    {
+      "stage": "project_changed",
+      "started": 489786718.45199,
+      "ms": 14.523136,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786732.981057,
+      "ms": 50.199898,
+      "readers": 32
+    },
+    {
+      "stage": "project_changed",
+      "started": 489786793.730701,
+      "ms": 15.341391,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489786840.660627,
+      "ms": 27.254589,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489786840.654341,
+      "ms": 30.951628,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489786840.427055,
+      "ms": 31.18364,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786809.214033,
+      "ms": 62.398055,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786872.230747,
+      "ms": 50.114448,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786922.643172,
+      "ms": 50.186946,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489786972.934084,
+      "ms": 50.21295,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787023.437187,
+      "ms": 50.210098,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787073.95427,
+      "ms": 50.235932,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787124.497872,
+      "ms": 50.206247,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787175.045745,
+      "ms": 50.247027,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787225.530761,
+      "ms": 50.129127,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489787293.508994,
+      "ms": 37.058033,
+      "readers": 32
+    },
+    {
+      "stage": "frame",
+      "started": 489787293.503684,
+      "ms": 41.127885,
+      "readers": 32
+    },
+    {
+      "stage": "process_requests",
+      "started": 489787293.292174,
+      "ms": 41.345931,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787275.976872,
+      "ms": 58.66288,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787336.494124,
+      "ms": 50.180581,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787386.783618,
+      "ms": 50.182783,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787437.225029,
+      "ms": 50.088479,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787487.519855,
+      "ms": 50.105025,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787538.241529,
+      "ms": 50.231309,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787588.821273,
+      "ms": 50.247578,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787640.063608,
+      "ms": 50.152309,
+      "readers": 32
+    },
+    {
+      "stage": "poll",
+      "started": 489787690.519678,
+      "ms": 50.247636,
+      "readers": 31
+    },
+    {
+      "stage": "frame",
+      "started": 489787755.674441,
+      "ms": 27.653727,
+      "readers": 31
+    },
+    {
+      "stage": "frame",
+      "started": 489787755.66865,
+      "ms": 31.356289,
+      "readers": 31
+    },
+    {
+      "stage": "process_requests",
+      "started": 489787755.451876,
+      "ms": 31.57878,
+      "readers": 31
+    },
+    {
+      "stage": "poll",
+      "started": 489787741.551103,
+      "ms": 45.481079,
+      "readers": 31
+    },
+    {
+      "stage": "poll",
+      "started": 489787787.448184,
+      "ms": 50.071957,
+      "readers": 31
+    },
+    {
+      "stage": "poll",
+      "started": 489787837.639609,
+      "ms": 50.121355,
+      "readers": 31
+    },
+    {
+      "stage": "poll",
+      "started": 489787888.009775,
+      "ms": 50.119361,
+      "readers": 31
+    },
+    {
+      "stage": "poll",
+      "started": 489787938.29104,
+      "ms": 53.633752,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489787992.620818,
+      "ms": 50.133314,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788043.0649,
+      "ms": 50.20709,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788094.141649,
+      "ms": 50.312114,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788144.791556,
+      "ms": 50.262508,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489788208.488094,
+      "ms": 30.245234,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489788208.48171,
+      "ms": 34.468441,
+      "readers": 6
+    },
+    {
+      "stage": "process_requests",
+      "started": 489788208.23631,
+      "ms": 34.719027,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788195.933315,
+      "ms": 47.023938,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788243.672247,
+      "ms": 50.173497,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788294.006484,
+      "ms": 50.177275,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489788348.478691,
+      "ms": 16.916498,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788365.509477,
+      "ms": 50.106664,
+      "readers": 6
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489788415.640771,
+      "ms": 41.063915,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489788458.353724,
+      "ms": 16.526075,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788475.014614,
+      "ms": 50.088489,
+      "readers": 6
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489788525.127113,
+      "ms": 51.107121,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489788577.991746,
+      "ms": 17.049069,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788595.157962,
+      "ms": 50.185033,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489788654.999,
+      "ms": 15.623667,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489788670.633592,
+      "ms": 26.668341,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489788670.630942,
+      "ms": 31.289959,
+      "readers": 6
+    },
+    {
+      "stage": "broadcast",
+      "started": 489788670.628377,
+      "ms": 35.916008,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489788706.646975,
+      "ms": 27.065238,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489788706.645185,
+      "ms": 31.421445,
+      "readers": 6
+    },
+    {
+      "stage": "process_requests",
+      "started": 489788706.574432,
+      "ms": 31.497423,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788706.546811,
+      "ms": 31.683103,
+      "readers": 6
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489788738.233844,
+      "ms": 36.832862,
+      "readers": 6
+    },
+    {
+      "stage": "desktop_tick",
+      "started": 489788775.073551,
+      "ms": 14.406358,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489788789.482937,
+      "ms": 15.0427,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788805.077081,
+      "ms": 17.730328,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788823.403395,
+      "ms": 50.082748,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788873.612132,
+      "ms": 50.176182,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788924.050282,
+      "ms": 50.185372,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489788974.353707,
+      "ms": 50.069706,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789024.683644,
+      "ms": 50.185257,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789075.183907,
+      "ms": 50.098803,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789126.209527,
+      "ms": 50.228935,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789176.934548,
+      "ms": 50.197922,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489789237.540293,
+      "ms": 16.387981,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789254.066905,
+      "ms": 50.212251,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489789346.805185,
+      "ms": 32.753523,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489789346.797008,
+      "ms": 36.877729,
+      "readers": 6
+    },
+    {
+      "stage": "process_requests",
+      "started": 489789346.488743,
+      "ms": 37.190897,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789304.542683,
+      "ms": 79.138239,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789384.528603,
+      "ms": 50.112337,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789434.769104,
+      "ms": 50.126484,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789485.112169,
+      "ms": 50.071581,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789535.348891,
+      "ms": 50.097341,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789586.014642,
+      "ms": 50.118333,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789636.442405,
+      "ms": 50.209603,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789687.391425,
+      "ms": 50.214176,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789737.956671,
+      "ms": 50.192561,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489789807.221921,
+      "ms": 38.131805,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489789807.212372,
+      "ms": 42.233547,
+      "readers": 6
+    },
+    {
+      "stage": "process_requests",
+      "started": 489789806.818749,
+      "ms": 42.632167,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789788.866317,
+      "ms": 60.586169,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789849.965569,
+      "ms": 50.174014,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789900.383259,
+      "ms": 50.124032,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489789950.621531,
+      "ms": 50.181213,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790001.214647,
+      "ms": 50.081406,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790051.456798,
+      "ms": 50.195633,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790101.934904,
+      "ms": 50.194056,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790152.394911,
+      "ms": 50.133399,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790203.228606,
+      "ms": 50.105058,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489790268.854261,
+      "ms": 35.006569,
+      "readers": 6
+    },
+    {
+      "stage": "frame",
+      "started": 489790268.848115,
+      "ms": 39.05252,
+      "readers": 6
+    },
+    {
+      "stage": "process_requests",
+      "started": 489790268.596634,
+      "ms": 39.310154,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790253.661945,
+      "ms": 54.24647,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790308.659737,
+      "ms": 50.168667,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790358.959588,
+      "ms": 50.200828,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790409.396632,
+      "ms": 50.187254,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790459.763423,
+      "ms": 50.260728,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790510.986324,
+      "ms": 50.229846,
+      "readers": 6
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489790561.244759,
+      "ms": 43.742166,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489790606.476322,
+      "ms": 16.925959,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790623.408451,
+      "ms": 50.188829,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489790684.71181,
+      "ms": 16.060635,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790700.921422,
+      "ms": 50.129068,
+      "readers": 6
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489790751.071514,
+      "ms": 40.100893,
+      "readers": 6
+    },
+    {
+      "stage": "project_changed",
+      "started": 489790792.72967,
+      "ms": 16.939604,
+      "readers": 6
+    },
+    {
+      "stage": "poll",
+      "started": 489790809.806575,
+      "ms": 50.112965,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489790869.153137,
+      "ms": 17.117588,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489790886.276296,
+      "ms": 50.191828,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489790937.20997,
+      "ms": 50.08419,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489790987.595011,
+      "ms": 43.319723,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791031.243231,
+      "ms": 50.11613,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791081.574621,
+      "ms": 50.169193,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791131.860486,
+      "ms": 50.098791,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791182.253073,
+      "ms": 50.108373,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791232.490617,
+      "ms": 50.09891,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791282.844571,
+      "ms": 50.099972,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791333.084178,
+      "ms": 50.06447,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489791390.692762,
+      "ms": 18.210175,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791409.016012,
+      "ms": 50.180849,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489791459.206625,
+      "ms": 36.229661,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489791496.978988,
+      "ms": 16.894683,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791513.973046,
+      "ms": 50.191322,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791564.294853,
+      "ms": 50.175236,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791614.710844,
+      "ms": 50.103751,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791665.308797,
+      "ms": 50.078924,
+      "readers": 0
+    },
+    {
+      "stage": "desktop_tick",
+      "started": 489791715.502278,
+      "ms": 16.61434,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489791732.121131,
+      "ms": 17.132428,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791749.369418,
+      "ms": 50.102187,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791799.591591,
+      "ms": 50.178687,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791850.01729,
+      "ms": 50.11523,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791900.246175,
+      "ms": 50.06207,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489791950.548296,
+      "ms": 50.064083,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792000.731557,
+      "ms": 50.065111,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792051.065547,
+      "ms": 50.067278,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792101.253567,
+      "ms": 50.155827,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792151.63595,
+      "ms": 50.099454,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792201.856737,
+      "ms": 50.064981,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792252.234775,
+      "ms": 50.263326,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792302.655639,
+      "ms": 50.100614,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489792357.363191,
+      "ms": 18.38727,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792375.863809,
+      "ms": 50.190189,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792426.176353,
+      "ms": 50.182904,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792476.590883,
+      "ms": 50.104081,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792526.862383,
+      "ms": 50.105325,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489792576.977226,
+      "ms": 40.140819,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489792618.697009,
+      "ms": 17.481265,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792636.300905,
+      "ms": 50.11107,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489792691.262544,
+      "ms": 18.464182,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792709.734784,
+      "ms": 50.110036,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489792759.85725,
+      "ms": 38.164388,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489792799.598816,
+      "ms": 18.619607,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792818.326416,
+      "ms": 50.069841,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489792873.174912,
+      "ms": 17.992143,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792891.172739,
+      "ms": 50.070292,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792941.549501,
+      "ms": 50.068462,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489792991.759962,
+      "ms": 50.070494,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793042.12197,
+      "ms": 50.068723,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793092.380212,
+      "ms": 50.070715,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793142.74139,
+      "ms": 50.072284,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793192.957631,
+      "ms": 50.068146,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793243.321419,
+      "ms": 50.069715,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793293.537171,
+      "ms": 50.070457,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793343.919453,
+      "ms": 50.071019,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793394.171378,
+      "ms": 50.072049,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793444.558709,
+      "ms": 50.070557,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793494.789377,
+      "ms": 50.074197,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793545.219411,
+      "ms": 50.075111,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793595.457182,
+      "ms": 50.213612,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793645.988398,
+      "ms": 50.107478,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793696.265429,
+      "ms": 50.17659,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793746.749325,
+      "ms": 50.165528,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793797.074212,
+      "ms": 50.068086,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793847.463524,
+      "ms": 50.112705,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793897.74041,
+      "ms": 50.197533,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793948.248516,
+      "ms": 50.071457,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489793998.480891,
+      "ms": 50.212633,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794048.992903,
+      "ms": 50.168195,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794099.34363,
+      "ms": 50.12304,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794149.790201,
+      "ms": 50.20831,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794200.31054,
+      "ms": 50.183804,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794250.754415,
+      "ms": 50.172784,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794301.050765,
+      "ms": 50.0689,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794351.369576,
+      "ms": 50.100396,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794401.642541,
+      "ms": 21.140543,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794432.786314,
+      "ms": 16.938828,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489794449.809274,
+      "ms": 28.126557,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489794449.8072,
+      "ms": 32.686261,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489794449.751322,
+      "ms": 32.747927,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489794449.731464,
+      "ms": 32.769794,
+      "readers": 1
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489794482.504963,
+      "ms": 31.708624,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794515.720102,
+      "ms": 15.75116,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489794532.502459,
+      "ms": 50.064463,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489794582.57722,
+      "ms": 38.376012,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794622.604035,
+      "ms": 17.09162,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794639.838394,
+      "ms": 33.993574,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794683.169625,
+      "ms": 17.530641,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489794700.789143,
+      "ms": 30.432252,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489794700.787259,
+      "ms": 35.153895,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489794700.72939,
+      "ms": 35.218149,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489794700.709765,
+      "ms": 35.239573,
+      "readers": 1
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489794735.954155,
+      "ms": 33.583438,
+      "readers": 1
+    },
+    {
+      "stage": "desktop_tick",
+      "started": 489794769.54497,
+      "ms": 14.961849,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794784.510585,
+      "ms": 16.2851,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794807.808713,
+      "ms": 16.499308,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794829.01285,
+      "ms": 16.61962,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794845.638533,
+      "ms": 50.06254,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489794900.16817,
+      "ms": 17.430955,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794917.70591,
+      "ms": 50.091336,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489794968.085622,
+      "ms": 50.20166,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795018.922989,
+      "ms": 11.298829,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489795030.85877,
+      "ms": 29.96774,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489795030.851855,
+      "ms": 34.2707,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489795030.568172,
+      "ms": 34.55979,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795030.530771,
+      "ms": 34.598614,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795065.66846,
+      "ms": 50.066316,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795115.857315,
+      "ms": 50.191996,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795166.278375,
+      "ms": 50.188299,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795216.775141,
+      "ms": 50.185184,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489795272.567223,
+      "ms": 32.256684,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489795272.561416,
+      "ms": 36.428042,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489795272.354397,
+      "ms": 36.640469,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795272.323024,
+      "ms": 36.673187,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795309.728503,
+      "ms": 50.067903,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795360.02373,
+      "ms": 50.171961,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795410.529717,
+      "ms": 50.21139,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489795469.14658,
+      "ms": 15.847229,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795484.999081,
+      "ms": 31.162106,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489795516.806559,
+      "ms": 28.468385,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489795516.801674,
+      "ms": 32.661594,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489795516.64503,
+      "ms": 32.823832,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795516.618981,
+      "ms": 32.851308,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795550.08441,
+      "ms": 50.06448,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795600.279187,
+      "ms": 50.067074,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795650.609831,
+      "ms": 50.209082,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795701.137147,
+      "ms": 50.081206,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489795754.907834,
+      "ms": 26.378612,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489795754.905788,
+      "ms": 30.701661,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489795754.83461,
+      "ms": 30.778512,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795754.823019,
+      "ms": 30.791703,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795786.301151,
+      "ms": 50.09777,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795836.516073,
+      "ms": 50.060314,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795886.78718,
+      "ms": 50.195831,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489795937.252998,
+      "ms": 50.098616,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489795994.46253,
+      "ms": 36.169034,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489795994.452214,
+      "ms": 40.422145,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489795994.037043,
+      "ms": 40.843997,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489795993.956396,
+      "ms": 40.926114,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489796035.666316,
+      "ms": 50.166569,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796085.939413,
+      "ms": 50.108766,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796136.272439,
+      "ms": 50.095992,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796186.753679,
+      "ms": 50.107937,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489796241.05616,
+      "ms": 33.212745,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489796241.049309,
+      "ms": 37.463856,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489796240.774,
+      "ms": 37.744819,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489796240.746062,
+      "ms": 37.77435,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489796279.302391,
+      "ms": 50.06624,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796329.49259,
+      "ms": 50.100802,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796379.826535,
+      "ms": 50.197994,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796430.306461,
+      "ms": 50.180863,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489796484.353092,
+      "ms": 33.779176,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489796484.348011,
+      "ms": 37.93206,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489796484.161284,
+      "ms": 38.124205,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489796484.133913,
+      "ms": 38.152916,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489796523.026735,
+      "ms": 50.068505,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489796573.104316,
+      "ms": 15.643869,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489796590.419291,
+      "ms": 18.788038,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796609.317041,
+      "ms": 50.12556,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489796659.469317,
+      "ms": 31.731316,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489796692.721837,
+      "ms": 16.931964,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796709.772728,
+      "ms": 26.499828,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489796747.312649,
+      "ms": 17.270838,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489796764.677206,
+      "ms": 27.255663,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489796764.674726,
+      "ms": 32.847332,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489796764.614063,
+      "ms": 32.914992,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489796764.590473,
+      "ms": 32.940422,
+      "readers": 1
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489796797.536032,
+      "ms": 37.440297,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489796836.690706,
+      "ms": 16.087836,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489796853.896319,
+      "ms": 50.067013,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796904.135564,
+      "ms": 50.069588,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489796954.515137,
+      "ms": 50.18228,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797005.05228,
+      "ms": 50.097791,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489797061.738254,
+      "ms": 27.825565,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489797061.731606,
+      "ms": 32.140457,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489797061.510187,
+      "ms": 32.368279,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797061.481772,
+      "ms": 32.398295,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797094.724234,
+      "ms": 50.064326,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797144.924378,
+      "ms": 50.068454,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797195.220967,
+      "ms": 50.185938,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797245.547852,
+      "ms": 50.20217,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489797302.546685,
+      "ms": 29.077302,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489797302.541377,
+      "ms": 33.279581,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489797302.337521,
+      "ms": 33.488563,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797302.30714,
+      "ms": 33.520301,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797336.569149,
+      "ms": 50.068586,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797386.779177,
+      "ms": 50.121576,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489797446.878239,
+      "ms": 15.946377,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797462.938703,
+      "ms": 50.138997,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489797513.09853,
+      "ms": 38.348202,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489797552.931698,
+      "ms": 16.255647,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489797569.479764,
+      "ms": 26.251459,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489797569.478006,
+      "ms": 30.168157,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489797569.431717,
+      "ms": 30.21968,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797569.423828,
+      "ms": 30.229106,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797600.505361,
+      "ms": 50.107123,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797650.73452,
+      "ms": 50.167468,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797701.50675,
+      "ms": 50.079149,
+      "readers": 0
+    },
+    {
+      "stage": "desktop_tick",
+      "started": 489797751.75763,
+      "ms": 17.954498,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489797769.717223,
+      "ms": 16.322185,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797786.046812,
+      "ms": 19.170824,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489797805.521416,
+      "ms": 26.950224,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489797805.518938,
+      "ms": 31.12328,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489797805.454225,
+      "ms": 31.195085,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797805.442807,
+      "ms": 31.208502,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489797837.719389,
+      "ms": 50.161581,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797887.98681,
+      "ms": 50.12968,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797938.342479,
+      "ms": 50.200035,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489797988.847181,
+      "ms": 50.103613,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489798043.176735,
+      "ms": 29.545295,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489798043.172855,
+      "ms": 33.823234,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489798043.043671,
+      "ms": 33.961839,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489798043.022473,
+      "ms": 33.984738,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489798077.702378,
+      "ms": 50.199887,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798128.049467,
+      "ms": 50.067125,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798178.352056,
+      "ms": 50.169528,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798228.788047,
+      "ms": 50.201018,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489798283.816931,
+      "ms": 32.432156,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489798283.809558,
+      "ms": 36.58658,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489798283.524886,
+      "ms": 36.876992,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489798283.478415,
+      "ms": 36.925024,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489798321.080724,
+      "ms": 50.064804,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798371.277222,
+      "ms": 50.181095,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798421.695238,
+      "ms": 50.120774,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798472.407116,
+      "ms": 50.195601,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489798527.250915,
+      "ms": 37.517862,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489798527.245235,
+      "ms": 42.255846,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489798527.028979,
+      "ms": 42.479856,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489798526.978506,
+      "ms": 42.532547,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798574.517808,
+      "ms": 17.129215,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798596.240434,
+      "ms": 16.96717,
+      "readers": 1
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489798613.290434,
+      "ms": 36.335843,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798651.103874,
+      "ms": 14.83267,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489798666.768012,
+      "ms": 50.062835,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798721.405906,
+      "ms": 17.917254,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798739.329654,
+      "ms": 50.068285,
+      "readers": 0
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489798789.408126,
+      "ms": 12.31626,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798803.32624,
+      "ms": 16.522274,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489798820.005461,
+      "ms": 50.193949,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798880.865837,
+      "ms": 15.818975,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798903.116894,
+      "ms": 16.521872,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489798919.840883,
+      "ms": 25.953887,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489798919.838317,
+      "ms": 30.133867,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489798919.781302,
+      "ms": 30.19679,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489798919.7629,
+      "ms": 30.216669,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798953.978229,
+      "ms": 15.144872,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798975.750954,
+      "ms": 15.12162,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489798999.933035,
+      "ms": 15.118558,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799015.787219,
+      "ms": 50.173377,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489799070.301401,
+      "ms": 17.268006,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799087.575496,
+      "ms": 50.199713,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799137.992839,
+      "ms": 50.189252,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799188.487658,
+      "ms": 31.673446,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489799220.850246,
+      "ms": 32.275161,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489799220.842435,
+      "ms": 36.589739,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489799220.547644,
+      "ms": 36.890364,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799220.505339,
+      "ms": 36.933974,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799258.18969,
+      "ms": 50.176169,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799308.476187,
+      "ms": 50.165063,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799358.874475,
+      "ms": 50.235041,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799409.369119,
+      "ms": 50.199704,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489799462.624946,
+      "ms": 31.975305,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489799462.618865,
+      "ms": 36.246272,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489799462.387682,
+      "ms": 36.483392,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799462.354664,
+      "ms": 36.517934,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799499.616968,
+      "ms": 50.102565,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799549.836779,
+      "ms": 50.218929,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799600.286748,
+      "ms": 50.099407,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799650.779889,
+      "ms": 50.209402,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489799708.796798,
+      "ms": 33.485904,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489799708.786828,
+      "ms": 37.753283,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489799708.419419,
+      "ms": 38.141285,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799708.352535,
+      "ms": 38.209758,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799747.333057,
+      "ms": 50.066213,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799797.527079,
+      "ms": 50.190135,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799847.945246,
+      "ms": 50.231455,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489799898.493902,
+      "ms": 50.206185,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489799953.267198,
+      "ms": 33.591246,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489799953.259981,
+      "ms": 37.759491,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489799952.973521,
+      "ms": 38.051216,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799952.933669,
+      "ms": 38.092487,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489799991.75864,
+      "ms": 50.101767,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800041.983847,
+      "ms": 50.171508,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800092.366433,
+      "ms": 50.238052,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800142.973705,
+      "ms": 50.204972,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489800197.244886,
+      "ms": 34.249901,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489800197.236812,
+      "ms": 39.190818,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489800196.907543,
+      "ms": 39.527801,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489800196.863094,
+      "ms": 39.573957,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489800237.06356,
+      "ms": 50.06356,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800287.255392,
+      "ms": 50.170861,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800337.654571,
+      "ms": 50.109204,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800388.076028,
+      "ms": 50.093683,
+      "readers": 0
+    },
+    {
+      "stage": "frame",
+      "started": 489800445.39687,
+      "ms": 36.424197,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489800445.390471,
+      "ms": 40.811914,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489800445.174816,
+      "ms": 41.034233,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489800445.137216,
+      "ms": 41.074747,
+      "readers": 1
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489800486.217023,
+      "ms": 12.565493,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489800500.228862,
+      "ms": 16.078528,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489800520.874452,
+      "ms": 16.307379,
+      "readers": 1
+    },
+    {
+      "stage": "connection_tick",
+      "started": 489800537.243723,
+      "ms": 18.404044,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489800557.08625,
+      "ms": 15.498996,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489800579.090652,
+      "ms": 15.446928,
+      "readers": 1
+    },
+    {
+      "stage": "project_changed",
+      "started": 489800601.040251,
+      "ms": 15.352532,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489800616.756088,
+      "ms": 50.181337,
+      "readers": 0
+    },
+    {
+      "stage": "project_changed",
+      "started": 489800683.965288,
+      "ms": 18.409273,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800702.486047,
+      "ms": 50.229504,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800752.76059,
+      "ms": 50.305877,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800803.481627,
+      "ms": 23.650177,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489800827.425853,
+      "ms": 30.823325,
+      "readers": 1
+    },
+    {
+      "stage": "frame",
+      "started": 489800827.420873,
+      "ms": 34.949675,
+      "readers": 1
+    },
+    {
+      "stage": "process_requests",
+      "started": 489800827.236256,
+      "ms": 35.140476,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489800827.184327,
+      "ms": 35.193971,
+      "readers": 1
+    },
+    {
+      "stage": "poll",
+      "started": 489800863.230768,
+      "ms": 50.110928,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800913.516018,
+      "ms": 50.173943,
+      "readers": 0
+    },
+    {
+      "stage": "poll",
+      "started": 489800963.717821,
+      "ms": 50.828905,
+      "readers": 0
+    }
+  ],
+  "instrumentation": {
+    "cProfile": {
+      "coordinatorSha256": "bb8246003d6c13846d1d23c1956987e3799f2f6f9187d7a07a1a6d2dc8b937b4",
+      "rootOverride": "ROOT = Path('/home/bryan/code/tmux-observer'); sys.path.insert(0, str(ROOT / 'scripts'))",
+      "replacementOfPublisherRun": "if role == \"fleet\":\n        import cProfile\n        profiler = cProfile.Profile()\n        try:\n            profiler.runcall(publisher.run)\n        finally:\n            profiler.dump_stats('/tmp/tmux-observer-capacity-fleet-3a.pstats')\n    else:\n        publisher.run()\n    return 0"
+    },
+    "stageTimers": {
+      "coordinatorSha256": "19eb598e14997e84a1f88a23581149b75c8de002c9c4d805791979620ca7c846",
+      "rootOverride": "ROOT = Path('/home/bryan/code/tmux-observer'); sys.path.insert(0, str(ROOT / 'scripts'))",
+      "replacementOfPublisherRun": "if role == \"fleet\":\n        measurements = []\n        def wrap(target, name):\n            original = getattr(target, name)\n            def measured(*args, **kwargs):\n                start = time.monotonic_ns()\n                try:\n                    return original(*args, **kwargs)\n                finally:\n                    elapsed = (time.monotonic_ns() - start) / 1000000\n                    if elapsed >= 10 and len(measurements) < 5000:\n                        measurements.append({\"stage\": name, \"started\": start / 1000000, \"ms\": elapsed, \"readers\": len(publisher.hub.peers) if publisher.hub else 0})\n            setattr(target, name, measured)\n        for name in (\"connection_tick\", \"project_changed\", \"frame\", \"desktop_tick\", \"publish_tickets\"):\n            wrap(publisher, name)\n        from tmux_observer._hub import SocketHub\n        for name in (\"broadcast\", \"poll\", \"frame\", \"process_requests\"):\n            wrap(SocketHub, name)\n        try:\n            publisher.run()\n        finally:\n            Path('/tmp/tmux-observer-capacity-fleet-3a-stages.json').write_text(json.dumps(measurements))\n    else:\n        publisher.run()\n    return 0"
+    }
+  }
+}

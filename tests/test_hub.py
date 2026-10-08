@@ -60,6 +60,36 @@ class HubTests(unittest.TestCase):
         self.assertEqual(error["error"]["code"], "backpressure")
         self.assertEqual(error["requestId"], "probe-2")
 
+    def test_read_only_ready_request_delivers_nonce_reply_in_same_poll(self):
+        self.hub.handle_request = lambda peer, request, now: self.hub.frame(
+            peer, now, kind="status", request_id=request["requestId"]
+        )
+        self.reader.sendall(
+            json.dumps(
+                {
+                    "protocol": SERVICE_PROTOCOL,
+                    "schemaVersion": 1,
+                    "operation": "probe",
+                    "expectedHost": self.owner.source["hostId"],
+                    "requestId": "same-poll-query",
+                }
+            ).encode()
+            + b"\n"
+        )
+        self.hub.poll(130, timeout=0)
+        value = validate_service_frame(decode_document(self.reader.recv(16384)))
+        self.assertEqual((value["requestId"], value["encodedAt"]), ("same-poll-query", 130))
+        self.assertIsNone(self.peer.started)
+        self.assertIsNone(self.peer.queued)
+
+    def test_read_only_ready_bad_request_delivers_error_and_closes_in_same_poll(self):
+        self.reader.sendall(b"{}\n")
+        self.hub.poll(130, timeout=0)
+        value = decode_document(self.reader.recv(16384))
+        self.assertEqual(value["error"]["code"], "invalid_request")
+        self.assertNotIn(self.peer, self.hub.peers)
+        self.assertEqual(self.reader.recv(1), b"")
+
     def test_broadcast_shares_only_identical_unsolicited_sequences_and_preserves_nonce_reply(self):
         source, reader = socket.socketpair()
         source.setblocking(False)
