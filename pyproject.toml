@@ -22,6 +22,7 @@ tmux-observer = "tmux_observer.cli:main"
 where = ["src"]
 
 [tool.setuptools.data-files]
+"share/tmux-observer/systemd" = ["systemd/*.service"]
 "share/tmux-observer/contracts/observation-v1" = ["contracts/observation-v1/*.json", "contracts/observation-v1/*.md", "contracts/observation-v1/SHA256SUMS"]
 "share/tmux-observer/contracts/observation-v1/fixtures" = ["contracts/observation-v1/fixtures/*.json"]
 "share/tmux-observer/contracts/service-v1" = ["contracts/service-v1/*.json", "contracts/service-v1/*.md", "contracts/service-v1/SHA256SUMS"]

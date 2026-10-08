@@ -1,0 +1,339 @@
+#!/usr/bin/env python3
+"""Installed owner acceptance in a disposable user unit and native server."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import os
+import selectors
+import socket
+import subprocess
+import time
+import uuid
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+ROOT = Path(__file__).resolve().parent.parent
+loader = importlib.machinery.SourceFileLoader(
+    "owner_accept_reader", str(ROOT / "scripts/read-contract")
+)
+spec = importlib.util.spec_from_loader(loader.name, loader)
+reader = importlib.util.module_from_spec(spec)
+loader.exec_module(reader)
+
+
+def command(argv, *, env=None, ok=True):
+    result = subprocess.run(argv, env=env, capture_output=True, timeout=30, check=False)
+    if ok and result.returncode:
+        raise RuntimeError(result.stderr.decode(errors="replace")[:4096])
+    return result
+
+
+def wire(sock, pending):
+    deadline = time.monotonic() + 3
+    with selectors.DefaultSelector() as selector:
+        selector.register(sock, selectors.EVENT_READ)
+        while b"\n" not in pending:
+            if time.monotonic() >= deadline:
+                raise TimeoutError("owned stream frame deadline")
+            if not selector.select(0.05):
+                continue
+            chunk = sock.recv(65536)
+            if not chunk:
+                raise RuntimeError("owned stream ended early")
+            pending.extend(chunk)
+            if len(pending) > 1064960:
+                raise RuntimeError("owned acceptance reader cap")
+    raw, _, rest = pending.partition(b"\n")
+    pending[:] = rest
+    value = reader.wire(bytes(raw) + b"\n", 1064960)
+    reader.verify("operation-error" if value["kind"] == "operation_error" else "service", value)
+    return value
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    evidence = {
+        "gate": "G2",
+        "sourceCommit": command(["git", "rev-parse", "HEAD"]).stdout.decode().strip(),
+        "nativeVersion": command(["tmux", "-V"]).stdout.decode().strip(),
+        "endpoint": "Snap",
+        "scope": "disposable systemd user unit, private IPC and owned TMUX_TMPDIR",
+        "cases": [],
+        "limits": [
+            "Physical suspend untested; deadline jumps covered synthetically",
+            "No remote fleet, Rofi migration or managed rollout acceptance",
+        ],
+    }
+
+    def passed(name, **details):
+        evidence["cases"].append({"name": name, "result": "passed", **details})
+        print("passed " + name, flush=True)
+
+    with TemporaryDirectory(prefix="tmux-observer-owner-native-") as temporary:
+        directory = Path(temporary)
+        env = dict(os.environ, TMUX_TMPDIR=str(directory))
+        env.pop("TMUX", None)
+        env.pop("TMUX_PANE", None)
+        native_prefix = ["tmux", "-f", "/dev/null", "-L", "default"]
+        endpoint = directory / "owner.sock"
+        unit = "tmux-observer-accept-" + uuid.uuid4().hex + ".service"
+
+        def native(*arguments, ok=True):
+            return command([*native_prefix, *arguments], env=env, ok=ok).stdout.decode().strip()
+
+        def req(operation="snapshot", **extra):
+            return {
+                "protocol": "tmux-observer.service.v1",
+                "schemaVersion": 1,
+                "operation": operation,
+                "requestId": uuid.uuid4().hex,
+                "expectedHost": "fixture-native",
+                **extra,
+            }
+
+        def exchange(value):
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+                sock.settimeout(2)
+                sock.connect(str(endpoint))
+                sock.sendall(json.dumps(value, separators=(",", ":")).encode() + b"\n")
+                return wire(sock, bytearray())
+
+        def until(predicate, *, timeout=5):
+            deadline = time.monotonic() + timeout
+            last = None
+            while time.monotonic() < deadline:
+                try:
+                    last = exchange(req())
+                    if predicate(last):
+                        return last
+                except (OSError, RuntimeError):
+                    pass
+                time.sleep(0.03)
+            raise RuntimeError("owned publisher condition not met: " + str(last)[:256])
+
+        try:
+            wheels = directory / "wheel"
+            command(["uv", "build", "--wheel", "--out-dir", str(wheels)])
+            wheel = next(wheels.glob("*.whl"))
+            evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
+            venv = directory / "venv"
+            command(["uv", "venv", str(venv)])
+            python = str(venv / "bin/python")
+            command(["uv", "pip", "install", "--python", python, "--no-deps", str(wheel)])
+            installed_unit = venv / "share/tmux-observer/systemd/tmux-observer-owner@.service"
+            assert (
+                installed_unit.read_bytes()
+                == (ROOT / "systemd/tmux-observer-owner@.service").read_bytes()
+            )
+            candidate = installed_unit.read_text().replace(
+                "%h/.local/share/tmux-observer/bin/tmux-observer owner --host-id %i",
+                f"{venv}/bin/tmux-observer owner --host-id fixture-native --socket {endpoint}",
+            )
+            verify_unit = directory / "tmux-observer-verify.service"
+            verify_unit.write_text(candidate)
+            command(["systemd-analyze", "--user", "verify", str(verify_unit)])
+            absent = command(
+                [
+                    python,
+                    "-I",
+                    "-m",
+                    "tmux_observer",
+                    "snapshot",
+                    "--expected-host",
+                    "fixture-native",
+                    "--socket",
+                    str(endpoint),
+                ],
+                ok=False,
+            )
+            reader.verify("operation-error", reader.wire(absent.stdout, 16384))
+            assert absent.returncode == 1 and not endpoint.exists()
+            passed(
+                "installed prepared read never auto-starts an absent service; packaged unit verified"
+            )
+            native("new-session", "-d", "-s", "owned", "sleep 120")
+            baseline = native(
+                "list-sessions",
+                "-F",
+                "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}",
+            )
+            hooks = native("show-hooks")
+            command(
+                [
+                    "systemd-run",
+                    "--user",
+                    "--collect",
+                    "--unit",
+                    unit,
+                    "--property=Type=exec",
+                    "--property=KillMode=control-group",
+                    "--property=TimeoutStopSec=5",
+                    "--property=UMask=0077",
+                    "--property=NoNewPrivileges=true",
+                    f"--setenv=TMUX_TMPDIR={directory}",
+                    f"--setenv=TMUX={directory}/foreign,1,0",
+                    "--setenv=TMUX_PANE=%999",
+                    str(venv / "bin/tmux-observer"),
+                    "owner",
+                    "--host-id",
+                    "fixture-native",
+                    "--socket",
+                    str(endpoint),
+                ]
+            )
+            first = until(lambda value: value["receipt"]["state"] == "ready")
+            assert first["snapshot"]["sessions"][0]["name"] == "owned"
+            passed(
+                "installed user-manager publisher observes owned default despite ambient alternate context"
+            )
+            # Independent connections hold only observation subscriptions.
+            watchers = []
+            try:
+                counters = []
+                for _ in range(12):
+                    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                    sock.settimeout(2)
+                    sock.connect(str(endpoint))
+                    sock.sendall(json.dumps(req("watch"), separators=(",", ":")).encode() + b"\n")
+                    watchers.append(sock)
+                    counters.append(wire(sock, bytearray())["receipt"]["attempted"])
+                durations = []
+                for _ in range(20):
+                    started = time.monotonic_ns()
+                    value = exchange(req("probe"))
+                    durations.append((time.monotonic_ns() - started) / 1e6)
+                    counters.append(value["receipt"]["attempted"])
+                assert len(set(counters)) == 1
+                assert (
+                    native(
+                        "list-sessions",
+                        "-F",
+                        "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}",
+                    )
+                    == baseline
+                )
+                assert native("show-hooks") == hooks
+                passed(
+                    "12 watchers and 20 probes share one native attempt and preserve native lifetime facts",
+                    attempted=counters[0],
+                    queryDurationsMs=durations,
+                )
+                ticket = exchange(
+                    req("refresh", sources=[{"hostId": "fixture-native", "source": "owner"}])
+                )["ticket"]
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline:
+                    value = exchange(
+                        req(
+                            "refresh_status",
+                            publisherId=ticket["publisherId"],
+                            ticketId=ticket["id"],
+                        )
+                    )
+                    if value["ticket"]["state"] in ("complete", "failed", "deadline"):
+                        break
+                    time.sleep(0.03)
+                assert value["ticket"]["state"] == "complete"
+                assert value["snapshot"]["sample"]["startedAt"] >= ticket["requestedAt"]
+                assert value["ticket"]["sources"][0]["attempt"] > counters[0]
+                completed = value["ticket"]
+                before = value["receipt"]["attempted"]
+                for _ in range(8):
+                    value = exchange(
+                        req(
+                            "refresh_status",
+                            publisherId=ticket["publisherId"],
+                            ticketId=ticket["id"],
+                        )
+                    )
+                    assert value["ticket"] == completed and value["receipt"]["attempted"] == before
+                passed(
+                    "explicit refresh completes only post-request native work; terminal lookup does not collect"
+                )
+                duplicate = command(
+                    [
+                        python,
+                        "-I",
+                        "-m",
+                        "tmux_observer",
+                        "owner",
+                        "--host-id",
+                        "fixture-native",
+                        "--socket",
+                        str(endpoint),
+                    ],
+                    env=env,
+                    ok=False,
+                )
+                assert (
+                    duplicate.returncode == 1
+                    and exchange(req())["publisherId"] == first["publisherId"]
+                )
+                passed("duplicate publisher refuses held lease and leaves original readers intact")
+                generation = value["snapshot"]["serverGeneration"]
+                native("kill-server")
+                empty = until(
+                    lambda frame: (
+                        frame["receipt"]["state"] == "ready"
+                        and frame["snapshot"]["serverGeneration"] is None
+                    )
+                )
+                assert (
+                    not empty["snapshot"]["sessions"]
+                    and not (directory / f"tmux-{os.getuid()}" / "default").exists()
+                )
+                passed(
+                    "last session disappears with watchers alive; publisher verifies absence without restarting tmux"
+                )
+                native("new-session", "-d", "-s", "restarted", "sleep 120")
+                revived = until(
+                    lambda frame: (
+                        frame["receipt"]["state"] == "ready"
+                        and frame["snapshot"]["serverGeneration"] is not None
+                    )
+                )
+                assert revived["snapshot"]["serverGeneration"] != generation
+                assert revived["snapshot"]["sessions"][0]["sessionId"] == "$0"
+                passed("native restart and reused session ID acquire new generation")
+                old = revived["publisherId"]
+                command(["systemctl", "--user", "restart", unit])
+                renewed = until(
+                    lambda frame: (
+                        frame["publisherId"] != old and frame["receipt"]["state"] == "ready"
+                    )
+                )
+                stale = exchange(
+                    req("refresh_status", publisherId=ticket["publisherId"], ticketId=ticket["id"])
+                )
+                assert (
+                    stale["kind"] == "operation_error" and stale["error"]["code"] == "stale_scope"
+                )
+                assert renewed["receipt"]["attempted"] == 1
+                passed(
+                    "user-manager restart changes publisher incarnation and rejects old refresh lookup"
+                )
+            finally:
+                for sock in watchers:
+                    sock.close()
+            command(["systemctl", "--user", "stop", unit])
+            assert not endpoint.exists()
+            assert native("list-sessions", "-F", "#{session_name}") == "restarted"
+            passed("service stop removes only owned IPC and preserves native sessions")
+        finally:
+            command(["systemctl", "--user", "stop", unit], ok=False)
+            native("kill-server", ok=False)
+    evidence.update(result="passed", observedAtUnixMs=time.time_ns() // 1000000)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(evidence, indent=2) + "\n")
+    print(f"G2 passed: {len(evidence['cases'])} installed/native cases")
+
+
+if __name__ == "__main__":
+    main()
