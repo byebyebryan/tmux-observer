@@ -22,7 +22,7 @@ from ._remote_state import RemoteState
 
 
 class LocalConnection:
-    def __init__(self, host_id, now, *, path=None, state=None, on_frame=None):
+    def __init__(self, host_id, now, *, path=None, state=None, on_frame=None, on_error=None):
         self.state = state or RemoteState(host_id, local_clock=domain())
         self.nonce = uuid.uuid4().hex
         self.state.start(self.nonce, now)
@@ -45,6 +45,7 @@ class LocalConnection:
         self.incoming = bytearray()
         self.first_byte = None
         self.on_frame = on_frame
+        self.on_error = on_error
         self.closed = False
 
     def send(self, value, now):
@@ -128,6 +129,10 @@ class LocalConnection:
                 self.first_byte = first_byte if rest else None
                 if value.get("kind") == "operation_error":
                     validate_operation_error(value)
+                    if value["protocol"] != SERVICE_PROTOCOL:
+                        raise ValueError("foreign owner error")
+                    if self.on_error is not None and self.on_error(self, value, now):
+                        continue
                     raise IPCError(
                         "owner_unavailable", "local owner returned a scoped operation failure"
                     )

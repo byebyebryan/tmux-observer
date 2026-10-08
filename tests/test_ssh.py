@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 from tmux_observer._clock import boottime_ms
+from tmux_observer.public import SERVICE_PROTOCOL
 from tmux_observer_client.mesh import MeshHost, MeshPolicy, MeshRoute
 from tmux_observer_client.ssh import RemoteConnection
 
@@ -22,13 +23,14 @@ MODE
 os.write(1,raw[:17]); time.sleep(.03); os.write(1,raw[17:])
 for line in sys.stdin.buffer:
     request=json.loads(line)
+    REPLY
     frame.update(kind="status",requestId=request["requestId"],sequence=frame["sequence"]+1)
     print(json.dumps(frame,separators=(",",":")),flush=True)
 """
 
 
 class SSHTests(unittest.TestCase):
-    def connection(self, temporary, mode=""):
+    def connection(self, temporary, mode="", *, reply="", on_error=None):
         root = Path(__file__).resolve().parent.parent
         fixture = root / "contracts/service-v1/fixtures/ready.json"
         host_id = json.loads(fixture.read_text())["source"]["hostId"]
@@ -37,12 +39,13 @@ class SSHTests(unittest.TestCase):
             PROGRAM.replace("INTERPRETER", sys.executable)
             .replace("FIXTURE", repr(str(fixture)))
             .replace("MODE", mode)
+            .replace("REPLY", reply)
         )
         executable.chmod(0o700)
         host = MeshHost(host_id, host_id, False, (), ())
         route = MeshRoute("fixture-destination", 0, None, None)
         policy = MeshPolicy(str(executable), 2, 1, 300)
-        connection = RemoteConnection(host, route, policy, boottime_ms())
+        connection = RemoteConnection(host, route, policy, boottime_ms(), on_error=on_error)
         self.addCleanup(connection.close)
         return connection
 
@@ -68,6 +71,44 @@ class SSHTests(unittest.TestCase):
             connection.close()
             self.assertIsNotNone(connection.process.returncode)
             self.assertFalse(connection.incoming)
+
+    def test_known_control_error_preserves_proof_but_unknown_error_is_fatal(self):
+        reply = """if request["operation"]=="refresh":
+        print(json.dumps({"protocol":"tmux-observer.service.v1","schemaVersion":1,
+            "kind":"operation_error","requestId":request["requestId"],
+            "error":{"code":"capacity","message":"full"}}),flush=True)
+        continue"""
+        for handled in (True, False):
+            with (
+                self.subTest(handled=handled),
+                tempfile.TemporaryDirectory(prefix="tmux-observer-ssh-control-") as temporary,
+            ):
+                errors = []
+
+                def error(_connection, value, _now, errors=errors, handled=handled):
+                    errors.append(value)
+                    return handled and value.get("requestId") == "known-control"
+
+                connection = self.connection(temporary, reply=reply, on_error=error)
+                self.pump(
+                    connection, lambda selected=connection: selected.state.expiry > boottime_ms()
+                )
+                expiry = connection.state.expiry
+                connection.send(
+                    {
+                        "protocol": SERVICE_PROTOCOL,
+                        "schemaVersion": 1,
+                        "operation": "refresh",
+                        "requestId": "known-control",
+                        "expectedHost": connection.state.host_id,
+                        "publisherId": connection.state.scope[0],
+                        "sources": [{"hostId": connection.state.host_id, "source": "owner"}],
+                    },
+                    boottime_ms(),
+                )
+                self.pump(connection, lambda selected=errors: bool(selected))
+                self.assertEqual(connection.closed, not handled)
+                self.assertEqual(connection.state.expiry, expiry if handled else 0)
 
     def test_trickled_frame_and_clock_jump_cannot_establish_membership(self):
         with tempfile.TemporaryDirectory(prefix="tmux-observer-ssh-trickle-") as temporary:

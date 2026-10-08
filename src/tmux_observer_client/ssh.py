@@ -28,7 +28,16 @@ from .direct import REACHED, REMOTE_EXEC, ssh_argv
 
 class RemoteConnection:
     def __init__(
-        self, host, route, policy, now, *, state=None, remote_exec=REMOTE_EXEC, on_frame=None
+        self,
+        host,
+        route,
+        policy,
+        now,
+        *,
+        state=None,
+        remote_exec=REMOTE_EXEC,
+        on_frame=None,
+        on_error=None,
     ):
         self.host = host
         self.route = route
@@ -65,6 +74,7 @@ class RemoteConnection:
         self.outgoing = collections.deque()
         self.output_at = None
         self.on_frame = on_frame
+        self.on_error = on_error
         self.closed = False
         self.reached_reported = False
 
@@ -216,6 +226,8 @@ class RemoteConnection:
                     validate_operation_error(value)
                     if value["protocol"] != SERVICE_PROTOCOL:
                         raise ValueError("foreign owner error")
+                    if self.on_error is not None and self.on_error(self, value, now):
+                        continue
                     self.fail(
                         "owner_unavailable", "remote owner returned a scoped operation failure"
                     )
