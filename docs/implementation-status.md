@@ -18,6 +18,14 @@ with `--artifact`, retain independent harness provenance and refuse mismatched
 packaged checkout code. These harness changes do not change the candidate wheel
 or waive deferred physical G3 acceptance.
 
+The frozen wheel at `3437633` passed 68 [native/installed cases](candidate-artifacts.md#recorded-preparation)
+with clean harness `d107b04`, but its new resource checks reopen G3 performance:
+Snap combined CPU was 5.1046% against 5%, and a near-cap capacity reply exceeded
+250 ms. The normal memory/timing checks passed; capacity's later memory result
+was not captured. These failures remain recorded and this wheel is not accepted
+for promotion. Older resource passes below retain their original source/wheel
+scope. Physical sleep is still deferred, and frontend/managed rollout remain open.
+
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The
 normal desktop-inclusive ten-minute profile also passes the unchanged 5%

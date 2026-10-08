@@ -1,0 +1,51 @@
+{
+  "gate": "T12-installed-ssh-capacity-partial",
+  "result": "failed_query_deadline",
+  "sourceCommit": "3437633defd3acfaf4e6947b0e84eb7b9043db12",
+  "harnessCommit": "d107b048997d5f09d7a9d6c922849f8196e7b3ff",
+  "harnessTreeDirty": false,
+  "wheelSha256": "9ce744f2aae020ad8078effe7a4118781dda32e12fe5624192d1403fcbd189a1",
+  "command": [
+    "uv",
+    "run",
+    "--extra",
+    "dev",
+    "python",
+    "scripts/accept-installed-capacity",
+    "--artifact",
+    "/home/bryan/.cache/tmux-observer/candidates/3437633defd3acfaf4e6947b0e84eb7b9043db12/candidate.json",
+    "--ssh-host",
+    "starship",
+    "--memory-target-mib",
+    "768",
+    "--output",
+    "/tmp/tmux-observer-frozen-capacity.json"
+  ],
+  "exitCode": 1,
+  "passedCasesBeforeFailure": [
+    "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+    "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+    "thirty_two_watchers_share_sixteen_owner_connections",
+    "thirty_third_reader_receives_explicit_capacity_error",
+    "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+    "near_cap_aggregate_is_complete_untruncated_independently_readable"
+  ],
+  "failure": {
+    "type": "AssertionError",
+    "location": "scripts/accept-installed-capacity:848",
+    "condition": "durations[-1] <= 250",
+    "meaning": "validated near-cap healthy-reader round trip exceeded 250 ms",
+    "numericDurationMs": null
+  },
+  "limits": [
+    "Original harness did not persist evidence on assertion; this record preserves terminal observations only.",
+    "Exact duration, failing request index, completed RSS profile and later cases were not captured.",
+    "Synthetic facts/catalog across two physical endpoints do not establish sixteen physical hosts.",
+    "No native session, physical suspend, Rofi or managed deployment acceptance."
+  ],
+  "postFailureCleanup": {
+    "localOwnedCapacityRoots": [],
+    "remoteOwnedCapacityRoots": [],
+    "verifiedUsing": "read-only owned-UID namespace scans after command terminated"
+  }
+}

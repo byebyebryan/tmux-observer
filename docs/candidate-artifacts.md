@@ -85,3 +85,22 @@ wheel installed on Snap and Starship: all 64 runtime/data/license members and
 three contract checksum manifests matched; import origins and both entry-point
 help commands passed. Temporary install roots were removed. No service or native
 collection was requested, and this wheel remains unaccepted for those gates.
+
+Clean harness `d107b04` exercised that same wheel independently: [G1](evidence/2026-10-08-frozen-g1.json)
+passed 14 cases, [G2](evidence/2026-10-08-frozen-g2.json) 11,
+[context](evidence/2026-10-08-frozen-context-t12.json) four,
+[direct](evidence/2026-10-08-frozen-direct-t10.json) 24 and
+[fleet](evidence/2026-10-08-frozen-fleet-g3-partial.json) 15. Those 68 passed
+cases establish only their recorded scopes.
+
+The same wheel's [ten-minute desktop profile](evidence/2026-10-08-frozen-normal-g3-failed-cpu.json)
+passed functional, memory and foreground timing checks but failed Snap's unchanged
+5% combined CPU target at 5.1046% (Starship: 2.0739%). Sampled fleet/associated
+bridge peaks were 82.04/57.63 MiB against 96 MiB, with zero new observer SSH starts.
+The [capacity run](evidence/2026-10-08-frozen-capacity-failed-query.json) stopped
+after six passed cases when a validated near-cap healthy-reader reply exceeded
+250 ms. Its original harness lost the numeric duration and RSS result on that
+assertion; the failure reconstruction states those limits. Both temporary
+capacity roots were verified absent afterward. Neither failure is superseded by
+the earlier, separately scoped resource passes, and this candidate is not
+accepted for G3 or promotion. Physical sleep remains separately deferred.
