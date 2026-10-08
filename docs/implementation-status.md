@@ -56,8 +56,11 @@ Independent [fresh direct acceptance](native-direct-acceptance.md) reopened T10:
 local rows lacked the required legacy `route: null`. The producer now emits that
 field for complete/failed rows, with a pinned-schema regression. Expanded checks
 preserve the released legacy failure for empty option strings while Observation
-v1 retains empty versus absent values. Installed two-host direct acceptance is
-being completed independently; no frontend migration has occurred.
+v1 retains empty versus absent values. Clean source `6bb0594` passed all 24
+[installed two-host direct cases](evidence/2026-10-07-native-direct-t10.json),
+including inactive daemon lifetime and verified fixture cleanup. This closes T10
+native direct acceptance independently; the physical G3 case remains deferred
+and no frontend migration has occurred.
 
 The collector rejects generic connection errors as absence. Fast and legacy
 paths check final generation and full-reference roster within one 2-second
@@ -146,11 +149,11 @@ JSONSchema/semantic validation. Physical suspend remains untested; synthetic
 clock-jump rejection is separate evidence. The unit/artifact were exercised in
 temporary paths, not selected by chezmoi. This closes G2 and permits T10–T12.
 
-T10 source is `5a31860`: the direct diagnostic client retains the released
+T10 source initially was `5a31860`: the direct diagnostic client retains the released
 inventory shape and 128-host Mesh limit, fixed ordering/aliases, strict provider
 failure, bounded one-shot SSH and nonce-marked route reports. It does not read
-prepared fleet state. Native local Snap diagnosis succeeded; the Starship route
-was independently reachable. Full installed remote direct acceptance remains G3.
+prepared fleet state. Its independently validated legacy route/value corrections
+and full installed two-host direct acceptance are recorded above at `6bb0594`.
 
 T11 source is `4808f76`: one owned non-PTY SSH bridge, first-byte/silence/control
 bounds, held source epochs and matching send-based probes. Remote push frames

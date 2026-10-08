@@ -52,3 +52,13 @@ decision with its own bundle/pin review.
 
 The tool retains failed investigation outcomes outside the committed acceptance
 records. Only a clean committed source result can establish this native checkpoint.
+
+Clean source `6bb0594` passed all 24 installed/native cases with one wheel on both
+endpoints; see [native direct evidence](evidence/2026-10-07-native-direct-t10.json).
+The default full-fleet CLI used one fresh SSH connection per invocation; selected
+local and invalid selection/revision cases used none. Both owned observer services
+stayed inactive. Native roster, attachment/window counts, geometry, hooks and
+option snapshots matched before/after the operator rename cases. Both fixtures'
+units, owned children, sockets and backing directories were removed. This closes
+the independent T10 native direct checkpoint; the deferred physical G3 gate and
+consumer/managed gates remain open.
