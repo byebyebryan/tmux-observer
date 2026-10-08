@@ -57,7 +57,7 @@ fleet endpoint; they never activate services or fall back to direct collection.
 Fresh inventory retains Tmux Session v1, while prepared operations return Fleet v1
 frames. Desktop absence or unsupported contexts leave viewer membership unknown
 without changing owner attachment facts. The candidate fleet unit and explicit
-desktop environment handoff are documented in [service contexts](docs/service-contexts.md).
+desktop environment handoff are documented in [service contexts](docs/service-contexts.md) and [two-host acceptance](docs/native-fleet-acceptance.md).
 Their installed/native acceptance is pending; these development interfaces are
 not a managed rollout selection.
 

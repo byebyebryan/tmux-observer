@@ -1,0 +1,1119 @@
+#!/usr/bin/env python3
+"""Isolated installed two-host fleet acceptance, independent of Rofi/deployment."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import os
+import re
+import selectors
+import shlex
+import shutil
+import signal
+import socket
+import subprocess
+import sys
+import time
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+LIMIT = 1064960
+
+
+def command(argv, *, env=None, ok=True):
+    value = subprocess.run(argv, env=env, capture_output=True, timeout=30, check=False)
+    if ok and value.returncode:
+        raise RuntimeError(value.stderr.decode(errors="replace")[:2048])
+    return value
+
+
+def private_root(path):
+    info = path.lstat()
+    assert path.is_dir() and not path.is_symlink()
+    assert info.st_uid == os.getuid() and info.st_mode & 0o777 == 0o700
+    assert path.parent == Path("/tmp") and re.fullmatch(r"to-fleet-[0-9a-f]{32}", path.name)
+    return path
+
+
+def write(path, value, *, executable=False):
+    path.write_text(value)
+    path.chmod(0o700 if executable else 0o600)
+
+
+def owned_unit(root, role):
+    return "tmux-observer-fleet-accept-" + root.name[9:] + "-" + role + ".service"
+
+
+def manager(operation, unit, *, ok=True):
+    return command(["systemctl", "--user", operation, unit], ok=ok)
+
+
+def serve_fleet(root, host_id):
+    # Imports resolve only from the candidate wheel in this mode.
+    from tmux_observer.public import encode_document
+    from tmux_observer_client.fleet import FleetPublisher
+    from tmux_observer_client.ssh import RemoteConnection
+
+    counters = {"sshStarts": 0, "ownerPayloadReceivedBytes": 0, "ownerControlSentBytes": 0}
+
+    class CountedRemote(RemoteConnection):
+        def __init__(self, *args, **kwargs):
+            callback = kwargs.get("on_frame")
+
+            def received(connection, value, matched, now):
+                counters["ownerPayloadReceivedBytes"] += len(encode_document(value, limit=LIMIT))
+                if callback is not None:
+                    callback(connection, value, matched, now)
+
+            kwargs["on_frame"] = received
+            super().__init__(*args, **kwargs)
+            counters["sshStarts"] += 1
+
+        def send(self, request, now):
+            super().send(request, now)
+            counters["ownerControlSentBytes"] += len(encode_document(request, limit=16384))
+
+    publisher = FleetPublisher(
+        host_id,
+        path=root / "fleet.sock",
+        owner_path=root / "owner.sock",
+        remote_exec=shlex.quote(str(root / "bridge")),
+        remote_connection=CountedRemote,
+    )
+    signal.signal(signal.SIGTERM, lambda *_: publisher.stop())
+    signal.signal(signal.SIGINT, lambda *_: publisher.stop())
+    original = publisher.state.material
+    next_metrics = 0
+    high_water = {"readers": 0, "outputBytes": 0, "retainedBytes": 0, "connections": 0}
+
+    def material(now):
+        nonlocal next_metrics
+        if now >= next_metrics:
+            current = {
+                "readers": len(publisher.hub.peers),
+                "outputBytes": sum(peer.bytes_held() for peer in publisher.hub.peers),
+                "retainedBytes": sum(publisher.retained.values()),
+                "connections": len(publisher.connections),
+            }
+            for key, value in current.items():
+                high_water[key] = max(value, high_water[key])
+            value = {
+                "highWater": high_water,
+                "current": current,
+                "counters": counters,
+                "owners": {
+                    key: {
+                        "transport": conn.state.transport,
+                        "expiry": conn.state.expiry,
+                        "pid": getattr(getattr(conn, "process", None), "pid", None),
+                    }
+                    for key, conn in publisher.connections.items()
+                },
+            }
+            temporary = root / "metrics.tmp"
+            write(temporary, json.dumps(value))
+            temporary.replace(root / "metrics.json")
+            next_metrics = now + 1000
+        return original(now)
+
+    publisher.state.material = material
+    publisher.run()
+
+
+def bridge_relay(root, arguments):
+    child = subprocess.Popen(
+        [str(root / "venv/bin/tmux-observer"), *arguments, "--socket", str(root / "owner.sock")],
+        stdin=sys.stdin.buffer,
+        stdout=subprocess.PIPE,
+        stderr=sys.stderr.buffer,
+        start_new_session=True,
+    )
+
+    def terminate(*_args):
+        raise SystemExit(0)
+
+    signal.signal(signal.SIGTERM, terminate)
+    signal.signal(signal.SIGHUP, terminate)
+    try:
+        while raw := child.stdout.readline(LIMIT + 1):
+            assert len(raw) <= LIMIT and raw.endswith(b"\n")
+            try:
+                mode = (root / "bridge-fault").read_text()
+            except FileNotFoundError:
+                mode = None
+            if mode == "delay":
+                time.sleep(3)
+            elif mode == "trickle":
+                sys.stdout.buffer.write(raw[:1])
+                sys.stdout.buffer.flush()
+                time.sleep(3)
+                raw = raw[1:]
+            elif mode == "wrong_nonce":
+                value = json.loads(raw)
+                if value.get("requestId") is not None:
+                    value["requestId"] = "owned-wrong-nonce"
+                    raw = json.dumps(value, separators=(",", ":")).encode() + b"\n"
+            sys.stdout.buffer.write(raw)
+            sys.stdout.buffer.flush()
+    except (BrokenPipeError, ConnectionResetError):
+        pass
+    finally:
+        if child.poll() is None:
+            os.killpg(child.pid, signal.SIGKILL)
+        child.wait(timeout=3)
+        child.stdout.close()
+
+
+def profile_native(root, seconds):
+    assert seconds >= 600
+    tick = os.sysconf("SC_CLK_TCK")
+    groups = {}
+    for role in ("owner", "fleet"):
+        unit = owned_unit(root, role)
+        group = (
+            command(["systemctl", "--user", "show", "--value", "--property=ControlGroup", unit])
+            .stdout.decode()
+            .strip()
+        )
+        assert group.startswith("/user.slice/") and unit in group
+        groups[role] = Path("/sys/fs/cgroup") / group.lstrip("/")
+
+    def process(pid):
+        try:
+            fields = Path(f"/proc/{pid}/stat").read_text().rpartition(") ")[2].split()
+            status = Path(f"/proc/{pid}/status").read_text().splitlines()
+            rss = next(
+                (int(line.split()[1]) * 1024 for line in status if line.startswith("VmRSS:")), 0
+            )
+            return {
+                "cpuUsec": (int(fields[11]) + int(fields[12])) * 1000000 / tick,
+                "rssBytes": rss,
+                "incarnation": fields[19],
+            }
+        except (FileNotFoundError, ProcessLookupError):
+            return None
+
+    def bridge_processes():
+        result = {}
+        for record in root.glob("bridge-pid-*"):
+            pid = int(record.read_text())
+            pending = [pid]
+            while pending:
+                pid = pending.pop()
+                if pid in result:
+                    continue
+                try:
+                    argv = Path(f"/proc/{pid}/cmdline").read_bytes()
+                    if str(root).encode() not in argv:
+                        continue
+                    value = process(pid)
+                    if value is None:
+                        continue
+                    result[pid] = value
+                    pending += [
+                        int(child)
+                        for child in Path(f"/proc/{pid}/task/{pid}/children").read_text().split()
+                    ]
+                    assert len(result) + len(pending) <= 64
+                except (FileNotFoundError, ProcessLookupError):
+                    continue
+        return result
+
+    def sample():
+        services = {}
+        for role, group in groups.items():
+            cpu = dict(line.split() for line in (group / "cpu.stat").read_text().splitlines())
+            pids = [int(pid) for pid in (group / "cgroup.procs").read_text().split()]
+            services[role] = {
+                "cpuUsec": int(cpu["usage_usec"]),
+                "rssBytes": sum(value["rssBytes"] for pid in pids if (value := process(pid))),
+                "memoryCurrentBytes": int((group / "memory.current").read_text()),
+                "processes": len(pids),
+            }
+        metrics = json.loads((root / "metrics.json").read_bytes())
+        return {
+            "atMs": time.clock_gettime_ns(time.CLOCK_BOOTTIME) // 1000000,
+            "services": services,
+            "bridges": bridge_processes(),
+            "nativeCommands": (root / "native-count").stat().st_size // 5,
+            "meshCalls": (root / "mesh-count").read_text().splitlines(),
+            "fleetCounters": metrics["counters"],
+            "queues": metrics["highWater"],
+        }
+
+    first = sample()
+    samples = [first]
+    output = {"state": "running", "durationMs": 0, "samples": samples}
+    destination = root / "profile.json"
+    while True:
+        now = sample()
+        elapsed = now["atMs"] - first["atMs"]
+        output["durationMs"] = elapsed
+        samples.append(now)
+        temporary = root / "profile.tmp"
+        write(temporary, json.dumps(output))
+        temporary.replace(destination)
+        if elapsed >= seconds * 1000:
+            break
+        time.sleep(1)
+    duration_us = elapsed * 1000
+    output["state"] = "complete"
+    output["serviceCpuPercent"] = {
+        role: (now["services"][role]["cpuUsec"] - first["services"][role]["cpuUsec"])
+        / duration_us
+        * 100
+        for role in groups
+    }
+    bridge_cpu = {}
+    for item in samples:
+        for pid, value in item["bridges"].items():
+            key = (pid, value["incarnation"])
+            bridge_cpu.setdefault(key, [value["cpuUsec"], value["cpuUsec"]])[1] = value["cpuUsec"]
+    output["bridgeCpuPercent"] = (
+        sum(end - start for start, end in bridge_cpu.values()) / duration_us * 100
+    )
+    output["serviceMaxObservedRssBytes"] = {
+        role: max(item["services"][role]["rssBytes"] for item in samples) for role in groups
+    }
+    output["maxObservedBridgeRssBytes"] = max(
+        sum(value["rssBytes"] for value in item["bridges"].values()) for item in samples
+    )
+    output["nativeCommands"] = now["nativeCommands"] - first["nativeCommands"]
+    output["meshCalls"] = {
+        op: now["meshCalls"].count(op) - first["meshCalls"].count(op)
+        for op in ("list", "report-route")
+    }
+    output["fleetCounters"] = {
+        key: value - first["fleetCounters"][key] for key, value in now["fleetCounters"].items()
+    }
+    output["limits"] = [
+        "RSS sampled once per second; transient peaks can be missed",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups",
+    ]
+    # Repeated operation names are counters, not part of every retained sample.
+    for item in samples:
+        item.pop("meshCalls")
+    write(root / "profile.tmp", json.dumps(output))
+    (root / "profile.tmp").replace(destination)
+
+
+class Endpoint:
+    def __init__(self, root, host_id):
+        self.root, self.host_id = private_root(root), host_id
+        self.venv = root / "venv"
+        self.python = str(self.venv / "bin/python")
+        self.units = []
+        self.env = dict(os.environ)
+        self.env.pop("TMUX", None)
+        self.env.pop("TMUX_PANE", None)
+        self.env.update(
+            TMUX_TMPDIR=str(root / "native"),
+            XDG_CONFIG_HOME=str(root / "config"),
+            XDG_STATE_HOME=str(root / "state"),
+            NIRI_SOCKET="",
+            WAYLAND_DISPLAY="",
+            DISPLAY="",
+        )
+        self.native_prefix = [shutil.which("tmux"), "-f", "/dev/null", "-L", "default"]
+        self.watches = []
+        self.baseline = self.hooks = None
+        self.profile_process = None
+
+    def native(self, *args, ok=True):
+        return command([*self.native_prefix, *args], env=self.env, ok=ok).stdout.decode().strip()
+
+    def start(self):
+        wheel = next(self.root.glob("*.whl"))
+        self.wheel_digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+        command(["uv", "venv", str(self.venv)])
+        command(["uv", "pip", "install", "--python", self.python, "--no-deps", str(wheel)])
+        actual = json.loads(command(["rofi-ssh-plus", "mesh", "list", "--json"]).stdout)
+        assert actual["localHostId"] == self.host_id and len(actual["hosts"]) == 2
+        # Copy the public catalog to isolated provider preferences, never read its files.
+        config = self.root / "config/rofi-ssh-plus"
+        config.mkdir(mode=0o700, parents=True)
+        policy = actual["sshPolicy"]
+        local = next(host for host in actual["hosts"] if host["local"])
+        quote = json.dumps
+        lines = [
+            "schema_version = 1",
+            "local_id = " + quote(self.host_id),
+            "local_display = " + quote(local["display"]),
+            "local_aliases = " + quote(local["aliases"]),
+            "[ssh]",
+            "executable = " + quote(policy["executable"]),
+            "connect_timeout_seconds = " + str(policy["connectTimeoutSeconds"]),
+            "connection_attempts = " + str(policy["connectionAttempts"]),
+            "route_health_ttl_seconds = " + str(policy["routeHealthTtlSeconds"]),
+        ]
+        for host in actual["hosts"]:
+            if not host["local"]:
+                lines += [
+                    "[[hosts]]",
+                    "id = " + quote(host["id"]),
+                    "display = " + quote(host["display"]),
+                    "aliases = " + quote(host["aliases"]),
+                    "routes = " + quote([route["destination"] for route in host["routes"]]),
+                ]
+        self.config = config / "config.toml"
+        self.config_bytes = ("\n".join(lines) + "\n").encode()
+        self.config.write_bytes(self.config_bytes)
+        self.config.chmod(0o600)
+        (self.root / "native").mkdir(mode=0o700)
+        binary = self.root / "bin"
+        binary.mkdir(mode=0o700)
+        write(
+            binary / "tmux",
+            "#!/bin/sh\n"
+            + "printf 'read\n' >> "
+            + shlex.quote(str(self.root / "native-count"))
+            + "\n"
+            + "if [ -f "
+            + shlex.quote(str(self.root / "native-fault"))
+            + " ]; then sleep 5; fi\n"
+            + "exec "
+            + shlex.quote(self.native_prefix[0])
+            + ' "$@"\n',
+            executable=True,
+        )
+        write(
+            binary / "rofi-ssh-plus",
+            "#!/bin/sh\nprintf '%s\n' \"$2\" >> "
+            + shlex.quote(str(self.root / "mesh-count"))
+            + "\nexec "
+            + shlex.quote(shutil.which("rofi-ssh-plus"))
+            + ' "$@"\n',
+            executable=True,
+        )
+        write(
+            self.root / "bridge",
+            "#!/bin/sh\necho $$ > "
+            + shlex.quote(str(self.root / "bridge-pid-"))
+            + '"$$"\nexec '
+            + shlex.quote(self.python)
+            + " "
+            + shlex.quote(str(self.root / "accept-native-fleet"))
+            + " --bridge-relay "
+            + shlex.quote(str(self.root))
+            + ' "$@"\n',
+            executable=True,
+        )
+        self.env["PATH"] = str(binary) + ":" + os.environ["PATH"]
+        self.native("new-session", "-d", "-s", "owned-" + self.host_id, "sleep 3600")
+        self.baseline = self.roster()
+        self.hooks = self.native("show-hooks")
+        owner_unit = owned_unit(self.root, "owner")
+        fleet_unit = owned_unit(self.root, "fleet")
+        template_dir = self.venv / "share/tmux-observer/systemd"
+        owner_template = template_dir / "tmux-observer-owner@.service"
+        fleet_template = template_dir / "tmux-observer-fleet@.service"
+        self.template_hashes = {
+            path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in (owner_template, fleet_template)
+        }
+        owner_text = owner_template.read_text().replace(
+            "%h/.local/share/tmux-observer/bin/tmux-observer owner --host-id %i",
+            str(self.venv / "bin/tmux-observer")
+            + " owner --host-id "
+            + self.host_id
+            + " --socket "
+            + str(self.root / "owner.sock"),
+        )
+        environment = self.root / "environment"
+        keep = (
+            "PATH",
+            "TMUX_TMPDIR",
+            "XDG_CONFIG_HOME",
+            "XDG_STATE_HOME",
+            "NIRI_SOCKET",
+            "DISPLAY",
+            "WAYLAND_DISPLAY",
+        )
+        write(environment, "\n".join(key + "=" + quote(self.env[key]) for key in keep) + "\n")
+        owner_text = owner_text.replace(
+            "[Service]\n",
+            "[Service]\nEnvironmentFile="
+            + str(environment)
+            + "\nUnsetEnvironment=TMUX TMUX_PANE\n",
+        )
+        fleet_text = (
+            fleet_template.read_text()
+            .replace(
+                "EnvironmentFile=%t/tmux-observer-client/context-%i.env",
+                "EnvironmentFile=" + str(environment),
+            )
+            .replace(
+                "ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer-client fleet --host-id ${TMUX_OBSERVER_HOST_ID} --context-id %i",
+                "ExecStart="
+                + self.python
+                + " "
+                + str(self.root / "accept-native-fleet")
+                + " --serve-fleet "
+                + str(self.root)
+                + " --host-id "
+                + self.host_id,
+            )
+        )
+        for unit, text in ((owner_unit, owner_text), (fleet_unit, fleet_text)):
+            unit_file = self.root / unit
+            write(unit_file, text)
+            command(["systemd-analyze", "--user", "verify", str(unit_file)])
+            command(["systemctl", "--user", "link", "--runtime", str(unit_file)])
+            self.units.append(unit)
+        self.owner_unit, self.fleet_unit = owner_unit, fleet_unit
+        manager("start", owner_unit)
+        manager("start", fleet_unit)
+        # Test operations run through the installed distribution, not this checkout.
+        site = (
+            command(
+                [self.python, "-I", "-c", "import sysconfig; print(sysconfig.get_path('purelib'))"]
+            )
+            .stdout.decode()
+            .strip()
+        )
+        sys.path.insert(0, site)
+        from tmux_observer_client.public import desktop_context_id
+
+        self.context = desktop_context_id(self.env)
+        return {
+            "wheelSha256": self.wheel_digest,
+            "templateSha256": self.template_hashes,
+            "actualMeshRevision": actual["meshRevision"],
+            "nativeVersion": command([self.native_prefix[0], "-V"]).stdout.decode().strip(),
+            "contextId": self.context,
+            "nativeReference": self.independent_native(),
+            "clock": {
+                "bootId": Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+                "timeNamespace": "time:" + os.readlink("/proc/self/ns/time").split("[")[1][:-1],
+            },
+            "nativeHostname": socket.gethostname(),
+            "uid": os.getuid(),
+        }
+
+    def independent_native(self):
+        path = self.native("display-message", "-p", "#{socket_path}")
+        started = self.native("display-message", "-p", "#{start_time}")
+        pid = self.native("display-message", "-p", "#{pid}")
+        row = self.native(
+            "list-sessions",
+            "-F",
+            "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}|#{session_name}",
+        ).split("|")
+        assert len(row) == 5
+        return {
+            "hostId": self.host_id,
+            "serverGeneration": f"tmux-v1:{started}:{pid}:{path}",
+            "sessionId": row[0],
+            "createdAt": int(row[1]),
+            "attachedClients": int(row[2]),
+            "windowCount": int(row[3]),
+            "name": row[4],
+        }
+
+    def roster(self):
+        return self.native(
+            "list-sessions",
+            "-F",
+            "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}",
+        )
+
+    def frame(self, **kwargs):
+        from tmux_observer_client.public import read_cached
+
+        start = time.perf_counter_ns()
+        value = read_cached(
+            self.context, expected_host=self.host_id, path=self.root / "fleet.sock", **kwargs
+        )
+        return {"frame": value, "durationMs": (time.perf_counter_ns() - start) / 1000000}
+
+    def dispatch(self, request):
+        op = request["operation"]
+        if op == "snapshot":
+            return self.frame()
+        if op == "refresh":
+            return self.frame(operation="refresh", sources=request["sources"])
+        if op == "refresh_status":
+            return self.frame(
+                operation="refresh_status",
+                publisher_id=request["publisherId"],
+                ticket_id=request["ticketId"],
+            )
+        if op == "benchmark":
+            durations, value = [], None
+            for _ in range(100):
+                value = self.frame()
+                durations.append(value["durationMs"])
+            cli = str(self.venv / "bin/tmux-observer-client")
+            cli_durations = []
+            for _ in range(100):
+                start = time.perf_counter_ns()
+                result = command(
+                    [
+                        cli,
+                        "snapshot",
+                        "--access",
+                        "cached",
+                        "--context-id",
+                        self.context,
+                        "--expected-host",
+                        self.host_id,
+                        "--socket",
+                        str(self.root / "fleet.sock"),
+                        "--json",
+                    ]
+                )
+                assert len(result.stdout) < LIMIT
+                cli_durations.append((time.perf_counter_ns() - start) / 1000000)
+            return {"rpcMs": durations, "cliMs": cli_durations, "frame": value["frame"]}
+        if op == "bridge_fault":
+            path = self.root / "bridge-fault"
+            if request["mode"] is None:
+                path.unlink(missing_ok=True)
+            else:
+                assert request["mode"] in ("delay", "trickle", "wrong_nonce")
+                write(path, request["mode"])
+            return {}
+        if op == "native_fault":
+            path = self.root / "native-fault"
+            if request["enabled"]:
+                write(path, "owned test only\n")
+            else:
+                path.unlink(missing_ok=True)
+            return {}
+        if op == "owner":
+            assert request["action"] in ("start", "stop", "restart")
+            manager(request["action"], self.owner_unit)
+            return {}
+        if op == "mesh_fault":
+            self.config.write_bytes(
+                b"schema_version = ?\n" if request["enabled"] else self.config_bytes
+            )
+            return {}
+        if op == "passivity":
+            assert self.roster() == self.baseline and self.native("show-hooks") == self.hooks
+            return {"preserved": True}
+        if op == "profile_start":
+            assert self.profile_process is None
+            error_log = self.root / "profile-error"
+            with error_log.open("wb") as stream:
+                self.profile_process = subprocess.Popen(
+                    [
+                        self.python,
+                        str(self.root / "accept-native-fleet"),
+                        "--profile",
+                        str(self.root),
+                        "--seconds",
+                        "600",
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=stream,
+                )
+            return {}
+        if op == "profile_status":
+            path = self.root / "profile.json"
+            assert self.profile_process is not None
+            if self.profile_process.poll() not in (None, 0):
+                raise RuntimeError(
+                    "owned profiler failed: " + (self.root / "profile-error").read_text()[:2048]
+                )
+            if not path.exists():
+                return {"state": "starting"}
+            return json.loads(path.read_bytes())
+        if op == "metrics":
+            return json.loads((self.root / "metrics.json").read_bytes())
+        if op == "stop_fleet":
+            start = time.monotonic()
+            manager("stop", self.fleet_unit)
+            assert not (self.root / "fleet.sock").exists()
+            return {
+                "stopMs": (time.monotonic() - start) * 1000,
+                "ownerActive": manager("is-active", self.owner_unit).stdout.decode().strip(),
+            }
+        raise ValueError("unknown owned acceptance operation")
+
+    def close(self):
+        if self.profile_process is not None:
+            if self.profile_process.poll() is None:
+                self.profile_process.terminate()
+            self.profile_process.wait(timeout=5)
+        for unit in reversed(self.units):
+            manager("stop", unit, ok=False)
+            manager("disable", unit, ok=False)
+            manager("reset-failed", unit, ok=False)
+        if (self.root / "native").is_dir():
+            self.native("kill-server", ok=False)
+        for stream in self.watches:
+            stream.close()
+        deadline = time.monotonic() + 5
+        while True:
+            alive = []
+            for record in self.root.glob("bridge-pid-*"):
+                pid = int(record.read_text())
+                try:
+                    cmdline = Path(f"/proc/{pid}/cmdline").read_bytes()
+                except FileNotFoundError:
+                    continue
+                if str(self.root / "accept-native-fleet").encode() in cmdline:
+                    alive.append(pid)
+            if not alive:
+                break
+            assert time.monotonic() < deadline, "owned remote bridge remains"
+            time.sleep(0.03)
+
+
+def worker(root, host_id):
+    endpoint = Endpoint(root, host_id)
+    try:
+        result = endpoint.start()
+        from tmux_observer._ipc import IPCError
+        from tmux_observer_client._errors import ContractError
+
+        print(json.dumps({"ok": True, "result": result}), flush=True)
+        while line := sys.stdin.buffer.readline(16385):
+            if len(line) > 16384 or not line.endswith(b"\n"):
+                raise ValueError("invalid owned control frame")
+            request = json.loads(line)
+            if request["operation"] == "close":
+                break
+            try:
+                result = endpoint.dispatch(request)
+                print(json.dumps({"ok": True, "result": result}), flush=True)
+            except (
+                OSError,
+                ValueError,
+                RuntimeError,
+                AssertionError,
+                subprocess.SubprocessError,
+                IPCError,
+                ContractError,
+            ) as error:
+                print(
+                    json.dumps(
+                        {
+                            "ok": False,
+                            "code": getattr(error, "code", type(error).__name__),
+                            "message": str(error)[:1024],
+                        }
+                    ),
+                    flush=True,
+                )
+    finally:
+        endpoint.close()
+
+
+class Control:
+    def __init__(self, argv):
+        self.process = subprocess.Popen(
+            argv,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+        )
+        self.pending = bytearray()
+        self.diagnostics = bytearray()
+
+    def receive(self, *, budget=30):
+        deadline = time.monotonic() + budget
+        with selectors.DefaultSelector() as selector:
+            selector.register(self.process.stdout, selectors.EVENT_READ, "output")
+            selector.register(self.process.stderr, selectors.EVENT_READ, "diagnostic")
+            while b"\n" not in self.pending:
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("owned control response deadline")
+                for key, _events in selector.select(0.05):
+                    raw = os.read(key.fileobj.fileno(), 65536)
+                    if not raw:
+                        selector.unregister(key.fileobj)
+                        if key.data == "output":
+                            raise RuntimeError(
+                                "owned endpoint ended: "
+                                + self.diagnostics.decode(errors="replace")[:2048]
+                            )
+                    elif key.data == "output":
+                        self.pending.extend(raw)
+                        if len(self.pending) > LIMIT:
+                            raise ValueError("owned control response exceeded limit")
+                    else:
+                        self.diagnostics.extend(raw)
+                        if len(self.diagnostics) > 65536:
+                            raise ValueError("owned endpoint diagnostics exceeded limit")
+            line, _, rest = self.pending.partition(b"\n")
+            self.pending = bytearray(rest)
+        value = json.loads(line)
+        if not value["ok"]:
+            raise RuntimeError(value["code"] + ": " + value["message"])
+        return value["result"]
+
+    def call(self, operation, **kwargs):
+        self.process.stdin.write(json.dumps({"operation": operation, **kwargs}).encode() + b"\n")
+        self.process.stdin.flush()
+        return self.receive()
+
+    def close(self):
+        if self.process.poll() is None:
+            try:
+                self.process.stdin.write(b'{"operation":"close"}\n')
+                self.process.stdin.flush()
+                self.process.stdin.close()
+                self.process.wait(timeout=15)
+            except (OSError, subprocess.TimeoutExpired):
+                os.killpg(self.process.pid, signal.SIGKILL)
+                self.process.wait(timeout=5)
+        self.process.stdout.close()
+        self.process.stderr.close()
+
+
+def coordinate(remote, output, *, profile=False):
+    loader = importlib.machinery.SourceFileLoader(
+        "fleet_accept_reader", str(ROOT / "scripts/read-contract")
+    )
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    reader = importlib.util.module_from_spec(spec)
+    loader.exec_module(reader)
+    root = Path("/tmp/to-fleet-" + uuid.uuid4().hex)
+    root.mkdir(mode=0o700)
+    ssh = [
+        "ssh",
+        "-T",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=2",
+        "-o",
+        "ConnectionAttempts=1",
+        remote,
+    ]
+    controls = {}
+    remote_created = False
+    evidence = {
+        "gate": "G3-partial",
+        "sourceCommit": command(["git", "rev-parse", "HEAD"]).stdout.decode().strip(),
+        "sourceTreeDirty": bool(command(["git", "status", "--porcelain"]).stdout),
+        "scope": "same wheel, two disposable default servers and user units, real strict SSH, isolated Mesh preferences",
+        "endpoints": {},
+        "cases": [],
+        "limits": [
+            "No physical suspend, native desktop truth, capacity or ten-minute background profile acceptance",
+            "No Rofi or managed deployment acceptance",
+        ],
+    }
+
+    def passed(name, **details):
+        evidence["cases"].append({"name": name, "result": "passed", **details})
+        print("passed " + name, flush=True)
+
+    def frame(host):
+        value = controls[host].call("snapshot")["frame"]
+        reader.verify("fleet-frame", value)
+        return value
+
+    def until(host, predicate, *, budget=12):
+        deadline = time.monotonic() + budget
+        last = None
+        while time.monotonic() < deadline:
+            try:
+                last = frame(host)
+                if predicate(last):
+                    return last
+            except RuntimeError:
+                pass
+            time.sleep(0.04)
+        raise RuntimeError(
+            "owned fleet condition expired on " + host + ": " + json.dumps(last)[:512]
+        )
+
+    def current(value, target):
+        row = next(host for host in value["snapshot"]["hosts"] if host["hostId"] == target)
+        owner = row["owner"]
+        return (
+            value["snapshot"]["mesh"]["state"] == "ready"
+            and owner["receipt"]
+            and owner["receipt"]["state"] == "ready"
+            and owner["localExpiry"] > value["encodedAt"]
+        )
+
+    try:
+        wheel_dir = root / "wheel"
+        command(["uv", "build", "--wheel", "--out-dir", str(wheel_dir)])
+        wheel = next(wheel_dir.glob("*.whl"))
+        wheel.rename(root / wheel.name)
+        wheel = root / wheel.name
+        shutil.copy2(ROOT / "scripts/accept-native-fleet", root / "accept-native-fleet")
+        command([*ssh, "mkdir -m 700 -- " + shlex.quote(str(root))])
+        remote_created = True
+        command(
+            [
+                "scp",
+                "-q",
+                "-o",
+                "BatchMode=yes",
+                str(wheel),
+                str(root / "accept-native-fleet"),
+                remote + ":" + str(root) + "/",
+            ]
+        )
+        for host in ("snap", "starship"):
+            argv = [
+                sys.executable,
+                str(root / "accept-native-fleet"),
+                "--worker",
+                str(root),
+                "--host-id",
+                host,
+            ]
+            if host == "starship":
+                argv = [*ssh, " ".join(map(shlex.quote, ["python3", *argv[1:]]))]
+            controls[host] = Control(argv)
+            evidence["endpoints"][host] = controls[host].receive()
+        assert (
+            evidence["endpoints"]["snap"]["wheelSha256"]
+            == evidence["endpoints"]["starship"]["wheelSha256"]
+            == hashlib.sha256(wheel.read_bytes()).hexdigest()
+        )
+        initial = {}
+        for host in controls:
+            initial[host] = until(
+                host, lambda value: all(current(value, target) for target in controls)
+            )
+            assert all(len(row["sessions"]) == 1 for row in initial[host]["snapshot"]["hosts"])
+            for owner_host in initial[host]["snapshot"]["hosts"]:
+                endpoint = evidence["endpoints"][owner_host["hostId"]]
+                expected = endpoint["nativeReference"]
+                row = owner_host["sessions"][0]
+                assert all(row[key] == value for key, value in expected.items())
+                owner = owner_host["owner"]
+                assert owner["clock"] == endpoint["clock"]
+                assert owner["source"]["nativeHostname"] == endpoint["nativeHostname"]
+                assert owner["source"]["uid"] == endpoint["uid"]
+                if not owner_host["local"]:
+                    proof = owner["proof"]
+                    rtt = proof["receivedAt"] - proof["sentAt"]
+                    assert 0 <= rtt < 2000
+                    bound = proof["receivedAt"] + max(
+                        0, proof["remainingMs"] - rtt - proof["marginMs"]
+                    )
+                    assert owner["localExpiry"] == bound
+            assert initial[host]["snapshot"]["desktop"]["state"] == "unsupported"
+        passed("same_installed_wheel_and_native_owners_confirmed_in_both_directions")
+        for host, control in controls.items():
+            samples = control.call("benchmark")
+            reader.verify("fleet-frame", samples.pop("frame"))
+            samples["rpcP95Ms"] = sorted(samples["rpcMs"])[94]
+            samples["cliP95Ms"] = sorted(samples["cliMs"])[94]
+            assert samples["rpcP95Ms"] <= 50 and samples["cliP95Ms"] <= 150
+            evidence["endpoints"][host]["warmSamples"] = samples
+            control.call("passivity")
+        passed("100_warm_rpc_and_cli_samples_per_endpoint_with_native_passivity")
+        for host in controls:
+            sources = [{"source": "owner", "hostId": target} for target in controls]
+            sources.append({"source": "desktop", "hostId": host})
+            requested = controls[host].call("refresh", sources=sources)["frame"]
+            reader.verify("fleet-frame", requested)
+            ticket = requested["ticket"]
+            deadline = time.monotonic() + 15
+            while (
+                ticket["state"] in ("accepted", "coalesced", "running")
+                and time.monotonic() < deadline
+            ):
+                result = controls[host].call(
+                    "refresh_status", publisherId=ticket["publisherId"], ticketId=ticket["id"]
+                )["frame"]
+                reader.verify("fleet-frame", result)
+                ticket = result["ticket"]
+                time.sleep(0.03)
+            owners = [row for row in ticket["sources"] if row["source"] == "owner"]
+            assert all(row["state"] == "complete" and row["attempt"] > 0 for row in owners)
+            assert (
+                ticket["state"] == "failed"
+                and next(row for row in ticket["sources"] if row["source"] == "desktop")["state"]
+                == "failed"
+            )
+            passed(
+                "causal_owner_refresh_and_honest_headless_desktop_outcome",
+                endpoint=host,
+                ticketState=ticket["state"],
+            )
+        controls["starship"].call("native_fault", enabled=True)
+        failed = until(
+            "snap",
+            lambda value: (
+                next(row for row in value["snapshot"]["hosts"] if row["hostId"] == "starship")[
+                    "owner"
+                ]["receipt"]["state"]
+                == "failed"
+            ),
+            budget=8,
+        )
+        remote_row = next(row for row in failed["snapshot"]["hosts"] if row["hostId"] == "starship")
+        assert (
+            remote_row["owner"]["transport"] == "ready"
+            and not current(failed, "starship")
+            and current(failed, "snap")
+        )
+        passed("native_owner_failure_is_distinct_from_live_ssh_and_local_health")
+        controls["starship"].call("native_fault", enabled=False)
+        until("snap", lambda value: current(value, "starship"), budget=8)
+        controls["starship"].call("owner", action="stop")
+        down = until("snap", lambda value: not current(value, "starship"), budget=8)
+        assert current(down, "snap")
+        passed("stopped_remote_owner_invalidates_positives_without_blocking_local_reads")
+        controls["starship"].call("owner", action="start")
+        recovered = until("snap", lambda value: current(value, "starship"), budget=15)
+        old_owner = next(
+            row for row in initial["snap"]["snapshot"]["hosts"] if row["hostId"] == "starship"
+        )["owner"]
+        new_owner = next(
+            row for row in recovered["snapshot"]["hosts"] if row["hostId"] == "starship"
+        )["owner"]
+        assert (
+            old_owner["publisherId"] != new_owner["publisherId"]
+            and old_owner["serverGeneration"] == new_owner["serverGeneration"]
+        )
+        passed("publisher_replacement_requires_new_proof_and_preserves_native_generation")
+        for mode in ("delay", "trickle", "wrong_nonce"):
+            controls["starship"].call("bridge_fault", mode=mode)
+            invalid = until("snap", lambda value: not current(value, "starship"), budget=8)
+            assert current(invalid, "snap")
+            assert next(row for row in invalid["snapshot"]["hosts"] if row["hostId"] == "starship")[
+                "sessions"
+            ]
+            controls["starship"].call("bridge_fault", mode=None)
+            until("snap", lambda value: current(value, "starship"), budget=20)
+            passed("native_ssh_fault_cannot_renew_remote_authority", mode=mode)
+        controls["snap"].call("mesh_fault", enabled=True)
+        unavailable = until(
+            "snap", lambda value: value["snapshot"]["mesh"]["state"] == "unavailable", budget=20
+        )
+        assert all(not current(unavailable, host) for host in controls)
+        assert all(row["sessions"] for row in unavailable["snapshot"]["hosts"])
+        controls["snap"].call("mesh_fault", enabled=False)
+        until("snap", lambda value: all(current(value, host) for host in controls), budget=20)
+        passed("present_broken_mesh_retains_history_and_recovers_only_after_revalidation")
+        if profile:
+            for control in controls.values():
+                control.call("profile_start")
+            print("started ten-minute background profile on both endpoints", flush=True)
+            profiles = {}
+            profile_deadline = time.monotonic() + 720
+            while len(profiles) < len(controls):
+                assert time.monotonic() < profile_deadline, "owned profile deadline expired"
+                for host, control in controls.items():
+                    if host not in profiles:
+                        value = control.call("profile_status")
+                        if value["state"] == "complete":
+                            profiles[host] = value
+                            evidence["endpoints"][host]["backgroundProfile"] = value
+                if len(profiles) < len(controls):
+                    time.sleep(10)
+            evidence["limits"] += [
+                "Encrypted SSH wire overhead and transient RSS peaks remain unaccepted"
+            ]
+            evidence["limits"][0] = (
+                "No physical suspend, native desktop truth or declared-capacity acceptance"
+            )
+            passed(
+                "ten_minute_native_background_profile_collected",
+                cpuPercent={
+                    host: sum(value["serviceCpuPercent"].values()) + value["bridgeCpuPercent"]
+                    for host, value in profiles.items()
+                },
+            )
+        for host, control in controls.items():
+            deadline = time.monotonic() + 3
+            while (metrics := control.call("metrics"))["current"]["connections"] != 2:
+                assert time.monotonic() < deadline, "diagnostic checkpoint did not catch up"
+                time.sleep(0.05)
+            assert sum(row["pid"] is not None for row in metrics["owners"].values()) == 1
+            evidence["endpoints"][host]["queueMetrics"] = metrics["highWater"]
+            control.call("passivity")
+            stopped = control.call("stop_fleet")
+            assert stopped["stopMs"] < 5000 and stopped["ownerActive"] == "active"
+            control.call("passivity")
+            passed(
+                "fleet_stop_preserves_owner_and_native_sessions",
+                endpoint=host,
+                stopMs=stopped["stopMs"],
+            )
+        evidence["result"] = "passed_partial"
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(evidence, indent=2) + "\n")
+    finally:
+        for control in reversed(list(controls.values())):
+            control.close()
+        if remote_created:
+            # Fixed, task-created UUID directory only; no ordinary paths are addressed.
+            command(
+                [
+                    *ssh,
+                    " ".join(
+                        map(
+                            shlex.quote,
+                            [
+                                "python3",
+                                str(root / "accept-native-fleet"),
+                                "--cleanup",
+                                str(root),
+                                "--host-id",
+                                "starship",
+                            ],
+                        )
+                    ),
+                ]
+            )
+            command([*ssh, "rm -rf -- " + shlex.quote(str(root))])
+        cleanup(root, "snap")
+        shutil.rmtree(root)
+
+
+def cleanup(root, host_id):
+    endpoint = Endpoint(root, host_id)
+    endpoint.units = [owned_unit(root, role) for role in ("owner", "fleet")]
+    endpoint.close()
+    for unit in endpoint.units:
+        assert manager("is-active", unit, ok=False).returncode != 0
+    assert not (root / "fleet.sock").exists() and not (root / "owner.sock").exists()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--worker", type=Path)
+    parser.add_argument("--cleanup", type=Path)
+    parser.add_argument("--serve-fleet", type=Path)
+    parser.add_argument("--host-id", choices=("snap", "starship"))
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--remote", choices=("starship",), default="starship")
+    parser.add_argument("--bridge-relay", type=Path)
+    parser.add_argument("--profile", type=Path)
+    parser.add_argument("--seconds", type=int, default=600)
+    parser.add_argument("--with-profile", action="store_true")
+    args, extra = parser.parse_known_args()
+    if (args.worker or args.serve_fleet or args.cleanup) and args.host_id is None:
+        parser.error("--host-id is required for endpoint operations")
+    if args.bridge_relay:
+        bridge_relay(private_root(args.bridge_relay), extra)
+    elif extra:
+        parser.error("unexpected arguments")
+    elif args.profile:
+        profile_native(private_root(args.profile), args.seconds)
+    elif args.cleanup:
+        cleanup(private_root(args.cleanup), args.host_id)
+    elif args.worker:
+        worker(args.worker, args.host_id)
+    elif args.serve_fleet:
+        serve_fleet(private_root(args.serve_fleet), args.host_id)
+    else:
+        if not args.output:
+            parser.error("--output is required")
+        coordinate(args.remote, args.output, profile=args.with_profile)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
