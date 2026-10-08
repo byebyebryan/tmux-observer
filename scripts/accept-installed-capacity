@@ -799,6 +799,7 @@ def main(output, memory_target_mib, ssh_host=None):
             )
             if ssh_host:
                 watch_buffers = {}
+                initial_frames = []
                 with ThreadPoolExecutor(max_workers=32) as pool:
                     futures = [
                         pool.submit(request, root, context, "watch", keep=True, buffered=True)
@@ -810,16 +811,12 @@ def main(output, memory_target_mib, ssh_host=None):
                             sock, raw, pending = future.result()
                             watchers.append(sock)
                             watch_buffers[sock] = pending
-                            value = reader.wire(raw, LIMIT)
-                            reader.verify("fleet-frame", value)
                             assert len(raw) >= 850000
+                            initial_frames.append(raw)
                         except Exception as error:  # noqa: BLE001 - retain all admitted owned sockets
                             failures.append(error)
                     if failures:
                         raise failures[0]
-                passed(
-                    "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners"
-                )
                 durations = []
                 healthy = watchers[-1]
                 for _ in range(10):
@@ -869,7 +866,15 @@ def main(output, memory_target_mib, ssh_host=None):
                 for sock in watchers:
                     sock.close()
                 watchers.clear()
+                # Complete independent schema checks after the pressure window.
+                # Otherwise serial verification of 32 MiB-sized records makes
+                # the designated healthy subscriber stop consuming for seconds.
+                for raw in initial_frames:
+                    reader.verify("fleet-frame", reader.wire(raw, LIMIT))
                 wait(complete)
+                passed(
+                    "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners"
+                )
                 passed(
                     "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
                     rpcMs=durations,
