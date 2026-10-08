@@ -10,6 +10,8 @@ import importlib.util
 import json
 import os
 import selectors
+import shlex
+import shutil
 import socket
 import subprocess
 import time
@@ -42,7 +44,11 @@ def wire(sock, pending):
                 raise TimeoutError("owned stream frame deadline")
             if not selector.select(0.05):
                 continue
-            chunk = sock.recv(65536)
+            chunk = (
+                sock.recv(65536)
+                if isinstance(sock, socket.socket)
+                else os.read(sock.fileno(), 65536)
+            )
             if not chunk:
                 raise RuntimeError("owned stream ended early")
             pending.extend(chunk)
@@ -165,6 +171,22 @@ def main():
                 "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}",
             )
             hooks = native("show-hooks")
+            native_bin = directory / "native-bin"
+            native_bin.mkdir()
+            gate = directory / "gate"
+            child_pid = directory / "child.pid"
+            wrapper = native_bin / "tmux"
+            wrapper.write_text(
+                "#!/bin/sh\nif [ -f "
+                + shlex.quote(str(gate))
+                + " ]; then\n"
+                + "echo $$ > "
+                + shlex.quote(str(child_pid))
+                + "\nsleep 120\nfi\nexec "
+                + shlex.quote(shutil.which("tmux"))
+                + ' "$@"\n'
+            )
+            wrapper.chmod(0o700)
             command(
                 [
                     "systemd-run",
@@ -180,6 +202,7 @@ def main():
                     f"--setenv=TMUX_TMPDIR={directory}",
                     f"--setenv=TMUX={directory}/foreign,1,0",
                     "--setenv=TMUX_PANE=%999",
+                    f"--setenv=PATH={native_bin}:{os.environ['PATH']}",
                     str(venv / "bin/tmux-observer"),
                     "owner",
                     "--host-id",
@@ -193,6 +216,47 @@ def main():
             passed(
                 "installed user-manager publisher observes owned default despite ambient alternate context"
             )
+            bridge = subprocess.Popen(
+                [
+                    python,
+                    "-I",
+                    "-m",
+                    "tmux_observer",
+                    "bridge",
+                    "--expected-host",
+                    "fixture-native",
+                    "--socket",
+                    str(endpoint),
+                ],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                start_new_session=True,
+            )
+            try:
+                initial = wire(bridge.stdout, bytearray())
+                assert (
+                    initial["publisherId"] == first["publisherId"] and initial["kind"] == "resync"
+                )
+                probe = req("probe")
+                raw = json.dumps(probe, separators=(",", ":")).encode() + b"\n"
+                bridge.stdin.write(raw[:20])
+                bridge.stdin.flush()
+                bridge.stdin.write(raw[20:])
+                bridge.stdin.flush()
+                response = wire(bridge.stdout, bytearray())
+                assert response["requestId"] == probe["requestId"]
+                bridge.stdin.close()
+                bridge.stdin = None
+                assert bridge.wait(timeout=3) == 0
+                assert exchange(req())["publisherId"] == first["publisherId"]
+                passed(
+                    "installed owner-only bridge echoes fragmented probe nonce; EOF leaves publisher alive"
+                )
+            finally:
+                if bridge.poll() is None:
+                    bridge.terminate()
+                bridge.communicate(timeout=3)
             # Independent connections hold only observation subscriptions.
             watchers = []
             try:
@@ -320,10 +384,62 @@ def main():
             finally:
                 for sock in watchers:
                     sock.close()
+            evidence["ownerCgroupMemoryBytes"] = int(
+                command(
+                    ["systemctl", "--user", "show", unit, "--property=MemoryCurrent", "--value"]
+                ).stdout
+            )
+            gate.touch()
+            exchange(req("refresh", sources=[{"hostId": "fixture-native", "source": "owner"}]))
+            deadline = time.monotonic() + 2
+            while not child_pid.exists() and time.monotonic() < deadline:
+                time.sleep(0.02)
+            assert child_pid.exists()
+            pid = int(child_pid.read_text())
+            descendants = [
+                int(item) for item in Path(f"/proc/{pid}/task/{pid}/children").read_text().split()
+            ]
+            assert descendants
+            stop_started = time.monotonic()
             command(["systemctl", "--user", "stop", unit])
+            stop_ms = (time.monotonic() - stop_started) * 1000
+            assert stop_ms < 5000
+            for owned_pid in [pid, *descendants]:
+                stat = Path(f"/proc/{owned_pid}/stat")
+                assert not stat.exists() or stat.read_text().rsplit(")", 1)[1].split()[0] == "Z"
             assert not endpoint.exists()
             assert native("list-sessions", "-F", "#{session_name}") == "restarted"
-            passed("service stop removes only owned IPC and preserves native sessions")
+            passed(
+                "stop during blocked collection reaps owned descendants, removes IPC and preserves native sessions",
+                stopDurationMs=stop_ms,
+            )
+            gate.unlink()
+            unsupported = subprocess.Popen(
+                [
+                    python,
+                    "-I",
+                    "-m",
+                    "tmux_observer",
+                    "owner",
+                    "--host-id",
+                    "fixture-native",
+                    "--socket",
+                    str(endpoint),
+                ],
+                env=dict(env, PATH="/tmux-observer-owned-missing"),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+            try:
+                failed = until(lambda frame: frame["receipt"]["state"] == "unsupported")
+                assert failed["receipt"]["remainingMs"] == 0 and failed["snapshot"] is None
+                passed(
+                    "installed publisher missing native executable is unsupported, not current empty"
+                )
+            finally:
+                unsupported.terminate()
+                unsupported.wait(timeout=3)
         finally:
             command(["systemctl", "--user", "stop", unit], ok=False)
             native("kill-server", ok=False)
