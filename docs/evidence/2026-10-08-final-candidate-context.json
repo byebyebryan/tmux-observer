@@ -1,0 +1,57 @@
+{
+  "gate": "T12-context",
+  "endpoint": "Snap",
+  "sourceCommit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+  "sourceTreeDirty": false,
+  "systemdVersion": "systemd 262 (262-1-arch)",
+  "cases": [
+    {
+      "name": "installed_capture_and_literal_environment_parsing",
+      "result": "passed",
+      "keys": [
+        "PATH",
+        "XDG_RUNTIME_DIR",
+        "NIRI_SOCKET",
+        "DISPLAY",
+        "WAYLAND_DISPLAY",
+        "SSH_AUTH_SOCK",
+        "TMUX_TMPDIR",
+        "TMUX_OBSERVER_HOST_ID"
+      ],
+      "contextId": "eac7bb2c0511bd1b69f5ed2522484ee0"
+    },
+    {
+      "name": "restart_reloads_capture_and_reaps_prior_owned_children",
+      "result": "passed"
+    },
+    {
+      "name": "scoped_stop_removes_only_its_capture_and_owned_processes",
+      "result": "passed",
+      "stopMs": 42.289
+    },
+    {
+      "name": "installed_fleet_template_argv_context_and_prepared_startup",
+      "result": "passed",
+      "meshState": "warming"
+    }
+  ],
+  "limits": [
+    "Context/unit and prepared startup only; no two-host/native-source/desktop G3 acceptance",
+    "Private candidate paths, not managed deployment or lingering policy acceptance"
+  ],
+  "harnessCommit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+  "harnessTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+      "epoch": 1791450852,
+      "tree": "96c96b4febd662c792adfd9dde65213d4f0b3e6b"
+    },
+    "wheelSha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84",
+    "descriptorSha256": "2c954063ff4796fd2e59cb991e018b5d8c6ac5f790c379282a2a8f1777031bd2",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84",
+  "templateSha256": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+}

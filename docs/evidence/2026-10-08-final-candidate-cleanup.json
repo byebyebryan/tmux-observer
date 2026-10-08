@@ -1,0 +1,25 @@
+{
+  "scope": "Read-only post-run candidate root-directory and active-unit checks on both hosts; excludes retained /tmp diagnostic files",
+  "snap": {
+    "ownedRootDirectories": {
+      "to-fleet-*": 0,
+      "tmux-observer-capacity-*": 0,
+      "tmux-observer-native-acceptance-*": 0,
+      "tmux-observer-owner-native-*": 0,
+      "tmux-observer-desktop-*": 0,
+      "tmux-ctx-native-*": 0
+    },
+    "activeCandidateUnits": []
+  },
+  "starship": {
+    "ownedRootDirectories": {
+      "to-fleet-*": 0,
+      "tmux-observer-capacity-*": 0,
+      "tmux-observer-native-acceptance-*": 0,
+      "tmux-observer-owner-native-*": 0,
+      "tmux-observer-desktop-*": 0,
+      "tmux-ctx-native-*": 0
+    },
+    "activeCandidateUnits": []
+  }
+}

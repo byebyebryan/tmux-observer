@@ -1,0 +1,299 @@
+{
+  "gate": "T12-native-local-desktop-partial",
+  "sourceCommit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+  "sourceTreeDirty": false,
+  "endpoint": "snap",
+  "nativeVersion": "tmux 3.7c",
+  "kittyVersion": "kitty 0.49.2 created by Kovid Goyal",
+  "nativeIdentity": {
+    "uid": 1000,
+    "hostname": "80H1VV3",
+    "clock": {
+      "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+      "timeNamespace": "time:4026531834"
+    }
+  },
+  "scope": "one installed wheel; private default tmux server, owner/fleets and read-only compositor proxy; owned Kitty viewer",
+  "cases": [
+    {
+      "name": "installed_current_empty_viewer_observations_match_native_owner_and_compositor",
+      "result": "passed"
+    },
+    {
+      "name": "actual_owned_kitty_window_and_native_client_join_prove_confirmed_open",
+      "result": "passed"
+    },
+    {
+      "name": "live_native_client_switch_confirms_current_reference_and_revokes_old_positive",
+      "result": "passed",
+      "previousViewer": {
+        "reason": "conflicting_metadata",
+        "state": "unknown"
+      },
+      "currentViewer": {
+        "reason": null,
+        "state": "open",
+        "confidence": "confirmed"
+      }
+    },
+    {
+      "name": "rename_preserves_complete_reference_and_rejoins_current_desktop_inputs",
+      "result": "passed"
+    },
+    {
+      "name": "owner_loss_invalidates_viewer_positives_and_new_owner_requires_desktop_rejoin",
+      "result": "passed"
+    },
+    {
+      "name": "actual_owned_compositor_socket_replacement_invalidates_old_desktop_epoch",
+      "result": "passed"
+    },
+    {
+      "name": "unavailable_compositor_is_independent_from_current_owner_and_attached_clients",
+      "result": "passed"
+    },
+    {
+      "name": "headless_context_has_independent_unsupported_receipt_and_shared_owner",
+      "result": "passed"
+    },
+    {
+      "name": "viewer_and_service_stop_preserve_native_sessions_windows_hooks_and_creation_times",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Injected missing Mesh lookup; no remote owner/manual SSH or native Mesh acceptance",
+    "Owned proxy relays actual read-only Niri Windows responses; ordinary compositor socket is unchanged",
+    "Native desktop evidence does not establish Rofi rendering, physical display or managed rollout",
+    "Starship native graphical acceptance and declared-capacity/resource profiles remain separate"
+  ],
+  "harnessCommit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+  "harnessTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+      "epoch": 1791450852,
+      "tree": "96c96b4febd662c792adfd9dde65213d4f0b3e6b"
+    },
+    "wheelSha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84",
+    "descriptorSha256": "2c954063ff4796fd2e59cb991e018b5d8c6ac5f790c379282a2a8f1777031bd2",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84",
+  "contextId": "3133713fb6973d827b7ff41a96f21a31",
+  "nativeBaseline": {
+    "generation": "tmux-v1:1791451047:1981603:/tmp/tmux-observer-desktop-p0l4_89o/tmux-1000/default",
+    "sessions": {
+      "$0": {
+        "sessionId": "$0",
+        "createdAt": 1791451047,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-33e6af41e280-first"
+      },
+      "$1": {
+        "sessionId": "$1",
+        "createdAt": 1791451047,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-33e6af41e280-second"
+      }
+    },
+    "hooks": {
+      "$0": "",
+      "$1": ""
+    }
+  },
+  "nativeViewerJoin": {
+    "windowId": 97,
+    "windowPid": 1981731,
+    "clientPid": 1981764,
+    "reference": {
+      "hostId": "fixture-desktop",
+      "serverGeneration": "tmux-v1:1791451047:1981603:/tmp/tmux-observer-desktop-p0l4_89o/tmux-1000/default",
+      "sessionId": "$0",
+      "createdAt": 1791451047
+    }
+  },
+  "finalFrame": {
+    "protocol": "tmux-observer.fleet.v1",
+    "schemaVersion": 1,
+    "readerId": "40adbcf0-453d-43e0-90e6-111f5571a46f",
+    "clock": {
+      "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+      "timeNamespace": "time:4026531834"
+    },
+    "contextId": "3133713fb6973d827b7ff41a96f21a31",
+    "encodedAt": 490934331,
+    "sequence": 0,
+    "viewRevision": 23,
+    "snapshot": {
+      "protocol": "tmux-observer.fleet.v1",
+      "schemaVersion": 1,
+      "readerId": "40adbcf0-453d-43e0-90e6-111f5571a46f",
+      "clock": {
+        "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+        "timeNamespace": "time:4026531834"
+      },
+      "contextId": "3133713fb6973d827b7ff41a96f21a31",
+      "encodedAt": 490934331,
+      "viewRevision": 23,
+      "mesh": {
+        "state": "local_only",
+        "revision": null,
+        "localHostId": "fixture-desktop"
+      },
+      "desktop": {
+        "contextId": "3133713fb6973d827b7ff41a96f21a31",
+        "epoch": 4,
+        "state": "ready",
+        "startedAt": 490934256,
+        "acceptedAt": 490934306,
+        "expiresAt": 490944256,
+        "inputHash": "sha256:68b33ecdc25d3b71a1886b3a77f0a024c18451c8107b96b9f956ca8ed671f054",
+        "error": null
+      },
+      "hosts": [
+        {
+          "hostId": "fixture-desktop",
+          "display": "fixture-desktop",
+          "local": true,
+          "owner": {
+            "source": {
+              "hostId": "fixture-desktop",
+              "uid": 1000,
+              "server": "default",
+              "nativeHostname": "80H1VV3"
+            },
+            "clock": {
+              "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+              "timeNamespace": "time:4026531834"
+            },
+            "publisherId": "11305487-bd3b-4d3f-b881-8ac50c9b27c9",
+            "encodedAt": 490934236,
+            "serverGeneration": "tmux-v1:1791451047:1981603:/tmp/tmux-observer-desktop-p0l4_89o/tmux-1000/default",
+            "sample": {
+              "startedAt": 490934186,
+              "finishedAt": 490934196,
+              "observedAt": 1791451059761,
+              "coverage": "complete",
+              "error": null
+            },
+            "receipt": {
+              "state": "ready",
+              "attempted": 4,
+              "accepted": 4,
+              "acceptedAttempt": 4,
+              "startedAt": 490934186,
+              "acceptedAt": 490934236,
+              "expiresAt": 490944186,
+              "lastAttemptAt": 490934186,
+              "lastAttemptResult": "complete",
+              "leaseMs": 10000,
+              "remainingMs": 9950,
+              "inFlight": false
+            },
+            "transport": "local",
+            "localExpiry": 490944186,
+            "proof": null,
+            "error": null
+          },
+          "sessions": [
+            {
+              "hostId": "fixture-desktop",
+              "serverGeneration": "tmux-v1:1791451047:1981603:/tmp/tmux-observer-desktop-p0l4_89o/tmux-1000/default",
+              "sessionId": "$0",
+              "createdAt": 1791451047,
+              "name": "owned-33e6af41e280-first",
+              "activityAt": 1791451048,
+              "lastAttachedAt": 1791451048,
+              "attachedClients": 0,
+              "pending": false,
+              "windowCount": 1,
+              "sessionPath": "/home/bryan/code/tmux-observer",
+              "currentWindow": "tmux",
+              "currentPath": "/home/bryan/code/tmux-observer",
+              "localViewer": {
+                "reason": null,
+                "state": "none"
+              }
+            },
+            {
+              "hostId": "fixture-desktop",
+              "serverGeneration": "tmux-v1:1791451047:1981603:/tmp/tmux-observer-desktop-p0l4_89o/tmux-1000/default",
+              "sessionId": "$1",
+              "createdAt": 1791451047,
+              "name": "owned-33e6af41e280-renamed",
+              "activityAt": 1791451049,
+              "lastAttachedAt": 1791451049,
+              "attachedClients": 0,
+              "pending": false,
+              "windowCount": 1,
+              "sessionPath": "/home/bryan/code/tmux-observer",
+              "currentWindow": "tmux",
+              "currentPath": "/home/bryan/code/tmux-observer",
+              "localViewer": {
+                "reason": null,
+                "state": "none"
+              }
+            }
+          ]
+        }
+      ],
+      "ticket": null,
+      "error": null
+    },
+    "requestId": "51e29651696a4747884747f09556dc05",
+    "error": null,
+    "ticket": null,
+    "kind": "view"
+  },
+  "nativeFinal": {
+    "generation": "tmux-v1:1791451047:1981603:/tmp/tmux-observer-desktop-p0l4_89o/tmux-1000/default",
+    "sessions": {
+      "$0": {
+        "sessionId": "$0",
+        "createdAt": 1791451047,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-33e6af41e280-first"
+      },
+      "$1": {
+        "sessionId": "$1",
+        "createdAt": 1791451047,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-33e6af41e280-renamed"
+      }
+    },
+    "hooks": {
+      "$0": "",
+      "$1": ""
+    }
+  },
+  "attachedBaseline": {
+    "generation": "tmux-v1:1791451047:1981603:/tmp/tmux-observer-desktop-p0l4_89o/tmux-1000/default",
+    "sessions": {
+      "$0": {
+        "sessionId": "$0",
+        "createdAt": 1791451047,
+        "attachedClients": 1,
+        "windowCount": 1,
+        "name": "owned-33e6af41e280-first"
+      },
+      "$1": {
+        "sessionId": "$1",
+        "createdAt": 1791451047,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-33e6af41e280-second"
+      }
+    },
+    "hooks": {
+      "$0": "",
+      "$1": ""
+    }
+  },
+  "result": "passed_partial"
+}

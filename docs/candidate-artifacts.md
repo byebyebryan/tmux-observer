@@ -120,3 +120,17 @@ retains the timings, returns failure and marks completed owned fixture cleanup.
 The pressure involves an unsolicited record preceding the matching reply;
 receive time includes server work and socket transfer, so these phases alone
 do not isolate networking cost. Memory acceptance remains incomplete.
+
+The later final candidate `3beab8a` has a separate
+[descriptor and repeat-build record](evidence/2026-10-08-final-candidate-artifact.json).
+Its wheel SHA256 is
+`b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84`.
+Both committed-source builds produced the same wheel bytes and 69 member
+digests, including all 64 runtime/data/license payloads. All 96 installed/native
+cases in the [current status](implementation-status.md) used that exact frozen
+wheel with clean source/harness `3beab8a`. They include G1/G2, context, fresh direct,
+fleet, desktop, actual SSH capacity and ten-minute normal profiling; the measured
+resource targets and query deadlines pass. The descriptor remains
+`built_unaccepted`: deferred physical sleep/wake, frontend migration and managed
+rollout have independent remaining gates. Previous failed artifacts retain their
+original results and are not relabeled by this pass.

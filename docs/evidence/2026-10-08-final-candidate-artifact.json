@@ -1,0 +1,763 @@
+{
+  "state": "built_unaccepted",
+  "scope": "Committed source reproducible candidate builds; all acceptance remains in separate reports",
+  "candidate": {
+    "build": {
+      "builderSha256": "5abf7157a5953ec7edf032c0497d95fb3539084221131b568c95c780b658175d",
+      "constraintsSha256": "9415ac080e4169856325998ab71d3258c16c02a1d0d3cfa837bfca1290faa8db",
+      "implementation": "CPython",
+      "python": "3.14.7",
+      "uv": "uv 0.8.22"
+    },
+    "contractBundles": {
+      "fleet-v1": "ad030c7853104734727792f37c7dba42da139b076319db2ba408b8214adbbb8e",
+      "observation-v1": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c",
+      "service-v1": "1229737bda758c66dea4762e933e2ba15c8ff79e1fdd3f4bc473b03adc386c89"
+    },
+    "members": {
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/SHA256SUMS": {
+        "bytes": 578,
+        "sha256": "ad030c7853104734727792f37c7dba42da139b076319db2ba408b8214adbbb8e"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.json": {
+        "bytes": 741,
+        "sha256": "e498256e300cf4c066ae85e145e07bfc70646623580da0264c82d89afc2256ac"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.md": {
+        "bytes": 377,
+        "sha256": "568f30f19385c041ae1c0db04d3d75d9e9d11a82ea94110fb8498661c38d2576"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/frame.json": {
+        "bytes": 3316,
+        "sha256": "622e6f4c3660dd5213b2cd97cb558870e165a47351fd6eac9a3cdba319aa158c"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/index.json": {
+        "bytes": 181,
+        "sha256": "fab0b1e0cc7a647f48c2e87351e76947d6c8f99954b6ca793dfcae02d535ea97"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/local.json": {
+        "bytes": 2689,
+        "sha256": "173b685081ea639e616d951fbb382355955401294e2de79e9feee2f6fa1e26a2"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/frame.schema.json": {
+        "bytes": 2336,
+        "sha256": "09ac94c66ea5beef7d5da607f3ea023dbefd8bdf737b1f7683a5be15110f26ae"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/schema.json": {
+        "bytes": 17242,
+        "sha256": "70d59c01e06e994608d1d6a3fbb9b07e6799aa957f45aae2829ee4058c71c91f"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/SHA256SUMS": {
+        "bytes": 682,
+        "sha256": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.json": {
+        "bytes": 575,
+        "sha256": "b8e90e4a19dbe5c28ed7299b9ed1021dc303e997b63e47a1b5adaa2f4314a966"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.md": {
+        "bytes": 383,
+        "sha256": "f2755e6789818466546f1e7ec2887b9c1aa70d1017a1e5070d881ef7de6b355b"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/complete.json": {
+        "bytes": 1040,
+        "sha256": "34671760202d76685aaa0fac9f906dc5ea847142f9cd47be0f263e9022b91b01"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/failed.json": {
+        "bytes": 635,
+        "sha256": "fc5d87a9a1d37f1ca88a2112dff4e43df49cf25ea62d3a8a333296d8984343da"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/index.json": {
+        "bytes": 214,
+        "sha256": "3735abf2a116cc7e4a979618d3ce8cbfb25563620ddfad2ed1fd3653ec3936d6"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/no-server.json": {
+        "bytes": 556,
+        "sha256": "9841866d7de48358f076180797497cf02e83e522cd68dafc0546e6f799c7a95d"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/operation-error.schema.json": {
+        "bytes": 741,
+        "sha256": "c1ddd0de1efea475a0029e48d54d7d3d4e78767e53ea6d6b94fa4dace9785a0f"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/schema.json": {
+        "bytes": 10866,
+        "sha256": "b79b26cddc4363e43dbc73265f880115570afa9fa5f9851aed947ebb6f0c8c8c"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/SHA256SUMS": {
+        "bytes": 670,
+        "sha256": "1229737bda758c66dea4762e933e2ba15c8ff79e1fdd3f4bc473b03adc386c89"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.json": {
+        "bytes": 659,
+        "sha256": "b0aea176df05ef5ae431311346118c517267785d69a5c697cad5515f39bd766c"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.md": {
+        "bytes": 379,
+        "sha256": "516512a3f8a32cc63733f35d554fcf423b6450eb64e55780a53b4ad399b698f3"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/index.json": {
+        "bytes": 249,
+        "sha256": "7835302a4208690b243df6a6f1ae09a95e55403fb9da1b0c7e0e54da413941a6"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/ready.json": {
+        "bytes": 1945,
+        "sha256": "43449c60b83fde3dd01ee0d48ba187dc7eeb3ffe822ba084997b440f0c0e6945"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/request.json": {
+        "bytes": 157,
+        "sha256": "61810646046ca1ff7850b84e7d054813290f9f19a43df880970b48d5bd7a7835"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/warming.json": {
+        "bytes": 823,
+        "sha256": "80574546b78a808b68449a598227f05ea31678951ff77667861df4cc570d26be"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/request.schema.json": {
+        "bytes": 3032,
+        "sha256": "a0f34d2068e8c5e2cec1f232fa05d02a5b5b3f0a496fdddb2b74af53b32dabb9"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/schema.json": {
+        "bytes": 7907,
+        "sha256": "4002b17b06200907b935da8c7191fc44ba9a41c45061c8f7b4201403cf39bfd0"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-fleet@.service": {
+        "bytes": 518,
+        "sha256": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-owner@.service": {
+        "bytes": 294,
+        "sha256": "d21e43859d6ee4c45d27f2b3fb8f01d7f1a8720af80eb6861a74ac00d9b9c319"
+      },
+      "tmux_observer-0.1.0a1.dist-info/METADATA": {
+        "bytes": 7113,
+        "sha256": "a52984a3f97be9991da19f53bd226d6d99872ee537cbbe82ae8bfa9316252e51"
+      },
+      "tmux_observer-0.1.0a1.dist-info/RECORD": {
+        "bytes": 7622,
+        "sha256": "976075b4434fb8de5d62224f796f82190473193f54149e34d6cc618916822303"
+      },
+      "tmux_observer-0.1.0a1.dist-info/WHEEL": {
+        "bytes": 91,
+        "sha256": "61532836a2b3111b7ec23519c09df7c41180c27165fb872a6d8913b566b88ad1"
+      },
+      "tmux_observer-0.1.0a1.dist-info/entry_points.txt": {
+        "bytes": 110,
+        "sha256": "38e0ca991bc0e02e330495a84f8c37ed47ea741d34b5910899258eecda5dd10c"
+      },
+      "tmux_observer-0.1.0a1.dist-info/licenses/LICENSE": {
+        "bytes": 1066,
+        "sha256": "09f9adb67e3a6659b19893fbfc583eb5dfc605fea5b8e64202d20c41bdac9fb0"
+      },
+      "tmux_observer-0.1.0a1.dist-info/top_level.txt": {
+        "bytes": 35,
+        "sha256": "c3a9c48dcf3b5e1b1b18cd8b8466aab99e2635cfd5a5e14016142ab858f229f5"
+      },
+      "tmux_observer/__init__.py": {
+        "bytes": 102,
+        "sha256": "6a29bfc80325ad76ed68d48393fbbe48f1f3865373931f36aae3b358474d6af1"
+      },
+      "tmux_observer/__main__.py": {
+        "bytes": 48,
+        "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+      },
+      "tmux_observer/_clock.py": {
+        "bytes": 570,
+        "sha256": "f9eabc6347a603ef14e5fb4e56f1ce68ebb87293c05444cc71fbbcc69c2268ef"
+      },
+      "tmux_observer/_hub.py": {
+        "bytes": 11373,
+        "sha256": "5001a2914c7a76741873fc1aaaa2a5d56065342e31a088645732ec4a07821e2b"
+      },
+      "tmux_observer/_ipc.py": {
+        "bytes": 9791,
+        "sha256": "9bdf9ff4bd0f6698880325b69f234f6efebb09d11531bac1dceea542cec06239"
+      },
+      "tmux_observer/_models.py": {
+        "bytes": 2152,
+        "sha256": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd"
+      },
+      "tmux_observer/_owner_state.py": {
+        "bytes": 6833,
+        "sha256": "024160ca934d928645aef85cb12c01c0e9426db6f6ba8119232d4e82a9c96ae6"
+      },
+      "tmux_observer/_process.py": {
+        "bytes": 5831,
+        "sha256": "c2ba06aa0d19336d64dc79afd2cef2c86ee209df58558a8109e0d08cad8174fd"
+      },
+      "tmux_observer/_stream.py": {
+        "bytes": 11473,
+        "sha256": "aaf936489b8f3498d47c1148aed109802c43c40364d0227a0714db8b8f4e22c5"
+      },
+      "tmux_observer/_tickets.py": {
+        "bytes": 8054,
+        "sha256": "3741288958100fd031b38371479878575253e339b513f7a5a6c0d26b198ddfba"
+      },
+      "tmux_observer/_tmux_wire.py": {
+        "bytes": 7295,
+        "sha256": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4"
+      },
+      "tmux_observer/_validation.py": {
+        "bytes": 29846,
+        "sha256": "e6712694831c36477f6c32d0aea38e8bbeb3282a33c024743f054fad14c16e23"
+      },
+      "tmux_observer/_wire.py": {
+        "bytes": 5668,
+        "sha256": "d7c4d13d2d4e67106a8fa68ddf441725f70401ac6cb726179e5f1c65aeda60b3"
+      },
+      "tmux_observer/cli.py": {
+        "bytes": 5157,
+        "sha256": "209f9089ec23b10ec295bdde6ec3d6fa1a8395312bb3c673de1ed2d136488ea3"
+      },
+      "tmux_observer/collector.py": {
+        "bytes": 13785,
+        "sha256": "8ef4846a21cb909c71f6f95b5bb04ac763dabffe7d68829a2c8b49aebd5f7ab4"
+      },
+      "tmux_observer/owner.py": {
+        "bytes": 7835,
+        "sha256": "fe747ed5ff2e3b4b04d5a519eb3a19ba81283e3272c396759f1b746f2d3c8cec"
+      },
+      "tmux_observer/public.py": {
+        "bytes": 1200,
+        "sha256": "fbe2705fb71e13244a3b2a18834f45e859ff3dca8a37d5d6fa7d23831899989f"
+      },
+      "tmux_observer_client/__init__.py": {
+        "bytes": 53,
+        "sha256": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0"
+      },
+      "tmux_observer_client/_command.py": {
+        "bytes": 4396,
+        "sha256": "e317d77baf3625819fecab72f24bf9e2e19d5e994384a61f6d74a2a5182b416c"
+      },
+      "tmux_observer_client/_context.py": {
+        "bytes": 6685,
+        "sha256": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e"
+      },
+      "tmux_observer_client/_desktop_input.py": {
+        "bytes": 1153,
+        "sha256": "d17ebd7aaf2d82a7e30bdb4d87100212dfb006db982e0c91376eca34383ba80c"
+      },
+      "tmux_observer_client/_desktop_scan.py": {
+        "bytes": 25877,
+        "sha256": "42247f353ec24800ac21b45b1689d869f303d66fa9913b2d2c034f001ccef4a6"
+      },
+      "tmux_observer_client/_errors.py": {
+        "bytes": 1022,
+        "sha256": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089"
+      },
+      "tmux_observer_client/_fleet_state.py": {
+        "bytes": 11693,
+        "sha256": "d6a8068d2fe95e1ae77f12ce154ffee2a8db4c345c90bbe7a4915c8916c1d984"
+      },
+      "tmux_observer_client/_fleet_tickets.py": {
+        "bytes": 14408,
+        "sha256": "29c142575202d43b7732057e1aecd694f2630e054e1e630b7719c218562656f8"
+      },
+      "tmux_observer_client/_local_stream.py": {
+        "bytes": 6284,
+        "sha256": "4dea112dff1b9c05e2bf68f24c642745569ac1537f4be49428d097c32911dff0"
+      },
+      "tmux_observer_client/_remote_state.py": {
+        "bytes": 9015,
+        "sha256": "82e333deeb245363a3faf22e2609edf88a5a4ad9fb5d2fe0f95bf02c71bdd10b"
+      },
+      "tmux_observer_client/_watch.py": {
+        "bytes": 9860,
+        "sha256": "894bf8b5dfcbd3e6cc01e8c5e2e3279931075e53a5b5dbbef6ed34219b6a1738"
+      },
+      "tmux_observer_client/cli.py": {
+        "bytes": 7313,
+        "sha256": "01c653fea097d187c63b7d3113e00d4d9eafe2e262c94494150b2d7bf164ce2f"
+      },
+      "tmux_observer_client/desktop.py": {
+        "bytes": 6133,
+        "sha256": "396d6d0daac6d7c6eedb047a995efad82480b60bb1f83e54e2e8fc7843c6dfce"
+      },
+      "tmux_observer_client/direct.py": {
+        "bytes": 11537,
+        "sha256": "df947cb5a4d6004d0972298b3d689bbc1ac03f1f6aeacee08abd6ef5f088c3a9"
+      },
+      "tmux_observer_client/fleet.py": {
+        "bytes": 22539,
+        "sha256": "27e6a6943c9b3f571be270b2a7c1480cdb516dd38b93d4f2ff7cf9e1b8f6fe44"
+      },
+      "tmux_observer_client/mesh.py": {
+        "bytes": 15809,
+        "sha256": "35be440c8af2642d120d80190a1b8287c49d34445ff24a70d9baee14859f93aa"
+      },
+      "tmux_observer_client/public.py": {
+        "bytes": 2206,
+        "sha256": "864400d34225f03b5649c37f124cb559ac7dcc756f00becec82e688490ae06cc"
+      },
+      "tmux_observer_client/ssh.py": {
+        "bytes": 9694,
+        "sha256": "9cc6966463bf16dfc096effd0c9f23d2ca0f5af93978a6b613835f84ee8afaf5"
+      }
+    },
+    "package": {
+      "generator": "setuptools (84.0.0)",
+      "name": "tmux-observer",
+      "requiresPython": ">=3.11",
+      "version": "0.1.0a1"
+    },
+    "schemaVersion": 1,
+    "source": {
+      "commit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+      "epoch": 1791450852,
+      "tree": "96c96b4febd662c792adfd9dde65213d4f0b3e6b"
+    },
+    "sourceFiles": {
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/SHA256SUMS": "contracts/fleet-v1/SHA256SUMS",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.json": "contracts/fleet-v1/contract.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.md": "contracts/fleet-v1/contract.md",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/frame.json": "contracts/fleet-v1/fixtures/frame.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/index.json": "contracts/fleet-v1/fixtures/index.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/local.json": "contracts/fleet-v1/fixtures/local.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/frame.schema.json": "contracts/fleet-v1/frame.schema.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/schema.json": "contracts/fleet-v1/schema.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/SHA256SUMS": "contracts/observation-v1/SHA256SUMS",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.json": "contracts/observation-v1/contract.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.md": "contracts/observation-v1/contract.md",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/complete.json": "contracts/observation-v1/fixtures/complete.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/failed.json": "contracts/observation-v1/fixtures/failed.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/index.json": "contracts/observation-v1/fixtures/index.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/no-server.json": "contracts/observation-v1/fixtures/no-server.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/operation-error.schema.json": "contracts/observation-v1/operation-error.schema.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/schema.json": "contracts/observation-v1/schema.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/SHA256SUMS": "contracts/service-v1/SHA256SUMS",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.json": "contracts/service-v1/contract.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.md": "contracts/service-v1/contract.md",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/index.json": "contracts/service-v1/fixtures/index.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/ready.json": "contracts/service-v1/fixtures/ready.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/request.json": "contracts/service-v1/fixtures/request.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/warming.json": "contracts/service-v1/fixtures/warming.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/request.schema.json": "contracts/service-v1/request.schema.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/schema.json": "contracts/service-v1/schema.json",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-fleet@.service": "systemd/tmux-observer-fleet@.service",
+      "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-owner@.service": "systemd/tmux-observer-owner@.service",
+      "tmux_observer-0.1.0a1.dist-info/licenses/LICENSE": "LICENSE",
+      "tmux_observer/__init__.py": "src/tmux_observer/__init__.py",
+      "tmux_observer/__main__.py": "src/tmux_observer/__main__.py",
+      "tmux_observer/_clock.py": "src/tmux_observer/_clock.py",
+      "tmux_observer/_hub.py": "src/tmux_observer/_hub.py",
+      "tmux_observer/_ipc.py": "src/tmux_observer/_ipc.py",
+      "tmux_observer/_models.py": "src/tmux_observer/_models.py",
+      "tmux_observer/_owner_state.py": "src/tmux_observer/_owner_state.py",
+      "tmux_observer/_process.py": "src/tmux_observer/_process.py",
+      "tmux_observer/_stream.py": "src/tmux_observer/_stream.py",
+      "tmux_observer/_tickets.py": "src/tmux_observer/_tickets.py",
+      "tmux_observer/_tmux_wire.py": "src/tmux_observer/_tmux_wire.py",
+      "tmux_observer/_validation.py": "src/tmux_observer/_validation.py",
+      "tmux_observer/_wire.py": "src/tmux_observer/_wire.py",
+      "tmux_observer/cli.py": "src/tmux_observer/cli.py",
+      "tmux_observer/collector.py": "src/tmux_observer/collector.py",
+      "tmux_observer/owner.py": "src/tmux_observer/owner.py",
+      "tmux_observer/public.py": "src/tmux_observer/public.py",
+      "tmux_observer_client/__init__.py": "src/tmux_observer_client/__init__.py",
+      "tmux_observer_client/_command.py": "src/tmux_observer_client/_command.py",
+      "tmux_observer_client/_context.py": "src/tmux_observer_client/_context.py",
+      "tmux_observer_client/_desktop_input.py": "src/tmux_observer_client/_desktop_input.py",
+      "tmux_observer_client/_desktop_scan.py": "src/tmux_observer_client/_desktop_scan.py",
+      "tmux_observer_client/_errors.py": "src/tmux_observer_client/_errors.py",
+      "tmux_observer_client/_fleet_state.py": "src/tmux_observer_client/_fleet_state.py",
+      "tmux_observer_client/_fleet_tickets.py": "src/tmux_observer_client/_fleet_tickets.py",
+      "tmux_observer_client/_local_stream.py": "src/tmux_observer_client/_local_stream.py",
+      "tmux_observer_client/_remote_state.py": "src/tmux_observer_client/_remote_state.py",
+      "tmux_observer_client/_watch.py": "src/tmux_observer_client/_watch.py",
+      "tmux_observer_client/cli.py": "src/tmux_observer_client/cli.py",
+      "tmux_observer_client/desktop.py": "src/tmux_observer_client/desktop.py",
+      "tmux_observer_client/direct.py": "src/tmux_observer_client/direct.py",
+      "tmux_observer_client/fleet.py": "src/tmux_observer_client/fleet.py",
+      "tmux_observer_client/mesh.py": "src/tmux_observer_client/mesh.py",
+      "tmux_observer_client/public.py": "src/tmux_observer_client/public.py",
+      "tmux_observer_client/ssh.py": "src/tmux_observer_client/ssh.py"
+    },
+    "state": "built_unaccepted",
+    "wheel": {
+      "bytes": 110583,
+      "file": "tmux_observer-0.1.0a1-py3-none-any.whl",
+      "sha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84"
+    }
+  },
+  "repeatBuild": {
+    "descriptor": {
+      "build": {
+        "builderSha256": "5abf7157a5953ec7edf032c0497d95fb3539084221131b568c95c780b658175d",
+        "constraintsSha256": "9415ac080e4169856325998ab71d3258c16c02a1d0d3cfa837bfca1290faa8db",
+        "implementation": "CPython",
+        "python": "3.14.7",
+        "uv": "uv 0.8.22"
+      },
+      "contractBundles": {
+        "fleet-v1": "ad030c7853104734727792f37c7dba42da139b076319db2ba408b8214adbbb8e",
+        "observation-v1": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c",
+        "service-v1": "1229737bda758c66dea4762e933e2ba15c8ff79e1fdd3f4bc473b03adc386c89"
+      },
+      "members": {
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/SHA256SUMS": {
+          "bytes": 578,
+          "sha256": "ad030c7853104734727792f37c7dba42da139b076319db2ba408b8214adbbb8e"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.json": {
+          "bytes": 741,
+          "sha256": "e498256e300cf4c066ae85e145e07bfc70646623580da0264c82d89afc2256ac"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.md": {
+          "bytes": 377,
+          "sha256": "568f30f19385c041ae1c0db04d3d75d9e9d11a82ea94110fb8498661c38d2576"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/frame.json": {
+          "bytes": 3316,
+          "sha256": "622e6f4c3660dd5213b2cd97cb558870e165a47351fd6eac9a3cdba319aa158c"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/index.json": {
+          "bytes": 181,
+          "sha256": "fab0b1e0cc7a647f48c2e87351e76947d6c8f99954b6ca793dfcae02d535ea97"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/local.json": {
+          "bytes": 2689,
+          "sha256": "173b685081ea639e616d951fbb382355955401294e2de79e9feee2f6fa1e26a2"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/frame.schema.json": {
+          "bytes": 2336,
+          "sha256": "09ac94c66ea5beef7d5da607f3ea023dbefd8bdf737b1f7683a5be15110f26ae"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/schema.json": {
+          "bytes": 17242,
+          "sha256": "70d59c01e06e994608d1d6a3fbb9b07e6799aa957f45aae2829ee4058c71c91f"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/SHA256SUMS": {
+          "bytes": 682,
+          "sha256": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.json": {
+          "bytes": 575,
+          "sha256": "b8e90e4a19dbe5c28ed7299b9ed1021dc303e997b63e47a1b5adaa2f4314a966"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.md": {
+          "bytes": 383,
+          "sha256": "f2755e6789818466546f1e7ec2887b9c1aa70d1017a1e5070d881ef7de6b355b"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/complete.json": {
+          "bytes": 1040,
+          "sha256": "34671760202d76685aaa0fac9f906dc5ea847142f9cd47be0f263e9022b91b01"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/failed.json": {
+          "bytes": 635,
+          "sha256": "fc5d87a9a1d37f1ca88a2112dff4e43df49cf25ea62d3a8a333296d8984343da"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/index.json": {
+          "bytes": 214,
+          "sha256": "3735abf2a116cc7e4a979618d3ce8cbfb25563620ddfad2ed1fd3653ec3936d6"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/no-server.json": {
+          "bytes": 556,
+          "sha256": "9841866d7de48358f076180797497cf02e83e522cd68dafc0546e6f799c7a95d"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/operation-error.schema.json": {
+          "bytes": 741,
+          "sha256": "c1ddd0de1efea475a0029e48d54d7d3d4e78767e53ea6d6b94fa4dace9785a0f"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/schema.json": {
+          "bytes": 10866,
+          "sha256": "b79b26cddc4363e43dbc73265f880115570afa9fa5f9851aed947ebb6f0c8c8c"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/SHA256SUMS": {
+          "bytes": 670,
+          "sha256": "1229737bda758c66dea4762e933e2ba15c8ff79e1fdd3f4bc473b03adc386c89"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.json": {
+          "bytes": 659,
+          "sha256": "b0aea176df05ef5ae431311346118c517267785d69a5c697cad5515f39bd766c"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.md": {
+          "bytes": 379,
+          "sha256": "516512a3f8a32cc63733f35d554fcf423b6450eb64e55780a53b4ad399b698f3"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/index.json": {
+          "bytes": 249,
+          "sha256": "7835302a4208690b243df6a6f1ae09a95e55403fb9da1b0c7e0e54da413941a6"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/ready.json": {
+          "bytes": 1945,
+          "sha256": "43449c60b83fde3dd01ee0d48ba187dc7eeb3ffe822ba084997b440f0c0e6945"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/request.json": {
+          "bytes": 157,
+          "sha256": "61810646046ca1ff7850b84e7d054813290f9f19a43df880970b48d5bd7a7835"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/warming.json": {
+          "bytes": 823,
+          "sha256": "80574546b78a808b68449a598227f05ea31678951ff77667861df4cc570d26be"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/request.schema.json": {
+          "bytes": 3032,
+          "sha256": "a0f34d2068e8c5e2cec1f232fa05d02a5b5b3f0a496fdddb2b74af53b32dabb9"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/schema.json": {
+          "bytes": 7907,
+          "sha256": "4002b17b06200907b935da8c7191fc44ba9a41c45061c8f7b4201403cf39bfd0"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-fleet@.service": {
+          "bytes": 518,
+          "sha256": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+        },
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-owner@.service": {
+          "bytes": 294,
+          "sha256": "d21e43859d6ee4c45d27f2b3fb8f01d7f1a8720af80eb6861a74ac00d9b9c319"
+        },
+        "tmux_observer-0.1.0a1.dist-info/METADATA": {
+          "bytes": 7113,
+          "sha256": "a52984a3f97be9991da19f53bd226d6d99872ee537cbbe82ae8bfa9316252e51"
+        },
+        "tmux_observer-0.1.0a1.dist-info/RECORD": {
+          "bytes": 7622,
+          "sha256": "976075b4434fb8de5d62224f796f82190473193f54149e34d6cc618916822303"
+        },
+        "tmux_observer-0.1.0a1.dist-info/WHEEL": {
+          "bytes": 91,
+          "sha256": "61532836a2b3111b7ec23519c09df7c41180c27165fb872a6d8913b566b88ad1"
+        },
+        "tmux_observer-0.1.0a1.dist-info/entry_points.txt": {
+          "bytes": 110,
+          "sha256": "38e0ca991bc0e02e330495a84f8c37ed47ea741d34b5910899258eecda5dd10c"
+        },
+        "tmux_observer-0.1.0a1.dist-info/licenses/LICENSE": {
+          "bytes": 1066,
+          "sha256": "09f9adb67e3a6659b19893fbfc583eb5dfc605fea5b8e64202d20c41bdac9fb0"
+        },
+        "tmux_observer-0.1.0a1.dist-info/top_level.txt": {
+          "bytes": 35,
+          "sha256": "c3a9c48dcf3b5e1b1b18cd8b8466aab99e2635cfd5a5e14016142ab858f229f5"
+        },
+        "tmux_observer/__init__.py": {
+          "bytes": 102,
+          "sha256": "6a29bfc80325ad76ed68d48393fbbe48f1f3865373931f36aae3b358474d6af1"
+        },
+        "tmux_observer/__main__.py": {
+          "bytes": 48,
+          "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+        },
+        "tmux_observer/_clock.py": {
+          "bytes": 570,
+          "sha256": "f9eabc6347a603ef14e5fb4e56f1ce68ebb87293c05444cc71fbbcc69c2268ef"
+        },
+        "tmux_observer/_hub.py": {
+          "bytes": 11373,
+          "sha256": "5001a2914c7a76741873fc1aaaa2a5d56065342e31a088645732ec4a07821e2b"
+        },
+        "tmux_observer/_ipc.py": {
+          "bytes": 9791,
+          "sha256": "9bdf9ff4bd0f6698880325b69f234f6efebb09d11531bac1dceea542cec06239"
+        },
+        "tmux_observer/_models.py": {
+          "bytes": 2152,
+          "sha256": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd"
+        },
+        "tmux_observer/_owner_state.py": {
+          "bytes": 6833,
+          "sha256": "024160ca934d928645aef85cb12c01c0e9426db6f6ba8119232d4e82a9c96ae6"
+        },
+        "tmux_observer/_process.py": {
+          "bytes": 5831,
+          "sha256": "c2ba06aa0d19336d64dc79afd2cef2c86ee209df58558a8109e0d08cad8174fd"
+        },
+        "tmux_observer/_stream.py": {
+          "bytes": 11473,
+          "sha256": "aaf936489b8f3498d47c1148aed109802c43c40364d0227a0714db8b8f4e22c5"
+        },
+        "tmux_observer/_tickets.py": {
+          "bytes": 8054,
+          "sha256": "3741288958100fd031b38371479878575253e339b513f7a5a6c0d26b198ddfba"
+        },
+        "tmux_observer/_tmux_wire.py": {
+          "bytes": 7295,
+          "sha256": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4"
+        },
+        "tmux_observer/_validation.py": {
+          "bytes": 29846,
+          "sha256": "e6712694831c36477f6c32d0aea38e8bbeb3282a33c024743f054fad14c16e23"
+        },
+        "tmux_observer/_wire.py": {
+          "bytes": 5668,
+          "sha256": "d7c4d13d2d4e67106a8fa68ddf441725f70401ac6cb726179e5f1c65aeda60b3"
+        },
+        "tmux_observer/cli.py": {
+          "bytes": 5157,
+          "sha256": "209f9089ec23b10ec295bdde6ec3d6fa1a8395312bb3c673de1ed2d136488ea3"
+        },
+        "tmux_observer/collector.py": {
+          "bytes": 13785,
+          "sha256": "8ef4846a21cb909c71f6f95b5bb04ac763dabffe7d68829a2c8b49aebd5f7ab4"
+        },
+        "tmux_observer/owner.py": {
+          "bytes": 7835,
+          "sha256": "fe747ed5ff2e3b4b04d5a519eb3a19ba81283e3272c396759f1b746f2d3c8cec"
+        },
+        "tmux_observer/public.py": {
+          "bytes": 1200,
+          "sha256": "fbe2705fb71e13244a3b2a18834f45e859ff3dca8a37d5d6fa7d23831899989f"
+        },
+        "tmux_observer_client/__init__.py": {
+          "bytes": 53,
+          "sha256": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0"
+        },
+        "tmux_observer_client/_command.py": {
+          "bytes": 4396,
+          "sha256": "e317d77baf3625819fecab72f24bf9e2e19d5e994384a61f6d74a2a5182b416c"
+        },
+        "tmux_observer_client/_context.py": {
+          "bytes": 6685,
+          "sha256": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e"
+        },
+        "tmux_observer_client/_desktop_input.py": {
+          "bytes": 1153,
+          "sha256": "d17ebd7aaf2d82a7e30bdb4d87100212dfb006db982e0c91376eca34383ba80c"
+        },
+        "tmux_observer_client/_desktop_scan.py": {
+          "bytes": 25877,
+          "sha256": "42247f353ec24800ac21b45b1689d869f303d66fa9913b2d2c034f001ccef4a6"
+        },
+        "tmux_observer_client/_errors.py": {
+          "bytes": 1022,
+          "sha256": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089"
+        },
+        "tmux_observer_client/_fleet_state.py": {
+          "bytes": 11693,
+          "sha256": "d6a8068d2fe95e1ae77f12ce154ffee2a8db4c345c90bbe7a4915c8916c1d984"
+        },
+        "tmux_observer_client/_fleet_tickets.py": {
+          "bytes": 14408,
+          "sha256": "29c142575202d43b7732057e1aecd694f2630e054e1e630b7719c218562656f8"
+        },
+        "tmux_observer_client/_local_stream.py": {
+          "bytes": 6284,
+          "sha256": "4dea112dff1b9c05e2bf68f24c642745569ac1537f4be49428d097c32911dff0"
+        },
+        "tmux_observer_client/_remote_state.py": {
+          "bytes": 9015,
+          "sha256": "82e333deeb245363a3faf22e2609edf88a5a4ad9fb5d2fe0f95bf02c71bdd10b"
+        },
+        "tmux_observer_client/_watch.py": {
+          "bytes": 9860,
+          "sha256": "894bf8b5dfcbd3e6cc01e8c5e2e3279931075e53a5b5dbbef6ed34219b6a1738"
+        },
+        "tmux_observer_client/cli.py": {
+          "bytes": 7313,
+          "sha256": "01c653fea097d187c63b7d3113e00d4d9eafe2e262c94494150b2d7bf164ce2f"
+        },
+        "tmux_observer_client/desktop.py": {
+          "bytes": 6133,
+          "sha256": "396d6d0daac6d7c6eedb047a995efad82480b60bb1f83e54e2e8fc7843c6dfce"
+        },
+        "tmux_observer_client/direct.py": {
+          "bytes": 11537,
+          "sha256": "df947cb5a4d6004d0972298b3d689bbc1ac03f1f6aeacee08abd6ef5f088c3a9"
+        },
+        "tmux_observer_client/fleet.py": {
+          "bytes": 22539,
+          "sha256": "27e6a6943c9b3f571be270b2a7c1480cdb516dd38b93d4f2ff7cf9e1b8f6fe44"
+        },
+        "tmux_observer_client/mesh.py": {
+          "bytes": 15809,
+          "sha256": "35be440c8af2642d120d80190a1b8287c49d34445ff24a70d9baee14859f93aa"
+        },
+        "tmux_observer_client/public.py": {
+          "bytes": 2206,
+          "sha256": "864400d34225f03b5649c37f124cb559ac7dcc756f00becec82e688490ae06cc"
+        },
+        "tmux_observer_client/ssh.py": {
+          "bytes": 9694,
+          "sha256": "9cc6966463bf16dfc096effd0c9f23d2ca0f5af93978a6b613835f84ee8afaf5"
+        }
+      },
+      "package": {
+        "generator": "setuptools (84.0.0)",
+        "name": "tmux-observer",
+        "requiresPython": ">=3.11",
+        "version": "0.1.0a1"
+      },
+      "schemaVersion": 1,
+      "source": {
+        "commit": "3beab8a94719c9690914fc73ca15697e81025e2e",
+        "epoch": 1791450852,
+        "tree": "96c96b4febd662c792adfd9dde65213d4f0b3e6b"
+      },
+      "sourceFiles": {
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/SHA256SUMS": "contracts/fleet-v1/SHA256SUMS",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.json": "contracts/fleet-v1/contract.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/contract.md": "contracts/fleet-v1/contract.md",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/frame.json": "contracts/fleet-v1/fixtures/frame.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/index.json": "contracts/fleet-v1/fixtures/index.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/fixtures/local.json": "contracts/fleet-v1/fixtures/local.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/frame.schema.json": "contracts/fleet-v1/frame.schema.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/fleet-v1/schema.json": "contracts/fleet-v1/schema.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/SHA256SUMS": "contracts/observation-v1/SHA256SUMS",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.json": "contracts/observation-v1/contract.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/contract.md": "contracts/observation-v1/contract.md",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/complete.json": "contracts/observation-v1/fixtures/complete.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/failed.json": "contracts/observation-v1/fixtures/failed.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/index.json": "contracts/observation-v1/fixtures/index.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/fixtures/no-server.json": "contracts/observation-v1/fixtures/no-server.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/operation-error.schema.json": "contracts/observation-v1/operation-error.schema.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/observation-v1/schema.json": "contracts/observation-v1/schema.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/SHA256SUMS": "contracts/service-v1/SHA256SUMS",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.json": "contracts/service-v1/contract.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/contract.md": "contracts/service-v1/contract.md",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/index.json": "contracts/service-v1/fixtures/index.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/ready.json": "contracts/service-v1/fixtures/ready.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/request.json": "contracts/service-v1/fixtures/request.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/fixtures/warming.json": "contracts/service-v1/fixtures/warming.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/request.schema.json": "contracts/service-v1/request.schema.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/service-v1/schema.json": "contracts/service-v1/schema.json",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-fleet@.service": "systemd/tmux-observer-fleet@.service",
+        "tmux_observer-0.1.0a1.data/data/share/tmux-observer/systemd/tmux-observer-owner@.service": "systemd/tmux-observer-owner@.service",
+        "tmux_observer-0.1.0a1.dist-info/licenses/LICENSE": "LICENSE",
+        "tmux_observer/__init__.py": "src/tmux_observer/__init__.py",
+        "tmux_observer/__main__.py": "src/tmux_observer/__main__.py",
+        "tmux_observer/_clock.py": "src/tmux_observer/_clock.py",
+        "tmux_observer/_hub.py": "src/tmux_observer/_hub.py",
+        "tmux_observer/_ipc.py": "src/tmux_observer/_ipc.py",
+        "tmux_observer/_models.py": "src/tmux_observer/_models.py",
+        "tmux_observer/_owner_state.py": "src/tmux_observer/_owner_state.py",
+        "tmux_observer/_process.py": "src/tmux_observer/_process.py",
+        "tmux_observer/_stream.py": "src/tmux_observer/_stream.py",
+        "tmux_observer/_tickets.py": "src/tmux_observer/_tickets.py",
+        "tmux_observer/_tmux_wire.py": "src/tmux_observer/_tmux_wire.py",
+        "tmux_observer/_validation.py": "src/tmux_observer/_validation.py",
+        "tmux_observer/_wire.py": "src/tmux_observer/_wire.py",
+        "tmux_observer/cli.py": "src/tmux_observer/cli.py",
+        "tmux_observer/collector.py": "src/tmux_observer/collector.py",
+        "tmux_observer/owner.py": "src/tmux_observer/owner.py",
+        "tmux_observer/public.py": "src/tmux_observer/public.py",
+        "tmux_observer_client/__init__.py": "src/tmux_observer_client/__init__.py",
+        "tmux_observer_client/_command.py": "src/tmux_observer_client/_command.py",
+        "tmux_observer_client/_context.py": "src/tmux_observer_client/_context.py",
+        "tmux_observer_client/_desktop_input.py": "src/tmux_observer_client/_desktop_input.py",
+        "tmux_observer_client/_desktop_scan.py": "src/tmux_observer_client/_desktop_scan.py",
+        "tmux_observer_client/_errors.py": "src/tmux_observer_client/_errors.py",
+        "tmux_observer_client/_fleet_state.py": "src/tmux_observer_client/_fleet_state.py",
+        "tmux_observer_client/_fleet_tickets.py": "src/tmux_observer_client/_fleet_tickets.py",
+        "tmux_observer_client/_local_stream.py": "src/tmux_observer_client/_local_stream.py",
+        "tmux_observer_client/_remote_state.py": "src/tmux_observer_client/_remote_state.py",
+        "tmux_observer_client/_watch.py": "src/tmux_observer_client/_watch.py",
+        "tmux_observer_client/cli.py": "src/tmux_observer_client/cli.py",
+        "tmux_observer_client/desktop.py": "src/tmux_observer_client/desktop.py",
+        "tmux_observer_client/direct.py": "src/tmux_observer_client/direct.py",
+        "tmux_observer_client/fleet.py": "src/tmux_observer_client/fleet.py",
+        "tmux_observer_client/mesh.py": "src/tmux_observer_client/mesh.py",
+        "tmux_observer_client/public.py": "src/tmux_observer_client/public.py",
+        "tmux_observer_client/ssh.py": "src/tmux_observer_client/ssh.py"
+      },
+      "state": "built_unaccepted",
+      "wheel": {
+        "bytes": 110583,
+        "file": "tmux_observer-0.1.0a1-py3-none-any.whl",
+        "sha256": "b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84"
+      }
+    },
+    "identicalWheelBytesAndMemberDigests": true
+  },
+  "limits": [
+    "Descriptor is local provenance, not a source signature or artifact promotion",
+    "Physical sleep/wake and frontend/managed acceptance remain deferred or pending"
+  ]
+}

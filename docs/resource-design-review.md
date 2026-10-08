@@ -77,3 +77,23 @@ the initial Python design; sample intervals can miss transient peaks, and the
 capacity facts/catalog are synthetic despite actual SSH/process costs. They do
 not establish physical sleep/wake, sixteen physical native hosts or managed
 rollout. G3 retains those separate acceptance boundaries.
+
+On 2026-10-08 one [frozen final-candidate wheel](evidence/2026-10-08-final-candidate-artifact.json)
+at clean source `3beab8a` passed both resource profiles. The
+[desktop-inclusive normal profile](evidence/2026-10-08-final-candidate-normal.json)
+records Snap/Starship fleet-plus-associated-bridge peaks of 84.00/57.83 MiB and
+combined owner/fleet/associated-bridge CPU of 4.9763%/1.9494%, over at least 600
+seconds each, with zero new observer SSH starts. Snap's CPU headroom is narrow;
+the mean is not a bound on instantaneous CPU. The
+[SSH capacity profile](evidence/2026-10-08-final-candidate-capacity.json) records
+a 500.02 MiB conservative sampled peak and ten healthy near-cap queries within
+250 ms, including installed decoding/validation. It uses sixteen synthetic
+logical owners on two physical endpoints, fifteen actual SSH links and thirty-two
+readers. One-second normal and 100 ms capacity RSS sampling can miss transient
+peaks; no sixteen-physical-host or capacity-CPU claim follows.
+
+The intervening [frozen-wheel CPU failure](evidence/2026-10-08-frozen-normal-g3-failed-cpu.json)
+and [capacity deadline failures](evidence/2026-10-08-optimized-3a-capacity.json)
+remain recorded alongside this later pass. The selected direction is validated
+within the measured scope; physical sleep/wake remains deferred by the user, and
+G3/consumer migration/managed rollout are still open.

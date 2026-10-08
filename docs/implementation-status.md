@@ -3,22 +3,41 @@
 Updated: 2026-10-08. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
-Clean frozen candidate `41c6b35` passes [G1](evidence/2026-10-08-optimized-41-g1.json),
-[G2](evidence/2026-10-08-optimized-41-g2.json) and all ten
-[SSH capacity cases](evidence/2026-10-08-optimized-41-capacity.json). Its healthy
-near-cap queries take 47.61–186.41 ms, including installed decoding/validation;
-the conservative sampled fleet/SSH/associated-bridge peak is 500.77 MiB against
-768 MiB. Earlier failures remain recorded. A ten-minute desktop-inclusive
-normal profile of that same frozen wheel is in progress.
+Current clean candidate `3beab8a` passes 183 source methods and 96 installed/native
+cases on one [frozen wheel](evidence/2026-10-08-final-candidate-artifact.json).
+Two committed-source builds have identical wheel bytes and member manifests.
+The wheel includes efficient JSON string preflight, the batched final native
+generation bracket, shared unsolicited broadcast bodies and immediate bounded
+reply delivery. Review also closed a prepared-client deadline gap: a validated
+reply finishing at or after its deadline cannot return success. The real private
+IPC regression covers 249/250/251 ms completion with a controlled validation clock.
 
-Review also found the prepared RPC deadline was checked before decoding but not
-after validation and scope checks. The client now rejects a validated reply that
-finishes at or after its deadline. A real private-IPC regression checks 249/250/251
-ms completion with a controlled validation clock; source validation passes 183
-methods. This client correction needs a new frozen artifact and installed/native
-checks; the running profile remains attributed to `41c6b35`. Physical sleep is
-deferred on both hosts, and T12/G3, frontend migration and managed rollout remain
-open.
+| Final-candidate check | Recorded scope |
+| --- | --- |
+| [G1](evidence/2026-10-08-final-candidate-g1.json) / [G2](evidence/2026-10-08-final-candidate-g2.json) | 14 producer and 11 shared-owner installed/native cases |
+| [Context](evidence/2026-10-08-final-candidate-context.json) / [fresh direct](evidence/2026-10-08-final-candidate-direct.json) | 4 context/recovery cases and 24 released-contract/native cases, both host directions |
+| [Fleet](evidence/2026-10-08-final-candidate-fleet.json) / [desktop](evidence/2026-10-08-final-candidate-desktop.json) | 15 two-host transport/provenance/recovery cases and 9 native desktop cases |
+| [SSH capacity](evidence/2026-10-08-final-candidate-capacity.json) | 10 cases; 16 logical owners, 15 real SSH links, 32 near-cap readers; 500.02 MiB conservative sampled peak; healthy replies 46.44–229.61 ms including installed validation |
+| [Desktop-inclusive normal profile](evidence/2026-10-08-final-candidate-normal.json) | 9 cases; at least 600 seconds per host; fleet/associated-bridge peaks 84.00/57.83 MiB, combined CPU 4.9763%/1.9494%, no new observer SSH starts |
+
+The selected 96/768 MiB fleet ceilings, unchanged owner/5% CPU ceilings and query
+deadlines pass in those measured profiles. Snap's CPU margin is narrow. The 100
+warm samples per endpoint have RPC p95 2.09/2.01 ms and CLI p95 38.60/33.77 ms.
+Sampling can miss transient peaks; capacity facts/catalog remain synthetic on two
+physical endpoints, and these checks establish no Rofi rendering or managed
+rollout. Earlier failures remain recorded. The preceding `41c6b35` candidate also
+passed its [normal profile](evidence/2026-10-08-optimized-41-normal.json), with
+CPU 4.7449%/1.9417%; its wheel is distinct and retains its own attribution.
+
+Physical sleep/wake remains deferred by the user on both actively working hosts.
+No alarm or whole-host suspend was performed. T12/G3 stays open on that native
+gate; T13/T14 prepared-read migration and T15 publication/managed rollout retain
+their accepted-producer dependency. The frozen descriptor remains unaccepted for
+promotion, and frontend/managed changes have not begun.
+The [post-run cleanup check](evidence/2026-10-08-final-candidate-cleanup.json)
+finds no owned candidate root directories or active candidate units on either
+host. Per-case native/session/child cleanup assertions also passed; retained
+temporary diagnostic files are not live fixture roots.
 
 [Candidate artifact preparation](candidate-artifacts.md) now builds committed
 snapshots with an exact hashed backend constraint, verifies complete packaged
@@ -114,9 +133,9 @@ capacity-source limits remain explicit.
 
 | Delivery | State | Evidence |
 | --- | --- | --- |
-| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-07-native-optimized-g1.json) |
-| B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-07-native-optimized-g2.json) |
-| C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI/context units | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and explicit context handoff; native fleet G3 pending |
+| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-08-final-candidate-g1.json) |
+| B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-08-final-candidate-g2.json) |
+| C: fleet service | In progress: awake native and resource checks pass; physical sleep/wake deferred | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and context handoff; T12/G3 stays open |
 | D: Rofi client | Planned; T06 native mode interaction prototype passes, production integration unresolved | [Native experiment](rofi-interaction-probe.md); idle/active-input adoption and exact selection observed with version-pinned mode prototype; no frontend migration accepted |
 | E: managed rollout | Planned | None |
 
