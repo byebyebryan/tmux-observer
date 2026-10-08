@@ -253,4 +253,18 @@ pass 143 tests, including expiry, disconnect, changed-owner and publication-orde
 regressions. A dirty-source two-host functional investigation passes all thirteen
 included cases. Clean installed source `c413094` is being profiled separately;
 its tool records owned process footprints at each sampled service memory peak.
-No post-cache resource or G3 acceptance is claimed while that run is pending.
+The [clean installed profile](evidence/2026-10-07-native-fleet-input-cache-g3-partial.json)
+has now passed all fourteen included cases. It records at least ten minutes on
+each host, 1,485 native commands per endpoint and no new SSH connections in the
+measurement window. Cached RPC p95 is 3.64/3.99 ms and installed cached CLI p95 is
+40.51/35.55 ms. Combined mean owner/fleet/associated remote-bridge CPU is
+4.40/2.43 percent of one core on Snap/Starship.
+
+Memory remains unaccepted. The conservative sum of fleet and associated bridge
+sampled maxima is 67.23/77.79 MiB, exceeding the initial 64 MiB target. The Starship
+fleet peak contains a 27.32 MiB fleet process, 10.95 MiB SSH child and 20.69 MiB
+Python child. The headless worker's process layout identifies the latter as Mesh
+CLI work; the retained record contains process names, not raw argv. The opposite
+endpoint's associated bridge adds about 18.84 MiB. This is an explicit process
+cost, not foreground network latency. Resource budgets/process choices require
+review, and declared capacity remains separate from these two-owner samples.
