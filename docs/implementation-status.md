@@ -10,12 +10,28 @@ direct cases and four recovery simulations. The other 63 packaged payloads retai
 the accepted always-on G3 bytes documented below; [direct acceptance](native-direct-acceptance.md)
 records that scope and parity. Current source checks pass 188 methods.
 
-Delivery D is in progress: the installed frontend fresh facade passed 30 cases
-on Snap/Starship, preserving the unchanged v1 CLI and native passivity. Production
-picker acceptance is running on Starship; the user reserves Snap for active work.
+Delivery D is accepted: the installed frontend fresh facade passed 30 cases
+on Snap/Starship, preserving the unchanged v1 CLI and native passivity. The exact
+frontend wheel passed 20 graphical cases on Starship; the user reserves Snap for active work.
 See [the consumer migration record](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/observer-migration.md)
-for exact frontend artifacts and its independent graphical gate. Managed selection
-remains pending. Physical sleep/wake remains optional.
+for exact frontend artifacts and its independent graphical gate. Delivery E/T15
+is accepted through [managed operations and evidence](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md):
+69 Core and 198 frontend members plus controls match on both hosts, ready prepared
+local/remote/Desktop frames and fresh facade pass, restart changes publisher/reader
+incarnations, each runtime rollback restores the old bytes and healthy facade,
+and scoped reselection passes. Existing native session references survive.
+The actual managed frontend bundle and Mod+G arguments/theme additionally pass
+20 isolated graphical cases on Starship. Snap receives headless checks only.
+Physical sleep/wake remains optional and unverified; no host was suspended.
+
+Tmux Observer `v0.1.0a1` publishes runtime source `d5a2e97`; Tmux Plus `v0.7.0a1`
+publishes frozen runtime `92b5c35`, review/release `9c39575`, wheel SHA256
+`4d28a8a103025fc467f4f558a4071f2573fd628170dfa726442f89685811eaa0`
+and managed bundle SHA256
+`1a5701c0887aa2304e97f6fc4ab0c7512a96a919dec17e899102fdac48ce5e46`.
+Main source CI passed independently for producer `28a74b6` and frontend `9c39575`.
+Deliveries A–E/T01–T15 are complete in the recorded always-on/two-host scope.
+Lifecycle extraction and native event experiments remain separate follow-ups.
 
 ## Accepted T12 checkpoint
 
@@ -24,6 +40,8 @@ cases on one [frozen wheel](evidence/2026-10-08-final-candidate-artifact.json).
 Clean harness `791df63` passes 186 source methods and four additional
 [installed recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json)
 on that same wheel; all 64 runtime/data/license files match, with owned cleanup.
+This section retains the producer checkpoint's original evidence; subsequent
+frontend and managed acceptance are recorded above.
 The same wheel also passes four preparation-only cases through the suspend
 harness; those do not establish physical sleep/wake.
 Two committed-source builds have identical wheel bytes and member manifests.
@@ -57,10 +75,8 @@ physical sleep/wake optional. Snap remains awake during active work; Starship
 has no verified unattended wake/recovery, so this pass uses simulations. No alarm
 or whole-host suspend was performed. The clean-harness frozen-wheel simulations
 pass and complement the existing awake-host evidence: T12/G3 is accepted for
-the always-on scope. T13/T14 can now implement the prepared client using that
-accepted producer; frontend/compatibility and T15 managed acceptance remain.
-The frozen descriptor remains unaccepted for promotion, and frontend/managed
-changes have not begun.
+the always-on scope. At that checkpoint T13/T14/T15 were still pending. The frozen
+descriptor retains its immutable build status; acceptance is recorded separately.
 The [post-run cleanup check](evidence/2026-10-08-final-candidate-cleanup.json)
 finds no owned candidate root directories or active candidate units on either
 host. Per-case native/session/child cleanup assertions also passed; retained
@@ -72,15 +88,16 @@ and header bytes, all seven required private symbols, and an isolated compile
 reproduces the prior T06 library. This is read-only/compile evidence, not another
 GUI or production gate. The review defines version/artifact checks, watcher
 lifetime and BOOTTIME invalidation, read-only callbacks, terminal-ticket handling
-and pending-intent acceptance before migration; frontend code remains unchanged.
+and pending-intent acceptance before migration; frontend code was unchanged at
+that review checkpoint.
 
 | Delivery | State | Evidence |
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and [14 installed/native cases](evidence/2026-10-08-final-candidate-g1.json) |
 | B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and [11 installed/native cases](evidence/2026-10-08-final-candidate-g2.json) |
 | C: fleet service | Accepted: T10–T12; G3 passed for always-on hosts | Same-wheel awake native/resources and [four installed recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json); physical suspend optional/unverified |
-| D: Rofi client | T13 installed facade passed; T14 production graphical acceptance in progress on Starship | Exact consumer artifact and acceptance remain separate from producer G3 |
-| E: managed rollout | Planned | None |
+| D: Rofi client | Accepted: T13/T14; G4 passed | 30 fresh facade cases on both hosts, 20 installed graphical cases on Starship; exact consumer artifact and acceptance remain separate from G3 |
+| E: managed rollout | Accepted: T15; G6 passed | 13 installed/recovery/rollback/reselection checks on both hosts, 20 actual managed-bundle graphical cases on Starship; [managed record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md) |
 
 ## Prior checkpoint history
 

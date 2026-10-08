@@ -4,16 +4,18 @@ Shared observation foundation under development for local and remote tmux client
 Tmux Observer publishes host-local session metadata through a passive direct
 collector and shared owner service. The prepared fleet service has passed
 two-host awake/native and simulated recovery acceptance for always-on hosts.
-Rofi Tmux Plus will consume its prepared views and retain presentation policy.
+Rofi Tmux Plus consumes its prepared views and retains presentation policy.
 
 ## Status
 
-Implementation in progress, 2026-10-08; see the
+Deliveries A–E accepted in their recorded scopes, 2026-10-08; see the
 [status record](docs/implementation-status.md). Pure contracts and the direct
 collector and owner service passed isolated native/artifact acceptance.
 Fleet/read acceptance has passed for the [always-on scope](docs/always-on-acceptance.md).
-Physical sleep/wake is optional and unverified. Frontend migration and managed
-deployment remain unaccepted; their interfaces must pass separate delivery gates.
+Physical sleep/wake is optional and unverified. Frontend migration and scoped
+managed deployment passed separate installed/native gates on Snap and Starship;
+graphical acceptance uses Starship only. Lifecycle extraction and native tmux
+event experiments remain separate follow-ups.
 
 ```sh
 uv run tmux-observer collect --host-id snap
@@ -37,7 +39,8 @@ networking or lifecycle code. Wire schemas and semantic rules are documented in
 read prepared state; missing services produce typed failure without activation.
 `bridge` exports only that owner over stdio and accepts bounded requests on stdin.
 `refresh` returns a bounded ticket; `refresh_status` reads its retained outcome.
-The packaged user unit is a candidate, not installed/enabled by package installation.
+Package installation alone does not install or enable the packaged user unit.
+The accepted managed selection explicitly enables owners and starts desktop readers.
 
 The separate client CLI has explicit fresh and prepared paths:
 
@@ -59,8 +62,8 @@ Fresh inventory retains Tmux Session v1, while prepared operations return Fleet 
 frames. Desktop absence or unsupported contexts leave viewer membership unknown
 without changing owner attachment facts. The candidate fleet unit and explicit
 desktop environment handoff are documented in [service contexts](docs/service-contexts.md) and [two-host acceptance](docs/native-fleet-acceptance.md).
-Installed/native acceptance has passed in isolated candidate scope; these
-development interfaces are not a managed rollout selection.
+Installed/native acceptance and scoped managed rollout have passed separately;
+the exact managed tuple and recovery/rollback evidence are linked in the status record.
 
 The extraction baseline is released `rofi-tmux-plus 0.6.0`, source
 `407ae58ba422ba88fed7da2f9d845ff274830f0e`. Its public Tmux Session v1 and

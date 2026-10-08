@@ -187,9 +187,10 @@ bounded visible state and never silently invokes direct collection. Measure CLI
 startup, parsing, model adoption, frame creation and actual graphical appearance
 separately so a fast daemon query cannot hide frontend overhead.
 
-Exit: compatibility fixtures/checks pass, Snap native GUI acceptance passes, and
-Starship graphical acceptance is recorded separately. Source/callback tests alone
-cannot close the graphical gate.
+Exit: compatibility fixtures/checks and native GUI acceptance pass. The user's
+2026-10-08 scope assigns graphical testing to Starship while Snap is in active
+use; Snap receives headless checks only. Source/callback tests alone cannot close
+the graphical gate. No current Snap production-GUI acceptance is claimed.
 
 ## G5 — independent lifecycle client
 

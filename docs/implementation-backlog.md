@@ -198,8 +198,9 @@ and notice timing; frame-generation timing alone is insufficient.
 After the source/candidate/GUI gates pass, prepare exact published artifacts and
 scoped managed changes. Bring up owner publishers, then fleet readers, then select
 the Rofi candidate. Check bytes, host scope, user-manager lifetime, desktop context,
-native recovery and rollback on each endpoint. Starship GUI acceptance remains
-separate from Snap GUI acceptance.
+native recovery and rollback on each endpoint. The user's 2026-10-08 scope assigns
+production GUI acceptance to Starship; Snap is in active use and receives headless
+checks only. The earlier Snap T06 prototype retains its own distinct scope.
 
 ## Review and evidence record
 
