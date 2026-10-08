@@ -315,3 +315,17 @@ passes seven included functional cases and records a 307.01 MiB sampled
 fleet/bridge peak against the selected 768 MiB candidate. Its `passed_partial`
 result retains the explicit no-SSH/synthetic and separate-load-phase limits;
 it does not close full native capacity. The initial failed evidence is unchanged.
+
+Clean source `4792174` passes fifteen [two-host functional cases](evidence/2026-10-07-native-fleet-membership-g3-partial.json)
+with the same installed wheel on Snap/Starship. Native Mesh host removal/restore
+and equivalent route replacement require new connections and post-change proofs
+while preserving native generation and publisher identity. Both private fixture
+directories were absent after cleanup. Warm RPC p95 is 4.34/4.37 ms and installed
+CLI p95 is 41.82/38.48 ms; this run does not repeat the background profile.
+Physical suspend has a [concrete acceptance preparation](native-suspend-acceptance.md),
+including read-only power-interface preflight, wake/supervisor requirements and
+separate clock/receipt/native-survival evidence. No host suspend was executed.
+Remote qualified/manual desktop truth, actual SSH capacity with simultaneous
+near-cap readers, desktop-inclusive resource profiles and physical sleep/wake
+remain the next producer gates. Consumer migration and managed rollout remain
+pending.

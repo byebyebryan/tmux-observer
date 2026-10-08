@@ -43,6 +43,13 @@ actual selected connection route; route values are not added to the public fleet
 frame. These cases exercise this two-host fixture's equivalent routes, not other
 network topologies. The ordinary provider configuration/history stays untouched.
 
+Clean source `4792174` passes fifteen included functional cases with one installed
+wheel on both hosts; see [membership/route evidence](evidence/2026-10-07-native-fleet-membership-g3-partial.json).
+The new cases record Mesh revisions, post-change proof timing, new SSH starts and
+the selected equivalent route. Both private backing directories were absent after
+completion. This run does not repeat the ten-minute profile or close the explicit
+remaining G3 limits.
+
 Each endpoint reports 100 warm cached RPC durations including validation and
 100 installed cached CLI durations including process startup. These are not
 Rofi-frame or graphical-open measurements. The optional profile collects at least
