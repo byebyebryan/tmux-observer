@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import os
 import re
 from pathlib import Path
@@ -10,8 +9,9 @@ from pathlib import Path
 from tmux_observer._clock import boottime_ms
 from tmux_observer._process import ProcessError
 from tmux_observer.collector import Collector, FastUnavailable, NoServer
-from tmux_observer.public import Session, SessionReference, encode_document
+from tmux_observer.public import Session
 
+from ._desktop_input import reference
 from ._desktop_scan import DesktopConfig, ViewerTarget, _niri_windows, observe_local_viewers
 from ._errors import ContractError
 
@@ -24,41 +24,6 @@ def context_fingerprint(context_id):
     except OSError:
         identity = None
     return context_id, path, identity
-
-
-def reference(row):
-    return SessionReference(
-        *(row[key] for key in ("hostId", "serverGeneration", "sessionId", "createdAt"))
-    )
-
-
-def input_hash(hosts):
-    values = [
-        {
-            "hostId": host["hostId"],
-            "local": host["local"],
-            "publisherId": host["owner"]["publisherId"],
-            "clock": host["owner"]["clock"],
-            "route": host.get("route"),
-            "sessions": [
-                {
-                    key: row[key]
-                    for key in (
-                        "hostId",
-                        "serverGeneration",
-                        "sessionId",
-                        "createdAt",
-                        "name",
-                        "attachedClients",
-                        "pending",
-                    )
-                }
-                for row in host["sessions"]
-            ],
-        }
-        for host in hosts
-    ]
-    return "sha256:" + hashlib.sha256(encode_document(values, limit=16 * 1048576)).hexdigest()
 
 
 class LocalClients:
