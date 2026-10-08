@@ -34,3 +34,13 @@ endpoint and preserves fixture owners. Cleanup stops every fixture owner and
 owned bridge before the private backing directory is removed. Native two-host
 transport, normal resource profiles, desktop truth and physical suspend/wake have
 independent acceptance tools/evidence; none follows from this fixture profile.
+
+Clean installed source `ef94ebe` passes all seven included functional cases in
+the [recorded profile](evidence/2026-10-07-installed-capacity-t12-partial.json).
+The result is `failed_resource_target`: the sampled fleet/bridge peak is
+322,592,768 bytes (307.65 MiB), exceeding 256 MiB without actual SSH processes.
+The peak contains the fleet and fifteen plain installed bridge processes.
+The near-cap complete aggregate contains all sixteen owners in 918,291 bytes.
+Recorded process incarnations were absent or exited after cleanup. These facts
+motivate a resource/process-design review; they accept neither full capacity nor
+revised budgets automatically.

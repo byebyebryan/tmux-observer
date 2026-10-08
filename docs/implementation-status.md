@@ -290,3 +290,14 @@ captures show the new notice. This closes the early interaction experiment for
 the installed Rofi 2.0.0 build. Private script-factory/view hooks remain explicit
 dependencies requiring a reviewed production integration; T14/G4 and end-to-end
 ticket/notice timing remain open. Source checks pass 143 tests.
+
+Clean source `ef94ebe` also passes seven functional [installed capacity cases](evidence/2026-10-07-installed-capacity-t12-partial.json):
+sixteen current owners, thirty-two shared watchers, explicit admission failures,
+logical queue bounds, a near-cap complete aggregate and scoped stop. The fixture
+uses synthetic facts/catalog and real installed local stdio bridges, with no
+native tmux or SSH process. Its result is `failed_resource_target`: sampled
+fleet/bridge RSS reaches 307.65 MiB before SSH costs, exceeding 256 MiB. Maximum
+readers and large frames were separate phases, so their simultaneous maximum load
+and full native capacity remain open. See [capacity scope](installed-capacity-acceptance.md)
+and [resource decision review](resource-design-review.md). Source checks pass 143
+tests and include the new tool; no budget has been silently raised.
