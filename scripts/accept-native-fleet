@@ -864,7 +864,7 @@ class Control:
         self.process.stderr.close()
 
 
-def coordinate(remote, output, *, profile=False):
+def coordinate(remote, output, *, profile=False, artifact=None):
     loader = importlib.machinery.SourceFileLoader(
         "fleet_accept_reader", str(ROOT / "scripts/read-contract")
     )
@@ -935,8 +935,9 @@ def coordinate(remote, output, *, profile=False):
 
     try:
         wheel_dir = root / "wheel"
-        command(["uv", "build", "--wheel", "--out-dir", str(wheel_dir)])
-        wheel = next(wheel_dir.glob("*.whl"))
+        from artifact_input import stage_wheel
+
+        wheel = stage_wheel(wheel_dir, evidence, repo=ROOT, descriptor=artifact)
         wheel.rename(root / wheel.name)
         wheel = root / wheel.name
         shutil.copy2(ROOT / "scripts/accept-native-fleet", root / "accept-native-fleet")
@@ -1311,7 +1312,12 @@ def main():
     parser.add_argument("--profile", type=Path)
     parser.add_argument("--seconds", type=int, default=600)
     parser.add_argument("--with-profile", action="store_true")
+    parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
     args, extra = parser.parse_known_args()
+    if args.artifact and (
+        args.worker or args.cleanup or args.serve_fleet or args.bridge_relay or args.profile
+    ):
+        parser.error("--artifact is a coordinator input")
     if (args.worker or args.serve_fleet or args.cleanup) and args.host_id is None:
         parser.error("--host-id is required for endpoint operations")
     if args.bridge_relay:
@@ -1329,7 +1335,7 @@ def main():
     else:
         if not args.output:
             parser.error("--output is required")
-        coordinate(args.remote, args.output, profile=args.with_profile)
+        coordinate(args.remote, args.output, profile=args.with_profile, artifact=args.artifact)
     return 0
 
 

@@ -420,7 +420,7 @@ def process_tree(pid):
     return processes
 
 
-def main(output, memory_target_mib, ssh_host=None):
+def main(output, memory_target_mib, ssh_host=None, artifact=None):
     source_commit = command(["git", "-C", str(ROOT), "rev-parse", "HEAD"]).decode().strip()
     dirty = bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).strip())
     evidence = {
@@ -473,11 +473,9 @@ def main(output, memory_target_mib, ssh_host=None):
         )
         for name in ("config", "cache", "dist"):
             (root / name).mkdir(mode=0o700)
-        command(
-            ["uv", "build", "--wheel", "--out-dir", str(root / "dist"), str(ROOT)],
-            env=env,
-        )
-        wheel = next((root / "dist").glob("*.whl"))
+        from artifact_input import stage_wheel
+
+        wheel = stage_wheel(root / "dist", evidence, repo=ROOT, descriptor=artifact, env=env)
         evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
         command(["uv", "venv", str(root / "venv")], env=env)
         command(
@@ -1008,14 +1006,17 @@ def main(output, memory_target_mib, ssh_host=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
     parser.add_argument("--memory-target-mib", type=int, choices=(256, 768), default=768)
     parser.add_argument("--root", type=Path)
     parser.add_argument("--role", choices=("owner", "fleet", "context", "bundle"))
     parser.add_argument("--ssh-host", choices=("starship",))
     parser.add_argument("--host")
     args, remaining = parser.parse_known_args()
+    if args.artifact and (args.root or args.role or args.host):
+        parser.error("--artifact is a coordinator input")
     if args.root is not None and args.role is not None and not remaining:
         raise SystemExit(worker(args.root, args.role, args.host))
     if args.output is None or remaining:
         parser.error("provide --output or a complete private worker invocation")
-    main(args.output, args.memory_target_mib, args.ssh_host)
+    main(args.output, args.memory_target_mib, args.ssh_host, args.artifact)

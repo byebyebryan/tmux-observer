@@ -96,7 +96,7 @@ def worker(root, host_id):
         endpoint.close()
 
 
-def main(output, *, profile=False):
+def main(output, *, profile=False, artifact=None):
     helper = load(ROOT / "scripts/accept-native-fleet", "remote_desktop_fixture")
     reader = load(ROOT / "scripts/read-contract", "remote_desktop_reader")
     env = desktop_environment(os.environ)
@@ -372,8 +372,9 @@ def main(output, *, profile=False):
 
     try:
         wheels = root / "wheel"
-        command(["uv", "build", "--wheel", "--out-dir", str(wheels), str(ROOT)])
-        wheel = next(wheels.glob("*.whl"))
+        from artifact_input import stage_wheel
+
+        wheel = stage_wheel(wheels, evidence, repo=ROOT, descriptor=artifact)
         wheel.rename(root / wheel.name)
         wheel = root / wheel.name
         for name in ("accept-native-fleet", "accept-native-remote-desktop"):
@@ -623,10 +624,13 @@ if __name__ == "__main__":
     parser.add_argument("--host-id", choices=("snap", "starship"))
     parser.add_argument("--output", type=Path)
     parser.add_argument("--with-profile", action="store_true")
+    parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
     args = parser.parse_args()
+    if args.artifact and (args.worker or args.host_id):
+        parser.error("--artifact is a coordinator input")
     if args.worker is not None and args.host_id is not None:
         worker(args.worker, args.host_id)
     elif args.output is not None:
-        main(args.output, profile=args.with_profile)
+        main(args.output, profile=args.with_profile, artifact=args.artifact)
     else:
         parser.error("provide --output or a complete private worker invocation")

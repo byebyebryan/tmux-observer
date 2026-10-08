@@ -54,6 +54,7 @@ def until(predicate, *, budget=5):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
     args = parser.parse_args()
     evidence = {
         "gate": "T12-context",
@@ -75,8 +76,9 @@ def main():
     with TemporaryDirectory(prefix="tmux-ctx-native-") as temporary:
         directory = Path(temporary)
         wheel_dir = directory / "wheel"
-        command(["uv", "build", "--wheel", "--out-dir", str(wheel_dir)])
-        wheel = next(wheel_dir.glob("*.whl"))
+        from artifact_input import stage_wheel
+
+        wheel = stage_wheel(wheel_dir, evidence, repo=ROOT, descriptor=args.artifact)
         evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
         venv = directory / "venv"
         command(["uv", "venv", str(venv)])

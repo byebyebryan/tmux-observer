@@ -16,6 +16,12 @@ loader = importlib.machinery.SourceFileLoader(
 spec = importlib.util.spec_from_loader(loader.name, loader)
 artifact = importlib.util.module_from_spec(spec)
 loader.exec_module(artifact)
+input_loader = importlib.machinery.SourceFileLoader(
+    "artifact_input", str(Path(__file__).resolve().parents[1] / "scripts/artifact_input.py")
+)
+input_spec = importlib.util.spec_from_loader(input_loader.name, input_loader)
+artifact_input = importlib.util.module_from_spec(input_spec)
+input_loader.exec_module(artifact_input)
 
 
 class CandidateArtifactTests(unittest.TestCase):
@@ -80,6 +86,118 @@ class CandidateArtifactTests(unittest.TestCase):
 
     def write_descriptor(self):
         self.descriptor.write_text(json.dumps(self.value))
+
+    def initialize_checkout(self):
+        scripts = self.source / "scripts"
+        scripts.mkdir()
+        (scripts / "candidate-artifact").write_bytes(Path(loader.path).read_bytes())
+        artifact.command(["git", "-C", str(self.source), "init"])
+        artifact.command(["git", "-C", str(self.source), "add", "."])
+        artifact.command(
+            [
+                "git",
+                "-C",
+                str(self.source),
+                "-c",
+                "user.name=Fixture",
+                "-c",
+                "user.email=fixture@example.invalid",
+                "commit",
+                "-m",
+                "Fixture",
+            ]
+        )
+        self.value["source"]["commit"] = (
+            artifact.command(["git", "-C", str(self.source), "rev-parse", "HEAD"]).decode().strip()
+        )
+        self.value["source"]["tree"] = (
+            artifact.command(["git", "-C", str(self.source), "rev-parse", "HEAD^{tree}"])
+            .decode()
+            .strip()
+        )
+        self.write_descriptor()
+
+    def test_frozen_input_skips_build_and_separates_harness_provenance(self):
+        self.initialize_checkout()
+        (self.source / "README.md").write_text("harness documentation changed\n")
+        artifact.command(["git", "-C", str(self.source), "add", "README.md"])
+        artifact.command(
+            [
+                "git",
+                "-C",
+                str(self.source),
+                "-c",
+                "user.name=Fixture",
+                "-c",
+                "user.email=fixture@example.invalid",
+                "commit",
+                "-m",
+                "Documentation",
+            ]
+        )
+        # An untracked generated cache must not invalidate payload coverage.
+        cache = self.source / "src/tmux_observer/__pycache__"
+        cache.mkdir()
+        (cache / "ignored.pyc").write_bytes(b"cache")
+        evidence = {"sourceCommit": "old harness value", "sourceTreeDirty": True}
+        with patch.object(
+            artifact_input.subprocess, "run", wraps=artifact_input.subprocess.run
+        ) as commands:
+            wheel = artifact_input.stage_wheel(
+                self.root / "staged", evidence, repo=self.source, descriptor=self.descriptor
+            )
+            self.assertTrue(commands.call_args_list)
+            self.assertTrue(all(call.args[0][0] == "git" for call in commands.call_args_list))
+        self.assertEqual(wheel.read_bytes(), self.wheel.read_bytes())
+        self.assertEqual(evidence["sourceCommit"], self.value["source"]["commit"])
+        self.assertNotEqual(evidence["harnessCommit"], evidence["sourceCommit"])
+        self.assertTrue(evidence["harnessTreeDirty"])
+        self.assertFalse(evidence["sourceTreeDirty"])
+        self.assertTrue(evidence["artifactInput"]["sourceFilesMatchHarness"])
+
+    def test_frozen_input_refuses_changed_or_new_tracked_harness_payload(self):
+        self.initialize_checkout()
+        filename = self.source / "src/tmux_observer/__init__.py"
+        filename.write_bytes(b"# different code\n")
+        output = self.root / "staged"
+        with self.assertRaisesRegex(ValueError, "payload differs from harness"):
+            artifact_input.stage_wheel(output, {}, repo=self.source, descriptor=self.descriptor)
+        self.assertFalse(output.exists())
+        filename.write_bytes(self.payload["tmux_observer/__init__.py"])
+        (filename.parent / "new.py").write_bytes(b"# omitted by old wheel\n")
+        artifact.command(["git", "-C", str(self.source), "add", "src/tmux_observer/new.py"])
+        with self.assertRaisesRegex(ValueError, "coverage differs from harness"):
+            artifact_input.stage_wheel(output, {}, repo=self.source, descriptor=self.descriptor)
+        self.assertFalse(output.exists())
+
+    def test_frozen_input_preserves_existing_destination_bytes(self):
+        self.initialize_checkout()
+        output = self.root / "staged"
+        output.mkdir()
+        existing = output / self.wheel.name
+        existing.write_bytes(b"preserved")
+        with self.assertRaises(FileExistsError):
+            artifact_input.stage_wheel(output, {}, repo=self.source, descriptor=self.descriptor)
+        self.assertEqual(existing.read_bytes(), b"preserved")
+
+    def test_default_input_keeps_explicit_checkout_build_and_environment(self):
+        output = self.root / "default"
+        environment = {"PATH": "/fixture"}
+
+        def built(argv, **kwargs):
+            self.assertEqual(
+                argv, ["uv", "build", "--wheel", "--out-dir", str(output), str(self.source)]
+            )
+            self.assertEqual(kwargs["cwd"], self.source)
+            self.assertEqual(kwargs["env"], environment)
+            output.mkdir()
+            (output / self.wheel.name).write_bytes(self.wheel.read_bytes())
+
+        evidence = {"sourceCommit": "checkout"}
+        with patch.object(artifact_input.subprocess, "run", side_effect=built):
+            wheel = artifact_input.stage_wheel(output, evidence, repo=self.source, env=environment)
+        self.assertEqual(wheel.read_bytes(), self.wheel.read_bytes())
+        self.assertEqual(evidence, {"sourceCommit": "checkout"})
 
     def test_exact_candidate_verifies_without_importing_package(self):
         value, wheel = artifact.verify(self.descriptor)

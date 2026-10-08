@@ -42,6 +42,32 @@ an independent acceptance record and later managed pin must name the reviewed
 wheel checksum. A wheel plus a replaced descriptor is not an authenticated
 source or an accepted release.
 
+Each native/installed acceptance coordinator accepts `--artifact PATH/candidate.json`.
+It copies and verifies the exact frozen wheel instead of running a build. For
+example:
+
+```sh
+uv run --extra dev python scripts/accept-native-collector \
+  --artifact /tmp/to-candidate-new/candidate.json --output /tmp/to-g1.json
+uv run --extra dev python scripts/accept-native-owner \
+  --artifact /tmp/to-candidate-new/candidate.json --output /tmp/to-g2.json
+uv run --extra dev python scripts/accept-native-fleet \
+  --artifact /tmp/to-candidate-new/candidate.json --output /tmp/to-g3-partial.json
+```
+
+The option is also available on context, direct, desktop, remote-desktop,
+suspend and capacity coordinators. It is rejected in private worker modes;
+installed workers receive only the already selected wheel. It changes no test
+scope or physical-sleep authorization. Omitting the option preserves checkout
+build mode.
+
+Frozen-input records name the artifact's `sourceCommit` and checksum separately
+from `harnessCommit`/`harnessTreeDirty`. All packaged runtime/data/license files
+must match the harness checkout, including its complete tracked file set. This
+prevents source-level native race cases from silently testing different code.
+Untracked generated caches do not count as packaged source. Copied inputs are
+verified again before installation, and existing destination files are preserved.
+
 The next artifact acceptance uses the same frozen wheel across installed
 producer, owner, fleet, direct-reader and frontend checks. Changing packaged
 source requires a new artifact and review of affected evidence. Existing native

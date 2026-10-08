@@ -13,6 +13,10 @@ Clean source `3437633` passed 164 methods; two builds produced identical wheel
 bytes, and isolated same-wheel installs on both hosts verified all 64 packaged
 runtime/data/license files and three contract manifests. The exact scope and
 probe are in the [preparation evidence](evidence/2026-10-08-candidate-artifact-preparation.json).
+All nine native/installed coordinators can now consume that frozen descriptor
+with `--artifact`, retain independent harness provenance and refuse mismatched
+packaged checkout code. These harness changes do not change the candidate wheel
+or waive deferred physical G3 acceptance.
 
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The

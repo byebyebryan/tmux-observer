@@ -466,7 +466,7 @@ def close_control(control):
     control.process.stderr.close()
 
 
-def coordinate(output, sleep_host):
+def coordinate(output, sleep_host, artifact=None):
     helper = load(ROOT / "scripts/accept-native-fleet", "suspend_coordinator_helper")
     reader = load(ROOT / "scripts/read-contract", "suspend_coordinator_reader")
     root = Path("/tmp/to-fleet-" + uuid.uuid4().hex)
@@ -522,8 +522,9 @@ def coordinate(output, sleep_host):
         raise RuntimeError("owned two-host prepared state did not become ready")
 
     try:
-        command(["uv", "build", "--wheel", "--out-dir", str(root / "wheel"), str(ROOT)])
-        wheel = next((root / "wheel").glob("*.whl"))
+        from artifact_input import stage_wheel
+
+        wheel = stage_wheel(root / "wheel", evidence, repo=ROOT, descriptor=artifact)
         wheel.rename(root / wheel.name)
         wheel = root / wheel.name
         names = ("accept-native-fleet", "accept-native-suspend")
@@ -715,19 +716,22 @@ def main():
     parser.add_argument("--power", type=Path)
     parser.add_argument("--host-id", choices=("snap", "starship"))
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
     parser.add_argument(
         "--sleep",
         choices=("snap", "starship"),
         help="physical 30-second whole-host interruption; requires an agreed user test window",
     )
     args = parser.parse_args()
+    if args.artifact and (args.worker or args.power or args.host_id):
+        parser.error("--artifact is a coordinator input")
     if args.power and not (args.worker or args.output or args.sleep):
         return power(args.power)
     if args.worker and args.host_id and not (args.output or args.sleep):
         worker(args.worker, args.host_id)
         return 0
     if args.output and not (args.worker or args.power or args.host_id):
-        return coordinate(args.output, args.sleep)
+        return coordinate(args.output, args.sleep, args.artifact)
     parser.error("provide --output, or one complete private worker/power invocation")
 
 

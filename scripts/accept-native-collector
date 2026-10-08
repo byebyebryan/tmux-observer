@@ -38,6 +38,7 @@ def command(args, *, env=None, ok=True):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
     args = parser.parse_args()
     evidence = {
         "schemaVersion": 1,
@@ -230,8 +231,9 @@ def main():
 
             # Build and invoke the installed CLI with -I, outside source imports.
             artifact_dir = directory / "artifact"
-            command(["uv", "build", "--wheel", "--out-dir", str(artifact_dir)])
-            wheel = next(artifact_dir.glob("*.whl"))
+            from artifact_input import stage_wheel
+
+            wheel = stage_wheel(artifact_dir, evidence, repo=ROOT, descriptor=args.artifact)
             evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
             with zipfile.ZipFile(wheel) as archive:
                 names = archive.namelist()

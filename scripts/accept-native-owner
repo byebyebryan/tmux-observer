@@ -64,6 +64,7 @@ def wire(sock, pending):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
     args = parser.parse_args()
     evidence = {
         "gate": "G2",
@@ -126,8 +127,9 @@ def main():
 
         try:
             wheels = directory / "wheel"
-            command(["uv", "build", "--wheel", "--out-dir", str(wheels)])
-            wheel = next(wheels.glob("*.whl"))
+            from artifact_input import stage_wheel
+
+            wheel = stage_wheel(wheels, evidence, repo=ROOT, descriptor=args.artifact)
             evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
             venv = directory / "venv"
             command(["uv", "venv", str(venv)])
