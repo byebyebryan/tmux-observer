@@ -7,7 +7,7 @@ The design/backlog baseline is commit `a4fba75`.
 | --- | --- | --- |
 | A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader, 32 test methods and 12 native/installed cases; [G1 evidence](evidence/2026-10-07-native-collector-g1.json) |
 | B: owner service | Accepted: T07–T09; G2 passed | 64 source test methods, bounded tickets/stdio, 11 installed/native cases; [G2 evidence](evidence/2026-10-07-native-owner-g2.json) |
-| C: fleet service | In progress: T10/T11 source and T12 adapters | Host Mesh/direct client, persistent transport, local stream and passive desktop scan; native fleet G3 pending |
+| C: fleet service | In progress: T10/T11 source and T12 scheduler/CLI | Shared aggregate, independent desktop jobs, causal grouped refresh and prepared CLI; units/context handoff and native fleet G3 pending |
 | D: Rofi client | Planned; T06 experiment completed, automatic adoption unresolved | [Native experiment](rofi-interaction-probe.md); filter/caret preserved, continuous-input/idle timing not accepted |
 | E: managed rollout | Planned | None |
 
@@ -131,3 +131,31 @@ cached-read and import-boundary tests pass; the source suite has 100 methods.
 Fleet scheduling, aggregate refresh tickets, user-manager desktop handoff and
 two-host installed/native G3 are the next T12 work. No Rofi/chezmoi migration has
 occurred.
+
+T12 now has fleet projection and scheduling source. `1f46ba6` separates current
+owner authority from desktop acceptance and rejects old context/input results.
+Review reopened T11: `76221b2` invalidates remote leases on sequence gaps and
+rejects regressing source counters/encoding clocks. `8246b25` groups parent refresh
+requests over one child per owner; later requests require a successor, remote
+completion requires post-request matching proof, and lost ticket notifications
+use one bounded cached lookup. Desktop work waits for requested owner outcomes;
+an obsolete join requeues rather than completing the ticket.
+
+`d4bc721` adds the shared fleet loop, four concurrent remote setup slots,
+independent Mesh/report/desktop workers, retry backoff, retained-document admission
+and fixed-context IPC. Queries do not submit jobs. Source integration tests use
+real private Unix endpoints with synthetic owners/scans, including cached sharing,
+actual-start refresh ordering, missing-owner failure and desktop replacement.
+Prepared CLI access and read-only watch framing are implemented after that commit.
+Native two-host transport, desktop truth, normal/capacity resource measurements,
+candidate context units, environment handoff and installed G3 remain unaccepted.
+Rofi and chezmoi checkouts are unchanged by this work.
+
+The current source gate covers 131 test methods. CLI tests additionally exercise
+an explicitly launched fleet subprocess, missing cached endpoints, near-cap
+fragmented output, incarnation replacement, trickled input and a stdout pipe
+already full before the first write. Watch shutdown drains only already validated
+output within its existing budget and accepts no buffered input after EOF.
+Live read-only preflight confirmed Starship's Mesh selects `snap`, and that its
+selected SSH route reaches Snap (`80H1VV3`) with ordinary strict host-key policy.
+This is route connectivity evidence, not installed fleet G3 acceptance.

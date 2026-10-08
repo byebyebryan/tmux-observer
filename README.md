@@ -2,7 +2,8 @@
 
 Shared observation foundation under development for local and remote tmux clients.
 Tmux Observer publishes host-local session metadata through a passive direct
-collector and shared owner service. Prepared remote fleet views are the next delivery.
+collector and shared owner service. A prepared fleet service is implemented in
+source and awaits two-host native acceptance.
 Rofi Tmux Plus will consume its prepared views and retain presentation policy.
 
 ## Status
@@ -36,6 +37,28 @@ read prepared state; missing services produce typed failure without activation.
 `bridge` exports only that owner over stdio and accepts bounded requests on stdin.
 `refresh` returns a bounded ticket; `refresh_status` reads its retained outcome.
 The packaged user unit is a candidate, not installed/enabled by package installation.
+
+The separate client CLI has explicit fresh and prepared paths:
+
+```sh
+uv run tmux-observer-client snapshot --access direct --json
+uv run tmux-observer-client context
+uv run tmux-observer-client fleet --host-id snap
+uv run tmux-observer-client snapshot --access cached --expected-host snap --json
+uv run tmux-observer-client watch --expected-host snap --json
+uv run tmux-observer-client refresh --source snap:owner --source snap:desktop --json
+uv run tmux-observer-client refresh_status --publisher-id UUID --ticket-id UUID --json
+```
+
+`fleet` explicitly starts the per-context service. Its fixed local ID must match
+Host Mesh. Remote owners must already be running at the selected installed owner
+bridge path. Cached snapshot/status/probe/watch and ticket lookup use the private
+fleet endpoint; they never activate services or fall back to direct collection.
+Fresh inventory retains Tmux Session v1, while prepared operations return Fleet v1
+frames. Desktop absence or unsupported contexts leave viewer membership unknown
+without changing owner attachment facts. The fleet unit and desktop environment
+handoff remain pending; these commands are development interfaces, not a managed
+rollout selection.
 
 The extraction baseline is released `rofi-tmux-plus 0.6.0`, source
 `407ae58ba422ba88fed7da2f9d845ff274830f0e`. Its public Tmux Session v1 and
