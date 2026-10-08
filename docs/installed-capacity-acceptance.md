@@ -54,3 +54,37 @@ records a 307.01 MiB sampled peak and `passed_partial`. This establishes only
 the included local-bridge fixture below that candidate ceiling; actual SSH costs
 and simultaneous maximum reader/frame load remain unaccepted. The earlier
 256 MiB failure is retained unchanged.
+
+## Actual SSH and simultaneous near-cap readers
+
+```sh
+uv run --extra dev scripts/accept-installed-capacity --ssh-host starship --output /tmp/tmux-installed-ssh-capacity.json
+```
+
+This additional candidate profile places fifteen synthetic owner scopes in a
+private installed environment on Starship and the local owner/fleet on Snap.
+The production transport opens fifteen actual strict non-PTY SSH links, each
+running the plain installed bridge for one distinct scope. Both endpoints use
+the same wheel digest. Synthetic facts/catalog remain explicit: this is sixteen
+logical scopes on two physical hosts, not sixteen native tmux/Host Mesh sources.
+Actual remote clock domains, process layout and transport costs are exercised.
+
+After the existing small-frame checks, thirty-two readers simultaneously receive
+complete near-cap frames. They then stop reading while healthy cached RPCs retain
+their 250 ms deadline. The test requires actual stalled-reader retirement and
+checks unchanged queue/retention caps, rather than inferring retirement from
+fully buffered small frames. A seventeenth source still fails catalog authority.
+
+Separate 100 ms samplers retain the local fleet/SSH process peak and the remote
+associated bridge peak. Their conservative sum counts every attributed bridge;
+the remote synthetic owners and fixture supervisors are accounted separately from
+the fleet. The selected 768 MiB ceiling is assessed explicitly. Sampling can miss
+transient peaks, and this short stress profile is independent of normal ten-minute
+CPU acceptance. SSH process costs are included; encrypted wire-byte accounting,
+native collection/desktop facts, physical suspend and managed rollout remain
+separate evidence.
+
+Shutdown must reap the fleet's owned SSH children, verify attributed remote
+bridges have exited, and preserve all synthetic owners until fixture cleanup.
+Only root-qualified recorded bridge incarnations and explicitly owned publisher
+processes may be signalled. Both private directories are removed after cleanup.

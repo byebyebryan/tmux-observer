@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Installed fleet capacity with synthetic owners and local stdio bridges.
+"""Installed fleet capacity with synthetic owners and local or actual SSH bridges.
 
-No native tmux, network, compositor or ordinary service is touched. This measures
-real installed publisher/bridge processes and IPC; it is not native SSH evidence.
+No native tmux, compositor or ordinary service is touched. Optional --ssh-host
+uses fifteen real SSH links to owned synthetic publishers on Starship.
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ import shutil
 import signal
 import socket
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -51,11 +52,165 @@ def host_number(value):
     return int(value[-2:])
 
 
+def remote_bundle(root):
+    """Own remote synthetic publishers and account for every attributed bridge."""
+    owners, bridges, samples = [], {}, []
+    stop = threading.Event()
+    lock = threading.Lock()
+
+    def bridge_rows():
+        result = []
+        for path in root.glob("bridge-pid-fixture-*"):
+            host_number(path.name.removeprefix("bridge-pid-"))
+            try:
+                pid = int(path.read_text())
+                argv = Path(f"/proc/{pid}/cmdline").read_bytes()
+            except (FileNotFoundError, ValueError):
+                continue
+            if str(root).encode() not in argv:
+                continue
+            rows = process_tree(pid)
+            result.extend(rows)
+            for row in rows:
+                bridges[row["pid"], row["incarnation"]] = row
+        unique = {row["pid"]: row for row in result}
+        assert len(unique) <= 64
+        return list(unique.values())
+
+    def sample():
+        while not stop.is_set():
+            rows = bridge_rows()
+            with lock:
+                samples.append(
+                    {
+                        "atBootTimeMs": time.clock_gettime_ns(time.CLOCK_BOOTTIME) // 1000000,
+                        "rssBytes": sum(row["rssBytes"] for row in rows),
+                        "processes": rows,
+                    }
+                )
+                assert len(samples) <= 12000
+            stop.wait(0.1)
+
+    sampler = threading.Thread(target=sample)
+    try:
+        for index in range(1, 16):
+            host = f"fixture-{index:02d}"
+            with (root / (host + ".stderr")).open("wb") as log:
+                process = subprocess.Popen(
+                    [
+                        sys.executable,
+                        "-I",
+                        str(root / "worker"),
+                        "--root",
+                        str(root),
+                        "--role",
+                        "owner",
+                        "--host",
+                        host,
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=log,
+                    start_new_session=True,
+                )
+            owners.append(process)
+        deadline = time.monotonic() + 10
+        while not all((root / f"fixture-{i:02d}.sock").exists() for i in range(1, 16)):
+            if (
+                any(process.poll() is not None for process in owners)
+                or time.monotonic() >= deadline
+            ):
+                raise RuntimeError("owned remote capacity publishers failed to start")
+            time.sleep(0.05)
+        sampler.start()
+        from tmux_observer._clock import domain
+
+        wheel = next((root / "dist").glob("*.whl"))
+        print(
+            json.dumps(
+                {
+                    "ok": True,
+                    "result": {
+                        "wheelSha256": hashlib.sha256(wheel.read_bytes()).hexdigest(),
+                        "clock": domain(),
+                        "owners": 15,
+                    },
+                }
+            ),
+            flush=True,
+        )
+        while line := sys.stdin.buffer.readline(16385):
+            if len(line) > 16384 or not line.endswith(b"\n"):
+                raise ValueError("invalid owned bundle control")
+            value = json.loads(line)
+            operation = value["operation"]
+            if operation == "close":
+                break
+            if operation == "settings":
+                assert value["owners"] in (16, 17) and value["padding"] in (8, 14000)
+                settings = json.loads((root / "settings.json").read_text())
+                settings.update(owners=value["owners"], padding=value["padding"])
+                write_json(root / "settings.json", settings)
+                result = {}
+            elif operation == "metrics":
+                with lock:
+                    assert sampler.is_alive()
+                    assert (
+                        time.clock_gettime_ns(time.CLOCK_BOOTTIME) // 1000000
+                        - samples[-1]["atBootTimeMs"]
+                        <= 1000
+                    )
+                    result = {
+                        "sampleIntervalMs": 100,
+                        "sampleCount": len(samples),
+                        "peak": max(samples, key=lambda sample: sample["rssBytes"]),
+                        "current": samples[-1],
+                        "ownersAlive": sum(process.poll() is None for process in owners),
+                    }
+            else:
+                raise ValueError("unsupported owned bundle control")
+            print(json.dumps({"ok": True, "result": result}), flush=True)
+    finally:
+        stop.set()
+        if sampler.ident is not None:
+            sampler.join(timeout=3)
+            assert not sampler.is_alive()
+        for process in reversed(owners):
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGKILL)
+                    process.wait(timeout=3)
+        # Only captured root-qualified bridge incarnations may be signalled.
+        # Ordinary publishers and SSH sessions are outside this owned roster.
+        for row in bridges.values():
+            try:
+                fields = Path(f"/proc/{row['pid']}/stat").read_text().rpartition(") ")[2].split()
+            except FileNotFoundError:
+                continue
+            if fields[19] == row["incarnation"] and fields[0] != "Z":
+                try:
+                    os.kill(row["pid"], signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            if not bridge_rows():
+                break
+            time.sleep(0.05)
+        else:
+            raise RuntimeError("owned remote bridge processes survived cleanup")
+
+
 def worker(root, role, host):
     # Worker imports resolve only from the installed wheel under Python -I.
     info = root.lstat()
     assert root.is_dir() and not root.is_symlink()
     assert info.st_uid == os.getuid() and info.st_mode & 0o777 == 0o700
+    if role == "bundle":
+        remote_bundle(root)
+        return 0
     from tmux_observer._clock import boottime_ms, domain
 
     if role == "context":
@@ -107,7 +262,8 @@ def worker(root, role, host):
 
         class FixtureMesh:
             def load(self, **_kwargs):
-                count = json.loads((root / "settings.json").read_text())["owners"]
+                settings = json.loads((root / "settings.json").read_text())
+                count = settings["owners"]
                 hosts = tuple(
                     MeshHost(
                         f"fixture-{index:02d}",
@@ -116,14 +272,23 @@ def worker(root, role, host):
                         (),
                         ()
                         if index == 0
-                        else (MeshRoute(f"fixture-route-{index:02d}", 0, None, None),),
+                        else (
+                            MeshRoute(
+                                settings.get("sshHost", f"fixture-route-{index:02d}"), 0, None, None
+                            ),
+                        ),
                     )
                     for index in range(count)
                 )
                 return MeshSnapshot(
                     "sha256:" + ("a" if count == 16 else "b") * 64,
                     "fixture-00",
-                    MeshPolicy(str(root / "transport"), 1, 1, 60),
+                    MeshPolicy(
+                        "/usr/bin/ssh" if settings.get("sshHost") else str(root / "transport"),
+                        1,
+                        1,
+                        60,
+                    ),
                     hosts,
                 )
 
@@ -183,9 +348,9 @@ def independent_reader():
     return module
 
 
-def record(sock, *, timeout=2):
+def record(sock, *, timeout=2, pending=None):
     deadline = time.monotonic() + timeout
-    raw = bytearray()
+    raw = bytearray() if pending is None else pending
     while b"\n" not in raw:
         sock.settimeout(max(0.001, deadline - time.monotonic()))
         chunk = sock.recv(min(65536, LIMIT + 1 - len(raw)))
@@ -194,13 +359,14 @@ def record(sock, *, timeout=2):
         raw.extend(chunk)
         if len(raw) > LIMIT or time.monotonic() >= deadline:
             raise TimeoutError("fixture frame exceeded byte/deadline bound")
-    # Only the first response is used. Watch callers subsequently consume no data.
-    return bytes(raw.partition(b"\n")[0]) + b"\n"
+    body, _separator, rest = raw.partition(b"\n")
+    raw[:] = rest
+    return bytes(body) + b"\n"
 
 
-def request(root, context, operation="snapshot", *, keep=False):
+def request(root, context, operation="snapshot", *, keep=False, timeout=2, buffered=False):
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    sock.settimeout(2)
+    sock.settimeout(timeout)
     retained = False
     try:
         sock.connect(str(root / "fleet.sock"))
@@ -217,10 +383,11 @@ def request(root, context, operation="snapshot", *, keep=False):
             ).encode()
             + b"\n"
         )
-        raw = record(sock)
+        pending = bytearray()
+        raw = record(sock, timeout=timeout, pending=pending)
         if keep:
             retained = True
-            return sock, raw
+            return (sock, raw, pending) if buffered else (sock, raw)
         return raw
     finally:
         if not retained:
@@ -253,7 +420,7 @@ def process_tree(pid):
     return processes
 
 
-def main(output, memory_target_mib):
+def main(output, memory_target_mib, ssh_host=None):
     source_commit = command(["git", "-C", str(ROOT), "rev-parse", "HEAD"]).decode().strip()
     dirty = bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).strip())
     evidence = {
@@ -270,9 +437,21 @@ def main(output, memory_target_mib):
             "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
         ],
     }
+    if ssh_host:
+        evidence["gate"] = "T12-installed-ssh-capacity-partial"
+        evidence["scope"] = (
+            "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges"
+        )
+        evidence["limits"][0] = (
+            "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints"
+        )
+        evidence["limits"][3] = (
+            "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included"
+        )
     reader = independent_reader()
     owned, watchers, sampler_stop = [], [], threading.Event()
     samples = []
+    remote, remote_created, remote_profile = None, False, None
     with tempfile.TemporaryDirectory(prefix="tmux-observer-capacity-") as temporary:
         root = Path(temporary)
         root.chmod(0o700)
@@ -313,6 +492,17 @@ def main(output, memory_target_mib):
             ],
             env=env,
         )
+        # Foreground timing includes the installed production codec/validator.
+        # Independent schema verification remains separate acceptance work.
+        if any(
+            name == "tmux_observer" or name.startswith("tmux_observer.") for name in sys.modules
+        ):
+            raise RuntimeError("capacity coordinator already imported a producer implementation")
+        site = next((root / "venv/lib").glob("python*/site-packages"))
+        sys.path.insert(0, str(site))
+        from tmux_observer import public as installed_codec
+
+        assert Path(installed_codec.__file__).is_relative_to(root / "venv")
         shutil.copyfile(Path(__file__).resolve(), root / "worker")
         shutil.copyfile(
             ROOT / "contracts/observation-v1/fixtures/complete.json", root / "observation.json"
@@ -332,8 +522,35 @@ def main(output, memory_target_mib):
             + '/"$3".sock\n'
         )
         (root / "bridge").chmod(0o700)
-        write_json(root / "settings.json", {"owners": 16, "padding": 8})
+        settings = {"owners": 16, "padding": 8}
+        if ssh_host:
+            settings["sshHost"] = ssh_host
+        write_json(root / "settings.json", settings)
         context = command([*base, "--role", "context"], env=env).decode().strip()
+
+        ssh = [
+            "ssh",
+            "-T",
+            "-o",
+            "BatchMode=yes",
+            "-o",
+            "StrictHostKeyChecking=yes",
+            "-o",
+            "ConnectTimeout=2",
+            "-o",
+            "ConnectionAttempts=1",
+            "-o",
+            "ControlMaster=no",
+            "-o",
+            "ControlPath=none",
+            ssh_host or "starship",
+        ]
+
+        def configure(count, padding):
+            settings.update(owners=count, padding=padding)
+            write_json(root / "settings.json", settings)
+            if remote is not None:
+                remote.call("settings", owners=count, padding=padding)
 
         def start(role, host=None):
             args = [*base, "--role", role]
@@ -369,14 +586,123 @@ def main(output, memory_target_mib):
 
         def passed(name, **details):
             evidence["cases"].append({"name": name, "result": "passed", **details})
+            print("passed " + name, flush=True)
 
         fleet = None
         sampler = None
         descendants = []
         try:
-            for index in range(16):
+            if ssh_host:
+                command([*ssh, shlex.join(["mkdir", "-m", "700", "--", str(root)])], env=env)
+                remote_created = True
+                command(
+                    [*ssh, shlex.join(["mkdir", "-m", "700", "--", str(root / "dist")])], env=env
+                )
+                command(
+                    [
+                        "scp",
+                        "-q",
+                        "-o",
+                        "BatchMode=yes",
+                        "-o",
+                        "StrictHostKeyChecking=yes",
+                        str(wheel),
+                        ssh_host + ":" + str(root / "dist") + "/",
+                    ],
+                    env=env,
+                )
+                for name in ("worker", "observation.json", "settings.json"):
+                    command(
+                        [
+                            "scp",
+                            "-q",
+                            "-o",
+                            "BatchMode=yes",
+                            "-o",
+                            "StrictHostKeyChecking=yes",
+                            str(root / name),
+                            ssh_host + ":" + str(root) + "/",
+                        ],
+                        env=env,
+                    )
+                command([*ssh, shlex.join(["uv", "venv", str(root / "venv")])], env=env)
+                command(
+                    [
+                        *ssh,
+                        shlex.join(
+                            [
+                                "uv",
+                                "pip",
+                                "install",
+                                "--python",
+                                str(root / "venv/bin/python"),
+                                "--no-deps",
+                                str(root / "dist" / wheel.name),
+                            ]
+                        ),
+                    ],
+                    env=env,
+                )
+                # Record the exact installed plain bridge PID before exec; no
+                # fault relay or measurement import runs in a bridge process.
+                text = (
+                    (root / "bridge")
+                    .read_text()
+                    .replace(
+                        "exec ",
+                        "printf '%s\\n' \"$$\" > "
+                        + shlex.quote(str(root))
+                        + '/bridge-pid-"$3"\nexec ',
+                        1,
+                    )
+                )
+                (root / "remote-bridge").write_text(text)
+                command(
+                    [
+                        "scp",
+                        "-q",
+                        "-o",
+                        "BatchMode=yes",
+                        "-o",
+                        "StrictHostKeyChecking=yes",
+                        str(root / "remote-bridge"),
+                        ssh_host + ":" + str(root / "bridge"),
+                    ],
+                    env=env,
+                )
+                command([*ssh, shlex.join(["chmod", "700", str(root / "bridge")])], env=env)
+                loader = importlib.machinery.SourceFileLoader(
+                    "capacity_control", str(ROOT / "scripts/accept-native-fleet")
+                )
+                spec = importlib.util.spec_from_loader(loader.name, loader)
+                helper = importlib.util.module_from_spec(spec)
+                loader.exec_module(helper)
+                remote = helper.Control(
+                    [
+                        *ssh,
+                        shlex.join(
+                            [
+                                str(root / "venv/bin/python"),
+                                "-I",
+                                str(root / "worker"),
+                                "--root",
+                                str(root),
+                                "--role",
+                                "bundle",
+                            ]
+                        ),
+                    ]
+                )
+                bootstrap = remote.receive()
+                assert bootstrap["wheelSha256"] == evidence["wheelSha256"]
+                evidence["remoteEndpoint"] = bootstrap
+            for index in range(1 if ssh_host else 16):
                 start("owner", f"fixture-{index:02d}")
-            wait(lambda: all((root / f"fixture-{i:02d}.sock").exists() for i in range(16)))
+            wait(
+                lambda: all(
+                    (root / f"fixture-{i:02d}.sock").exists() for i in range(1 if ssh_host else 16)
+                )
+            )
             fleet = start("fleet")
 
             def sample():
@@ -412,6 +738,14 @@ def main(output, memory_target_mib):
                 "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
                 frameBytes=initial_size,
             )
+            if ssh_host:
+                local_tree = process_tree(fleet.pid)
+                remote_metrics = remote.call("metrics")
+                assert sum(row["name"] == "ssh" for row in local_tree) == 15
+                assert len(remote_metrics["current"]["processes"]) == 15
+                passed(
+                    "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges"
+                )
             with ThreadPoolExecutor(max_workers=32) as pool:
                 futures = [
                     pool.submit(request, root, context, "watch", keep=True) for _ in range(32)
@@ -455,7 +789,7 @@ def main(output, memory_target_mib):
                 "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
                 highWater=metrics["highWater"],
             )
-            write_json(root / "settings.json", {"owners": 16, "padding": 14000})
+            configure(16, 14000)
             _large, large_size = wait(
                 lambda: (value if value[1] >= 850000 else None) if (value := complete()) else None
             )
@@ -463,7 +797,85 @@ def main(output, memory_target_mib):
                 "near_cap_aggregate_is_complete_untruncated_independently_readable",
                 frameBytes=large_size,
             )
-            write_json(root / "settings.json", {"owners": 17, "padding": 14000})
+            if ssh_host:
+                watch_buffers = {}
+                with ThreadPoolExecutor(max_workers=32) as pool:
+                    futures = [
+                        pool.submit(request, root, context, "watch", keep=True, buffered=True)
+                        for _ in range(32)
+                    ]
+                    failures = []
+                    for future in futures:
+                        try:
+                            sock, raw, pending = future.result()
+                            watchers.append(sock)
+                            watch_buffers[sock] = pending
+                            value = reader.wire(raw, LIMIT)
+                            reader.verify("fleet-frame", value)
+                            assert len(raw) >= 850000
+                        except Exception as error:  # noqa: BLE001 - retain all admitted owned sockets
+                            failures.append(error)
+                    if failures:
+                        raise failures[0]
+                passed(
+                    "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners"
+                )
+                durations = []
+                healthy = watchers[-1]
+                for _ in range(10):
+                    started = time.monotonic()
+                    request_id = uuid.uuid4().hex
+                    healthy.sendall(
+                        json.dumps(
+                            {
+                                "protocol": "tmux-observer.fleet.v1",
+                                "schemaVersion": 1,
+                                "operation": "snapshot",
+                                "requestId": request_id,
+                                "contextId": context,
+                                "expectedHost": "fixture-00",
+                            }
+                        ).encode()
+                        + b"\n"
+                    )
+                    received = []
+                    while True:
+                        remaining = 0.25 - (time.monotonic() - started)
+                        assert remaining > 0
+                        raw = record(healthy, timeout=remaining, pending=watch_buffers[healthy])
+                        value = installed_codec.validate_fleet_frame(
+                            installed_codec.decode_document(raw, limit=LIMIT)
+                        )
+                        received.append(raw)
+                        if value["requestId"] == request_id:
+                            break
+                    durations.append((time.monotonic() - started) * 1000)
+                    assert durations[-1] <= 250
+                    for raw in received:
+                        reader.verify("fleet-frame", reader.wire(raw, LIMIT))
+                    time.sleep(0.3)
+                metrics = json.loads((root / "metrics.json").read_text())
+                assert metrics["highWater"]["outputBytes"] <= 72 * 1024 * 1024
+                assert metrics["highWater"]["perPeerBytes"] <= 2 * LIMIT + 65536
+                # Near-cap replacement records exceed kernel buffers. Require
+                # actual stalled-reader retirement, rather than inferring it
+                # from a small-frame phase that can stay fully buffered.
+                wait(
+                    lambda: (
+                        json.loads((root / "metrics.json").read_text())["current"]["readers"] == 1
+                    ),
+                    budget=10,
+                )
+                for sock in watchers:
+                    sock.close()
+                watchers.clear()
+                wait(complete)
+                passed(
+                    "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
+                    rpcMs=durations,
+                    highWater=metrics["highWater"],
+                )
+            configure(17, 14000)
 
             def over_capacity():
                 value, _size = frame()
@@ -485,6 +897,13 @@ def main(output, memory_target_mib):
                     assert fields[19] != row["incarnation"] or fields[0] == "Z"
             assert not (root / "fleet.sock").exists()
             assert all(process.poll() is None for process in owned[:-1])
+            if remote is not None:
+                deadline = time.monotonic() + 5
+                while (remote_profile := remote.call("metrics"))["current"]["processes"]:
+                    assert time.monotonic() < deadline
+                    time.sleep(0.05)
+                assert remote_profile["ownersAlive"] == 15
+                assert not remote_profile["current"]["processes"]
             passed(
                 "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
                 elapsedMs=round((time.monotonic() - started) * 1000, 3),
@@ -542,7 +961,14 @@ def main(output, memory_target_mib):
                 time.sleep(0.03)
             else:
                 raise RuntimeError("owned bridge incarnations survived fixture cleanup")
+            if remote is not None:
+                remote.close()
+            if remote_created:
+                command([*ssh, shlex.join(["rm", "-rf", "--", str(root)])], env=env)
     peak = max(samples, key=lambda sample: sample["rssBytes"])
+    attributed_bytes = peak["rssBytes"] + (
+        remote_profile["peak"]["rssBytes"] if remote_profile else 0
+    )
     evidence["profile"] = {
         "sampleIntervalMs": 100,
         "sampleCount": len(samples),
@@ -550,9 +976,12 @@ def main(output, memory_target_mib):
         "fleetAndBridgePeak": peak,
         "targetBytes": memory_target_mib * 1024 * 1024,
         "memoryTarget": "passed"
-        if peak["rssBytes"] <= memory_target_mib * 1024 * 1024
+        if attributed_bytes <= memory_target_mib * 1024 * 1024
         else "failed",
     }
+    if remote_profile:
+        evidence["profile"]["associatedRemoteBridges"] = remote_profile
+        evidence["profile"]["conservativeCombinedPeakBytes"] = attributed_bytes
     evidence["result"] = (
         "passed_partial"
         if evidence["profile"]["memoryTarget"] == "passed"
@@ -565,7 +994,7 @@ def main(output, memory_target_mib):
             {
                 "result": evidence["result"],
                 "cases": len(evidence["cases"]),
-                "peakRssBytes": peak["rssBytes"],
+                "peakRssBytes": attributed_bytes,
             }
         )
     )
@@ -576,11 +1005,12 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path)
     parser.add_argument("--memory-target-mib", type=int, choices=(256, 768), default=768)
     parser.add_argument("--root", type=Path)
-    parser.add_argument("--role", choices=("owner", "fleet", "context"))
+    parser.add_argument("--role", choices=("owner", "fleet", "context", "bundle"))
+    parser.add_argument("--ssh-host", choices=("starship",))
     parser.add_argument("--host")
     args, remaining = parser.parse_known_args()
     if args.root is not None and args.role is not None and not remaining:
         raise SystemExit(worker(args.root, args.role, args.host))
     if args.output is None or remaining:
         parser.error("provide --output or a complete private worker invocation")
-    main(args.output, args.memory_target_mib)
+    main(args.output, args.memory_target_mib, args.ssh_host)
