@@ -2,17 +2,18 @@
 
 Shared observation foundation under development for local and remote tmux clients.
 Tmux Observer publishes host-local session metadata through a passive direct
-collector and shared owner service. A prepared fleet service is implemented in
-source and awaits two-host native acceptance.
+collector and shared owner service. The prepared fleet service has passed
+two-host awake/native and simulated recovery acceptance for always-on hosts.
 Rofi Tmux Plus will consume its prepared views and retain presentation policy.
 
 ## Status
 
-Implementation in progress, 2026-10-07; see the
+Implementation in progress, 2026-10-08; see the
 [status record](docs/implementation-status.md). Pure contracts and the direct
 collector and owner service passed isolated native/artifact acceptance.
-Fleet, frontend migration and managed deployment are not accepted yet. The design
-describes later interfaces that must pass their delivery gates.
+Fleet/read acceptance has passed for the [always-on scope](docs/always-on-acceptance.md).
+Physical sleep/wake is optional and unverified. Frontend migration and managed
+deployment remain unaccepted; their interfaces must pass separate delivery gates.
 
 ```sh
 uv run tmux-observer collect --host-id snap
@@ -58,8 +59,8 @@ Fresh inventory retains Tmux Session v1, while prepared operations return Fleet 
 frames. Desktop absence or unsupported contexts leave viewer membership unknown
 without changing owner attachment facts. The candidate fleet unit and explicit
 desktop environment handoff are documented in [service contexts](docs/service-contexts.md) and [two-host acceptance](docs/native-fleet-acceptance.md).
-Their installed/native acceptance is pending; these development interfaces are
-not a managed rollout selection.
+Installed/native acceptance has passed in isolated candidate scope; these
+development interfaces are not a managed rollout selection.
 
 The extraction baseline is released `rofi-tmux-plus 0.6.0`, source
 `407ae58ba422ba88fed7da2f9d845ff274830f0e`. Its public Tmux Session v1 and

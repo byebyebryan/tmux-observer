@@ -95,6 +95,7 @@ peaks; no sixteen-physical-host or capacity-CPU claim follows.
 The intervening [frozen-wheel CPU failure](evidence/2026-10-08-frozen-normal-g3-failed-cpu.json)
 and [capacity deadline failures](evidence/2026-10-08-optimized-3a-capacity.json)
 remain recorded alongside this later pass. The selected direction is validated
-within the measured scope. Revised G3 requires its clean frozen-wheel recovery
-simulations; physical sleep/wake is optional. Consumer migration and managed
-rollout retain separate gates.
+within the measured scope. Revised G3 is accepted for always-on hosts with the
+[clean frozen-wheel recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json);
+physical sleep/wake is optional. Consumer migration and managed rollout retain
+separate gates.

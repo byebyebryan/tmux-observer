@@ -5,6 +5,9 @@ The design/backlog baseline is commit `a4fba75`.
 
 Current clean candidate `3beab8a` passes 183 source methods and 96 installed/native
 cases on one [frozen wheel](evidence/2026-10-08-final-candidate-artifact.json).
+Clean harness `791df63` passes 186 source methods and four additional
+[installed recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json)
+on that same wheel; all 64 runtime/data/license files match, with owned cleanup.
 The same wheel also passes four preparation-only cases through the suspend
 harness; those do not establish physical sleep/wake.
 Two committed-source builds have identical wheel bytes and member manifests.
@@ -22,6 +25,7 @@ IPC regression covers 249/250/251 ms completion with a controlled validation clo
 | [SSH capacity](evidence/2026-10-08-final-candidate-capacity.json) | 10 cases; 16 logical owners, 15 real SSH links, 32 near-cap readers; 500.02 MiB conservative sampled peak; healthy replies 46.44–229.61 ms including installed validation |
 | [Desktop-inclusive normal profile](evidence/2026-10-08-final-candidate-normal.json) | 9 cases; at least 600 seconds per host; fleet/associated-bridge peaks 84.00/57.83 MiB, combined CPU 4.9763%/1.9494%, no new observer SSH starts |
 | [Suspend preparation](evidence/2026-10-08-final-candidate-suspend-preparation.json) | 4 preparation-only cases on the same wheel, clean harness `25befbc`; 31 cached samples per endpoint, maxima 9.72/3.68 ms, zero suspend delta, untouched alarms and completed owned cleanup |
+| [Always-on recovery](evidence/2026-10-08-always-on-simulated-recovery.json) | 4 installed simulations, clean harness `791df63`; independent owner clocks, 30-second callback gap/first prepared read, real buffered child pipe and process BOOTTIME budget |
 
 The selected 96/768 MiB fleet ceilings, unchanged owner/5% CPU ceilings and query
 deadlines pass in those measured profiles. Snap's CPU margin is narrow. The 100
@@ -35,10 +39,10 @@ CPU 4.7449%/1.9417%; its wheel is distinct and retains its own attribution.
 The user-selected [always-on acceptance scope](always-on-acceptance.md) makes
 physical sleep/wake optional. Snap remains awake during active work; Starship
 has no verified unattended wake/recovery, so this pass uses simulations. No alarm
-or whole-host suspend was performed. Composed owner/fleet first-read and real
-pipe-buffer recovery tests pass against source; their clean-harness frozen-wheel
-run is the next required check before closing revised T12/G3. T13/T14 and T15
-retain their accepted-producer, frontend and managed acceptance dependencies.
+or whole-host suspend was performed. The clean-harness frozen-wheel simulations
+pass and complement the existing awake-host evidence: T12/G3 is accepted for
+the always-on scope. T13/T14 can now implement the prepared client using that
+accepted producer; frontend/compatibility and T15 managed acceptance remain.
 The frozen descriptor remains unaccepted for promotion, and frontend/managed
 changes have not begun.
 The [post-run cleanup check](evidence/2026-10-08-final-candidate-cleanup.json)
@@ -53,6 +57,14 @@ reproduces the prior T06 library. This is read-only/compile evidence, not anothe
 GUI or production gate. The review defines version/artifact checks, watcher
 lifetime and BOOTTIME invalidation, read-only callbacks, terminal-ticket handling
 and pending-intent acceptance before migration; frontend code remains unchanged.
+
+| Delivery | State | Evidence |
+| --- | --- | --- |
+| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and [14 installed/native cases](evidence/2026-10-08-final-candidate-g1.json) |
+| B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and [11 installed/native cases](evidence/2026-10-08-final-candidate-g2.json) |
+| C: fleet service | Accepted: T10–T12; G3 passed for always-on hosts | Same-wheel awake native/resources and [four installed recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json); physical suspend optional/unverified |
+| D: Rofi client | Planned; T06 passes and production boundary reviewed | [Integration review](rofi-integration-review.md); no frontend migration accepted |
+| E: managed rollout | Planned | None |
 
 ## Prior checkpoint history
 
@@ -151,19 +163,6 @@ CPU 4.66%/1.96%, and no new observer SSH starts. Native commands on Snap fell
 from 2,475 to 2,082 without slower collection or weaker validity. Physical sleep,
 frontend migration and managed rollout remain pending; sampling and synthetic
 capacity-source limits remain explicit.
-
-| Delivery | State | Evidence |
-| --- | --- | --- |
-| A: standalone producer | Accepted: T01–T05; G0/G1 passed | Pure API, exact bundles, independent reader and 14 native/installed cases; [latest G1 evidence](evidence/2026-10-08-final-candidate-g1.json) |
-| B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and 11 installed/native cases; [latest G2 evidence](evidence/2026-10-08-final-candidate-g2.json) |
-| C: fleet service | In progress: awake native and resource checks pass; physical sleep/wake deferred | Shared aggregate, independent desktop jobs, causal grouped refresh, prepared CLI and context handoff; T12/G3 stays open |
-| D: Rofi client | Planned; T06 native mode interaction prototype passes, production integration unresolved | [Native experiment](rofi-interaction-probe.md); idle/active-input adoption and exact selection observed with version-pinned mode prototype; no frontend migration accepted |
-| E: managed rollout | Planned | None |
-
-Pure validation and `collect --host-id ID` are implemented and accepted for
-the Delivery A scope. Owner service is accepted in isolated candidate scope; fleet,
-GUI migration and managed deployment remain pending. Source, installed/native,
-graphical and managed evidence remain separate gates.
 
 The [physical suspend harness](native-suspend-acceptance.md) is now implemented
 with a preparation-only default and five safety regressions. Clean source

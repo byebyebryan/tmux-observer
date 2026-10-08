@@ -51,6 +51,14 @@ source and harness provenance separately, returns failure on any failed case,
 and removes its private installation and owned relay. It has no power operation
 or ordinary-service activation path.
 
-Source validation and a clean-harness installed simulation report are required
-before closing the revised G3 checkpoint. T13/T14 still require that accepted
-producer; G4 and deployment cannot be inferred from this scope decision.
+## Recorded acceptance
+
+Clean harness `791df63` passes 186 source methods and all four
+[installed simulations](evidence/2026-10-08-always-on-simulated-recovery.json).
+They consume the existing `3beab8a` frozen wheel
+(`b511fb12304b7693879f7fb878ddacd1c32f1afa6e4ccf2738d34405f24a4b84`),
+verify all 64 payload files and installed import origins, and complete owned
+cleanup. Packaged production code is unchanged. Together with the existing
+same-wheel awake-host evidence, this closes revised T12/G3 for always-on hosts.
+T13/T14 may proceed against that accepted producer. Physical sleep/wake remains
+optional and unverified; G4 and deployment keep independent acceptance gates.

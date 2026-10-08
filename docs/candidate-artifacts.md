@@ -133,7 +133,9 @@ wheel with clean source/harness `3beab8a`. They include G1/G2, context, fresh di
 fleet, desktop, actual SSH capacity and ten-minute normal profiling; the measured
 resource targets and query deadlines pass. The descriptor remains
 `built_unaccepted`: frontend migration and managed rollout have independent
-remaining gates, and revised G3 requires the clean frozen-wheel simulation record.
+remaining gates. Revised G3 is accepted for always-on hosts with the clean
+[frozen-wheel simulation record](evidence/2026-10-08-always-on-simulated-recovery.json)
+and existing awake-host records; this does not promote the descriptor.
 Physical sleep/wake is optional under the always-on scope. Previous failed
 artifacts retain their original results and are not relabeled by this pass.
 
