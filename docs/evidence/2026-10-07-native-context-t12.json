@@ -1,0 +1,44 @@
+{
+  "gate": "T12-context",
+  "endpoint": "Snap",
+  "sourceCommit": "31d6c6825643a3fbe9d5b9752113c4de0625d74a",
+  "sourceTreeDirty": false,
+  "systemdVersion": "systemd 262 (262-1-arch)",
+  "cases": [
+    {
+      "name": "installed_capture_and_literal_environment_parsing",
+      "result": "passed",
+      "keys": [
+        "PATH",
+        "XDG_RUNTIME_DIR",
+        "NIRI_SOCKET",
+        "DISPLAY",
+        "WAYLAND_DISPLAY",
+        "SSH_AUTH_SOCK",
+        "TMUX_TMPDIR",
+        "TMUX_OBSERVER_HOST_ID"
+      ],
+      "contextId": "d2dafc8e830256eedb669cb9e4de48a3"
+    },
+    {
+      "name": "restart_reloads_capture_and_reaps_prior_owned_children",
+      "result": "passed"
+    },
+    {
+      "name": "scoped_stop_removes_only_its_capture_and_owned_processes",
+      "result": "passed",
+      "stopMs": 40.504
+    },
+    {
+      "name": "installed_fleet_template_argv_context_and_prepared_startup",
+      "result": "passed",
+      "meshState": "warming"
+    }
+  ],
+  "limits": [
+    "Context/unit and prepared startup only; no two-host/native-source/desktop G3 acceptance",
+    "Private candidate paths, not managed deployment or lingering policy acceptance"
+  ],
+  "wheelSha256": "46211f5ca5ab17cd8a6c65e8e19969f54a2b839fc7f68607de2ef2af51faf4aa",
+  "templateSha256": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+}

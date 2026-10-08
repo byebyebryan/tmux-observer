@@ -167,5 +167,12 @@ files/FIFOs, registry contention and capacity fail explicitly. Stop preserves
 other contexts and does not address native sessions or owner units. The source
 gate passes 137 methods. Review also corrected the prepared RPC facade's default
 deadline to the planned 250 ms; the owner/probe budgets remain independent.
-Installed systemd environment parsing and two-host native G3 are not established
-by these source checks. See [service contexts](service-contexts.md).
+Installed systemd environment parsing is now covered by a separate four-case
+[context acceptance](evidence/2026-10-07-native-context-t12.json) at clean source
+`31d6c68`. The exact wheel/template ran in a disposable user unit: literal quoting,
+restart, scoped stop with child reaping, and the actual installed fleet entry point
+with its captured context passed. A native finding corrected new-unit startup:
+`reset-failed` may fail before a unit is loaded, while the following start must
+succeed. The source gate passes 138 methods. This component evidence does not
+close two-host, native source, desktop truth, resource or managed G3 acceptance.
+See [service contexts](service-contexts.md).
