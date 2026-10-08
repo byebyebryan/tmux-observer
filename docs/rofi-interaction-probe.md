@@ -46,3 +46,13 @@ instead. Input was only sent while the owned PID was the sole Rofi process and
 Rofi was the sole exclusive keyboard surface on the focused output. Competing
 display-sleep surfaces caused the probe to stop without typing. The desktop was
 woken for the authorized test; ordinary tmux/agent sessions were preserved.
+
+
+A later X11 comparison with the installed `-x11` option could not establish an
+owned Rofi surface in the current desktop context. The probe stopped before
+sending input and cleaned its process; this does not accept or reject X11 timer
+behavior. The optional comparison flag is retained for a verified X11 desktop.
+Input guards now require a sole owned Rofi process in both surface forms and
+reject competing exclusive layers even when a normal window is focused. The
+[upstream backend option](https://github.com/davatorium/rofi#usage) is documented;
+no launcher backend change is selected by this investigation.

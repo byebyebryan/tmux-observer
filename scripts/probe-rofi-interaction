@@ -69,6 +69,7 @@ def run(args, env):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--x11", action="store_true", help="compare the installed XCB backend")
     args = parser.parse_args()
     env = dict(os.environ)
     manager = run(["systemctl", "--user", "show-environment"], env)
@@ -82,6 +83,7 @@ def main():
         "schemaVersion": 1,
         "gate": "T06 experiment",
         "nativeVersion": run(["rofi", "-v"], env).strip(),
+        "backend": "x11" if args.x11 else "automatic",
         "scope": "owned Rofi surface; isolated preferences/cache; synthetic rows; no actions/services",
         "cases": [],
         "limits": [
@@ -150,6 +152,8 @@ def main():
                 "-kb-screenshot",
                 "F12",
             ]
+            if args.x11:
+                command.insert(1, "-x11")
             with (root / "rofi.stderr").open("w") as stderr:
                 process = subprocess.Popen(
                     command, env=env, stdout=subprocess.DEVNULL, stderr=stderr
@@ -181,28 +185,32 @@ def main():
 
                     def keys(*arguments):
                         current = json.loads(run(["niri", "msg", "--json", "windows"], env))
+                        layers = json.loads(run(["niri", "msg", "--json", "layers"], env))
+                        output = json.loads(run(["niri", "msg", "--json", "focused-output"], env))[
+                            "name"
+                        ]
+                        exclusive = [
+                            layer
+                            for layer in layers
+                            if layer["keyboard_interactivity"] == "Exclusive"
+                            and layer["output"] == output
+                        ]
+                        pids = run(["pgrep", "-x", "rofi"], env).split()
+                        if pids != [str(process.pid)]:
+                            raise RuntimeError("an ordinary Rofi process is present; no input sent")
                         if owned == "layer":
-                            layers = json.loads(run(["niri", "msg", "--json", "layers"], env))
-                            output = json.loads(
-                                run(["niri", "msg", "--json", "focused-output"], env)
-                            )["name"]
-                            exclusive = [
-                                layer
-                                for layer in layers
-                                if layer["keyboard_interactivity"] == "Exclusive"
-                                and layer["output"] == output
-                            ]
-                            pids = run(["pgrep", "-x", "rofi"], env).split()
-                            if (
-                                pids != [str(process.pid)]
-                                or not exclusive
-                                or any(layer["namespace"] != "rofi" for layer in exclusive)
+                            if not exclusive or any(
+                                layer["namespace"] != "rofi" for layer in exclusive
                             ):
                                 raise RuntimeError(
                                     "Rofi has competing exclusive surfaces; no input sent"
                                 )
-                        elif not any(w["id"] == owned and w.get("is_focused") for w in current):
-                            raise RuntimeError("owned Rofi window lost focus; no input sent")
+                        elif exclusive or not any(
+                            w["id"] == owned and w.get("is_focused") for w in current
+                        ):
+                            raise RuntimeError(
+                                "owned Rofi window lacks exclusive input focus; no input sent"
+                            )
                         run(["wtype", *arguments], env)
 
                     time.sleep(0.15)
