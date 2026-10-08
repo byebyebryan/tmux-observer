@@ -1,0 +1,583 @@
+#!/usr/bin/env python3
+"""Installed fleet capacity with synthetic owners and local stdio bridges.
+
+No native tmux, network, compositor or ordinary service is touched. This measures
+real installed publisher/bridge processes and IPC; it is not native SSH evidence.
+"""
+
+from __future__ import annotations
+
+import argparse
+import copy
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import os
+import re
+import shlex
+import shutil
+import signal
+import socket
+import subprocess
+import tempfile
+import threading
+import time
+import uuid
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+LIMIT = 1064960
+
+
+def command(argv, *, env=None):
+    value = subprocess.run(argv, env=env, capture_output=True, check=False, timeout=60)
+    if value.returncode:
+        raise RuntimeError(value.stderr.decode(errors="replace")[:2048])
+    return value.stdout
+
+
+def write_json(path, value):
+    temporary = path.with_suffix(".tmp")
+    temporary.write_text(json.dumps(value))
+    temporary.chmod(0o600)
+    temporary.replace(path)
+
+
+def host_number(value):
+    if not re.fullmatch(r"fixture-(?:0[0-9]|1[0-6])", value):
+        raise ValueError("foreign fixture host")
+    return int(value[-2:])
+
+
+def worker(root, role, host):
+    # Worker imports resolve only from the installed wheel under Python -I.
+    info = root.lstat()
+    assert root.is_dir() and not root.is_symlink()
+    assert info.st_uid == os.getuid() and info.st_mode & 0o777 == 0o700
+    from tmux_observer._clock import boottime_ms, domain
+
+    if role == "context":
+        from tmux_observer_client.public import desktop_context_id
+
+        print(desktop_context_id())
+        return 0
+    if role == "owner":
+        from tmux_observer.owner import OwnerPublisher
+
+        host_number(host)
+        fixture = json.loads((root / "observation.json").read_text())
+
+        class SyntheticCollector:
+            def __init__(self):
+                self.source = {
+                    "hostId": host,
+                    "uid": os.getuid(),
+                    "server": "default",
+                    "nativeHostname": "fixture",
+                }
+                self.clock = domain()
+                self.calls = 0
+
+            def collect(self, *, budget_ms):
+                started = boottime_ms()
+                value = copy.deepcopy(fixture)
+                self.calls += 1
+                settings = json.loads((root / "settings.json").read_text())
+                value.update(source=self.source, clock=self.clock)
+                value["sample"].update(
+                    startedAt=started,
+                    finishedAt=boottime_ms(),
+                    observedAt=time.time_ns() // 1000000,
+                )
+                row = value["sessions"][0]
+                row["hostId"] = host
+                for key in ("name", "sessionPath", "currentWindow", "currentPath"):
+                    row[key] = "x" * settings["padding"]
+                write_json(root / (host + ".count"), {"calls": self.calls})
+                return value
+
+        publisher = OwnerPublisher(
+            host, path=root / (host + ".sock"), collector=SyntheticCollector()
+        )
+    elif role == "fleet":
+        from tmux_observer_client.fleet import FleetPublisher
+        from tmux_observer_client.mesh import MeshHost, MeshPolicy, MeshRoute, MeshSnapshot
+
+        class FixtureMesh:
+            def load(self, **_kwargs):
+                count = json.loads((root / "settings.json").read_text())["owners"]
+                hosts = tuple(
+                    MeshHost(
+                        f"fixture-{index:02d}",
+                        f"Fixture {index}",
+                        index == 0,
+                        (),
+                        ()
+                        if index == 0
+                        else (MeshRoute(f"fixture-route-{index:02d}", 0, None, None),),
+                    )
+                    for index in range(count)
+                )
+                return MeshSnapshot(
+                    "sha256:" + ("a" if count == 16 else "b") * 64,
+                    "fixture-00",
+                    MeshPolicy(str(root / "transport"), 1, 1, 60),
+                    hosts,
+                )
+
+            def report_route(self, **_kwargs):
+                return True
+
+        publisher = FleetPublisher(
+            "fixture-00",
+            path=root / "fleet.sock",
+            owner_path=root / "fixture-00.sock",
+            mesh=FixtureMesh(),
+            remote_exec=shlex.quote(str(root / "bridge")),
+        )
+        original = publisher.publish_tickets
+        next_metrics = 0
+        high_water = {
+            "readers": 0,
+            "outputBytes": 0,
+            "retainedBytes": 0,
+            "connections": 0,
+            "perPeerBytes": 0,
+        }
+
+        def metrics_tick(now):
+            nonlocal next_metrics
+            original(now)
+            if now < next_metrics:
+                return
+            current = {
+                "readers": len(publisher.hub.peers),
+                "outputBytes": sum(peer.bytes_held() for peer in publisher.hub.peers),
+                "retainedBytes": sum(publisher.retained.values()),
+                "connections": len(publisher.connections),
+                "perPeerBytes": max((peer.bytes_held() for peer in publisher.hub.peers), default=0),
+            }
+            for key, value in current.items():
+                high_water[key] = max(high_water[key], value)
+            write_json(root / "metrics.json", {"current": current, "highWater": high_water})
+            next_metrics = now + 100
+
+        publisher.publish_tickets = metrics_tick
+    else:
+        raise ValueError("unsupported worker role")
+    signal.signal(signal.SIGTERM, lambda *_: publisher.stop())
+    signal.signal(signal.SIGINT, lambda *_: publisher.stop())
+    publisher.run()
+    return 0
+
+
+def independent_reader():
+    loader = importlib.machinery.SourceFileLoader(
+        "capacity_reader", str(ROOT / "scripts/read-contract")
+    )
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def record(sock, *, timeout=2):
+    deadline = time.monotonic() + timeout
+    raw = bytearray()
+    while b"\n" not in raw:
+        sock.settimeout(max(0.001, deadline - time.monotonic()))
+        chunk = sock.recv(min(65536, LIMIT + 1 - len(raw)))
+        if not chunk:
+            raise EOFError("owned publisher ended the fixture connection")
+        raw.extend(chunk)
+        if len(raw) > LIMIT or time.monotonic() >= deadline:
+            raise TimeoutError("fixture frame exceeded byte/deadline bound")
+    # Only the first response is used. Watch callers subsequently consume no data.
+    return bytes(raw.partition(b"\n")[0]) + b"\n"
+
+
+def request(root, context, operation="snapshot", *, keep=False):
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.settimeout(2)
+    retained = False
+    try:
+        sock.connect(str(root / "fleet.sock"))
+        sock.sendall(
+            json.dumps(
+                {
+                    "protocol": "tmux-observer.fleet.v1",
+                    "schemaVersion": 1,
+                    "operation": operation,
+                    "requestId": uuid.uuid4().hex,
+                    "contextId": context,
+                    "expectedHost": "fixture-00",
+                }
+            ).encode()
+            + b"\n"
+        )
+        raw = record(sock)
+        if keep:
+            retained = True
+            return sock, raw
+        return raw
+    finally:
+        if not retained:
+            sock.close()
+
+
+def process_tree(pid):
+    pending, seen, processes = [pid], set(), []
+    while pending:
+        selected = pending.pop()
+        if selected in seen or len(seen) >= 128:
+            continue
+        seen.add(selected)
+        path = Path(f"/proc/{selected}")
+        try:
+            fields = (path / "stat").read_text().rpartition(") ")[2].split()
+            rss = int((path / "statm").read_text().split()[1]) * os.sysconf("SC_PAGE_SIZE")
+            children = (path / f"task/{selected}/children").read_text().split()
+            processes.append(
+                {
+                    "pid": selected,
+                    "incarnation": fields[19],
+                    "name": (path / "comm").read_text().strip(),
+                    "rssBytes": rss,
+                }
+            )
+            pending.extend(map(int, children))
+        except (FileNotFoundError, ProcessLookupError):
+            continue
+    return processes
+
+
+def main(output):
+    source_commit = command(["git", "-C", str(ROOT), "rev-parse", "HEAD"]).decode().strip()
+    dirty = bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).strip())
+    evidence = {
+        "gate": "T12-installed-synthetic-capacity-partial",
+        "sourceCommit": source_commit,
+        "sourceTreeDirty": dirty,
+        "cases": [],
+        "scope": "one installed wheel; synthetic 16-owner catalog/observations; real private IPC and 15 installed local stdio bridges",
+        "limits": [
+            "Fixture transport execs local bridges with SSH-shaped argv; no SSH process or network costs are measured",
+            "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+            "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+            "Fixture owners/readers/coordinator are outside the fleet tree; every fleet bridge child is included",
+            "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
+        ],
+    }
+    reader = independent_reader()
+    owned, watchers, sampler_stop = [], [], threading.Event()
+    samples = []
+    with tempfile.TemporaryDirectory(prefix="tmux-observer-capacity-") as temporary:
+        root = Path(temporary)
+        root.chmod(0o700)
+        env = dict(os.environ)
+        for key in (
+            "PYTHONPATH",
+            "PYTHONHOME",
+            "TMUX",
+            "TMUX_PANE",
+            "NIRI_SOCKET",
+            "DISPLAY",
+            "WAYLAND_DISPLAY",
+        ):
+            env.pop(key, None)
+        env.update(
+            PYTHONNOUSERSITE="1",
+            XDG_CONFIG_HOME=str(root / "config"),
+            XDG_CACHE_HOME=str(root / "cache"),
+        )
+        for name in ("config", "cache", "dist"):
+            (root / name).mkdir(mode=0o700)
+        command(
+            ["uv", "build", "--wheel", "--out-dir", str(root / "dist"), str(ROOT)],
+            env=env,
+        )
+        wheel = next((root / "dist").glob("*.whl"))
+        evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
+        command(["uv", "venv", str(root / "venv")], env=env)
+        command(
+            [
+                "uv",
+                "pip",
+                "install",
+                "--python",
+                str(root / "venv/bin/python"),
+                "--no-deps",
+                str(wheel),
+            ],
+            env=env,
+        )
+        shutil.copyfile(Path(__file__).resolve(), root / "worker")
+        shutil.copyfile(
+            ROOT / "contracts/observation-v1/fixtures/complete.json", root / "observation.json"
+        )
+        base = [str(root / "venv/bin/python"), "-I", str(root / "worker"), "--root", str(root)]
+        (root / "transport").write_text(
+            '#!/bin/sh\nfor program do :; done\nexec /bin/sh -c "$program"\n'
+        )
+        (root / "transport").chmod(0o700)
+        (root / "bridge").write_text(
+            '#!/bin/sh\n[ "$1" = bridge ] && [ "$2" = --expected-host ] || exit 64\n'
+            'case "$3" in fixture-0[0-9]|fixture-1[0-5]) ;; *) exit 64 ;; esac\n'
+            + "exec "
+            + shlex.quote(str(root / "venv/bin/tmux-observer"))
+            + ' "$@" --socket '
+            + shlex.quote(str(root))
+            + '/"$3".sock\n'
+        )
+        (root / "bridge").chmod(0o700)
+        write_json(root / "settings.json", {"owners": 16, "padding": 8})
+        context = command([*base, "--role", "context"], env=env).decode().strip()
+
+        def start(role, host=None):
+            args = [*base, "--role", role]
+            if host is not None:
+                args.extend(["--host", host])
+            log = (root / (host or role)).with_suffix(".stderr")
+            with log.open("wb") as stderr:
+                process = subprocess.Popen(
+                    args, env=env, stdout=subprocess.DEVNULL, stderr=stderr, start_new_session=True
+                )
+            owned.append(process)
+            return process
+
+        def frame():
+            raw = request(root, context)
+            value = reader.wire(raw, LIMIT)
+            reader.verify("fleet-frame", value)
+            return value, len(raw)
+
+        def wait(condition, *, budget=20):
+            until = time.monotonic() + budget
+            while time.monotonic() < until:
+                if any(process.poll() is not None for process in owned):
+                    raise RuntimeError("an installed fixture publisher exited")
+                try:
+                    result = condition()
+                except (OSError, EOFError, TimeoutError):
+                    result = None
+                if result:
+                    return result
+                time.sleep(0.1)
+            raise TimeoutError("installed capacity condition did not complete")
+
+        def passed(name, **details):
+            evidence["cases"].append({"name": name, "result": "passed", **details})
+
+        fleet = None
+        sampler = None
+        descendants = []
+        try:
+            for index in range(16):
+                start("owner", f"fixture-{index:02d}")
+            wait(lambda: all((root / f"fixture-{i:02d}.sock").exists() for i in range(16)))
+            fleet = start("fleet")
+
+            def sample():
+                while not sampler_stop.is_set():
+                    rows = process_tree(fleet.pid)
+                    samples.append(
+                        {
+                            "at": time.monotonic_ns() // 1000000,
+                            "rssBytes": sum(row["rssBytes"] for row in rows),
+                            "processes": rows,
+                        }
+                    )
+                    sampler_stop.wait(0.1)
+
+            sampler = threading.Thread(target=sample)
+            sampler.start()
+
+            def complete():
+                value, size = frame()
+                hosts = value["snapshot"]["hosts"]
+                return (
+                    (value, size)
+                    if len(hosts) == 16
+                    and all(
+                        host["owner"]["localExpiry"] > value["encodedAt"] and host["sessions"]
+                        for host in hosts
+                    )
+                    else None
+                )
+
+            _initial, initial_size = wait(complete)
+            passed(
+                "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+                frameBytes=initial_size,
+            )
+            with ThreadPoolExecutor(max_workers=32) as pool:
+                futures = [
+                    pool.submit(request, root, context, "watch", keep=True) for _ in range(32)
+                ]
+                failures = []
+                for future in futures:
+                    try:
+                        sock, raw = future.result()
+                        watchers.append(sock)
+                        reader.verify("fleet-frame", reader.wire(raw, LIMIT))
+                    except Exception as error:  # noqa: BLE001 - retain every owned socket before propagating
+                        failures.append(error)
+                if failures:
+                    raise failures[0]
+            metrics = wait(
+                lambda: (
+                    (value if value["current"]["readers"] == 32 else None)
+                    if (value := json.loads((root / "metrics.json").read_text()))
+                    else None
+                )
+            )
+            assert metrics["current"]["connections"] == 16
+            passed("thirty_two_watchers_share_sixteen_owner_connections")
+            extra = json.loads(request(root, context, "watch"))
+            assert extra["kind"] == "operation_error" and extra["error"]["code"] == "capacity"
+            passed("thirty_third_reader_receives_explicit_capacity_error")
+            # Observe nonreading subscribers across heartbeats, then require
+            # healthy query progress. Small frames may fit kernel socket buffers;
+            # this phase alone cannot establish the stalled-writer cutoff.
+            time.sleep(9)
+            metrics = json.loads((root / "metrics.json").read_text())
+            assert metrics["highWater"]["readers"] <= 32
+            assert metrics["highWater"]["outputBytes"] <= 72 * 1024 * 1024
+            assert metrics["highWater"]["retainedBytes"] <= 16 * 1048576
+            assert metrics["highWater"]["perPeerBytes"] <= 2 * LIMIT + 65536
+            for sock in watchers:
+                sock.close()
+            watchers.clear()
+            wait(complete)
+            passed(
+                "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+                highWater=metrics["highWater"],
+            )
+            write_json(root / "settings.json", {"owners": 16, "padding": 14000})
+            _large, large_size = wait(
+                lambda: (value if value[1] >= 850000 else None) if (value := complete()) else None
+            )
+            passed(
+                "near_cap_aggregate_is_complete_untruncated_independently_readable",
+                frameBytes=large_size,
+            )
+            write_json(root / "settings.json", {"owners": 17, "padding": 14000})
+
+            def over_capacity():
+                value, _size = frame()
+                return value if value["snapshot"]["mesh"]["state"] == "capacity" else None
+
+            rejected = wait(over_capacity, budget=25)
+            assert rejected["snapshot"]["error"]["code"] == "capacity"
+            assert len(rejected["snapshot"]["hosts"]) == 16
+            assert all(host["owner"]["localExpiry"] == 0 for host in rejected["snapshot"]["hosts"])
+            passed("seventeenth_catalog_owner_fails_authority_without_truncated_success")
+            descendants = process_tree(fleet.pid)
+            started = time.monotonic()
+            fleet.terminate()
+            fleet.wait(timeout=5)
+            for row in descendants:
+                path = Path(f"/proc/{row['pid']}/stat")
+                if path.exists():
+                    fields = path.read_text().rpartition(") ")[2].split()
+                    assert fields[19] != row["incarnation"] or fields[0] == "Z"
+            assert not (root / "fleet.sock").exists()
+            assert all(process.poll() is None for process in owned[:-1])
+            passed(
+                "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+                elapsedMs=round((time.monotonic() - started) * 1000, 3),
+            )
+        finally:
+            sampler_stop.set()
+            if sampler is not None:
+                sampler.join(timeout=3)
+                assert not sampler.is_alive()
+            for sock in watchers:
+                sock.close()
+            known = {
+                (row["pid"], row["incarnation"]): row
+                for sample in samples
+                for row in sample["processes"]
+            }
+            if fleet is not None:
+                known.update(
+                    {(row["pid"], row["incarnation"]): row for row in process_tree(fleet.pid)}
+                )
+            descendants = list(known.values())
+            for process in reversed(owned):
+                if process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(process.pid, signal.SIGKILL)
+                        process.wait(timeout=3)
+            # Exceptional publisher termination must also reap the exact owned
+            # bridge incarnations before removing their private backing files.
+            for row in descendants:
+                path = Path(f"/proc/{row['pid']}/stat")
+                if path.exists():
+                    fields = path.read_text().rpartition(") ")[2].split()
+                    if fields[19] == row["incarnation"] and fields[0] != "Z":
+                        try:
+                            os.killpg(row["pid"], signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline:
+                running = []
+                for row in descendants:
+                    try:
+                        fields = (
+                            Path(f"/proc/{row['pid']}/stat").read_text().rpartition(") ")[2].split()
+                        )
+                    except FileNotFoundError:
+                        continue
+                    if fields[19] == row["incarnation"] and fields[0] != "Z":
+                        running.append(row["pid"])
+                if not running:
+                    break
+                time.sleep(0.03)
+            else:
+                raise RuntimeError("owned bridge incarnations survived fixture cleanup")
+    peak = max(samples, key=lambda sample: sample["rssBytes"])
+    evidence["profile"] = {
+        "sampleIntervalMs": 100,
+        "sampleCount": len(samples),
+        "durationMs": samples[-1]["at"] - samples[0]["at"],
+        "fleetAndBridgePeak": peak,
+        "targetBytes": 256 * 1024 * 1024,
+        "memoryTarget": "passed" if peak["rssBytes"] <= 256 * 1024 * 1024 else "failed",
+    }
+    evidence["result"] = (
+        "passed_partial"
+        if evidence["profile"]["memoryTarget"] == "passed"
+        else "failed_resource_target"
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(evidence, indent=2) + "\n")
+    print(
+        json.dumps(
+            {
+                "result": evidence["result"],
+                "cases": len(evidence["cases"]),
+                "peakRssBytes": peak["rssBytes"],
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--root", type=Path)
+    parser.add_argument("--role", choices=("owner", "fleet", "context"))
+    parser.add_argument("--host")
+    args, remaining = parser.parse_known_args()
+    if args.root is not None and args.role is not None and not remaining:
+        raise SystemExit(worker(args.root, args.role, args.host))
+    if args.output is None or remaining:
+        parser.error("provide --output or a complete private worker invocation")
+    main(args.output)
