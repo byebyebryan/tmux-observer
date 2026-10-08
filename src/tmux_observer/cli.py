@@ -22,7 +22,15 @@ def main(argv: list[str] | None = None) -> int:
     owner = commands.add_parser("owner", help="run one shared passive local publisher")
     owner.add_argument("--host-id", required=True, help="fixed logical owner ID")
     owner.add_argument("--socket", type=Path, help="private IPC endpoint, not a native tmux socket")
-    for operation in ("status", "snapshot", "probe", "watch", "bridge"):
+    for operation in (
+        "status",
+        "snapshot",
+        "probe",
+        "watch",
+        "bridge",
+        "refresh",
+        "refresh_status",
+    ):
         command = commands.add_parser(
             operation,
             help="explicit prepared owner read"
@@ -33,6 +41,10 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument(
             "--socket", type=Path, help="private publisher endpoint; never auto-started"
         )
+        if operation in ("refresh", "refresh_status"):
+            command.add_argument("--publisher-id", required=operation == "refresh_status")
+        if operation == "refresh_status":
+            command.add_argument("--ticket-id", required=True)
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
@@ -64,16 +76,20 @@ def main(argv: list[str] | None = None) -> int:
         from ._ipc import IPCError, exchange
 
         try:
-            value = exchange(
-                {
-                    "protocol": SERVICE_PROTOCOL,
-                    "schemaVersion": 1,
-                    "operation": args.command,
-                    "requestId": uuid.uuid4().hex,
-                    "expectedHost": args.expected_host,
-                },
-                path=args.socket,
-            )
+            request = {
+                "protocol": SERVICE_PROTOCOL,
+                "schemaVersion": 1,
+                "operation": args.command,
+                "requestId": uuid.uuid4().hex,
+                "expectedHost": args.expected_host,
+            }
+            if args.command == "refresh":
+                request["sources"] = [{"hostId": args.expected_host, "source": "owner"}]
+            if args.command in ("refresh", "refresh_status") and args.publisher_id:
+                request["publisherId"] = args.publisher_id
+            if args.command == "refresh_status":
+                request["ticketId"] = args.ticket_id
+            value = exchange(request, path=args.socket)
         except (IPCError, OSError, ValueError, AttributeError) as error:
             value = {
                 "protocol": SERVICE_PROTOCOL,

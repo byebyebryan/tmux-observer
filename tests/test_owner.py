@@ -88,7 +88,7 @@ class OwnerTests(unittest.TestCase):
             self.assertFalse(thread.is_alive())
             self.assertFalse(path.exists())
 
-    def test_scope_and_unimplemented_control_fail_without_sampling(self):
+    def test_scope_and_unknown_ticket_fail_without_sampling(self):
         with tempfile.TemporaryDirectory(prefix="tmux-observer-owner-") as temporary:
             path = Path(temporary) / "owner.sock"
             publisher, thread, collector = self.start(path)
@@ -98,9 +98,11 @@ class OwnerTests(unittest.TestCase):
                     (request(publisherId="22222222-2222-4222-8222-222222222222"), "stale_scope"),
                     (
                         request(
-                            "refresh", sources=[{"hostId": "fixture-local", "source": "owner"}]
+                            "refresh_status",
+                            ticketId="33333333-3333-4333-8333-333333333333",
+                            publisherId=publisher.state.publisher_id,
                         ),
-                        "unsupported_operation",
+                        "ticket_not_found",
                     ),
                 ):
                     with self.assertRaises(IPCError) as error:
@@ -146,5 +148,70 @@ class OwnerTests(unittest.TestCase):
                     self.assertEqual(value["kind"], "operation_error")
                 self.assertEqual(exchange(request(), path=path)["receipt"]["state"], "ready")
             finally:
+                publisher.stop()
+                thread.join(timeout=3)
+
+    def test_refresh_accepted_during_old_job_requires_one_successor(self):
+        with tempfile.TemporaryDirectory(prefix="tmux-observer-causal-") as temporary:
+            path = Path(temporary) / "owner.sock"
+            publisher, thread, collector = self.start(path)
+            entered = threading.Event()
+            release = threading.Event()
+            original = collector.collect
+
+            def blocked(*, budget_ms):
+                if collector.calls == 1:
+                    entered.set()
+                    if not release.wait(0.8):
+                        raise TimeoutError("owned test release deadline")
+                return original(budget_ms=budget_ms)
+
+            collector.collect = blocked
+            try:
+                scopes = [{"hostId": "fixture-local", "source": "owner"}]
+                first = exchange(request("refresh", sources=scopes), path=path)["ticket"]
+                self.assertTrue(entered.wait(1.5))
+                later = [
+                    exchange(request("refresh", sources=scopes, requestId=f"late-{i}"), path=path)[
+                        "ticket"
+                    ]
+                    for i in range(4)
+                ]
+                self.assertTrue(all(value["state"] == "coalesced" for value in later))
+                release.set()
+                until = time.monotonic() + 3
+                while time.monotonic() < until:
+                    values = [
+                        exchange(
+                            request(
+                                "refresh_status",
+                                ticketId=value["id"],
+                                publisherId=value["publisherId"],
+                            ),
+                            path=path,
+                        )["ticket"]
+                        for value in [first, *later]
+                    ]
+                    if all(value["state"] == "complete" for value in values):
+                        break
+                    time.sleep(0.03)
+                self.assertEqual(values[0]["sources"][0]["attempt"], 2)
+                self.assertTrue(
+                    all(
+                        value["state"] == "complete" and value["sources"][0]["attempt"] == 3
+                        for value in values[1:]
+                    )
+                )
+                self.assertEqual(collector.calls, 3)
+                for _ in range(4):
+                    exchange(
+                        request(
+                            "refresh_status", ticketId=first["id"], publisherId=first["publisherId"]
+                        ),
+                        path=path,
+                    )
+                self.assertEqual(collector.calls, 3)
+            finally:
+                release.set()
                 publisher.stop()
                 thread.join(timeout=3)

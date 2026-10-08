@@ -11,6 +11,7 @@ from ._clock import boottime_ms
 from ._hub import SocketHub
 from ._ipc import owner_socket
 from ._owner_state import OwnerState
+from ._tickets import TicketError, TicketStore
 from .public import OBSERVATION_PROTOCOL, SERVICE_PROTOCOL
 
 
@@ -30,6 +31,7 @@ class OwnerPublisher:
             raise ValueError("collector scope differs from fixed publisher configuration")
         self.collector = collector
         self.state = OwnerState(collector.source, collector.clock)
+        self.tickets = TicketStore(self.state.publisher_id)
         self.path = owner_socket() if path is None else path
         self.stop_event = threading.Event()
         self.hub = None
@@ -70,14 +72,34 @@ class OwnerPublisher:
             )
             peer.closing = not peer.watch
             hub.interest(peer)
-        else:
-            hub.error(
-                peer,
-                "unsupported_operation",
-                "refresh control is not implemented at this checkpoint",
-                request_id=rid,
-                close=not peer.watch,
-            )
+        elif operation in ("refresh", "refresh_status"):
+            if not hub.can_reply(peer):
+                hub.error(peer, "backpressure", "publisher reply slot is occupied", request_id=rid)
+                return
+            try:
+                if operation == "refresh":
+                    scope = (self.state.source["hostId"], "owner")
+                    value = self.tickets.admit(
+                        request["sources"],
+                        now,
+                        minimum={scope: self.state.evidence["attempted"] + 1},
+                        coalesced=self.state.job is not None
+                        or any(item.terminal_at is None for item in self.tickets.entries.values()),
+                    )
+                    self.state.hint(now)
+                else:
+                    value = self.tickets.lookup(request["ticketId"], now)
+                hub.frame(peer, now, kind="refresh_result", request_id=rid, ticket=value)
+                peer.closing = not peer.watch
+                hub.interest(peer)
+            except TicketError as error:
+                hub.error(peer, error.code, str(error), request_id=rid, close=not peer.watch)
+
+    def publish_tickets(self, values, now):
+        for value in values:
+            for peer in list(self.hub.peers):
+                if peer.watch and not peer.closing:
+                    self.hub.frame(peer, now, kind="refresh_result", ticket=value)
 
     def sample(self, job):
         _token, started, deadline = job
@@ -124,13 +146,30 @@ class OwnerPublisher:
                 while not self.stop_event.is_set():
                     now = boottime_ms()
                     self.state.expire(now)
+                    self.publish_tickets(self.tickets.expire(now), now)
                     if self.future is not None and self.future.done():
                         result = self.future.result()
                         now = boottime_ms()
-                        self.state.finish(self.token, result, now)
+                        accepted = self.state.finish(self.token, result, now)
+                        self.publish_tickets(
+                            self.tickets.finish(
+                                (self.state.source["hostId"], "owner"),
+                                self.token,
+                                now,
+                                accepted=accepted,
+                                error=self.state.problem,
+                            ),
+                            now,
+                        )
                         self.future = None
                     if self.future is None and self.state.due(now):
                         self.token = self.state.begin(now)
+                        self.publish_tickets(
+                            self.tickets.begin(
+                                (self.state.source["hostId"], "owner"), self.token, now, now
+                            ),
+                            now,
+                        )
                         self.future = executor.submit(self.sample, self.state.job)
                     if self.state.revision != last_revision:
                         self.hub.broadcast(now, kind="view")
