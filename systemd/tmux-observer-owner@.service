@@ -1,0 +1,15 @@
+[Unit]
+Description=Passive tmux owner publisher for %i
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer owner --host-id %i
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=5
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=default.target

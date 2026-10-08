@@ -180,7 +180,9 @@ class SocketHub:
         if peer.incoming_at is None:
             peer.incoming_at = now
         peer.incoming.extend(chunk)
-        if len(peer.incoming) > REQUEST_LIMIT:
+        if len(peer.incoming) > REQUEST_LIMIT and not (
+            0 <= peer.incoming.find(b"\n") < REQUEST_LIMIT
+        ):
             self.error(peer, "request_limit", "request exceeded its byte bound", close=True)
             return
         self.process_requests(peer, now)
@@ -191,7 +193,7 @@ class SocketHub:
                 break
             raw, _separator, rest = peer.incoming.partition(b"\n")
             peer.incoming = bytearray(rest)
-            peer.incoming_at = now if rest else None
+            peer.incoming_at = peer.incoming_at if rest else None
             try:
                 request = validate_request(decode_document(bytes(raw) + b"\n", limit=REQUEST_LIMIT))
                 if request["protocol"] != self.protocol or peer.handled and not peer.watch:
