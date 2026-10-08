@@ -12,6 +12,7 @@ from tmux_observer_client.contract import FLEET_PROTOCOL, validate_fleet_frame, 
 from ._contract_validation import viewer
 from ._desktop_input import input_hash, reference
 from ._remote_state import RemoteState
+from .desktop_contract import validate_desktop
 from .public import owner_current
 
 
@@ -38,6 +39,8 @@ class FleetState:
             "error": None,
         }
         self.viewers = {}
+        self.attachments = None
+        self.association = None
         validate_fleet_view(self.view(0))
 
     def catalog(self, snapshot):
@@ -108,6 +111,7 @@ class FleetState:
             error=None,
         )
         self.viewers = {}
+        self.association = None
 
     def hosts(self, now):
         result = []
@@ -138,16 +142,20 @@ class FleetState:
                     # Only a selected live transport supplies route context.
                     continue
                 host["remoteExecutable"] = description["remoteExecutable"]
+                if host["local"]:
+                    host["localAttachments"] = self.attachments
                 result.append(host)
         return result
 
     def input_key(self, now):
-        return input_hash(self.inputs(now))
+        return input_hash(self.inputs(now), now=now)
 
-    def accept_desktop(self, *, epoch, key, started, finished, now, state, observations, error):
+    def accept_desktop(
+        self, *, epoch, key, started, finished, now, state, observations, error, association=None
+    ):
         if epoch != self.desktop["epoch"] or key != self.input_key(now):
             return False
-        previous = copy.deepcopy(self.desktop), self.viewers
+        previous = copy.deepcopy(self.desktop), self.viewers, self.association
         if not started <= finished <= now < started + 2000:
             state, observations, error = (
                 "failed",
@@ -167,6 +175,49 @@ class FleetState:
                 )
         try:
             if state == "ready":
+                if association is not None:
+                    validate_desktop(association)
+                    if (
+                        association["contextId"] != self.context_id
+                        or association["epoch"] != epoch
+                        or association["clock"] != self.clock
+                        or association["receipt"]["inputHash"] != key
+                        or association["receipt"]["startedAt"] != started
+                        or not started <= association["encodedAt"] <= finished
+                    ):
+                        raise ValueError("desktop association is not bound to accepted job")
+                    inputs = {host["hostId"]: host for host in self.inputs(now)}
+                    expected_rows = {
+                        reference(row): row for host in inputs.values() for row in host["sessions"]
+                    }
+                    if set(expected_rows) != {
+                        reference(row["sessionRef"]) for row in association["rows"]
+                    }:
+                        raise ValueError("desktop association lacks complete input coverage")
+                    for row in association["rows"]:
+                        if (
+                            row["attachedClients"]
+                            != expected_rows[reference(row["sessionRef"])]["attachedClients"]
+                        ):
+                            raise ValueError("desktop association changed native attachment facts")
+                    if {dep["hostId"] for dep in association["dependencies"]} != set(inputs):
+                        raise ValueError("desktop association changed source coverage")
+                    for dep in association["dependencies"]:
+                        host = inputs[dep["hostId"]]
+                        owner = host["owner"]
+                        profile = host.get("localAttachments")
+                        if (
+                            dep["local"] != host["local"]
+                            or dep["publisherId"] != owner["publisherId"]
+                            or dep["serverGeneration"] != owner["serverGeneration"]
+                            or dep["ownerExpiresAt"] > owner["localExpiry"]
+                            or dep["associationExpiresAt"] is not None
+                            and (
+                                profile is None
+                                or dep["associationExpiresAt"] > profile["receipt"]["expiresAt"]
+                            )
+                        ):
+                            raise ValueError("desktop association changed dependency authority")
                 encode_document(list(observations.values()), limit=16 * 1048576)
                 for host in self.inputs(now):
                     for row in host["sessions"]:
@@ -182,6 +233,7 @@ class FleetState:
                     error=None,
                 )
                 self.viewers = copy.deepcopy(observations)
+                self.association = copy.deepcopy(association)
             elif state in ("failed", "unsupported") and error is not None:
                 self.desktop.update(state=state, error=copy.deepcopy(error))
             else:
@@ -189,7 +241,7 @@ class FleetState:
             self.view(now)
         except (ValueError, TypeError, KeyError):
             # A faulty adapter cannot poison accepted state or expose authority.
-            self.desktop, self.viewers = previous
+            self.desktop, self.viewers, self.association = previous
             self.desktop.update(
                 state="failed",
                 error={"code": "invalid_desktop", "message": "invalid desktop outcome rejected"},

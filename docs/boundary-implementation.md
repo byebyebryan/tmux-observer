@@ -11,7 +11,7 @@ operations tuple.
 | --- | --- | --- |
 | B0 contracts | Committed/pushed; CI passed | `bf5f838`; three new bundles, independent corpus, split pure domains and blocked-import checks |
 | B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
-| B2 desktop | Pending | Consume prepared associations; separate compositor/process/matcher, headless injection and C3 projection |
+| B2 desktop | Source gate passed; native gate pending | 216 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
 | B3 actions | Pending | Extract write package, exact native guards, uncertainty/cleanup and independent native proof |
 | B4 frontend | Pending | Narrow clients, compatibility corpus/deltas, remembered/frozen/expiry behavior, Starship GUI |
 | B5 selection | Pending | Exact candidate artifacts, normal/capacity profiling, published/scoped managed selection and rollback |
@@ -58,3 +58,28 @@ owned-fixture teardown race: `kill-server` returns before shutdown completes.
 The corrected harness waits for complete native absence before testing the
 no-server profile; it changes no producer code. B1 normal resource acceptance is
 deferred to the final integrated candidate, after B2 removes desktop native reads.
+
+B2 moves compositor reads to `_niri_observation`, bounded process/annotation
+capture to `_process_evidence`, types to `_desktop_types` and the pure policy to
+`_desktop_matching`. The coordinator reads the optional cached profile every two
+seconds using its existing desktop worker; read requests schedule no native work.
+Process/window incarnation checks share the original two-second desktop budget
+and process-read cap. Irrelevant non-terminal windows start no process scans.
+
+The adapter emits a validated C3 association batch and a separate legacy
+projection. C3 confirms only current local native bindings. A remote launch marker
+and compatible SSH argv qualify as `matched` only with a unique current title and
+positive native attachment count; otherwise C3 is unknown. Fleet/Tmux v1 preserves
+its existing remote launch confirmation, including its old weaker launch-only
+cases. This is an explicit compatibility projection, not end-to-end current remote
+binding proof. Missing/failed local associations now produce unknown rather than
+inventing absence. `DesktopResult.association` crosses the adapter/coordinator
+boundary and is checked against the accepted job; it does not add a daemon or
+inflate the published Fleet 1 envelope.
+
+Binding, source incarnation, process birth and profile availability participate
+in desktop input invalidation. Lease-only renewal preserves the material key;
+independent association expiry still revokes positive views. Desktop imports work
+with native collectors/actions blocked. A headless coordinator loads neither the
+desktop implementation nor a profile reader; explicit `scanner=False` also
+disables the adapter in a captured desktop. No UI or managed selection has changed.

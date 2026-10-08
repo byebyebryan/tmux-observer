@@ -3,95 +3,122 @@
 from __future__ import annotations
 
 import os
-import re
-from pathlib import Path
+from dataclasses import dataclass
 
-from tmux_observer._clock import boottime_ms
-from tmux_observer._process import ProcessError
-from tmux_observer.collector import Collector, FastUnavailable, NoServer
+from tmux_observer._clock import boottime_ms, domain
 from tmux_observer.native import Session
 
-from ._desktop_input import reference
+from ._desktop_input import input_hash, reference
 from ._desktop_scan import DesktopConfig, ViewerTarget, _niri_windows, observe_local_viewers
-from ._errors import ContractError
+from .attachments import CachedClients, current_attachments
+from .desktop_contract import DESKTOP_PROTOCOL, validate_desktop
 
 
-def context_fingerprint(context_id):
-    path = os.environ.get("NIRI_SOCKET", "")
-    try:
-        stat = Path(path).stat() if path else None
-        identity = (stat.st_dev, stat.st_ino) if stat else None
-    except OSError:
-        identity = None
-    return context_id, path, identity
+@dataclass
+class DesktopResult:
+    state: str
+    observations: dict
+    error: dict | None
+    association: dict | None = None
+
+    def __iter__(self):
+        return iter((self.state, self.observations, self.error))
 
 
-class LocalClients:
-    def __init__(self, targets, deadline, *, collector=None):
-        self.targets = [target for target in targets if target.local_owner]
-        self.deadline = deadline
-        self.collector = collector
-
-    def client_pids_by_session(self):
-        if not self.targets:
-            return {}
-        collector = self.collector or Collector(self.targets[0].session.reference.host_id)
-        expected = {
-            target.session.reference.session_id: target.session.reference for target in self.targets
-        }
-        generations = {item.server_generation for item in expected.values()}
-        try:
-            fast = True
-            try:
-                generation = collector.generation(self.deadline, fast)
-            except FastUnavailable:
-                fast = False
-                generation = collector.generation(self.deadline, fast)
-            if generations != {generation}:
-                raise ValueError("owner generation differs from desktop native join")
-            rows = collector.rows(
-                collector.read(
-                    [
-                        "list-clients",
-                        "-F",
-                        "#{client_pid}\t#{session_id}\t#{session_created}",
-                    ],
-                    self.deadline,
-                ),
-                3,
-            )
-            result = {key: set() for key in expected}
-            seen = set()
-            if len(rows) > 512:
-                raise ValueError("desktop client capacity exceeded")
-            for pid, session_id, created in rows:
-                if (
-                    not pid.isascii()
-                    or not pid.isdecimal()
-                    or not created.isascii()
-                    or not created.isdecimal()
-                    or re.fullmatch(r"\$[0-9]+", session_id) is None
+def association_batch(
+    hosts, observations, *, context_id, epoch, started, now, state="ready", error=None
+):
+    dependencies, rows = [], []
+    for host in hosts:
+        owner = host["owner"]
+        association = (
+            current_attachments(host, host.get("localAttachments"), now) if host["local"] else None
+        )
+        dependencies.append(
+            {
+                "hostId": host["hostId"],
+                "local": host["local"],
+                "publisherId": owner["publisherId"],
+                "serverGeneration": owner["serverGeneration"],
+                "ownerExpiresAt": owner["localExpiry"],
+                "associationExpiresAt": association["receipt"]["expiresAt"]
+                if association
+                else None,
+            }
+        )
+        for row in host["sessions"]:
+            observation = observations.get(reference(row))
+            presence = {
+                "state": "unknown",
+                "confidence": None,
+                "evidence": "unknown",
+                "reason": "inventory_incomplete",
+            }
+            if observation is not None:
+                presence.update(
+                    state=observation.state,
+                    confidence=observation.confidence,
+                    evidence=observation.evidence
+                    or ("absence" if observation.state == "none" else "unknown"),
+                    reason=observation.reason,
+                )
+                if observation.state == "open" and observation.evidence == "launch_reference":
+                    presence["confidence"] = "matched"
+                positive = observation.state in ("open", "none")
+                unsupported_open = observation.state == "open" and (
+                    not row["attachedClients"]
+                    or (observation.evidence == "launch_reference" and not observation.qualified)
+                )
+                if positive and (
+                    state != "ready"
+                    or owner["localExpiry"] <= now
+                    or host["local"]
+                    and association is None
+                    or unsupported_open
                 ):
-                    raise ValueError("invalid native client join")
-                native_pid = int(pid)
-                if native_pid <= 0 or native_pid > 2**31 - 1 or native_pid in seen:
-                    raise ValueError("duplicate or invalid native client PID")
-                seen.add(native_pid)
-                if session_id in expected:
-                    if int(created) != expected[session_id].created_at:
-                        raise ValueError("created-at conflict in desktop native join")
-                    result[session_id].add(native_pid)
-            if (
-                collector.generation(self.deadline, fast) != generation
-                or boottime_ms() >= self.deadline
-            ):
-                raise ValueError("native desktop join changed or exceeded its deadline")
-            return result
-        except (ProcessError, FastUnavailable, NoServer, ValueError) as error:
-            raise ContractError("operation_failed", "local attachment join unavailable") from error
+                    presence = {
+                        "state": "unknown",
+                        "confidence": None,
+                        "evidence": "unknown",
+                        "reason": "attachment_unverified",
+                    }
+            rows.append(
+                {
+                    "sessionRef": {
+                        key: row[key]
+                        for key in ("hostId", "serverGeneration", "sessionId", "createdAt")
+                    },
+                    "attachedClients": row["attachedClients"],
+                    "presence": presence,
+                }
+            )
+    return validate_desktop(
+        {
+            "protocol": DESKTOP_PROTOCOL,
+            "schemaVersion": 1,
+            "clock": domain(),
+            "contextId": context_id,
+            "epoch": epoch,
+            "encodedAt": now,
+            "receipt": {
+                "state": state,
+                "startedAt": started,
+                "acceptedAt": now,
+                "expiresAt": started + 10000,
+                "inputHash": input_hash(hosts, now=now),
+                "error": error,
+            },
+            "dependencies": dependencies,
+            "rows": rows,
+        }
+    )
 
 
-def scan(hosts, *, deadline, config=None):
+def scan(hosts, *, deadline, config=None, context_id=None, epoch=0):
+    from .public import desktop_context_id
+
+    context_id = desktop_context_id() if context_id is None else context_id
+    started = deadline - 2000
     config = DesktopConfig() if config is None else config
     targets = []
     for host in hosts:
@@ -139,9 +166,12 @@ def scan(hosts, *, deadline, config=None):
                     "message": "empty desktop input still requires a compositor read",
                 },
             )
-        return "ready", {}, None
+        modern = association_batch(
+            hosts, {}, context_id=context_id, epoch=epoch, started=started, now=boottime_ms()
+        )
+        return DesktopResult("ready", {}, None, modern)
     batch = observe_local_viewers(
-        targets, config, local_tmux=LocalClients(targets, deadline), deadline=deadline / 1000
+        targets, config, local_tmux=CachedClients(hosts, deadline), deadline=deadline / 1000
     )
     if boottime_ms() >= deadline:
         return (
@@ -160,4 +190,12 @@ def scan(hosts, *, deadline, config=None):
             {},
             {"code": "compositor_unavailable", "message": "desktop compositor could not be read"},
         )
-    return "ready", observations, None
+    modern = association_batch(
+        hosts,
+        batch.observations,
+        context_id=context_id,
+        epoch=epoch,
+        started=started,
+        now=boottime_ms(),
+    )
+    return DesktopResult("ready", observations, None, modern)

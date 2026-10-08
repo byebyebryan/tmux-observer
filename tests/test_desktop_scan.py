@@ -59,8 +59,15 @@ class LocalViewerObservationTests(unittest.TestCase):
         metadata: dict[int, tuple[dict[str, object] | None, bool, bool]] | None = None,
         children: dict[int, bytes] | None = None,
         unreadable_children: set[int] | None = None,
+        incarnations=None,
+        failed_clients=False,
+        process_after=None,
+        final_windows=None,
     ) -> tuple[object, Mock, Mock, list[int], list[int]]:
         tmux = Mock()
+        tmux.client_incarnations = incarnations
+        if failed_clients:
+            tmux.client_pids_by_session.side_effect = OSError("fixture unavailable")
         tmux.client_pids_by_session.return_value = {} if clients is None else clients
         process_reads: list[int] = []
         child_reads: list[int] = []
@@ -70,6 +77,8 @@ class LocalViewerObservationTests(unittest.TestCase):
 
         def read_process(pid: int) -> _Proc | None:
             process_reads.append(pid)
+            if process_after is not None and process_reads.count(pid) > 1:
+                return process_after.get(pid)
             return processes.get(pid)
 
         def read_children(pid: int) -> bytes:
@@ -79,15 +88,18 @@ class LocalViewerObservationTests(unittest.TestCase):
             return child_rows.get(pid, b"")
 
         with (
-            patch("tmux_observer_client._desktop_scan._niri_windows", return_value=windows) as niri,
-            patch("tmux_observer_client._desktop_scan._proc", side_effect=read_process),
             patch(
-                "tmux_observer_client._desktop_scan._child_bytes",
+                "tmux_observer_client._desktop_scan._niri_windows",
+                side_effect=[windows, windows if final_windows is None else final_windows],
+            ) as niri,
+            patch("tmux_observer_client._process_evidence._proc", side_effect=read_process),
+            patch(
+                "tmux_observer_client._process_evidence._child_bytes",
                 autospec=True,
                 side_effect=read_children,
             ),
             patch(
-                "tmux_observer_client._desktop_scan._read_metadata_detailed",
+                "tmux_observer_client._process_evidence._read_metadata_detailed",
                 side_effect=lambda pid: metadata_rows.get(pid, (None, False, True)),
             ),
         ):
@@ -97,8 +109,64 @@ class LocalViewerObservationTests(unittest.TestCase):
                 local_tmux=tmux,
                 now_millis=lambda: 1_234,
             )
-        self.assertEqual(niri.call_count, 1)
+        self.assertEqual(niri.call_count, 2)
         return batch, tmux, niri, process_reads, child_reads
+
+    def test_profile_incarnation_and_uid_conflict_cannot_confirm_current_join(self):
+        session = _observation_session(attached_clients=1)
+        targets = (self._target(session, local=True),)
+        processes = {
+            10: _proc(10, 1, 100, 0, ("kitty",)),
+            20: _proc(20, 10, 200, 41, ("tmux", "attach-session", "-t", "$7")),
+        }
+        for expected in ((999, 200), (None, 201)):
+            result, *_ = self._observe(
+                [_kitty_window(101, 10)],
+                processes,
+                targets,
+                clients={"$7": {20}},
+                children={10: b"20"},
+                incarnations={20: expected},
+            )
+            self.assertEqual(result.observations[session.reference].state, "unknown")
+
+    def test_process_and_window_reuse_during_capture_revoke_join(self):
+        session = _observation_session(attached_clients=1)
+        targets = (self._target(session, local=True),)
+        processes = {
+            10: _proc(10, 1, 100, 0, ("kitty",)),
+            20: _proc(20, 10, 200, 41, ("tmux", "attach-session", "-t", "$7")),
+        }
+        for kwargs in (
+            {"process_after": {**processes, 20: _proc(20, 10, 201, 41, ("tmux",))}},
+            {"final_windows": [_kitty_window(101, 11)]},
+        ):
+            result, *_ = self._observe(
+                [_kitty_window(101, 10)],
+                processes,
+                targets,
+                clients={"$7": {20}},
+                children={10: b"20"},
+                **kwargs,
+            )
+            self.assertEqual(result.observations[session.reference].state, "unknown")
+
+    def test_empty_compositor_with_failed_profile_is_unknown_not_absent(self):
+        session = _observation_session()
+        result, *_ = self._observe(
+            [], {}, (self._target(session, local=True),), failed_clients=True
+        )
+        self.assertEqual(result.observations[session.reference].state, "unknown")
+
+    def test_irrelevant_windows_start_no_process_scans(self):
+        session = _observation_session()
+        result, _, _, process_reads, _ = self._observe(
+            [{"id": 101, "pid": 10, "app_id": "browser", "title": "other"}],
+            {},
+            (self._target(session, local=False, route="fixture-route"),),
+        )
+        self.assertEqual(result.observations[session.reference].state, "none")
+        self.assertEqual(process_reads, [])
 
     @staticmethod
     def _target(session: Session, *, local: bool, route: str | None = None) -> ViewerTarget:
@@ -422,9 +490,9 @@ class LocalViewerObservationTests(unittest.TestCase):
     def test_boolean_launch_schema_version_is_rejected(self) -> None:
         raw = b'ROFI_TMUX_PLUS_VIEWER_V1={"schemaVersion":true}\0'
         with (
-            patch("tmux_observer_client._desktop_scan.os.open", return_value=55),
-            patch("tmux_observer_client._desktop_scan.os.read", return_value=raw),
-            patch("tmux_observer_client._desktop_scan.os.close"),
+            patch("tmux_observer_client._process_evidence.os.open", return_value=55),
+            patch("tmux_observer_client._process_evidence.os.read", return_value=raw),
+            patch("tmux_observer_client._process_evidence.os.close"),
         ):
             value, present, readable = _read_metadata_detailed(123)
         self.assertIsNone(value)
@@ -432,7 +500,7 @@ class LocalViewerObservationTests(unittest.TestCase):
         self.assertTrue(readable)
 
     def test_budget_is_shared_and_never_caches_past_cap_or_deadline(self) -> None:
-        with patch("tmux_observer_client._desktop_scan._proc", return_value=None) as read_proc:
+        with patch("tmux_observer_client._process_evidence._proc", return_value=None) as read_proc:
             capped = _ObservationProcessIndex(process_limit=2)
             self.assertIsNone(capped.proc(10))
             self.assertIsNone(capped.proc(11))
@@ -444,10 +512,12 @@ class LocalViewerObservationTests(unittest.TestCase):
         shared = _ObservationProcessIndex(process_limit=1)
         with (
             patch(
-                "tmux_observer_client._desktop_scan._proc",
+                "tmux_observer_client._process_evidence._proc",
                 return_value=_proc(10, 1, 100, 0, ("kitty",)),
             ),
-            patch("tmux_observer_client._desktop_scan._read_metadata_detailed") as read_metadata,
+            patch(
+                "tmux_observer_client._process_evidence._read_metadata_detailed"
+            ) as read_metadata,
         ):
             shared.proc(10)
             result = shared.metadata_state(10)
@@ -456,7 +526,7 @@ class LocalViewerObservationTests(unittest.TestCase):
         read_metadata.assert_not_called()
 
         expired = _ObservationProcessIndex(deadline=0)
-        with patch("tmux_observer_client._desktop_scan._proc") as read_expired:
+        with patch("tmux_observer_client._process_evidence._proc") as read_expired:
             self.assertIsNone(expired.proc(10))
             self.assertIsNone(expired.proc(11))
         self.assertFalse(expired.processes)

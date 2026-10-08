@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import os
 import random
 import threading
 import time
@@ -17,11 +18,12 @@ from tmux_observer.delivery import validate_service_frame
 from tmux_observer.native import FRAME_LIMIT, encode_document
 from tmux_observer_client.contract import FLEET_PROTOCOL
 
+from ._desktop_context import context_fingerprint
 from ._errors import ContractError
 from ._fleet_state import FleetState
 from ._fleet_tickets import FleetTickets
 from ._local_stream import LocalConnection
-from .desktop import context_fingerprint, scan
+from .attachments import read_local_attachments
 from .direct import REMOTE_EXEC
 from .mesh import HostMeshAdapter
 from .public import desktop_context_id, fleet_socket
@@ -58,7 +60,7 @@ class FleetPublisher:
         mesh=None,
         owner_path=None,
         remote_exec=REMOTE_EXEC,
-        scanner=scan,
+        scanner=None,
         fingerprint=context_fingerprint,
         local_connection=LocalConnection,
         remote_connection=RemoteConnection,
@@ -71,7 +73,29 @@ class FleetPublisher:
         self.mesh = HostMeshAdapter() if mesh is None else mesh
         self.owner_path = owner_path
         self.remote_exec = remote_exec
+        self.desktop_enabled = scanner is not False and bool(os.environ.get("NIRI_SOCKET"))
+        self.profile_enabled = scanner is None and self.desktop_enabled
+        if scanner is None:
+            # Import the optional implementation only for a captured desktop.
+            if self.desktop_enabled:
+                from .desktop import scan
+
+                scanner = scan
+            else:
+                scanner = lambda _hosts, **_kw: (
+                    "unsupported",
+                    {},
+                    {"code": "unsupported_desktop", "message": "desktop adapter is disabled"},
+                )
+        elif scanner is False:
+            scanner = lambda _hosts, **_kw: (
+                "unsupported",
+                {},
+                {"code": "unsupported_desktop", "message": "desktop adapter is disabled"},
+            )
         self.scanner, self.fingerprint = scanner, fingerprint
+        self.attachment_future = None
+        self.next_attachment = 0
         self.local_connection, self.remote_connection = local_connection, remote_connection
         self.tickets = FleetTickets(self.state)
         self.stop_event = threading.Event()
@@ -165,6 +189,11 @@ class FleetPublisher:
                 (owner.expiry for owner in self.state.owners.values() if owner.expiry > now),
                 default=None,
             )
+            attachment = self.state.attachments
+            if attachment is not None and attachment["receipt"]["state"] == "ready":
+                expiry = attachment["receipt"]["expiresAt"]
+                if expiry > now:
+                    self.input_expiry = min(self.input_expiry or expiry, expiry)
         return self.cached_input_key
 
     def project_changed(self, now):
@@ -177,6 +206,10 @@ class FleetPublisher:
         self.publish_needed |= self.state.material(now)
         self.projection_dirty = False
         expiries = [owner.expiry for owner in self.state.owners.values() if owner.expiry > now]
+        if self.state.attachments is not None:
+            expiry = self.state.attachments["receipt"]["expiresAt"]
+            if expiry is not None and expiry > now:
+                expiries.append(expiry)
         desktop = self.state.desktop
         if desktop["state"] == "ready" and desktop["expiresAt"] > now:
             expiries.append(desktop["expiresAt"])
@@ -412,11 +445,38 @@ class FleetPublisher:
                 result.add(ticket_id)
         return result
 
+    def attachment_work(self):
+        try:
+            return read_local_attachments(self.state.host_id, owner_path=self.owner_path)
+        except (IPCError, OSError, ValueError):
+            return None
+
+    def attachment_tick(self, executor, now):
+        if not self.profile_enabled:
+            return
+        if self.attachment_future is not None and self.attachment_future.done():
+            value = self.attachment_future.result()
+            previous = self.state.input_key(now)
+            self.state.attachments = value
+            if previous != self.state.input_key(now):
+                self.mark_changed()
+            # Receipt-only renewal still moves the next projection expiry.
+            self.projection_dirty = self.input_key_dirty = True
+            self.attachment_future = None
+        if self.attachment_future is None and now >= self.next_attachment:
+            self.attachment_future = executor.submit(self.attachment_work)
+            self.next_attachment = now + 2000
+
     def desktop_work(self, job):
         started = boottime_ms()
         job.started.append(started)
         try:
-            result = self.scanner(job.hosts, deadline=started + 2000)
+            kwargs = (
+                {"context_id": self.state.context_id, "epoch": job.epoch}
+                if self.profile_enabled
+                else {}
+            )
+            result = self.scanner(job.hosts, deadline=started + 2000, **kwargs)
             state, observations, _error = result
             if state not in ("ready", "failed", "unsupported") or not isinstance(
                 observations, dict
@@ -461,6 +521,7 @@ class FleetPublisher:
                 state=state,
                 observations=observations,
                 error=error,
+                association=getattr(result, "association", None),
             )
             self.tickets.desktop_finish(
                 job.attempt,
@@ -537,6 +598,7 @@ class FleetPublisher:
                     self.capacity = False
                 self.report_tick(report_executor, now)
                 self.tickets.tick(self.connections, now)
+                self.attachment_tick(desktop_executor, now)
                 self.desktop_tick(desktop_executor, now)
                 now = boottime_ms()
                 self.project_changed(now)

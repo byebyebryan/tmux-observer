@@ -137,14 +137,14 @@ def main(output, artifact=None):
             env[key] = value
     upstream = env.get("NIRI_SOCKET")
     if not upstream or not shutil.which("kitty"):
-        raise RuntimeError("native Snap Kitty/Niri context is required")
+        raise RuntimeError("native Kitty/Niri context is required")
     original_windows = json.loads(command(["niri", "msg", "--json", "windows"], env=env).stdout)
     focused = next((row["id"] for row in original_windows if row.get("is_focused")), None)
     evidence = {
         "gate": "T12-native-local-desktop-partial",
         "sourceCommit": command(["git", "rev-parse", "HEAD"]).stdout.decode().strip(),
         "sourceTreeDirty": bool(command(["git", "status", "--porcelain"]).stdout.strip()),
-        "endpoint": "snap",
+        "endpoint": command(["hostname"]).stdout.decode().strip(),
         "nativeVersion": command(["tmux", "-V"]).stdout.decode().strip(),
         "kittyVersion": command(["kitty", "--version"]).stdout.decode().strip(),
         "nativeIdentity": {
@@ -278,6 +278,7 @@ def main(output, artifact=None):
                     [
                         str(venv / "bin/tmux-observer"),
                         "owner",
+                        "--local-attachments",
                         "--host-id",
                         HOST,
                         "--socket",
@@ -338,7 +339,11 @@ def main(output, artifact=None):
                 )
 
             ready = until(
-                lambda value: current(value) and value["snapshot"]["desktop"]["state"] == "ready"
+                lambda value: (
+                    current(value)
+                    and value["snapshot"]["desktop"]["state"] == "ready"
+                    and all(row["localViewer"]["state"] == "none" for row in rows(value).values())
+                )
             )
             actual_owner = ready["snapshot"]["hosts"][0]["owner"]
             assert actual_owner["source"]["uid"] == evidence["nativeIdentity"]["uid"]
