@@ -41,10 +41,12 @@ class LocalClients:
         }
         generations = {item.server_generation for item in expected.values()}
         try:
+            fast = True
             try:
-                generation = collector.generation(self.deadline, True)
+                generation = collector.generation(self.deadline, fast)
             except FastUnavailable:
-                generation = collector.generation(self.deadline, False)
+                fast = False
+                generation = collector.generation(self.deadline, fast)
             if generations != {generation}:
                 raise ValueError("owner generation differs from desktop native join")
             rows = collector.rows(
@@ -80,7 +82,7 @@ class LocalClients:
                         raise ValueError("created-at conflict in desktop native join")
                     result[session_id].add(native_pid)
             if (
-                collector.generation(self.deadline, False) != generation
+                collector.generation(self.deadline, fast) != generation
                 or boottime_ms() >= self.deadline
             ):
                 raise ValueError("native desktop join changed or exceeded its deadline")

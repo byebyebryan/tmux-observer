@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from tmux_observer._clock import boottime_ms
+from tmux_observer.collector import FastUnavailable
 from tmux_observer.public import Session, SessionReference
 from tmux_observer_client import _desktop_scan
 from tmux_observer_client._desktop_scan import ViewerTarget
@@ -55,6 +56,41 @@ class DesktopTests(unittest.TestCase):
                 LocalClients(
                     [target], boottime_ms() + 2000, collector=self.collector(rows, generations)
                 ).client_pids_by_session()
+
+    def test_batched_and_legacy_generation_brackets_preserve_restart_rejection(self):
+        for batched in (True, False):
+            for restarted in (True, False):
+                with self.subTest(batched=batched, restarted=restarted):
+                    events = []
+
+                    def generation(
+                        _deadline, fast, *, events=events, batched=batched, restarted=restarted
+                    ):
+                        events.append(("generation", fast))
+                        if fast and not batched:
+                            raise FastUnavailable()
+                        return "restarted" if restarted and ("clients",) in events else "generation"
+
+                    def read(*_args, events=events):
+                        events.append(("clients",))
+                        return "fixture"
+
+                    collector = SimpleNamespace(
+                        generation=generation,
+                        read=read,
+                        rows=lambda *_args: [("1234", "$0", "123")],
+                    )
+                    join = LocalClients([self.target()], boottime_ms() + 2000, collector=collector)
+                    if restarted:
+                        with self.assertRaises(ContractError):
+                            join.client_pids_by_session()
+                    else:
+                        self.assertEqual(join.client_pids_by_session(), {"$0": {1234}})
+                    expected = [("generation", True)]
+                    if not batched:
+                        expected.append(("generation", False))
+                    expected.extend([("clients",), ("generation", batched)])
+                    self.assertEqual(events, expected)
 
     def test_empty_input_still_requires_independent_compositor_read(self):
         with (
