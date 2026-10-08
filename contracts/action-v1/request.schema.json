@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/action-v1/request.schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "tmux-observer.action.v1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "requestId": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "minLength": 1
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "open",
+        "create",
+        "rename",
+        "kill",
+        "viewers",
+        "close-viewer"
+      ]
+    },
+    "hostId": {
+      "type": "string",
+      "maxLength": 16384,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "minLength": 1
+    },
+    "meshRevision": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 71,
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sessionRef": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "hostId": {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "minLength": 1
+            },
+            "serverGeneration": {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+              "minLength": 1
+            },
+            "sessionId": {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^\\$[0-9]+$"
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            }
+          },
+          "required": [
+            "hostId",
+            "serverGeneration",
+            "sessionId",
+            "createdAt"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "guards": {
+      "type": "object",
+      "properties": {
+        "expectedName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requiredOptions": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^@[A-Za-z0-9_.-]+$",
+            "minLength": 1
+          },
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 16384,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+          }
+        }
+      },
+      "required": [
+        "expectedName",
+        "requiredOptions"
+      ],
+      "additionalProperties": false
+    },
+    "parameters": {}
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "requestId",
+    "operation",
+    "hostId",
+    "meshRevision",
+    "sessionRef",
+    "guards",
+    "parameters"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "open"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "viewerPolicy": {
+                "type": "string",
+                "enum": [
+                  "reuse_unique",
+                  "verified",
+                  "new"
+                ]
+              }
+            },
+            "required": [
+              "viewerPolicy"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "create"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 16384,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                "minLength": 1
+              },
+              "cwd": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 16384,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "options": {
+                "type": "object",
+                "maxProperties": 64,
+                "propertyNames": {
+                  "type": "string",
+                  "maxLength": 256,
+                  "pattern": "^@[A-Za-z0-9_.-]+$",
+                  "minLength": 1
+                },
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 16384,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+                }
+              },
+              "command": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 16384,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "maxItems": 128
+              },
+              "deferUntilAttached": {
+                "type": "boolean"
+              },
+              "attachTimeout": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 3600
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "open": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "name",
+              "cwd",
+              "options",
+              "command",
+              "deferUntilAttached",
+              "attachTimeout",
+              "open"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "rename"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 16384,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "kill"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "viewers"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "close-viewer"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "viewerId": {
+                "type": "string",
+                "maxLength": 512,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "viewerId"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ]
+}

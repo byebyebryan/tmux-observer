@@ -1,7 +1,9 @@
 # Component boundaries and next extraction
 
-Reviewed: 2026-10-08. Status: design decisions for the next extraction, not a
-new API, implemented write client or runtime acceptance. The companion
+Reviewed: 2026-10-08. This records the design decisions for the next extraction.
+The subsequent [wire freeze](boundary-wire-v1.md) and
+[execution ledger](boundary-implementation.md) track implementation separately.
+This design alone accepts no native/action runtime. The companion
 [review](component-boundaries-review.md) records source evidence, risks and gates.
 The accepted first delivery remains in [implementation status](implementation-status.md).
 Published Observation 1, Service 1, Fleet 1 and Tmux Session v1 remain unchanged.

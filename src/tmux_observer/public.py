@@ -1,39 +1,40 @@
-"""Supported pure models, strict framing and semantic protocol validators.
+"""Legacy public facade; new consumers use native/delivery/client.contract.
 
-All clock values are supplied by the caller. Importing this facade executes no
-native commands, network/IPC operations, service activation or lifecycle code.
+Native imports stay native. Legacy delivery/Fleet attributes are resolved only
+when requested; their shape and behavior remain compatible.
 """
 
-from ._models import Pane, Session, SessionReference
-from ._validation import (
-    FLEET_PROTOCOL,
-    OBSERVATION_PROTOCOL,
-    SERVICE_PROTOCOL,
-    ValidationError,
-    remote_expiry,
-    validate_fleet_frame,
-    validate_fleet_view,
-    validate_observation,
-    validate_operation_error,
-    validate_request,
-    validate_service_frame,
-)
-from ._wire import (
+from .native import (
     DOCUMENT_LIMIT,
     FRAME_LIMIT,
+    OBSERVATION_PROTOCOL,
     REQUEST_LIMIT,
+    Pane,
+    Session,
+    SessionReference,
+    ValidationError,
     WireError,
     decode_document,
     encode_document,
+    validate_observation,
 )
+
+_LEGACY = {
+    "SERVICE_PROTOCOL": "tmux_observer.delivery",
+    "remote_expiry": "tmux_observer.delivery",
+    "validate_service_frame": "tmux_observer.delivery",
+    "FLEET_PROTOCOL": "tmux_observer_client.contract",
+    "validate_fleet_view": "tmux_observer_client.contract",
+    "validate_fleet_frame": "tmux_observer_client.contract",
+    "validate_request": "tmux_observer._validation",
+    "validate_operation_error": "tmux_observer._validation",
+}
 
 __all__ = [
     "DOCUMENT_LIMIT",
-    "FLEET_PROTOCOL",
     "FRAME_LIMIT",
     "OBSERVATION_PROTOCOL",
     "REQUEST_LIMIT",
-    "SERVICE_PROTOCOL",
     "Pane",
     "Session",
     "SessionReference",
@@ -41,11 +42,14 @@ __all__ = [
     "WireError",
     "decode_document",
     "encode_document",
-    "remote_expiry",
-    "validate_fleet_frame",
-    "validate_fleet_view",
     "validate_observation",
-    "validate_operation_error",
-    "validate_request",
-    "validate_service_frame",
 ]
+__all__.extend(_LEGACY)
+
+
+def __getattr__(name):
+    import importlib
+
+    if name not in _LEGACY:
+        raise AttributeError(name)
+    return getattr(importlib.import_module(_LEGACY[name]), name)

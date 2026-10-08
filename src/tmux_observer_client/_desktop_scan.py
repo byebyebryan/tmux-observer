@@ -13,7 +13,7 @@ from pathlib import Path
 
 from tmux_observer._clock import boottime_ms
 from tmux_observer._wire import _pairs, _preflight
-from tmux_observer.public import Session, SessionReference
+from tmux_observer.native import Session, SessionReference
 
 from ._command import run_bounded
 from ._errors import ContractError

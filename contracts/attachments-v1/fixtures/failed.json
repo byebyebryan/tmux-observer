@@ -1,0 +1,28 @@
+{
+  "protocol": "tmux-observer.attachments.v1",
+  "schemaVersion": 1,
+  "source": {
+    "hostId": "fixture-local",
+    "uid": 1000,
+    "server": "default",
+    "nativeHostname": "fixture-local"
+  },
+  "clock": {
+    "bootId": "00000000-0000-4000-8000-000000000000",
+    "timeNamespace": "time:10"
+  },
+  "pidNamespace": "pid:10",
+  "sample": {
+    "startedAt": 100,
+    "finishedAt": 120,
+    "observedAt": 1700000000000,
+    "coverage": "failed",
+    "error": {
+      "code": "association_unavailable",
+      "message": "local native profile failed"
+    }
+  },
+  "serverGeneration": null,
+  "sessions": [],
+  "clients": []
+}

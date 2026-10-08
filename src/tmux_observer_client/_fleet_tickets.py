@@ -7,7 +7,7 @@ import uuid
 from dataclasses import dataclass
 
 from tmux_observer._tickets import TERMINAL, TicketError, TicketStore
-from tmux_observer.public import SERVICE_PROTOCOL
+from tmux_observer.delivery import SERVICE_PROTOCOL
 
 from ._errors import ContractError
 

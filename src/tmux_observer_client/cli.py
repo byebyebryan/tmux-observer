@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 from tmux_observer._ipc import IPCError
-from tmux_observer.public import FLEET_PROTOCOL, FRAME_LIMIT, REQUEST_LIMIT, encode_document
+from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, encode_document
+from tmux_observer_client.contract import FLEET_PROTOCOL
 
 from ._errors import ContractError
 

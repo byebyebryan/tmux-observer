@@ -9,18 +9,12 @@ import selectors
 import sys
 import uuid
 
+from tmux_observer._request_validation import validate_operation_error, validate_request
+from tmux_observer.delivery import SERVICE_PROTOCOL, validate_service_frame
+from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
+
 from ._clock import boottime_ms, domain
 from ._ipc import IPCError, connect, owner_socket
-from .public import (
-    FRAME_LIMIT,
-    REQUEST_LIMIT,
-    SERVICE_PROTOCOL,
-    decode_document,
-    encode_document,
-    validate_operation_error,
-    validate_request,
-    validate_service_frame,
-)
 
 
 def stream_owner(host_id, *, path=None, bridge=False, request_id=None):

@@ -1,0 +1,24 @@
+{
+  "protocol": "tmux-observer.action.v1",
+  "schemaVersion": 1,
+  "requestId": "fixture-create",
+  "operation": "create",
+  "hostId": "fixture-local",
+  "meshRevision": null,
+  "sessionRef": null,
+  "ok": false,
+  "outcome": {
+    "nativeEffect": "uncertain",
+    "terminalSpawn": "not_requested",
+    "attachment": "not_requested",
+    "focus": "not_requested",
+    "viewerClose": "not_requested",
+    "transport": "uncertain"
+  },
+  "legacyResult": null,
+  "error": {
+    "code": "transport_uncertain",
+    "message": "dispatched native effect is unknown"
+  },
+  "automaticRetry": false
+}

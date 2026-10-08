@@ -7,9 +7,11 @@ import selectors
 import socket
 from dataclasses import dataclass, field
 
+from tmux_observer._request_validation import validate_request
+from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
+
 from ._ipc import Endpoint, same_user
 from ._wire import MAX_INT
-from .public import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document, validate_request
 
 GLOBAL_OUTPUT_LIMIT = 72 * 1024 * 1024
 CONTROL_LIMIT = 64 * 1024

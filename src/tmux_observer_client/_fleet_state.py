@@ -6,14 +6,10 @@ import copy
 import hashlib
 import uuid
 
-from tmux_observer._validation import viewer
-from tmux_observer.public import (
-    FLEET_PROTOCOL,
-    encode_document,
-    validate_fleet_frame,
-    validate_fleet_view,
-)
+from tmux_observer.native import encode_document
+from tmux_observer_client.contract import FLEET_PROTOCOL, validate_fleet_frame, validate_fleet_view
 
+from ._contract_validation import viewer
 from ._desktop_input import input_hash, reference
 from ._remote_state import RemoteState
 from .public import owner_current

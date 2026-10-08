@@ -1,0 +1,47 @@
+{
+  "protocol": "tmux-observer.action.v1",
+  "schemaVersion": 1,
+  "requestId": "fixture-open",
+  "operation": "open",
+  "hostId": "fixture-local",
+  "meshRevision": null,
+  "sessionRef": {
+    "hostId": "fixture-local",
+    "serverGeneration": "tmux-v1:1700000000:4321:/tmp/tmux-fixture/default",
+    "sessionId": "$2",
+    "createdAt": 1700000001
+  },
+  "ok": true,
+  "outcome": {
+    "nativeEffect": "none",
+    "terminalSpawn": "confirmed",
+    "attachment": "unverified",
+    "focus": "not_requested",
+    "viewerClose": "not_requested",
+    "transport": "local"
+  },
+  "legacyResult": {
+    "schemaVersion": 1,
+    "ok": true,
+    "meshRevision": null,
+    "session": {
+      "hostId": "fixture-local",
+      "serverGeneration": "tmux-v1:1700000000:4321:/tmp/tmux-fixture/default",
+      "sessionId": "$2",
+      "createdAt": 1700000001,
+      "name": "fixture",
+      "activityAt": 1700000002,
+      "lastAttachedAt": null,
+      "attachedClients": 0,
+      "pending": false,
+      "windowCount": 1,
+      "sessionPath": "/tmp",
+      "currentWindow": "fixture",
+      "currentPath": "/tmp"
+    },
+    "focused": false,
+    "terminalLaunched": true
+  },
+  "error": null,
+  "automaticRetry": false
+}

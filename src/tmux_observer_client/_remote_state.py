@@ -6,7 +6,7 @@ import copy
 import os
 import uuid
 
-from tmux_observer.public import SERVICE_PROTOCOL, remote_expiry, validate_service_frame
+from tmux_observer.delivery import SERVICE_PROTOCOL, remote_expiry, validate_service_frame
 
 from ._errors import ContractError
 

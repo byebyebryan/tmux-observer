@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/attachments-v1/delivery.schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "tmux-observer.attachments-delivery.v1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "publisherId": {
+      "type": "string",
+      "maxLength": 36,
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "requestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "hostId": {
+          "type": "string",
+          "maxLength": 16384,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "minLength": 1
+        },
+        "uid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "server": {
+          "const": "default"
+        },
+        "nativeHostname": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "hostId",
+        "uid",
+        "server",
+        "nativeHostname"
+      ],
+      "additionalProperties": false
+    },
+    "clock": {
+      "type": "object",
+      "properties": {
+        "bootId": {
+          "type": "string",
+          "maxLength": 36,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "timeNamespace": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^time:[0-9]+$"
+        }
+      },
+      "required": [
+        "bootId",
+        "timeNamespace"
+      ],
+      "additionalProperties": false
+    },
+    "pidNamespace": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^pid:[0-9]+$"
+    },
+    "encodedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "receipt": {
+      "$ref": "https://tmux-observer.invalid/contracts/service-v1/schema.json#/$defs/Receipt"
+    },
+    "snapshot": {
+      "anyOf": [
+        {
+          "$ref": "https://tmux-observer.invalid/contracts/attachments-v1/schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+              "minLength": 1
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 4096,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "publisherId",
+    "requestId",
+    "source",
+    "clock",
+    "pidNamespace",
+    "encodedAt",
+    "receipt",
+    "snapshot",
+    "error"
+  ],
+  "additionalProperties": false
+}

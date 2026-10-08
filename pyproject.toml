@@ -31,6 +31,13 @@ where = ["src"]
 "share/tmux-observer/contracts/fleet-v1" = ["contracts/fleet-v1/*.json", "contracts/fleet-v1/*.md", "contracts/fleet-v1/SHA256SUMS"]
 "share/tmux-observer/contracts/fleet-v1/fixtures" = ["contracts/fleet-v1/fixtures/*.json"]
 
+"share/tmux-observer/contracts/attachments-v1" = ["contracts/attachments-v1/*.json", "contracts/attachments-v1/*.md", "contracts/attachments-v1/SHA256SUMS"]
+"share/tmux-observer/contracts/attachments-v1/fixtures" = ["contracts/attachments-v1/fixtures/*.json"]
+"share/tmux-observer/contracts/desktop-v1" = ["contracts/desktop-v1/*.json", "contracts/desktop-v1/*.md", "contracts/desktop-v1/SHA256SUMS"]
+"share/tmux-observer/contracts/desktop-v1/fixtures" = ["contracts/desktop-v1/fixtures/*.json"]
+"share/tmux-observer/contracts/action-v1" = ["contracts/action-v1/*.json", "contracts/action-v1/*.md", "contracts/action-v1/SHA256SUMS"]
+"share/tmux-observer/contracts/action-v1/fixtures" = ["contracts/action-v1/fixtures/*.json"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"

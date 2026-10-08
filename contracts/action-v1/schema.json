@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/action-v1/schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "tmux-observer.action.v1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "requestId": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+      "minLength": 1
+    },
+    "operation": {
+      "type": "string",
+      "enum": [
+        "open",
+        "create",
+        "rename",
+        "kill",
+        "viewers",
+        "close-viewer"
+      ]
+    },
+    "hostId": {
+      "type": "string",
+      "maxLength": 16384,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+      "minLength": 1
+    },
+    "meshRevision": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 71,
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sessionRef": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "hostId": {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+              "minLength": 1
+            },
+            "serverGeneration": {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+              "minLength": 1
+            },
+            "sessionId": {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^\\$[0-9]+$"
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            }
+          },
+          "required": [
+            "hostId",
+            "serverGeneration",
+            "sessionId",
+            "createdAt"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "outcome": {
+      "type": "object",
+      "properties": {
+        "nativeEffect": {
+          "type": "string",
+          "enum": [
+            "none",
+            "confirmed",
+            "uncertain"
+          ]
+        },
+        "terminalSpawn": {
+          "type": "string",
+          "enum": [
+            "not_requested",
+            "confirmed",
+            "failed",
+            "uncertain"
+          ]
+        },
+        "attachment": {
+          "type": "string",
+          "enum": [
+            "not_requested",
+            "confirmed",
+            "unverified"
+          ]
+        },
+        "focus": {
+          "type": "string",
+          "enum": [
+            "not_requested",
+            "confirmed",
+            "failed",
+            "ambiguous"
+          ]
+        },
+        "viewerClose": {
+          "type": "string",
+          "enum": [
+            "not_requested",
+            "confirmed",
+            "already_closed",
+            "failed",
+            "uncertain"
+          ]
+        },
+        "transport": {
+          "type": "string",
+          "enum": [
+            "local",
+            "confirmed",
+            "uncertain"
+          ]
+        }
+      },
+      "required": [
+        "nativeEffect",
+        "terminalSpawn",
+        "attachment",
+        "focus",
+        "viewerClose",
+        "transport"
+      ],
+      "additionalProperties": false
+    },
+    "legacyResult": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+              "minLength": 1
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 4096,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "automaticRetry": {
+      "const": false
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "requestId",
+    "operation",
+    "hostId",
+    "meshRevision",
+    "sessionRef",
+    "ok",
+    "outcome",
+    "legacyResult",
+    "error",
+    "automaticRetry"
+  ],
+  "additionalProperties": false
+}

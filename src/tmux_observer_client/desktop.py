@@ -9,7 +9,7 @@ from pathlib import Path
 from tmux_observer._clock import boottime_ms
 from tmux_observer._process import ProcessError
 from tmux_observer.collector import Collector, FastUnavailable, NoServer
-from tmux_observer.public import Session
+from tmux_observer.native import Session
 
 from ._desktop_input import reference
 from ._desktop_scan import DesktopConfig, ViewerTarget, _niri_windows, observe_local_viewers

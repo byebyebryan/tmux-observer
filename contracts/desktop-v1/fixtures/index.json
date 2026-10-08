@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "file": "native-confirmed.json",
+      "kind": "desktop",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "remote-launch-matched.json",
+      "kind": "desktop",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "invalid-launch-confirmation.json",
+      "kind": "desktop",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-expired-native-join.json",
+      "kind": "desktop",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "headless-unknown.json",
+      "kind": "desktop",
+      "schema": "schema.json",
+      "accept": true
+    }
+  ]
+}

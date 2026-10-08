@@ -1,0 +1,21 @@
+{
+  "protocol": "tmux-observer.action.v1",
+  "schemaVersion": 1,
+  "requestId": "fixture-close-viewer",
+  "operation": "close-viewer",
+  "hostId": "fixture-local",
+  "meshRevision": null,
+  "sessionRef": {
+    "hostId": "fixture-local",
+    "serverGeneration": "tmux-v1:1700000000:4321:/tmp/tmux-fixture/default",
+    "sessionId": "$2",
+    "createdAt": 1700000001
+  },
+  "guards": {
+    "expectedName": null,
+    "requiredOptions": {}
+  },
+  "parameters": {
+    "viewerId": "fixture-handle"
+  }
+}

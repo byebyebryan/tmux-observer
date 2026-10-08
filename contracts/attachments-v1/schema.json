@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tmux-observer.invalid/contracts/attachments-v1/schema.json",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "tmux-observer.attachments.v1"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "hostId": {
+          "type": "string",
+          "maxLength": 16384,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+          "minLength": 1
+        },
+        "uid": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "server": {
+          "const": "default"
+        },
+        "nativeHostname": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 16384,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "hostId",
+        "uid",
+        "server",
+        "nativeHostname"
+      ],
+      "additionalProperties": false
+    },
+    "clock": {
+      "type": "object",
+      "properties": {
+        "bootId": {
+          "type": "string",
+          "maxLength": 36,
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "timeNamespace": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^time:[0-9]+$"
+        }
+      },
+      "required": [
+        "bootId",
+        "timeNamespace"
+      ],
+      "additionalProperties": false
+    },
+    "pidNamespace": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^pid:[0-9]+$"
+    },
+    "sample": {
+      "type": "object",
+      "properties": {
+        "startedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "finishedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "observedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "failed",
+            "unsupported"
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "maxLength": 64,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$",
+                  "minLength": 1
+                },
+                "message": {
+                  "type": "string",
+                  "maxLength": 4096,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+                }
+              },
+              "required": [
+                "code",
+                "message"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "startedAt",
+        "finishedAt",
+        "observedAt",
+        "coverage",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    "serverGeneration": {
+      "anyOf": [
+        {
+          "type": "string",
+          "maxLength": 16384,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sessions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hostId": {
+            "type": "string",
+            "maxLength": 16384,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+            "minLength": 1
+          },
+          "serverGeneration": {
+            "type": "string",
+            "maxLength": 16384,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+            "minLength": 1
+          },
+          "sessionId": {
+            "type": "string",
+            "maxLength": 16384,
+            "pattern": "^\\$[0-9]+$"
+          },
+          "createdAt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9223372036854775807
+          }
+        },
+        "required": [
+          "hostId",
+          "serverGeneration",
+          "sessionId",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 256
+    },
+    "clients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sessionRef": {
+            "type": "object",
+            "properties": {
+              "hostId": {
+                "type": "string",
+                "maxLength": 16384,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$",
+                "minLength": 1
+              },
+              "serverGeneration": {
+                "type": "string",
+                "maxLength": 16384,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*$",
+                "minLength": 1
+              },
+              "sessionId": {
+                "type": "string",
+                "maxLength": 16384,
+                "pattern": "^\\$[0-9]+$"
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9223372036854775807
+              }
+            },
+            "required": [
+              "hostId",
+              "serverGeneration",
+              "sessionId",
+              "createdAt"
+            ],
+            "additionalProperties": false
+          },
+          "clientPid": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2147483647
+          },
+          "processStartTicks": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          }
+        },
+        "required": [
+          "sessionRef",
+          "clientPid",
+          "processStartTicks"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 512
+    }
+  },
+  "required": [
+    "protocol",
+    "schemaVersion",
+    "source",
+    "clock",
+    "pidNamespace",
+    "sample",
+    "serverGeneration",
+    "sessions",
+    "clients"
+  ],
+  "additionalProperties": false
+}

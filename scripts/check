@@ -6,9 +6,10 @@ cd -- "$repo_root"
 export PYTHONPATH="$repo_root/src${PYTHONPATH:+:$PYTHONPATH}"
 export PYTHONDONTWRITEBYTECODE=1
 python3 scripts/check-contracts
+python3 scripts/check-boundary-contracts
 python3 -m unittest discover -s tests -v
 python3 -m compileall -q src
-ruff check src tests scripts/read-contract scripts/check-contracts scripts/update-contracts scripts/accept-native-collector scripts/accept-native-owner scripts/accept-native-context scripts/accept-native-fleet scripts/accept-native-direct scripts/accept-native-desktop scripts/accept-native-remote-desktop scripts/accept-native-suspend scripts/accept-simulated-recovery scripts/accept-installed-capacity scripts/probe-rofi-interaction scripts/candidate-artifact scripts/artifact_input.py
-ruff format --check src tests scripts/read-contract scripts/check-contracts scripts/update-contracts scripts/accept-native-collector scripts/accept-native-owner scripts/accept-native-context scripts/accept-native-fleet scripts/accept-native-direct scripts/accept-native-desktop scripts/accept-native-remote-desktop scripts/accept-native-suspend scripts/accept-simulated-recovery scripts/accept-installed-capacity scripts/probe-rofi-interaction scripts/candidate-artifact scripts/artifact_input.py
+ruff check src tests scripts/read-contract scripts/check-contracts scripts/update-contracts scripts/accept-native-collector scripts/accept-native-owner scripts/accept-native-context scripts/accept-native-fleet scripts/accept-native-direct scripts/accept-native-desktop scripts/accept-native-remote-desktop scripts/accept-native-suspend scripts/accept-simulated-recovery scripts/accept-installed-capacity scripts/probe-rofi-interaction scripts/candidate-artifact scripts/artifact_input.py scripts/update-boundary-contracts scripts/read-boundary-contract scripts/check-boundary-contracts
+ruff format --check src tests scripts/read-contract scripts/check-contracts scripts/update-contracts scripts/accept-native-collector scripts/accept-native-owner scripts/accept-native-context scripts/accept-native-fleet scripts/accept-native-direct scripts/accept-native-desktop scripts/accept-native-remote-desktop scripts/accept-native-suspend scripts/accept-simulated-recovery scripts/accept-installed-capacity scripts/probe-rofi-interaction scripts/candidate-artifact scripts/artifact_input.py scripts/update-boundary-contracts scripts/read-boundary-contract scripts/check-boundary-contracts
 git diff --check
 git diff --cached --check

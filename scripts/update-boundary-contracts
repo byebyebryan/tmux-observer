@@ -1,0 +1,584 @@
+#!/usr/bin/env python3
+"""Maintain B0 bundles independently of producer serializers and validators.
+
+This script writes only the new bundles. The accepted v1 bundles are immutable.
+"""
+
+import copy
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1] / "contracts"
+BASE = "https://tmux-observer.invalid/contracts/"
+INT = {"type": "integer", "minimum": 0, "maximum": 2**63 - 1}
+TEXT = {"type": "string", "maxLength": 16384, "pattern": r"^[^\u0000-\u001f\u007f]*$"}
+NONEMPTY = {**TEXT, "minLength": 1}
+BOOL = {"type": "boolean"}
+HOST = {**NONEMPTY, "pattern": r"^[A-Za-z0-9][A-Za-z0-9_.-]*$"}
+TOKEN = {**NONEMPTY, "pattern": r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$", "maxLength": 64}
+UUID = {
+    **TEXT,
+    "pattern": r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+    "maxLength": 36,
+}
+HASH = {**TEXT, "pattern": r"^sha256:[0-9a-f]{64}$", "maxLength": 71}
+CONTEXT = {**TEXT, "pattern": r"^[0-9a-f]{32}$", "maxLength": 32}
+
+
+def nullable(shape):
+    return {"anyOf": [shape, {"type": "null"}]}
+
+
+def array(shape, maximum):
+    return {"type": "array", "items": shape, "maxItems": maximum}
+
+
+def choices(*values):
+    return {"type": "string", "enum": list(values)}
+
+
+def obj(fields):
+    return {
+        "type": "object",
+        "properties": fields,
+        "required": list(fields),
+        "additionalProperties": False,
+    }
+
+
+def schema(bundle, filename, fields):
+    return {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": BASE + bundle + "/" + filename,
+        **fields,
+    }
+
+
+def write(bundle, name, value):
+    path = ROOT / bundle / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
+
+
+def checksum(bundle):
+    directory = ROOT / bundle
+    files = sorted(p for p in directory.rglob("*") if p.is_file() and p.name != "SHA256SUMS")
+    data = "".join(
+        hashlib.sha256(p.read_bytes()).hexdigest()
+        + "  "
+        + p.relative_to(directory).as_posix()
+        + "\n"
+        for p in files
+    )
+    (directory / "SHA256SUMS").write_text(data)
+    return hashlib.sha256(data.encode()).hexdigest()
+
+
+def main():
+    native = json.loads((ROOT / "observation-v1/fixtures/complete.json").read_text())
+    owner = json.loads((ROOT / "service-v1/fixtures/ready.json").read_text())
+    reference = {
+        key: native["sessions"][0][key]
+        for key in ("hostId", "serverGeneration", "sessionId", "createdAt")
+    }
+    ref_shape = obj(
+        {
+            "hostId": HOST,
+            "serverGeneration": NONEMPTY,
+            "sessionId": {**TEXT, "pattern": r"^\$[0-9]+$"},
+            "createdAt": INT,
+        }
+    )
+    clock = obj(
+        {"bootId": UUID, "timeNamespace": {**TEXT, "pattern": r"^time:[0-9]+$", "maxLength": 64}}
+    )
+    source = obj(
+        {
+            "hostId": HOST,
+            "uid": {**INT, "maximum": 2**32 - 1},
+            "server": {"const": "default"},
+            "nativeHostname": nullable(NONEMPTY),
+        }
+    )
+    error = obj({"code": TOKEN, "message": {**TEXT, "maxLength": 4096}})
+    sample = obj(
+        {
+            "startedAt": INT,
+            "finishedAt": INT,
+            "observedAt": INT,
+            "coverage": choices("complete", "partial", "failed", "unsupported"),
+            "error": nullable(error),
+        }
+    )
+    pid_scope = {**TEXT, "pattern": r"^pid:[0-9]+$", "maxLength": 64}
+    bundles = []
+    cases = {}
+
+    bundle = "attachments-v1"
+    protocol = "tmux-observer.attachments.v1"
+    shape = obj(
+        {
+            "protocol": {"const": protocol},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "source": source,
+            "clock": clock,
+            "pidNamespace": pid_scope,
+            "sample": sample,
+            "serverGeneration": nullable(NONEMPTY),
+            "sessions": array(ref_shape, 256),
+            "clients": array(
+                obj(
+                    {
+                        "sessionRef": ref_shape,
+                        "clientPid": {**INT, "minimum": 1, "maximum": 2**31 - 1},
+                        "processStartTicks": {**INT, "minimum": 1},
+                    }
+                ),
+                512,
+            ),
+        }
+    )
+    write(bundle, "schema.json", schema(bundle, "schema.json", shape))
+    delivery = obj(
+        {
+            "protocol": {"const": "tmux-observer.attachments-delivery.v1"},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "publisherId": UUID,
+            "requestId": nullable(TOKEN),
+            "source": source,
+            "clock": clock,
+            "pidNamespace": pid_scope,
+            "encodedAt": INT,
+            "receipt": {"$ref": BASE + "service-v1/schema.json#/$defs/Receipt"},
+            "snapshot": nullable({"$ref": BASE + bundle + "/schema.json"}),
+            "error": nullable(error),
+        }
+    )
+    write(bundle, "delivery.schema.json", schema(bundle, "delivery.schema.json", delivery))
+    valid = {
+        "protocol": protocol,
+        "schemaVersion": 1,
+        "source": native["source"],
+        "clock": native["clock"],
+        "pidNamespace": "pid:10",
+        "sample": native["sample"],
+        "serverGeneration": native["serverGeneration"],
+        "sessions": [reference],
+        "clients": [{"sessionRef": reference, "clientPid": 123, "processStartTicks": 456}],
+    }
+    write(
+        bundle,
+        "request.schema.json",
+        schema(
+            bundle,
+            "request.schema.json",
+            obj(
+                {
+                    "protocol": {"const": "tmux-observer.attachments-delivery.v1"},
+                    "schemaVersion": {"type": "integer", "const": 1},
+                    "operation": {"const": "snapshot"},
+                    "requestId": TOKEN,
+                    "expectedHost": HOST,
+                }
+            ),
+        ),
+    )
+    cases[bundle] = []
+
+    def case(name, value, *, kind, accept=True, filename="schema.json"):
+        write(bundle, "fixtures/" + name + ".json", value)
+        cases[bundle].append(
+            {"file": name + ".json", "kind": kind, "schema": filename, "accept": accept}
+        )
+
+    case(
+        "request",
+        {
+            "protocol": "tmux-observer.attachments-delivery.v1",
+            "schemaVersion": 1,
+            "operation": "snapshot",
+            "requestId": "fixture-1",
+            "expectedHost": "fixture-local",
+        },
+        kind="attachment-request",
+        filename="request.schema.json",
+    )
+    case("complete", valid, kind="attachments")
+    empty = copy.deepcopy(valid)
+    empty.update(serverGeneration=None, sessions=[], clients=[])
+    case("no-server", empty, kind="attachments")
+    failed = copy.deepcopy(empty)
+    failed["sample"].update(
+        coverage="failed",
+        error={"code": "association_unavailable", "message": "local native profile failed"},
+    )
+    case("failed", failed, kind="attachments")
+    delivered = {
+        "protocol": "tmux-observer.attachments-delivery.v1",
+        "schemaVersion": 1,
+        "publisherId": owner["publisherId"],
+        "requestId": "fixture-1",
+        "source": valid["source"],
+        "clock": valid["clock"],
+        "pidNamespace": valid["pidNamespace"],
+        "encodedAt": owner["encodedAt"],
+        "receipt": owner["receipt"],
+        "snapshot": valid,
+        "error": None,
+    }
+    case("delivery-ready", delivered, kind="attachment-delivery", filename="delivery.schema.json")
+    bad = copy.deepcopy(delivered)
+    bad["snapshot"]["pidNamespace"] = "pid:11"
+    case(
+        "invalid-pid-scope",
+        bad,
+        kind="attachment-delivery",
+        accept=False,
+        filename="delivery.schema.json",
+    )
+    bad = copy.deepcopy(valid)
+    bad["clients"].append(copy.deepcopy(bad["clients"][0]))
+    case("invalid-duplicate-client", bad, kind="attachments", accept=False)
+    bad = copy.deepcopy(failed)
+    bad.update(
+        serverGeneration=valid["serverGeneration"],
+        clients=valid["clients"],
+        sessions=valid["sessions"],
+    )
+    case("invalid-partial-authority", bad, kind="attachments", accept=False)
+    bundles.append((bundle, protocol, ("observation-v1", "service-v1"), 262144))
+
+    bundle = "desktop-v1"
+    protocol = "tmux-observer.desktop.v1"
+    receipt = obj(
+        {
+            "state": choices("warming", "ready", "failed", "unsupported", "expired"),
+            "startedAt": nullable(INT),
+            "acceptedAt": nullable(INT),
+            "expiresAt": nullable(INT),
+            "inputHash": nullable(HASH),
+            "error": nullable(error),
+        }
+    )
+    dependency = obj(
+        {
+            "hostId": HOST,
+            "local": BOOL,
+            "publisherId": UUID,
+            "serverGeneration": nullable(NONEMPTY),
+            "ownerExpiresAt": INT,
+            "associationExpiresAt": nullable(INT),
+        }
+    )
+    presence = obj(
+        {
+            "state": choices("open", "none", "unknown"),
+            "confidence": nullable(choices("confirmed", "matched")),
+            "evidence": choices(
+                "current_native_association",
+                "qualified_title",
+                "launch_reference",
+                "absence",
+                "unknown",
+            ),
+            "reason": nullable(TOKEN),
+        }
+    )
+    shape = obj(
+        {
+            "protocol": {"const": protocol},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "clock": clock,
+            "contextId": CONTEXT,
+            "epoch": INT,
+            "encodedAt": INT,
+            "receipt": receipt,
+            "dependencies": array(dependency, 16),
+            "rows": array(
+                obj(
+                    {
+                        "sessionRef": ref_shape,
+                        "attachedClients": nullable(INT),
+                        "presence": presence,
+                    }
+                ),
+                4096,
+            ),
+        }
+    )
+    write(bundle, "schema.json", schema(bundle, "schema.json", shape))
+    valid_desktop = {
+        "protocol": protocol,
+        "schemaVersion": 1,
+        "clock": native["clock"],
+        "contextId": "0" * 32,
+        "epoch": 1,
+        "encodedAt": 130,
+        "receipt": {
+            "state": "ready",
+            "startedAt": 100,
+            "acceptedAt": 125,
+            "expiresAt": 10100,
+            "inputHash": "sha256:" + "a" * 64,
+            "error": None,
+        },
+        "dependencies": [
+            {
+                "hostId": reference["hostId"],
+                "local": True,
+                "publisherId": owner["publisherId"],
+                "serverGeneration": reference["serverGeneration"],
+                "ownerExpiresAt": 10100,
+                "associationExpiresAt": 10100,
+            }
+        ],
+        "rows": [
+            {
+                "sessionRef": reference,
+                "attachedClients": 1,
+                "presence": {
+                    "state": "open",
+                    "confidence": "confirmed",
+                    "evidence": "current_native_association",
+                    "reason": None,
+                },
+            }
+        ],
+    }
+    cases[bundle] = []
+    case("native-confirmed", valid_desktop, kind="desktop")
+    launch = copy.deepcopy(valid_desktop)
+    launch["dependencies"][0].update(local=False, associationExpiresAt=None)
+    launch["rows"][0]["presence"].update(confidence="matched", evidence="launch_reference")
+    case("remote-launch-matched", launch, kind="desktop")
+    bad = copy.deepcopy(launch)
+    bad["rows"][0]["presence"]["confidence"] = "confirmed"
+    case("invalid-launch-confirmation", bad, kind="desktop", accept=False)
+    bad = copy.deepcopy(valid_desktop)
+    bad["dependencies"][0]["associationExpiresAt"] = 130
+    case("invalid-expired-native-join", bad, kind="desktop", accept=False)
+    unknown = copy.deepcopy(valid_desktop)
+    unknown["receipt"].update(
+        state="unsupported",
+        startedAt=None,
+        acceptedAt=None,
+        expiresAt=None,
+        inputHash=None,
+        error={"code": "unsupported_desktop", "message": "headless context"},
+    )
+    unknown["rows"][0]["presence"].update(
+        state="unknown", confidence=None, evidence="unknown", reason="unsupported_desktop"
+    )
+    case("headless-unknown", unknown, kind="desktop")
+    bundles.append((bundle, protocol, ("observation-v1", "attachments-v1"), 1048576))
+
+    bundle = "action-v1"
+    protocol = "tmux-observer.action.v1"
+    operations = ("open", "create", "rename", "kill", "viewers", "close-viewer")
+    options = {
+        "type": "object",
+        "maxProperties": 64,
+        "propertyNames": {**NONEMPTY, "pattern": r"^@[A-Za-z0-9_.-]+$", "maxLength": 256},
+        "additionalProperties": TEXT,
+    }
+    parameter_shapes = {
+        "open": obj({"viewerPolicy": choices("reuse_unique", "verified", "new")}),
+        "create": obj(
+            {
+                "name": NONEMPTY,
+                "cwd": nullable(NONEMPTY),
+                "options": options,
+                "command": array(TEXT, 128),
+                "deferUntilAttached": BOOL,
+                "attachTimeout": nullable({**INT, "minimum": 1, "maximum": 3600}),
+                "open": BOOL,
+            }
+        ),
+        "rename": obj({"name": NONEMPTY}),
+        "kill": obj({}),
+        "viewers": obj({}),
+        "close-viewer": obj({"viewerId": {**NONEMPTY, "maxLength": 512}}),
+    }
+    request = obj(
+        {
+            "protocol": {"const": protocol},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "requestId": TOKEN,
+            "operation": choices(*operations),
+            "hostId": HOST,
+            "meshRevision": nullable(HASH),
+            "sessionRef": nullable(ref_shape),
+            "guards": obj({"expectedName": nullable(NONEMPTY), "requiredOptions": options}),
+            "parameters": {},
+        }
+    )
+    request["allOf"] = [
+        {
+            "if": {"properties": {"operation": {"const": op}}},
+            "then": {"properties": {"parameters": parameter_shapes[op]}},
+        }
+        for op in operations
+    ]
+    write(bundle, "request.schema.json", schema(bundle, "request.schema.json", request))
+    outcome = obj(
+        {
+            "nativeEffect": choices("none", "confirmed", "uncertain"),
+            "terminalSpawn": choices("not_requested", "confirmed", "failed", "uncertain"),
+            "attachment": choices("not_requested", "confirmed", "unverified"),
+            "focus": choices("not_requested", "confirmed", "failed", "ambiguous"),
+            "viewerClose": choices(
+                "not_requested", "confirmed", "already_closed", "failed", "uncertain"
+            ),
+            "transport": choices("local", "confirmed", "uncertain"),
+        }
+    )
+    result = obj(
+        {
+            "protocol": {"const": protocol},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "requestId": TOKEN,
+            "operation": choices(*operations),
+            "hostId": HOST,
+            "meshRevision": nullable(HASH),
+            "sessionRef": nullable(ref_shape),
+            "ok": BOOL,
+            "outcome": outcome,
+            "legacyResult": nullable({"type": "object"}),
+            "error": nullable(error),
+            "automaticRetry": {"const": False},
+        }
+    )
+    write(bundle, "schema.json", schema(bundle, "schema.json", result))
+    cases[bundle] = []
+    for op in operations:
+        params = {
+            "open": {"viewerPolicy": "reuse_unique"},
+            "create": {
+                "name": "fixture-new",
+                "cwd": "/tmp",
+                "options": {},
+                "command": ["true"],
+                "deferUntilAttached": False,
+                "attachTimeout": None,
+                "open": False,
+            },
+            "rename": {"name": "fixture-renamed"},
+            "kill": {},
+            "viewers": {},
+            "close-viewer": {"viewerId": "fixture-handle"},
+        }[op]
+        req = {
+            "protocol": protocol,
+            "schemaVersion": 1,
+            "requestId": "fixture-" + op,
+            "operation": op,
+            "hostId": reference["hostId"],
+            "meshRevision": None,
+            "sessionRef": None if op == "create" else reference,
+            "guards": {
+                "expectedName": "fixture" if op in ("kill", "rename") else None,
+                "requiredOptions": {},
+            },
+            "parameters": params,
+        }
+        case("request-" + op, req, kind="action-request", filename="request.schema.json")
+    success = {
+        "protocol": protocol,
+        "schemaVersion": 1,
+        "requestId": "fixture-open",
+        "operation": "open",
+        "hostId": reference["hostId"],
+        "meshRevision": None,
+        "sessionRef": reference,
+        "ok": True,
+        "outcome": {
+            "nativeEffect": "none",
+            "terminalSpawn": "confirmed",
+            "attachment": "unverified",
+            "focus": "not_requested",
+            "viewerClose": "not_requested",
+            "transport": "local",
+        },
+        "legacyResult": {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": None,
+            "session": native["sessions"][0],
+            "focused": False,
+            "terminalLaunched": True,
+        },
+        "error": None,
+        "automaticRetry": False,
+    }
+    case("spawn-unverified", success, kind="action-result")
+    uncertain = copy.deepcopy(success)
+    uncertain.update(
+        operation="create",
+        requestId="fixture-create",
+        sessionRef=None,
+        ok=False,
+        legacyResult=None,
+        error={"code": "transport_uncertain", "message": "dispatched native effect is unknown"},
+    )
+    uncertain["outcome"].update(
+        nativeEffect="uncertain",
+        terminalSpawn="not_requested",
+        attachment="not_requested",
+        transport="uncertain",
+    )
+    case("create-uncertain", uncertain, kind="action-result")
+    bad = copy.deepcopy(uncertain)
+    bad["automaticRetry"] = True
+    case("invalid-uncertain-retry", bad, kind="action-result", accept=False)
+    bad = copy.deepcopy(success)
+    bad["outcome"]["nativeEffect"] = "confirmed"
+    case("invalid-open-native-effect", bad, kind="action-result", accept=False)
+    bad = copy.deepcopy(req)
+    bad["hostId"] = "different-host"
+    case(
+        "invalid-retarget-request",
+        bad,
+        kind="action-request",
+        accept=False,
+        filename="request.schema.json",
+    )
+    bundles.append((bundle, protocol, ("observation-v1",), 1048576))
+
+    for bundle, protocol, dependencies, limit in bundles:
+        write(bundle, "fixtures/index.json", {"cases": cases[bundle]})
+        write(
+            bundle,
+            "contract.json",
+            {
+                "schemaVersion": 1,
+                "name": bundle,
+                "protocol": protocol,
+                "dependencies": {
+                    name: hashlib.sha256((ROOT / name / "SHA256SUMS").read_bytes()).hexdigest()
+                    for name in dependencies
+                },
+                "wire": {
+                    "encoding": "strict-utf8",
+                    "framing": "one-single-line-json-and-one-lf",
+                    "documentBytes": limit,
+                    "envelopeBytes": 16384,
+                    "requestBytes": 16384,
+                    "maxDepth": 32,
+                    "maxNodes": 100000,
+                },
+                "extensions": "new objects are closed; reused Service 1 receipt and compatibility payload retain independently validated v1 policies",
+                "runtimeAcceptance": "B0 contract freeze only; requires independent implementation and native gates",
+            },
+        )
+        (ROOT / bundle / "contract.md").write_text(
+            "# "
+            + bundle
+            + "\n\nVersion 1 executable boundary. See `docs/boundary-wire-v1.md` for semantic\nrules, legacy mappings and transport restrictions. This accepts no runtime.\nAll fixture identities and paths are synthetic; SHA256SUMS covers the full bundle.\n"
+        )
+        checksum(bundle)
+    print("Updated three new boundary bundles; original accepted bundles untouched")
+
+
+if __name__ == "__main__":
+    main()

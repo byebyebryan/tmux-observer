@@ -13,7 +13,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 
 from tmux_observer._clock import boottime_ms
-from tmux_observer.public import decode_document, encode_document, validate_observation
+from tmux_observer.native import decode_document, encode_document, validate_observation
 
 from ._command import run_bounded
 from ._errors import ContractError

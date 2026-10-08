@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "action-v1",
+  "protocol": "tmux-observer.action.v1",
+  "dependencies": {
+    "observation-v1": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c"
+  },
+  "wire": {
+    "encoding": "strict-utf8",
+    "framing": "one-single-line-json-and-one-lf",
+    "documentBytes": 1048576,
+    "envelopeBytes": 16384,
+    "requestBytes": 16384,
+    "maxDepth": 32,
+    "maxNodes": 100000
+  },
+  "extensions": "new objects are closed; reused Service 1 receipt and compatibility payload retain independently validated v1 policies",
+  "runtimeAcceptance": "B0 contract freeze only; requires independent implementation and native gates"
+}

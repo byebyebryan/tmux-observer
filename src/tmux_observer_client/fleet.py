@@ -13,12 +13,9 @@ from tmux_observer._clock import boottime_ms, domain
 from tmux_observer._hub import SocketHub
 from tmux_observer._ipc import IPCError
 from tmux_observer._tickets import TicketError
-from tmux_observer.public import (
-    FLEET_PROTOCOL,
-    FRAME_LIMIT,
-    encode_document,
-    validate_service_frame,
-)
+from tmux_observer.delivery import validate_service_frame
+from tmux_observer.native import FRAME_LIMIT, encode_document
+from tmux_observer_client.contract import FLEET_PROTOCOL
 
 from ._errors import ContractError
 from ._fleet_state import FleetState

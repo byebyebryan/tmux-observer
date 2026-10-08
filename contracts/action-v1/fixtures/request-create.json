@@ -1,0 +1,24 @@
+{
+  "protocol": "tmux-observer.action.v1",
+  "schemaVersion": 1,
+  "requestId": "fixture-create",
+  "operation": "create",
+  "hostId": "fixture-local",
+  "meshRevision": null,
+  "sessionRef": null,
+  "guards": {
+    "expectedName": null,
+    "requiredOptions": {}
+  },
+  "parameters": {
+    "name": "fixture-new",
+    "cwd": "/tmp",
+    "options": {},
+    "command": [
+      "true"
+    ],
+    "deferUntilAttached": false,
+    "attachTimeout": null,
+    "open": false
+  }
+}

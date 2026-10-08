@@ -1,0 +1,7 @@
+{
+  "protocol": "tmux-observer.attachments-delivery.v1",
+  "schemaVersion": 1,
+  "operation": "snapshot",
+  "requestId": "fixture-1",
+  "expectedHost": "fixture-local"
+}

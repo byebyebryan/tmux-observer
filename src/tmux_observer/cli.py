@@ -51,7 +51,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command is None:
         parser.print_help()
         return 0
-    from .public import OBSERVATION_PROTOCOL, SERVICE_PROTOCOL, encode_document
+    from tmux_observer.delivery import SERVICE_PROTOCOL
+    from tmux_observer.native import OBSERVATION_PROTOCOL, encode_document
 
     if args.command in ("watch", "bridge"):
         from ._stream import stream_owner

@@ -5,7 +5,8 @@ from __future__ import annotations
 import copy
 import uuid
 
-from .public import SERVICE_PROTOCOL, encode_document, validate_observation, validate_service_frame
+from tmux_observer.delivery import SERVICE_PROTOCOL, validate_service_frame
+from tmux_observer.native import encode_document, validate_observation
 
 CADENCE_MS = 2000
 BUDGET_MS = 2000

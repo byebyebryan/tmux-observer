@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "file": "request.json",
+      "kind": "attachment-request",
+      "schema": "request.schema.json",
+      "accept": true
+    },
+    {
+      "file": "complete.json",
+      "kind": "attachments",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "no-server.json",
+      "kind": "attachments",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "failed.json",
+      "kind": "attachments",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "delivery-ready.json",
+      "kind": "attachment-delivery",
+      "schema": "delivery.schema.json",
+      "accept": true
+    },
+    {
+      "file": "invalid-pid-scope.json",
+      "kind": "attachment-delivery",
+      "schema": "delivery.schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-duplicate-client.json",
+      "kind": "attachments",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-partial-authority.json",
+      "kind": "attachments",
+      "schema": "schema.json",
+      "accept": false
+    }
+  ]
+}

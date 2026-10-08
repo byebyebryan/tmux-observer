@@ -11,7 +11,7 @@ import unicodedata
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
-from tmux_observer.public import WireError, decode_document
+from tmux_observer.native import WireError, decode_document
 
 from ._command import BoundedCompleted, run_bounded
 from ._errors import ContractError, clean_message

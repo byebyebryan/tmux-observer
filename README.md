@@ -10,7 +10,9 @@ The next extraction is defined by the reviewed
 [component boundaries](docs/component-boundaries.md) and
 [source review](docs/component-boundaries-review.md): native tmux facts,
 networking, desktop association, action clients and UI retain separate authority.
-Those refinements are documentation, not another accepted runtime.
+The [implementation loop](docs/boundary-implementation.md) now freezes
+[executable boundary contracts](docs/boundary-wire-v1.md); native/action and
+managed acceptance remain separate from that source work.
 
 ## Status
 
@@ -133,4 +135,4 @@ Deliveries A–E/T01–T15 are complete in the recorded always-on two-host scope
 acceptance. The original backlog remains the first-delivery baseline. T16 action
 extraction is refined by [B0–B5](docs/component-boundaries.md#next-implementation-sequence),
 including native attachment associations and desktop contract cleanup. T17 native
-event collection remains optional. Neither follow-up is implemented by these docs.
+event collection remains optional. B0 source work is recorded separately; no new native/action runtime is selected.

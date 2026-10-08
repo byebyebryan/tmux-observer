@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {
+      "file": "request-open.json",
+      "kind": "action-request",
+      "schema": "request.schema.json",
+      "accept": true
+    },
+    {
+      "file": "request-create.json",
+      "kind": "action-request",
+      "schema": "request.schema.json",
+      "accept": true
+    },
+    {
+      "file": "request-rename.json",
+      "kind": "action-request",
+      "schema": "request.schema.json",
+      "accept": true
+    },
+    {
+      "file": "request-kill.json",
+      "kind": "action-request",
+      "schema": "request.schema.json",
+      "accept": true
+    },
+    {
+      "file": "request-viewers.json",
+      "kind": "action-request",
+      "schema": "request.schema.json",
+      "accept": true
+    },
+    {
+      "file": "request-close-viewer.json",
+      "kind": "action-request",
+      "schema": "request.schema.json",
+      "accept": true
+    },
+    {
+      "file": "spawn-unverified.json",
+      "kind": "action-result",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "create-uncertain.json",
+      "kind": "action-result",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "invalid-uncertain-retry.json",
+      "kind": "action-result",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-open-native-effect.json",
+      "kind": "action-result",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-retarget-request.json",
+      "kind": "action-request",
+      "schema": "request.schema.json",
+      "accept": false
+    }
+  ]
+}

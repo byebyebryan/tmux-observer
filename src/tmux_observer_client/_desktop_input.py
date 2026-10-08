@@ -2,7 +2,7 @@
 
 import hashlib
 
-from tmux_observer.public import SessionReference, encode_document
+from tmux_observer.native import SessionReference, encode_document
 
 
 def reference(row):

@@ -11,11 +11,12 @@ import re
 import socket
 import time
 
+from tmux_observer.native import OBSERVATION_PROTOCOL, validate_observation
+
 from ._clock import boottime_ms, domain
 from ._models import Pane, Session, SessionReference
 from ._process import ProcessError, ReadRunner
 from ._tmux_wire import TmuxWireError, decode_tmux_argument, parse_explicit_user_options
-from .public import OBSERVATION_PROTOCOL, validate_observation
 
 PENDING = "@rofi_tmux_plus_pending"
 FIELDS = (

@@ -1,0 +1,312 @@
+#!/usr/bin/env python3
+"""Independent B0 schema/semantic reader; imports no producer packages."""
+
+import argparse
+import importlib.machinery
+import importlib.util
+import json
+import sys
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+loader = importlib.machinery.SourceFileLoader("base_acceptance_reader", str(ROOT / "read-contract"))
+spec = importlib.util.spec_from_loader(loader.name, loader)
+base = importlib.util.module_from_spec(spec)
+loader.exec_module(base)
+SCHEMAS = {
+    "attachments": "attachments-v1/schema.json",
+    "attachment-request": "attachments-v1/request.schema.json",
+    "attachment-delivery": "attachments-v1/delivery.schema.json",
+    "desktop": "desktop-v1/schema.json",
+    "action-request": "action-v1/request.schema.json",
+    "action-result": "action-v1/schema.json",
+}
+base.SCHEMAS.update(SCHEMAS)
+require = base.require
+
+
+def identity(row):
+    return tuple(row[key] for key in ("hostId", "serverGeneration", "sessionId", "createdAt"))
+
+
+def attachments(value):
+    sample = value["sample"]
+    require(sample["startedAt"] <= sample["finishedAt"], "native interval")
+    complete = sample["coverage"] == "complete"
+    require(complete == (sample["error"] is None), "native coverage/error")
+    require(
+        complete
+        or (value["serverGeneration"] is None and not value["sessions"] and not value["clients"]),
+        "incomplete authority",
+    )
+    require(
+        value["serverGeneration"] is not None or (not value["sessions"] and not value["clients"]),
+        "absent source",
+    )
+    refs = {identity(row) for row in value["sessions"]}
+    ids = {row["sessionId"] for row in value["sessions"]}
+    require(len(ids) == len(value["sessions"]), "duplicate session ID")
+    require(
+        all(ref[:2] == (value["source"]["hostId"], value["serverGeneration"]) for ref in refs),
+        "source reference",
+    )
+    pids = [row["clientPid"] for row in value["clients"]]
+    require(len(pids) == len(set(pids)), "duplicate client PID")
+    require(
+        all(identity(row["sessionRef"]) in refs for row in value["clients"]),
+        "native association roster",
+    )
+
+
+def delivery(value):
+    evidence = value["receipt"]
+    base.receipt(evidence)
+    snapshot = value["snapshot"]
+    if snapshot is not None:
+        base.schema_check("attachments", snapshot)
+        attachments(snapshot)
+        require(snapshot["sample"]["coverage"] == "complete", "retained complete profile")
+        require(
+            base.same_scope(snapshot["source"], value["source"])
+            and base.same_clock(snapshot["clock"], value["clock"])
+            and snapshot["pidNamespace"] == value["pidNamespace"],
+            "local source incarnation",
+        )
+    require(evidence["state"] != "warming" or snapshot is None, "warming profile")
+    if evidence["state"] == "ready":
+        require(snapshot is not None and value["error"] is None, "ready profile")
+        require(
+            snapshot["sample"]["startedAt"] == evidence["startedAt"]
+            and snapshot["sample"]["finishedAt"] <= evidence["acceptedAt"] <= value["encodedAt"],
+            "receipt bound to sample",
+        )
+        require(
+            evidence["remainingMs"] == max(0, evidence["expiresAt"] - value["encodedAt"]),
+            "remaining lease",
+        )
+    if evidence["state"] in ("failed", "unsupported"):
+        require(value["error"] is not None, "failed profile diagnostic")
+
+
+def desktop(value):
+    now, receipt = value["encodedAt"], value["receipt"]
+    if receipt["state"] == "ready":
+        require(
+            all(
+                receipt[key] is not None
+                for key in ("startedAt", "acceptedAt", "expiresAt", "inputHash")
+            ),
+            "ready desktop receipt",
+        )
+        require(
+            receipt["startedAt"]
+            <= receipt["acceptedAt"]
+            <= now
+            < receipt["expiresAt"]
+            <= receipt["startedAt"] + 10000
+            and receipt["error"] is None,
+            "desktop interval",
+        )
+    if receipt["state"] == "warming":
+        require(
+            all(
+                receipt[key] is None
+                for key in ("startedAt", "acceptedAt", "expiresAt", "inputHash")
+            ),
+            "warming desktop",
+        )
+    if receipt["state"] in ("failed", "unsupported"):
+        require(receipt["error"] is not None, "desktop error")
+    dependencies = {row["hostId"]: row for row in value["dependencies"]}
+    require(
+        len(dependencies) == len(value["dependencies"])
+        and sum(row["local"] for row in dependencies.values()) <= 1,
+        "source dependency uniqueness",
+    )
+    require(
+        all(row["local"] or row["associationExpiresAt"] is None for row in dependencies.values()),
+        "local-only PID facts",
+    )
+    counts = Counter(row["sessionRef"]["hostId"] for row in value["rows"])
+    require(all(count <= 256 for count in counts.values()), "per-owner capacity")
+    require(
+        len({identity(row["sessionRef"]) for row in value["rows"]}) == len(value["rows"]),
+        "duplicate desktop reference",
+    )
+    require(
+        len(
+            {(row["sessionRef"]["hostId"], row["sessionRef"]["sessionId"]) for row in value["rows"]}
+        )
+        == len(value["rows"]),
+        "duplicate native session ID",
+    )
+    for row in value["rows"]:
+        ref, presence = row["sessionRef"], row["presence"]
+        require(ref["hostId"] in dependencies, "accepted owner input")
+        dependency = dependencies[ref["hostId"]]
+        require(ref["serverGeneration"] == dependency["serverGeneration"], "native generation")
+        if presence["state"] in ("open", "none"):
+            require(
+                receipt["state"] == "ready" and dependency["ownerExpiresAt"] > now,
+                "independent current facts",
+            )
+        if presence["state"] == "none" and dependency["local"]:
+            require(
+                dependency["associationExpiresAt"] is not None
+                and dependency["associationExpiresAt"] > now,
+                "native absence coverage",
+            )
+        if presence["state"] == "open":
+            require(
+                row["attachedClients"] is not None and row["attachedClients"] > 0,
+                "native attachment proof",
+            )
+            if presence["evidence"] == "current_native_association":
+                require(
+                    presence["confidence"] == "confirmed"
+                    and dependency["local"]
+                    and dependency["associationExpiresAt"] is not None
+                    and dependency["associationExpiresAt"] > now,
+                    "current local binding",
+                )
+            else:
+                require(
+                    presence["evidence"] in ("qualified_title", "launch_reference")
+                    and presence["confidence"] == "matched",
+                    "qualified launch/title",
+                )
+        else:
+            require(
+                presence["confidence"] is None
+                and presence["evidence"]
+                == ("absence" if presence["state"] == "none" else "unknown"),
+                "non-open evidence",
+            )
+
+
+def action_request(value):
+    operation, ref, guards = value["operation"], value["sessionRef"], value["guards"]
+    if operation == "create":
+        require(
+            ref is None and guards == {"expectedName": None, "requiredOptions": {}}, "create scope"
+        )
+    else:
+        require(ref is not None and ref["hostId"] == value["hostId"], "exact action target")
+    if operation in ("rename", "kill"):
+        require(guards["expectedName"] is not None, "name guard")
+
+
+def action_result(value):
+    operation, outcome = value["operation"], value["outcome"]
+    if value["sessionRef"] is not None:
+        require(value["sessionRef"]["hostId"] == value["hostId"], "result target host")
+    require(value["ok"] == (value["error"] is None), "result/error")
+    if operation in ("open", "viewers", "close-viewer"):
+        require(outcome["nativeEffect"] == "none", "non-native operation")
+    if operation != "close-viewer":
+        require(outcome["viewerClose"] == "not_requested", "close intent")
+    if operation not in ("open", "create"):
+        require(
+            all(
+                outcome[key] == "not_requested" for key in ("terminalSpawn", "attachment", "focus")
+            ),
+            "presentation intent",
+        )
+    if outcome["nativeEffect"] == "confirmed" or outcome["attachment"] == "confirmed":
+        require(value["sessionRef"] is not None, "confirmed effect target")
+    if value["ok"]:
+        require(
+            value["sessionRef"] is not None
+            and outcome["nativeEffect"] != "uncertain"
+            and outcome["terminalSpawn"] != "uncertain"
+            and outcome["transport"] != "uncertain",
+            "success certainty",
+        )
+        if operation in ("create", "rename", "kill"):
+            require(outcome["nativeEffect"] == "confirmed", "native effect")
+        legacy = value["legacyResult"]
+        require(
+            legacy is not None
+            and legacy.get("ok") is True
+            and type(legacy.get("schemaVersion")) is int
+            and legacy["schemaVersion"] == 1
+            and legacy.get("meshRevision") == value["meshRevision"],
+            "compatibility envelope",
+        )
+        legacy_ref = legacy.get("sessionRef", legacy.get("session", legacy.get("reference")))
+        require(
+            legacy_ref is not None and identity(legacy_ref) == identity(value["sessionRef"]),
+            "compatibility reference",
+        )
+        if operation == "open" or operation == "create" and "terminalLaunched" in legacy:
+            require(
+                type(legacy.get("focused")) is bool
+                and type(legacy.get("terminalLaunched")) is bool,
+                "compatibility presentation booleans",
+            )
+            require(
+                legacy["focused"] == (outcome["focus"] == "confirmed")
+                and legacy["terminalLaunched"] == (outcome["terminalSpawn"] == "confirmed"),
+                "presentation projection",
+            )
+            require(
+                operation != "open" or legacy["focused"] or legacy["terminalLaunched"],
+                "completed open effect",
+            )
+        if operation == "close-viewer":
+            require(
+                type(legacy.get("closed")) is bool
+                and type(legacy.get("alreadyClosed")) is bool
+                and legacy["closed"] != legacy["alreadyClosed"],
+                "close booleans",
+            )
+            require(
+                outcome["viewerClose"] == ("confirmed" if legacy["closed"] else "already_closed"),
+                "close projection",
+            )
+    else:
+        require(value["legacyResult"] is None, "failure projection")
+
+
+def verify(kind, value):
+    base.schema_check(kind, value)
+    validators = {
+        "attachments": attachments,
+        "attachment-request": lambda value: None,
+        "attachment-delivery": delivery,
+        "desktop": desktop,
+        "action-request": action_request,
+        "action-result": action_result,
+    }
+    validators[kind](value)
+    limit = {
+        "attachments": 262144,
+        "attachment-delivery": 262144 + 16384,
+        "action-request": 16384,
+        "attachment-request": 16384,
+    }.get(kind, 1048576)
+    encoded = lambda item: (
+        len(json.dumps(item, ensure_ascii=False, separators=(",", ":")).encode()) + 1
+    )
+    require(encoded(value) <= limit, "document byte cap")
+    if kind == "attachment-delivery":
+        require(encoded({**value, "snapshot": None}) <= 16384, "envelope byte cap")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--schema", choices=SCHEMAS, required=True)
+    args = parser.parse_args()
+    try:
+        value = base.wire(sys.stdin.buffer.read(1048576 + 16385), 1048576 + 16384)
+        verify(args.schema, value)
+    except (ValueError, KeyError, TypeError, UnicodeError):
+        print("invalid boundary document", file=sys.stderr)
+        return 1
+    print("accepted " + args.schema)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

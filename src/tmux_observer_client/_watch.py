@@ -11,16 +11,9 @@ import uuid
 
 from tmux_observer._clock import boottime_ms, domain
 from tmux_observer._ipc import IPCError, connect
-from tmux_observer.public import (
-    FLEET_PROTOCOL,
-    FRAME_LIMIT,
-    REQUEST_LIMIT,
-    decode_document,
-    encode_document,
-    validate_fleet_frame,
-    validate_operation_error,
-    validate_request,
-)
+from tmux_observer._request_validation import validate_operation_error, validate_request
+from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
+from tmux_observer_client.contract import FLEET_PROTOCOL, validate_fleet_frame
 
 from .public import fleet_socket
 

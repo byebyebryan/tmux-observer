@@ -6,8 +6,9 @@ import copy
 import uuid
 from dataclasses import dataclass
 
-from ._validation import ticket as validate_ticket
-from .public import encode_document
+from tmux_observer.native import encode_document
+
+from ._delivery_validation import ticket as validate_ticket
 
 TERMINAL = frozenset(("complete", "failed", "stale_scope", "deadline"))
 RETENTION_MS = 600000

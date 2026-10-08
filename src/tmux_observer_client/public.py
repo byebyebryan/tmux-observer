@@ -9,7 +9,7 @@ from pathlib import Path
 
 from tmux_observer._clock import boottime_ms, domain
 from tmux_observer._ipc import exchange
-from tmux_observer.public import FLEET_PROTOCOL
+from tmux_observer_client.contract import FLEET_PROTOCOL
 
 
 def desktop_context_id(environment=None):

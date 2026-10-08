@@ -7,12 +7,14 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+from tmux_observer.delivery import SERVICE_PROTOCOL
+from tmux_observer.native import OBSERVATION_PROTOCOL
+
 from ._clock import boottime_ms
 from ._hub import SocketHub
 from ._ipc import owner_socket
 from ._owner_state import OwnerState
 from ._tickets import TicketError, TicketStore
-from .public import OBSERVATION_PROTOCOL, SERVICE_PROTOCOL
 
 
 class OwnerPublisher:

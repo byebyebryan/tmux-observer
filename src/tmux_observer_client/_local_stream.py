@@ -7,15 +7,9 @@ import uuid
 
 from tmux_observer._clock import boottime_ms, domain
 from tmux_observer._ipc import IPCError, connect, owner_socket
-from tmux_observer.public import (
-    FRAME_LIMIT,
-    REQUEST_LIMIT,
-    SERVICE_PROTOCOL,
-    decode_document,
-    encode_document,
-    validate_operation_error,
-    validate_request,
-)
+from tmux_observer._request_validation import validate_operation_error, validate_request
+from tmux_observer.delivery import SERVICE_PROTOCOL
+from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
 
 from ._errors import ContractError
 from ._remote_state import RemoteState

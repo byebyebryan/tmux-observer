@@ -10,18 +10,11 @@ import stat
 import struct
 from pathlib import Path
 
+from tmux_observer._request_validation import validate_operation_error, validate_request
+from tmux_observer.delivery import SERVICE_PROTOCOL, validate_service_frame
+from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
+
 from ._clock import boottime_ms, domain
-from .public import (
-    FRAME_LIMIT,
-    REQUEST_LIMIT,
-    SERVICE_PROTOCOL,
-    decode_document,
-    encode_document,
-    validate_fleet_frame,
-    validate_operation_error,
-    validate_request,
-    validate_service_frame,
-)
 
 
 class IPCError(Exception):
@@ -233,3 +226,10 @@ def exchange(request: dict, *, path: Path | None = None, budget_ms=2000) -> dict
                         if boottime_ms() >= deadline:
                             raise IPCError("deadline", "publisher validation exceeded its deadline")
                         return value
+
+
+def validate_fleet_frame(value):
+    """Load prepared-domain validation only for an explicit Fleet request."""
+    from tmux_observer_client.contract import validate_fleet_frame as validate
+
+    return validate(value)
