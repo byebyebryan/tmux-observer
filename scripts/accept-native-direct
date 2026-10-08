@@ -148,6 +148,44 @@ def worker(root, host):
     try:
         initial = endpoint.start()
         prepare_direct(endpoint, helper)
+        frontend = root / "frontend/candidate.json"
+        if frontend.exists():
+            descriptor = json.loads(frontend.read_bytes())
+            wheel = frontend.parent / descriptor["wheel"]["file"]
+            assert hashlib.sha256(wheel.read_bytes()).hexdigest() == descriptor["wheel"]["sha256"]
+            helper.command(
+                ["uv", "pip", "install", "--python", endpoint.python, "--no-deps", str(wheel)]
+            )
+            installed = (
+                helper.command(
+                    [
+                        endpoint.python,
+                        "-I",
+                        "-c",
+                        "import rofi_tmux_plus; print(rofi_tmux_plus.__file__)",
+                    ],
+                    env=endpoint.direct_env,
+                )
+                .stdout.decode()
+                .strip()
+            )
+            package_root = Path(installed).parent.parent
+            for member, source in descriptor["sourceFiles"].items():
+                if source.startswith("rofi_tmux_plus/"):
+                    path = package_root / source
+                    assert (
+                        hashlib.sha256(path.read_bytes()).hexdigest()
+                        == descriptor["members"][member]["sha256"]
+                    )
+            assert (
+                package_root / "rofi_tmux_plus/native/rofi-tmux-plus-mode"
+            ).stat().st_mode & 0o111
+            initial["frontend"] = {
+                "wheelSha256": descriptor["wheel"]["sha256"],
+                "sourceCommit": descriptor["source"]["commit"],
+                "installedRoot": str(package_root / "rofi_tmux_plus"),
+                "payloadsVerified": len(descriptor["sourceFiles"]),
+            }
         print(json.dumps({"ok": True, "result": initial}), flush=True)
         while line := sys.stdin.buffer.readline(16385):
             if len(line) > 16384 or not line.endswith(b"\n"):
@@ -168,6 +206,10 @@ def worker(root, host):
                         "direct",
                         "--json",
                     ]
+                    if frontend.exists():
+                        args = [str(endpoint.venv / "bin/rofi-tmux-plus"), "inventory", "--json"]
+                        if request.get("withViewers"):
+                            args += ["--with-viewers"]
                     for selected in request.get("hosts", []):
                         args += ["--host", selected]
                     if request.get("expanded"):
@@ -177,7 +219,10 @@ def worker(root, host):
                                 part
                                 for name in OPTIONS
                                 if name != OPTIONS[1] or request.get("includeEmpty")
-                                for part in ("--option", name)
+                                for part in (
+                                    "--session-option" if frontend.exists() else "--option",
+                                    name,
+                                )
                             ),
                         ]
                     if request.get("meshRevision"):
@@ -258,7 +303,7 @@ def worker(root, host):
         endpoint.close()
 
 
-def coordinate(output, artifact=None):
+def coordinate(output, artifact=None, frontend_artifact=None):
     helper = load(ROOT / "scripts/accept-native-fleet", "direct_coordinator_helper")
     reader = load(ROOT / "scripts/read-contract", "direct_wire_reader")
     validators, digest = legacy_reader()
@@ -333,10 +378,39 @@ def coordinate(output, artifact=None):
         wheel = stage_wheel(root / "wheel", evidence, repo=ROOT, descriptor=artifact)
         wheel.rename(root / wheel.name)
         wheel = root / wheel.name
+        if frontend_artifact:
+            frontend_builder = load(
+                CONSUMER / "scripts/candidate-artifact", "frontend_artifact_verifier"
+            )
+            descriptor, frontend_wheel = frontend_builder.verify(frontend_artifact)
+            assert (
+                descriptor["observer"]["wheelSha256"]
+                == hashlib.sha256(wheel.read_bytes()).hexdigest()
+            )
+            (root / "frontend").mkdir(mode=0o700)
+            shutil.copyfile(frontend_artifact, root / "frontend/candidate.json")
+            shutil.copyfile(frontend_wheel, root / "frontend" / frontend_wheel.name)
+            evidence["frontendArtifact"] = descriptor
+            evidence["gate"] = "T13-installed-frontend-direct"
         for name in ("accept-native-fleet", "accept-native-direct"):
             shutil.copyfile(ROOT / "scripts" / name, root / name)
         command([*ssh, "mkdir -m 700 -- " + shlex.quote(str(root))])
         remote_created = True
+        if frontend_artifact:
+            command([*ssh, "mkdir -m 700 -- " + shlex.quote(str(root / "frontend"))])
+            command(
+                [
+                    "scp",
+                    "-q",
+                    "-o",
+                    "BatchMode=yes",
+                    "-o",
+                    "StrictHostKeyChecking=yes",
+                    str(root / "frontend/candidate.json"),
+                    str(root / "frontend" / frontend_wheel.name),
+                    "starship:" + str(root / "frontend") + "/",
+                ]
+            )
         command(
             [
                 "scp",
@@ -396,6 +470,15 @@ def coordinate(output, artifact=None):
             after = control.call("counts")
             assert after["servicesInactive"] and after["sshStarts"] == before["sshStarts"] + 1
             passed("fresh_installed_full_fleet_cli_without_daemons", endpoint=host, response=result)
+            if frontend_artifact:
+                viewers = direct(host, hosts=[host], withViewers=True)
+                verify_row(viewers["value"]["hosts"][0], baseline[host]["reference"])
+                assert "viewers" in viewers["value"]["hosts"][0]["sessions"][0]
+                passed(
+                    "installed_frontend_optional_viewers_preserve_fresh_native_identity",
+                    endpoint=host,
+                    response=viewers,
+                )
             before = after
             result = direct(host, hosts=[remote.upper()], expanded=True)
             assert len(result["value"]["hosts"]) == 1
@@ -570,14 +653,19 @@ def main():
     parser.add_argument("--host-id", choices=("snap", "starship"))
     parser.add_argument("--output", type=Path)
     parser.add_argument("--artifact", type=Path, help="frozen candidate.json; skip wheel build")
+    parser.add_argument(
+        "--frontend-artifact",
+        type=Path,
+        help="optional frozen frontend candidate for T13 facade acceptance",
+    )
     args = parser.parse_args()
-    if args.artifact and (args.worker or args.host_id):
+    if (args.artifact or args.frontend_artifact) and (args.worker or args.host_id):
         parser.error("--artifact is a coordinator input")
     if args.worker and args.host_id and not args.output:
         worker(args.worker, args.host_id)
         return 0
     if args.output and not (args.worker or args.host_id):
-        return coordinate(args.output, args.artifact)
+        return coordinate(args.output, args.artifact, args.frontend_artifact)
     parser.error("provide --output or a complete private worker invocation")
 
 
