@@ -309,3 +309,9 @@ Future profiles must name the selected candidate ceiling and retain their scope
 limits. Existing headless/local-bridge samples fitting those ceilings do not close
 normal native desktop work, simultaneous maximum-reader/frame load or actual
 SSH capacity acceptance.
+
+The clean `15d3203` [selected-budget fixture rerun](evidence/2026-10-07-installed-capacity-reviewed-t12-partial.json)
+passes seven included functional cases and records a 307.01 MiB sampled
+fleet/bridge peak against the selected 768 MiB candidate. Its `passed_partial`
+result retains the explicit no-SSH/synthetic and separate-load-phase limits;
+it does not close full native capacity. The initial failed evidence is unchanged.

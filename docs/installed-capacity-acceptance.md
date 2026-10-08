@@ -46,3 +46,11 @@ The near-cap complete aggregate contains all sixteen owners in 918,291 bytes.
 Recorded process incarnations were absent or exited after cleanup. These facts
 motivate a resource/process-design review; they accept neither full capacity nor
 revised budgets automatically.
+
+After the selected-budget review, clean source `15d3203` reran the same seven
+functional cases with the 768 MiB candidate named in its output. The
+[reviewed-target fixture evidence](evidence/2026-10-07-installed-capacity-reviewed-t12-partial.json)
+records a 307.01 MiB sampled peak and `passed_partial`. This establishes only
+the included local-bridge fixture below that candidate ceiling; actual SSH costs
+and simultaneous maximum reader/frame load remain unaccepted. The earlier
+256 MiB failure is retained unchanged.

@@ -1,0 +1,164 @@
+{
+  "gate": "T12-installed-synthetic-capacity-partial",
+  "sourceCommit": "15d32032bb5009daaa0ebb922ed7834ee3e1a4ef",
+  "sourceTreeDirty": false,
+  "cases": [
+    {
+      "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+      "result": "passed",
+      "frameBytes": 22803
+    },
+    {
+      "name": "thirty_two_watchers_share_sixteen_owner_connections",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_third_reader_receives_explicit_capacity_error",
+      "result": "passed"
+    },
+    {
+      "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+      "result": "passed",
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 182440,
+        "retainedBytes": 35472,
+        "connections": 16,
+        "perPeerBytes": 22805
+      }
+    },
+    {
+      "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+      "result": "passed",
+      "frameBytes": 918291
+    },
+    {
+      "name": "seventeenth_catalog_owner_fails_authority_without_truncated_success",
+      "result": "passed"
+    },
+    {
+      "name": "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+      "result": "passed",
+      "elapsedMs": 63.978
+    }
+  ],
+  "scope": "one installed wheel; synthetic 16-owner catalog/observations; real private IPC and 15 installed local stdio bridges",
+  "limits": [
+    "Fixture transport execs local bridges with SSH-shaped argv; no SSH process or network costs are measured",
+    "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+    "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+    "Fixture owners/readers/coordinator are outside the fleet tree; every fleet bridge child is included",
+    "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI"
+  ],
+  "wheelSha256": "e15add60927f76f977e0800338ab52de897f4d0b1c19afa1282cd75b9bfd96e2",
+  "profile": {
+    "sampleIntervalMs": 100,
+    "sampleCount": 153,
+    "durationMs": 17145,
+    "fleetAndBridgePeak": {
+      "at": 473562503,
+      "rssBytes": 321921024,
+      "processes": [
+        {
+          "pid": 1056234,
+          "incarnation": "47354875",
+          "name": "python",
+          "rssBytes": 30613504
+        },
+        {
+          "pid": 1056268,
+          "incarnation": "47354905",
+          "name": "tmux-observer",
+          "rssBytes": 19456000
+        },
+        {
+          "pid": 1056267,
+          "incarnation": "47354905",
+          "name": "tmux-observer",
+          "rssBytes": 19283968
+        },
+        {
+          "pid": 1056266,
+          "incarnation": "47354905",
+          "name": "tmux-observer",
+          "rssBytes": 19410944
+        },
+        {
+          "pid": 1056262,
+          "incarnation": "47354898",
+          "name": "tmux-observer",
+          "rssBytes": 19394560
+        },
+        {
+          "pid": 1056261,
+          "incarnation": "47354898",
+          "name": "tmux-observer",
+          "rssBytes": 19279872
+        },
+        {
+          "pid": 1056260,
+          "incarnation": "47354898",
+          "name": "tmux-observer",
+          "rssBytes": 19365888
+        },
+        {
+          "pid": 1056259,
+          "incarnation": "47354898",
+          "name": "tmux-observer",
+          "rssBytes": 19390464
+        },
+        {
+          "pid": 1056252,
+          "incarnation": "47354892",
+          "name": "tmux-observer",
+          "rssBytes": 19435520
+        },
+        {
+          "pid": 1056250,
+          "incarnation": "47354892",
+          "name": "tmux-observer",
+          "rssBytes": 19394560
+        },
+        {
+          "pid": 1056248,
+          "incarnation": "47354892",
+          "name": "tmux-observer",
+          "rssBytes": 19427328
+        },
+        {
+          "pid": 1056247,
+          "incarnation": "47354892",
+          "name": "tmux-observer",
+          "rssBytes": 19394560
+        },
+        {
+          "pid": 1056244,
+          "incarnation": "47354885",
+          "name": "tmux-observer",
+          "rssBytes": 19382272
+        },
+        {
+          "pid": 1056243,
+          "incarnation": "47354885",
+          "name": "tmux-observer",
+          "rssBytes": 19447808
+        },
+        {
+          "pid": 1056242,
+          "incarnation": "47354885",
+          "name": "tmux-observer",
+          "rssBytes": 19746816
+        },
+        {
+          "pid": 1056241,
+          "incarnation": "47354885",
+          "name": "tmux-observer",
+          "rssBytes": 19496960
+        }
+      ]
+    },
+    "targetBytes": 805306368,
+    "memoryTarget": "passed"
+  },
+  "result": "passed_partial"
+}
