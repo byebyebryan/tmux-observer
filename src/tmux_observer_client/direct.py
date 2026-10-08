@@ -6,7 +6,9 @@ import copy
 import re
 import shlex
 import socket
+import sys
 import time
+import unicodedata
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
@@ -19,6 +21,65 @@ from .mesh import HostMeshAdapter, MeshHost
 
 REACHED = "\x1eTMUX_OBSERVER_REACHED_V1:"
 REMOTE_EXEC = '"$HOME/.local/share/tmux-observer/bin/tmux-observer"'
+
+
+def safe_alias(value):
+    return (
+        isinstance(value, str)
+        and bool(value)
+        and value.strip() == value
+        and not value.startswith("-")
+        and not any(char.isspace() or unicodedata.category(char).startswith("C") for char in value)
+    )
+
+
+def fallback_host(requested, deadline, runner):
+    """Keep legacy local aliases; bound optional FQDN discovery off the UI path."""
+    short = socket.gethostname().split(".", 1)[0] or "localhost"
+    host_id = (
+        short.casefold() if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", short) else "localhost"
+    )
+    aliases = [short] if safe_alias(short) else [host_id]
+    if any(name.casefold() not in {alias.casefold() for alias in aliases} for name in requested):
+        # getfqdn can consult DNS and block. Only non-short selection needs it;
+        # an owned child enforces the direct operation's BOOTTIME deadline.
+        remaining = deadline - boottime_ms()
+        if remaining <= 0:
+            raise ContractError("operation_failed", "local identity deadline exceeded")
+        try:
+            result = runner(
+                [
+                    sys.executable,
+                    "-I",
+                    "-c",
+                    "import json,socket; print(json.dumps(socket.getfqdn()))",
+                ],
+                timeout=min(2, remaining / 1000),
+                stdout_limit=32768,
+                stderr_limit=4096,
+            )
+            if (
+                result.returncode
+                or result.timed_out
+                or result.overflow_streams
+                or boottime_ms() >= deadline
+            ):
+                raise ValueError("local identity lookup failed or exceeded its bound")
+            full = decode_document(result.stdout_bytes, limit=32768)
+            if not isinstance(full, str):
+                raise TypeError("local identity lookup returned invalid text")
+            aliases = [name for name in (full, short) if safe_alias(name)] or [host_id]
+        except (OSError, ValueError, TypeError) as error:
+            raise ContractError(
+                "operation_failed", "bounded local identity lookup failed"
+            ) from error
+    display = (
+        short
+        if short.strip() == short
+        and not any(unicodedata.category(char).startswith("C") for char in short)
+        else host_id
+    )
+    return MeshHost(host_id, display[:255], True, tuple(aliases), ())
 
 
 def ssh_argv(route, policy, program):
@@ -106,11 +167,20 @@ def failed_row(host, code, message, route=None):
 
 
 class DirectInventory:
-    def __init__(self, *, mesh=None, local=None, runner=run_bounded, remote_exec=REMOTE_EXEC):
+    def __init__(
+        self,
+        *,
+        mesh=None,
+        local=None,
+        runner=run_bounded,
+        remote_exec=REMOTE_EXEC,
+        identity_runner=run_bounded,
+    ):
         self.mesh = mesh or HostMeshAdapter()
         self.local = local
         self.runner = runner
         self.remote_exec = remote_exec  # Private owned acceptance injection, not a CLI option.
+        self.identity_runner = identity_runner
 
     def remote(self, host, policy, revision, *, deadline, panes, option_names):
         last = ("operation_failed", "SSH did not prove the selected owner was reached")
@@ -204,15 +274,9 @@ class DirectInventory:
         deadline = boottime_ms() + 15000
         mesh = self.mesh.load(timeout_seconds=5)
         if mesh is None:
-            hostname = socket.gethostname().split(".", 1)[0]
-            host_id = (
-                hostname.casefold()
-                if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", hostname)
-                else "localhost"
-            )
             if mesh_revision is not None:
                 raise ContractError("stale_mesh", "local-only mesh has no route revision")
-            hosts = (MeshHost(host_id, hostname, True, (hostname,), ()),)
+            hosts = (fallback_host(requested_hosts, deadline, self.identity_runner),)
             revision = None
         else:
             if mesh_revision is not None and mesh.revision != mesh_revision:

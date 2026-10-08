@@ -6,6 +6,7 @@ import re
 import subprocess
 import unittest
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
@@ -123,6 +124,57 @@ class Local:
 
 
 class DirectTests(unittest.TestCase):
+    def test_absent_mesh_preserves_casefold_local_fqdn_selection(self):
+        mesh = FakeMesh()
+        mesh.snapshot = None
+        with (
+            patch("tmux_observer_client.direct.socket.gethostname", return_value="ALPHA"),
+        ):
+            identity = Mock(
+                return_value=BoundedCompleted(
+                    0, '"alpha.example"\n', "", stdout_bytes=b'"alpha.example"\n'
+                )
+            )
+            value = DirectInventory(mesh=mesh, local=Local(), identity_runner=identity).inventory(
+                requested_hosts=["ALPHA.EXAMPLE", "alpha"]
+            )
+        self.assertEqual([row["hostId"] for row in value["hosts"]], ["alpha"])
+        legacy_validator().validate(value)
+        self.assertLessEqual(identity.call_args.kwargs["timeout"], 2)
+
+    def test_short_local_selection_needs_no_dns_and_failed_alias_lookup_collects_nothing(self):
+        mesh = FakeMesh()
+        mesh.snapshot = None
+        with patch("tmux_observer_client.direct.socket.gethostname", return_value="ALPHA"):
+            identity = Mock(side_effect=AssertionError("DNS for a short local alias"))
+            direct = DirectInventory(mesh=mesh, local=Local(), identity_runner=identity)
+            direct.inventory(requested_hosts=["alpha", "ALPHA"])
+            direct.inventory()
+            identity.assert_not_called()
+            for failure in (
+                BoundedCompleted(
+                    0, '"alpha.example"\n', "", timed_out=True, stdout_bytes=b'"alpha.example"\n'
+                ),
+                BoundedCompleted(
+                    0,
+                    '"alpha.example"\n',
+                    "",
+                    overflow_streams=frozenset({"stderr"}),
+                    stdout_bytes=b'"alpha.example"\n',
+                ),
+                BoundedCompleted(0, "{}\n", "", stdout_bytes=b"{}\n"),
+            ):
+                local = Mock()
+                direct = DirectInventory(
+                    mesh=mesh,
+                    local=local,
+                    identity_runner=lambda *_a, failure=failure, **_kw: failure,
+                )
+                with self.assertRaises(ContractError) as caught:
+                    direct.inventory(requested_hosts=["alpha.example"])
+                self.assertEqual(caught.exception.code, "operation_failed")
+                local.collect.assert_not_called()
+
     def test_legacy_empty_option_failure_preserves_core_empty_versus_absent_values(self):
         class EmptyOptions(Local):
             def collect(self, **kwargs):

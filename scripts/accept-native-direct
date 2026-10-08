@@ -10,6 +10,7 @@ import importlib.util
 import json
 import shlex
 import shutil
+import socket
 import subprocess
 import sys
 import time
@@ -189,6 +190,11 @@ def worker(root, host):
                         "value": json.loads(process.stdout),
                         "rawRecord": process.stdout.decode("utf-8", "strict"),
                         "durationMs": (time.perf_counter_ns() - start) / 1_000_000,
+                    }
+                elif op == "native_aliases":
+                    result = {
+                        "short": socket.gethostname().split(".", 1)[0],
+                        "fqdn": socket.getfqdn(),
                     }
                 elif op == "core_expanded":
                     process = helper.command(
@@ -445,6 +451,30 @@ def coordinate(output, artifact=None):
             assert row["serverGeneration"] == baseline[host]["reference"]["serverGeneration"]
             assert row["sessions"][0]["sessionId"] == baseline[host]["reference"]["sessionId"]
             passed("absent_mesh_only_allows_native_local_fallback", endpoint=host, response=result)
+            aliases = control.call("native_aliases")
+            before = control.call("counts")
+            selected = direct(
+                host, providerAbsent=True, hosts=[aliases["fqdn"].upper(), aliases["short"]]
+            )
+            assert selected["returnCode"] == 0
+            selected_row = selected["value"]["hosts"][0]
+            assert len(selected["value"]["hosts"]) == 1
+            assert selected_row["hostId"] == aliases["short"].casefold()
+            assert (
+                selected_row["serverGeneration"] == baseline[host]["reference"]["serverGeneration"]
+            )
+            assert (
+                selected_row["sessions"][0]["sessionId"] == baseline[host]["reference"]["sessionId"]
+            )
+            assert (
+                selected_row["sessions"][0]["createdAt"] == baseline[host]["reference"]["createdAt"]
+            )
+            assert control.call("counts")["sshStarts"] == before["sshStarts"]
+            passed(
+                "absent_mesh_accepts_casefold_native_fqdn_alias_without_ssh",
+                endpoint=host,
+                response=selected,
+            )
         for remote, control in controls.items():
             host = "starship" if remote == "snap" else "snap"
             renamed = control.call("rename_owned")

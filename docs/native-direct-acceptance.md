@@ -63,3 +63,20 @@ units, owned children, sockets and backing directories were removed. This closes
 the independent T10 native direct checkpoint. Revised G3 follows the
 [always-on scope](always-on-acceptance.md); physical sleep/wake is optional and
 consumer/managed gates retain their independent requirements.
+
+## Migration review: local-only aliases
+
+The T13 frontend review reproduced a missing-producer case in which a valid
+casefold FQDN was rejected as `unknown_host`, although the released Tmux Plus
+local identity accepts it. The direct client now preserves that alias selection.
+Short-host and all-host requests perform no DNS lookup. A non-short local
+selection resolves its optional FQDN in an owned, bounded child; failure,
+overflow or its two-second/whole-operation deadline refuses collection rather
+than guessing a host. Cached reads and owner/fleet service paths do not call it.
+
+Source checks pass 188 tests. The installed direct harness now also selects the
+actual local FQDN on each endpoint with Mesh absent and checks deduplication,
+full native generation/session/creation identity and no SSH. These two new cases
+and the existing 24 cases must pass on the revised frozen artifact before its
+direct-client checkpoint is accepted. The earlier native result remains evidence
+for its original artifact; it is not silently relabelled as a new-wheel run.
