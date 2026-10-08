@@ -1,0 +1,3 @@
+# Reviewed backend from the byte-identical committed-snapshot experiment.
+# Runtime remains standard-library-only; this is a candidate build dependency.
+setuptools==84.0.0

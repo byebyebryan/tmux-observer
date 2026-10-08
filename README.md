@@ -75,6 +75,7 @@ Host Mesh v1 behavior must remain compatible during migration.
 | [Implementation plan](docs/implementation-plan.md) | Work packages, dependencies, acceptance and rollout |
 | [Implementation backlog](docs/implementation-backlog.md) | Concrete tasks, owned paths, delivery order and first implementation pass |
 | [Validation plan](docs/validation-plan.md) | Independent producer, transport and frontend proof |
+| [Candidate artifacts](docs/candidate-artifacts.md) | Committed-source builds, exact manifests and acceptance boundaries |
 | [Design review](docs/design-review.md) | Findings, resolutions, adversarial scenarios and pending gates |
 | [Context and sources](docs/context-and-sources.md) | Checked baselines, measurements and primary references |
 

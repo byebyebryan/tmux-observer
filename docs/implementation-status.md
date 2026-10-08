@@ -1,7 +1,14 @@
 # Implementation status
 
-Updated: 2026-10-07. Goal: Deliveries A–E, with reviewed commits as work progresses.
+Updated: 2026-10-08. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
+
+[Candidate artifact preparation](candidate-artifacts.md) now builds committed
+snapshots with an exact hashed backend constraint, verifies complete packaged
+source coverage and writes an unaccepted content descriptor. Eleven focused
+checks cover source isolation and artifact integrity. This is preparation for
+one frozen wheel across later acceptance; it establishes no additional runtime
+or managed rollout gate. Both hosts' physical sleep remains deferred.
 
 Latest accepted resource profiles at `ab69e9d` pass the selected 96 MiB normal
 fleet and 768 MiB logical capacity ceilings, including actual SSH costs. The
