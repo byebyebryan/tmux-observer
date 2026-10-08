@@ -267,3 +267,12 @@ class FleetTicketTests(unittest.TestCase):
         self.tickets.desktop_begin({parent["id"]}, 7, 240, 240)
         self.tickets.desktop_finish(7, 250, accepted=True)
         self.assertEqual(self.value(parent, 251)["state"], "complete")
+
+    def test_owner_loss_does_not_invalidate_unrelated_desktop_request(self):
+        grouped = self.admit(scopes=[OWNER, DESKTOP])
+        desktop = self.admit(101, scopes=[DESKTOP])
+        self.tickets.tick(self.connections, 150)
+        self.tickets.owner_lost("fixture", 160)
+        self.assertEqual(self.value(grouped)["state"], "stale_scope")
+        self.assertEqual(self.value(desktop)["state"], "accepted")
+        self.assertEqual(self.tickets.desktop_ready(), {desktop["id"]})

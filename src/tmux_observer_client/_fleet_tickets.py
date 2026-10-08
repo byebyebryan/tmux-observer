@@ -150,6 +150,27 @@ class FleetTickets:
             )
         )
 
+    def owner_lost(self, host, now):
+        self.fail_host(
+            host, now, code="stale_scope", state="stale_scope", message="owner subscription ended"
+        )
+        affected = [
+            key
+            for key, entry in self.store.entries.items()
+            if any(
+                row["hostId"] == host and row["source"] == "owner" for row in entry.value["sources"]
+            )
+        ]
+        self.record(
+            self.store.set_source(
+                affected,
+                (self.state.host_id, "desktop"),
+                now,
+                state="stale_scope",
+                error={"code": "stale_scope", "message": "requested owner association ended"},
+            )
+        )
+
     def dispatch(self, host, connection, now):
         """One child per owner; later parents wait for one eligible successor."""
         if host in self.children or not self.pending.get(host):

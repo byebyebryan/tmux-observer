@@ -22,7 +22,9 @@ from ._remote_state import RemoteState
 
 
 class LocalConnection:
-    def __init__(self, host_id, now, *, path=None, state=None, on_frame=None, on_error=None):
+    def __init__(
+        self, host_id, now, *, path=None, state=None, on_frame=None, on_error=None, on_input=None
+    ):
         self.state = state or RemoteState(host_id, local_clock=domain())
         self.nonce = uuid.uuid4().hex
         self.state.start(self.nonce, now)
@@ -46,6 +48,7 @@ class LocalConnection:
         self.first_byte = None
         self.on_frame = on_frame
         self.on_error = on_error
+        self.on_input = on_input
         self.closed = False
 
     def send(self, value, now):
@@ -136,6 +139,8 @@ class LocalConnection:
                     raise IPCError(
                         "owner_unavailable", "local owner returned a scoped operation failure"
                     )
+                if self.on_input is not None:
+                    self.on_input(self, value, now)
                 matched = self.state.receive(value, now)
                 if self.on_frame is not None:
                     self.on_frame(self, value, matched, now)
@@ -144,5 +149,10 @@ class LocalConnection:
             value = self.state.probe(boottime_ms())
             if value is not None:
                 self.send(value, boottime_ms())
-        except (IPCError, OSError, ValueError, ContractError):
-            self.fail("owner_unavailable", "local owner subscription failed its bounded protocol")
+        except (IPCError, OSError, ValueError, ContractError) as error:
+            self.fail(
+                "capacity"
+                if isinstance(error, ContractError) and error.code == "capacity"
+                else "owner_unavailable",
+                "local owner subscription failed its bounded protocol",
+            )

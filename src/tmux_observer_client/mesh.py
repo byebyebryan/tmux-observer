@@ -178,7 +178,7 @@ class HostMeshAdapter:
                 "--status",
                 status,
                 "--source",
-                "rofi-tmux-plus",
+                "tmux-observer",
                 "--mesh-revision",
                 mesh_revision,
                 "--observed-at",

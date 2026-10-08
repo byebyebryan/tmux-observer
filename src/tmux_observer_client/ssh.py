@@ -38,6 +38,7 @@ class RemoteConnection:
         remote_exec=REMOTE_EXEC,
         on_frame=None,
         on_error=None,
+        on_input=None,
     ):
         self.host = host
         self.route = route
@@ -75,6 +76,7 @@ class RemoteConnection:
         self.output_at = None
         self.on_frame = on_frame
         self.on_error = on_error
+        self.on_input = on_input
         self.closed = False
         self.reached_reported = False
 
@@ -232,6 +234,8 @@ class RemoteConnection:
                         "owner_unavailable", "remote owner returned a scoped operation failure"
                     )
                     return
+                if self.on_input is not None:
+                    self.on_input(self, value, now)
                 matched = self.state.receive(value, now)
                 if self.on_frame is not None:
                     self.on_frame(self, value, matched, now)
@@ -241,6 +245,11 @@ class RemoteConnection:
             if request is not None:
                 self.send(request, boottime_ms())
         except (OSError, ValueError, ContractError) as error:
-            self.fail("invalid_owner_stream", "remote owner stream failed its bounded protocol")
+            self.fail(
+                "capacity"
+                if isinstance(error, ContractError) and error.code == "capacity"
+                else "invalid_owner_stream",
+                "remote owner stream failed its bounded protocol",
+            )
             if isinstance(error, ContractError) and error.code == "stale_mesh":
                 raise
