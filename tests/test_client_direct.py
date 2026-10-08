@@ -1,18 +1,45 @@
 """Independent Mesh fixtures and fresh composition/transport policy cases."""
 
+import hashlib
 import json
 import re
 import subprocess
 import unittest
 from pathlib import Path
 
-from tmux_observer.public import encode_document
+from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
+
+from tmux_observer.public import encode_document, validate_observation
 from tmux_observer_client._command import BoundedCompleted
 from tmux_observer_client._errors import ContractError
-from tmux_observer_client.direct import DirectInventory
+from tmux_observer_client.direct import DirectInventory, failed_row
 from tmux_observer_client.mesh import HostMeshAdapter, _parse_snapshot
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def legacy_validator():
+    directory = ROOT / "tests/fixtures/legacy-tmux-session-v1"
+    sums = (directory / "SHA256SUMS").read_bytes()
+    manifest = json.loads((ROOT / "docs/extraction-manifest.json").read_text())
+    assert hashlib.sha256(sums).hexdigest() == manifest["contractBundles"]["tmux-session-v1"]
+    expected = {
+        name: digest
+        for digest, name in (line.split("  ", 1) for line in sums.decode().splitlines())
+    }
+    schemas = []
+    for path in sorted((directory / "schemas").glob("*.json")):
+        assert (
+            hashlib.sha256(path.read_bytes()).hexdigest()
+            == expected[str(path.relative_to(directory))]
+        )
+        schemas.append(json.loads(path.read_text()))
+    registry = Registry().with_resources(
+        (value["$id"], Resource.from_contents(value)) for value in schemas
+    )
+    value = next(value for value in schemas if value["$id"] == "inventory.schema.json")
+    return Draft202012Validator(value, registry=registry)
 
 
 class MeshTests(unittest.TestCase):
@@ -96,6 +123,39 @@ class Local:
 
 
 class DirectTests(unittest.TestCase):
+    def test_legacy_empty_option_failure_preserves_core_empty_versus_absent_values(self):
+        class EmptyOptions(Local):
+            def collect(self, **kwargs):
+                value = super().collect(**kwargs)
+                value["capabilities"]["options"] = ["@empty", "@missing"]
+                value["sessions"][0]["options"] = {"@empty": "", "@missing": None}
+                validate_observation(value)
+                self.value = value
+                return value
+
+        local = EmptyOptions()
+        direct = DirectInventory(mesh=FakeMesh(), local=local)
+        with self.assertRaises(ContractError) as failure:
+            direct.inventory(requested_hosts=["alpha"], option_names=["@empty", "@missing"])
+        self.assertEqual(failure.exception.code, "operation_failed")
+        self.assertEqual(local.value["sessions"][0]["options"], {"@empty": "", "@missing": None})
+
+    def test_complete_and_failed_rows_conform_to_pinned_legacy_inventory_schema(self):
+        mesh = FakeMesh()
+        value = DirectInventory(mesh=mesh, local=Local(), runner=self.runner([])).inventory(
+            requested_hosts=["alpha", "beta"]
+        )
+        validator = legacy_validator()
+        validator.validate(value)
+        self.assertIsNone(value["hosts"][0]["route"])
+        self.assertEqual(value["hosts"][1]["route"], mesh.snapshot.hosts[1].routes[0].destination)
+        for host in mesh.snapshot.hosts:
+            for code in ("operation_failed", "host_unreachable"):
+                with self.subTest(host=host.host_id, code=code):
+                    response = {**value, "hosts": [failed_row(host, code, "owned failure")]}
+                    validator.validate(response)
+                    self.assertIsNone(response["hosts"][0]["route"])
+
     def runner(self, calls, *, kind="complete"):
         def run(argv, **_bounds):
             calls.append(argv)

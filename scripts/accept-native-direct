@@ -1,0 +1,540 @@
+#!/usr/bin/env python3
+"""Installed fresh CLI in both directions, with private HOME/native/Mesh contexts."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+CONSUMER = Path("/home/bryan/code/rofi-tmux-plus")
+OPTIONS = ("@owned-direct-present", "@owned-direct-empty", "@owned-direct-missing")
+
+
+def load(path, name):
+    loader = importlib.machinery.SourceFileLoader(name, str(path))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def command(argv):
+    result = subprocess.run(argv, capture_output=True, check=False, timeout=30)
+    if result.returncode:
+        raise RuntimeError(result.stderr.decode(errors="replace")[:1024])
+    return result
+
+
+def legacy_reader():
+    from jsonschema import Draft202012Validator
+    from referencing import Registry, Resource
+
+    directory = CONSUMER / "contracts/tmux-session-v1"
+    sums = (directory / "SHA256SUMS").read_bytes()
+    digest = hashlib.sha256(sums).hexdigest()
+    manifest = json.loads((ROOT / "docs/extraction-manifest.json").read_text())
+    assert digest == manifest["contractBundles"]["tmux-session-v1"]
+    for line in sums.decode().splitlines():
+        expected, name = line.split("  ", 1)
+        assert not Path(name).is_absolute() and ".." not in Path(name).parts
+        assert hashlib.sha256((directory / name).read_bytes()).hexdigest() == expected
+    schemas = [
+        json.loads(path.read_text()) for path in sorted((directory / "schemas").glob("*.json"))
+    ]
+    registry = Registry().with_resources(
+        (value["$id"], Resource.from_contents(value)) for value in schemas
+    )
+    validators = {value["$id"]: Draft202012Validator(value, registry=registry) for value in schemas}
+    return validators, digest
+
+
+def prepare_direct(endpoint, helper):
+    root = endpoint.root
+    home = root / "direct-home"
+    entry = home / ".local/share/tmux-observer/bin/tmux-observer"
+    entry.parent.mkdir(mode=0o700, parents=True)
+    wrapper = "#!/bin/sh\nexec " + shlex.quote(str(endpoint.venv / "bin/tmux-observer")) + ' "$@"\n'
+    helper.write(entry, wrapper, executable=True)
+    endpoint.direct_entry, endpoint.direct_wrapper = entry, wrapper
+    endpoint.direct_env = dict(endpoint.env)
+    for key in ("PYTHONPATH", "PYTHONHOME"):
+        endpoint.direct_env.pop(key, None)
+    for key in ("XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_STATE_HOME"):
+        path = root / ("direct-" + key.lower())
+        path.mkdir(mode=0o700)
+        endpoint.direct_env[key] = str(path)
+    provider = Path(endpoint.direct_env["XDG_CONFIG_HOME"]) / "rofi-ssh-plus"
+    provider.mkdir(mode=0o700)
+    shim = root / "direct-ssh"
+    actual = endpoint.actual_catalog["sshPolicy"]["executable"]
+    prefix = (
+        "export HOME="
+        + shlex.quote(str(home))
+        + " TMUX_TMPDIR="
+        + shlex.quote(str(root / "native"))
+        + "; unset TMUX TMUX_PANE PYTHONPATH PYTHONHOME; export PATH="
+        + shlex.quote(str(root / "bin"))
+        + ':"$PATH"; '
+    )
+    helper.write(
+        shim,
+        "#!"
+        + shutil.which("python3")
+        + "\n"
+        + "import os, sys\nfrom pathlib import Path\n"
+        + "assert sys.argv[-1].startswith(\"printf '\\\\036TMUX_OBSERVER_REACHED_V1:%s\\\\037\\\\n' \")\n"
+        + "with Path("
+        + repr(str(root / "direct-ssh-count"))
+        + ").open('a') as out: out.write('start\\n')\n"
+        + "os.execvp("
+        + repr(actual)
+        + ", ["
+        + repr(actual)
+        + ", *sys.argv[1:-1], "
+        + repr(prefix)
+        + " + sys.argv[-1]])\n",
+        executable=True,
+    )
+    original = "executable = " + json.dumps(actual)
+    assert endpoint.config_bytes.decode().count(original) == 1
+    endpoint.direct_config = provider / "config.toml"
+    endpoint.direct_config_bytes = endpoint.config_bytes.replace(
+        original.encode(), ("executable = " + json.dumps(str(shim))).encode()
+    )
+    helper.write(endpoint.direct_config, endpoint.direct_config_bytes.decode())
+    absent = root / "provider-absent"
+    absent.mkdir(mode=0o700)
+    (absent / "tmux").symlink_to(root / "bin/tmux")
+    sid = endpoint.independent_native()["sessionId"]
+    endpoint.native("set-option", "-t", sid, OPTIONS[0], "fixture metadata")
+    endpoint.native("set-option", "-t", sid, OPTIONS[1], "")
+    for unit in (endpoint.fleet_unit, endpoint.owner_unit):
+        helper.manager("stop", unit)
+        assert helper.manager("is-active", unit, ok=False).returncode != 0
+
+
+def native_truth(endpoint):
+    return {
+        "reference": endpoint.independent_native(),
+        "roster": endpoint.roster(),
+        "hooks": endpoint.native("show-hooks"),
+        "geometry": endpoint.native(
+            "list-panes",
+            "-a",
+            "-F",
+            "#{window_id}|#{window_width}|#{window_height}|#{pane_id}|#{pane_width}|#{pane_height}",
+        ),
+        "options": endpoint.native(
+            "show-options", "-t", endpoint.independent_native()["sessionId"]
+        ),
+    }
+
+
+def worker(root, host):
+    helper = load(root / "accept-native-fleet", "direct_worker_helper")
+    endpoint = helper.Endpoint(root, host)
+    try:
+        initial = endpoint.start()
+        prepare_direct(endpoint, helper)
+        print(json.dumps({"ok": True, "result": initial}), flush=True)
+        while line := sys.stdin.buffer.readline(16385):
+            if len(line) > 16384 or not line.endswith(b"\n"):
+                raise ValueError("invalid private control record")
+            request = json.loads(line)
+            op = request["operation"]
+            if op == "close":
+                break
+            try:
+                if op == "direct":
+                    env = dict(endpoint.direct_env)
+                    if request.get("providerAbsent"):
+                        env["PATH"] = str(root / "provider-absent")
+                    args = [
+                        str(endpoint.venv / "bin/tmux-observer-client"),
+                        "snapshot",
+                        "--access",
+                        "direct",
+                        "--json",
+                    ]
+                    for selected in request.get("hosts", []):
+                        args += ["--host", selected]
+                    if request.get("expanded"):
+                        args += [
+                            "--panes",
+                            *(
+                                part
+                                for name in OPTIONS
+                                if name != OPTIONS[1] or request.get("includeEmpty")
+                                for part in ("--option", name)
+                            ),
+                        ]
+                    if request.get("meshRevision"):
+                        args += ["--mesh-revision", request["meshRevision"]]
+                    start = time.perf_counter_ns()
+                    process = helper.command(args, env=env, ok=False)
+                    assert len(process.stdout) <= 1048576 and process.stdout.endswith(b"\n")
+                    result = {
+                        "returnCode": process.returncode,
+                        "value": json.loads(process.stdout),
+                        "rawRecord": process.stdout.decode("utf-8", "strict"),
+                        "durationMs": (time.perf_counter_ns() - start) / 1_000_000,
+                    }
+                elif op == "core_expanded":
+                    process = helper.command(
+                        [
+                            str(endpoint.venv / "bin/tmux-observer"),
+                            "collect",
+                            "--host-id",
+                            host,
+                            "--panes",
+                            *(part for name in OPTIONS for part in ("--option", name)),
+                        ],
+                        env=endpoint.direct_env,
+                    )
+                    result = {"rawRecord": process.stdout.decode("utf-8", "strict")}
+                elif op == "native_truth":
+                    result = native_truth(endpoint)
+                elif op == "rename_owned":
+                    endpoint.native(
+                        "rename-session",
+                        "-t",
+                        endpoint.independent_native()["sessionId"],
+                        "owned-direct-renamed-" + host,
+                    )
+                    result = native_truth(endpoint)
+                elif op == "remote_executable":
+                    if request["enabled"]:
+                        helper.write(
+                            endpoint.direct_entry, endpoint.direct_wrapper, executable=True
+                        )
+                    else:
+                        endpoint.direct_entry.unlink()
+                    result = {}
+                elif op == "provider_broken":
+                    endpoint.direct_config.write_bytes(
+                        b"schema_version = ?\n"
+                        if request["enabled"]
+                        else endpoint.direct_config_bytes
+                    )
+                    result = {}
+                elif op == "counts":
+                    path = root / "direct-ssh-count"
+                    result = {
+                        "sshStarts": len(path.read_text().splitlines()) if path.exists() else 0,
+                        "nativeReads": len((root / "native-count").read_text().splitlines()),
+                        "servicesInactive": all(
+                            helper.manager("is-active", unit, ok=False).returncode != 0
+                            for unit in endpoint.units
+                        ),
+                    }
+                else:
+                    raise ValueError("unknown private direct operation")
+                print(json.dumps({"ok": True, "result": result}), flush=True)
+            except Exception as error:  # noqa: BLE001 - bounded acceptance failure
+                print(
+                    json.dumps(
+                        {"ok": False, "code": type(error).__name__, "message": str(error)[:1024]}
+                    ),
+                    flush=True,
+                )
+    finally:
+        endpoint.close()
+
+
+def coordinate(output):
+    helper = load(ROOT / "scripts/accept-native-fleet", "direct_coordinator_helper")
+    reader = load(ROOT / "scripts/read-contract", "direct_wire_reader")
+    validators, digest = legacy_reader()
+    root = Path("/tmp/to-fleet-" + uuid.uuid4().hex)
+    root.mkdir(mode=0o700)
+    ssh = [
+        "ssh",
+        "-T",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "ConnectTimeout=2",
+        "-o",
+        "ConnectionAttempts=1",
+        "starship",
+    ]
+    controls, remote_created = {}, False
+    evidence = {
+        "gate": "T10-native-direct",
+        "sourceCommit": command(["git", "-C", str(ROOT), "rev-parse", "HEAD"])
+        .stdout.decode()
+        .strip(),
+        "sourceTreeDirty": bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).stdout),
+        "legacyBundleSha256": digest,
+        "endpoints": {},
+        "cases": [],
+        "limits": [
+            "Private Host Mesh SSH executable adds only remote HOME/native/PATH isolation before actual strict non-PTY SSH",
+            "No production endpoint selection, frontend migration, physical suspend or managed deployment acceptance",
+            "128-host capacity remains source-tested; native topology here is two hosts",
+        ],
+    }
+
+    def passed(name, **details):
+        evidence["cases"].append({"name": name, "result": "passed", **details})
+        print("passed " + name, flush=True)
+
+    def direct(host, **kwargs):
+        result = controls[host].call("direct", **kwargs)
+        raw = result.pop("rawRecord").encode("utf-8")
+        value = reader.wire(raw, 1048576)
+        assert value == result["value"]
+        result["rawRecordSha256"] = hashlib.sha256(raw).hexdigest()
+        evidence["lastDirectResponse"] = {"endpoint": host, "response": result}
+        error = value.get("ok") is False
+        validators["error.schema.json" if error else "inventory.schema.json"].validate(value)
+        assert result["returnCode"] == (1 if error else 0)
+        return result
+
+    def verify_row(row, truth):
+        assert row["status"] == "ok"
+        assert row["serverGeneration"] == truth["serverGeneration"]
+        assert len(row["sessions"]) == 1
+        assert all(
+            row["sessions"][0][key] == truth[key]
+            for key in (
+                "hostId",
+                "serverGeneration",
+                "sessionId",
+                "createdAt",
+                "attachedClients",
+                "windowCount",
+                "name",
+            )
+        )
+
+    try:
+        command(["uv", "build", "--wheel", "--out-dir", str(root / "wheel"), str(ROOT)])
+        wheel = next((root / "wheel").glob("*.whl"))
+        wheel.rename(root / wheel.name)
+        wheel = root / wheel.name
+        for name in ("accept-native-fleet", "accept-native-direct"):
+            shutil.copyfile(ROOT / "scripts" / name, root / name)
+        command([*ssh, "mkdir -m 700 -- " + shlex.quote(str(root))])
+        remote_created = True
+        command(
+            [
+                "scp",
+                "-q",
+                "-o",
+                "BatchMode=yes",
+                "-o",
+                "StrictHostKeyChecking=yes",
+                str(wheel),
+                str(root / "accept-native-fleet"),
+                str(root / "accept-native-direct"),
+                "starship:" + str(root) + "/",
+            ]
+        )
+        for host in ("snap", "starship"):
+            argv = [
+                sys.executable,
+                str(root / "accept-native-direct"),
+                "--worker",
+                str(root),
+                "--host-id",
+                host,
+            ]
+            if host == "starship":
+                argv = [*ssh, shlex.join(["python3", *argv[1:]])]
+            controls[host] = helper.Control(argv)
+            evidence["endpoints"][host] = controls[host].receive()
+        assert all(
+            value["wheelSha256"] == hashlib.sha256(wheel.read_bytes()).hexdigest()
+            for value in evidence["endpoints"].values()
+        )
+        baseline = {host: controls[host].call("native_truth") for host in controls}
+        evidence["baseline"] = baseline
+        passed("same_installed_wheel_private_production_path_layout_and_stopped_observer_services")
+        for host, control in controls.items():
+            remote = "starship" if host == "snap" else "snap"
+            raw = control.call("core_expanded")["rawRecord"].encode("utf-8")
+            observation = reader.wire(raw, 1048576)
+            reader.verify("observation", observation)
+            assert observation["sessions"][0]["options"] == {
+                OPTIONS[0]: "fixture metadata",
+                OPTIONS[1]: "",
+                OPTIONS[2]: None,
+            }
+            passed(
+                "installed_core_preserves_empty_versus_absent_option_values",
+                endpoint=host,
+                observation=observation,
+            )
+            before = control.call("counts")
+            result = direct(host)
+            value = result["value"]
+            assert [row["hostId"] for row in value["hosts"]] == [host, remote]
+            for row in value["hosts"]:
+                verify_row(row, baseline[row["hostId"]]["reference"])
+                assert "panes" not in row["sessions"][0] and "options" not in row["sessions"][0]
+            after = control.call("counts")
+            assert after["servicesInactive"] and after["sshStarts"] == before["sshStarts"] + 1
+            passed("fresh_installed_full_fleet_cli_without_daemons", endpoint=host, response=result)
+            before = after
+            result = direct(host, hosts=[remote.upper()], expanded=True)
+            assert len(result["value"]["hosts"]) == 1
+            row = result["value"]["hosts"][0]
+            verify_row(row, baseline[remote]["reference"])
+            session = row["sessions"][0]
+            assert len(session["panes"]) == 1
+            assert session["options"] == {OPTIONS[0]: "fixture metadata", OPTIONS[2]: None}
+            assert control.call("counts")["sshStarts"] == before["sshStarts"] + 1
+            passed(
+                "selected_remote_casefold_profile_preserves_panes_and_absent_options",
+                endpoint=host,
+                response=result,
+            )
+            result = direct(host, hosts=[remote], expanded=True, includeEmpty=True)
+            assert result["value"]["error"]["code"] == "operation_failed"
+            assert "hosts" not in result["value"]
+            passed(
+                "empty_option_returns_legacy_compatible_typed_failure",
+                endpoint=host,
+                response=result,
+            )
+            before = control.call("counts")
+            result = direct(host, hosts=[host.upper()])
+            assert len(result["value"]["hosts"]) == 1
+            verify_row(result["value"]["hosts"][0], baseline[host]["reference"])
+            assert control.call("counts")["sshStarts"] == before["sshStarts"]
+            passed("selected_local_cli_performs_no_ssh", endpoint=host)
+            for kwargs, code in (
+                ({"hosts": ["not-a-configured-owned-host"]}, "unknown_host"),
+                ({"meshRevision": "sha256:" + "0" * 64}, "stale_mesh"),
+            ):
+                before = control.call("counts")
+                result = direct(host, **kwargs)
+                assert result["value"]["error"]["code"] == code
+                assert control.call("counts") == before
+                passed(
+                    "invalid_selection_or_revision_prevents_native_or_ssh_reads",
+                    endpoint=host,
+                    code=code,
+                )
+            control.call("provider_broken", enabled=True)
+            before = control.call("counts")
+            result = direct(host)
+            assert result["value"]["error"]["code"] == "invalid_config"
+            assert control.call("counts") == before
+            control.call("provider_broken", enabled=False)
+            passed("present_broken_mesh_never_falls_back_to_local", endpoint=host)
+            result = direct(host, providerAbsent=True)
+            row = result["value"]["hosts"][0]
+            assert len(result["value"]["hosts"]) == 1 and result["value"]["meshRevision"] is None
+            assert row["status"] == "ok" and row["local"] is True
+            assert row["serverGeneration"] == baseline[host]["reference"]["serverGeneration"]
+            assert row["sessions"][0]["sessionId"] == baseline[host]["reference"]["sessionId"]
+            passed("absent_mesh_only_allows_native_local_fallback", endpoint=host, response=result)
+        for remote, control in controls.items():
+            host = "starship" if remote == "snap" else "snap"
+            renamed = control.call("rename_owned")
+            result = direct(host, hosts=[remote])
+            verify_row(result["value"]["hosts"][0], renamed["reference"])
+            passed(
+                "native_rename_is_fresh_with_preserved_full_identity",
+                endpoint=host,
+                response=result,
+            )
+            control.call("remote_executable", enabled=False)
+            result = direct(host, hosts=[remote])
+            row = result["value"]["hosts"][0]
+            assert row["status"] == "error" and row["error"]["code"] == "operation_failed"
+            assert row["sessions"] == [] and row["serverGeneration"] is None
+            control.call("remote_executable", enabled=True)
+            passed(
+                "reached_host_missing_executable_is_not_unreachable", endpoint=host, response=result
+            )
+        evidence["after"] = {host: controls[host].call("native_truth") for host in controls}
+        for host, truth in evidence["after"].items():
+            assert all(
+                truth[key] == baseline[host][key]
+                for key in ("roster", "hooks", "geometry", "options")
+            )
+            assert controls[host].call("counts")["servicesInactive"]
+        passed(
+            "native_roster_attachments_windows_geometry_hooks_options_and_service_lifetime_preserved"
+        )
+        evidence["result"] = "passed_direct_candidate"
+    except Exception as error:
+        evidence.update(
+            result="failed", failure={"code": type(error).__name__, "message": str(error)[:2048]}
+        )
+        raise
+    finally:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(evidence, indent=2) + "\n")
+        try:
+            for control in reversed(list(controls.values())):
+                control.close()
+            if remote_created:
+                command(
+                    [
+                        *ssh,
+                        shlex.join(
+                            [
+                                "python3",
+                                str(root / "accept-native-fleet"),
+                                "--cleanup",
+                                str(root),
+                                "--host-id",
+                                "starship",
+                            ]
+                        ),
+                    ]
+                )
+                command([*ssh, "rm -rf -- " + shlex.quote(str(root))])
+            helper.cleanup(root, "snap")
+            shutil.rmtree(root)
+            evidence["ownedCleanup"] = (
+                "both_endpoint_units_children_sockets_and_private_roots_removed"
+            )
+        except Exception as error:
+            evidence.update(
+                result="failed_cleanup",
+                ownedCleanup={
+                    "code": type(error).__name__,
+                    "message": str(error)[:1024],
+                    "privateRecoveryRoot": str(root),
+                },
+            )
+            raise
+        finally:
+            output.write_text(json.dumps(evidence, indent=2) + "\n")
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--worker", type=Path)
+    parser.add_argument("--host-id", choices=("snap", "starship"))
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    if args.worker and args.host_id and not args.output:
+        worker(args.worker, args.host_id)
+        return 0
+    if args.output and not (args.worker or args.host_id):
+        return coordinate(args.output)
+    parser.error("provide --output or a complete private worker invocation")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -48,8 +48,16 @@ with a preparation-only default and five safety regressions. Clean source
 `4465887` passed four [preparation cases](evidence/2026-10-07-native-suspend-preparation-g3.json)
 without arming alarms or suspending: both native baselines survived, cached read
 maxima were 11.27/3.77 ms and owned fixture cleanup passed. Whole-host execution
-still needs an agreed interruption window. Source validation now covers 151
+is deferred by the user on both actively working hosts; its G3 gate stays open.
+Source validation now covers 153
 methods; the added harness changes no production observation or collection code.
+
+Independent [fresh direct acceptance](native-direct-acceptance.md) reopened T10:
+local rows lacked the required legacy `route: null`. The producer now emits that
+field for complete/failed rows, with a pinned-schema regression. Expanded checks
+preserve the released legacy failure for empty option strings while Observation
+v1 retains empty versus absent values. Installed two-host direct acceptance is
+being completed independently; no frontend migration has occurred.
 
 The collector rejects generic connection errors as absence. Fast and legacy
 paths check final generation and full-reference roster within one 2-second

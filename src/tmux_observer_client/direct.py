@@ -77,10 +77,9 @@ def observation_row(host, value, route=None):
         "observedAt": value["sample"]["observedAt"],
         "nativeHostname": value["source"]["nativeHostname"],
         "serverGeneration": value["serverGeneration"],
+        "route": None if host.local else route,
         "sessions": copy.deepcopy(value["sessions"]),
     }
-    if not host.local:
-        row["route"] = route
     if coverage != "complete":
         issue = value["sample"]["error"]
         row["error"] = {
@@ -99,11 +98,10 @@ def failed_row(host, code, message, route=None):
         "observedAt": time.time_ns() // 1000000,
         "nativeHostname": None,
         "serverGeneration": None,
+        "route": None if host.local else route,
         "sessions": [],
         "error": {"code": code, "message": message},
     }
-    if not host.local:
-        row["route"] = route
     return row
 
 
@@ -271,5 +269,19 @@ class DirectInventory:
             "meshRevision": revision,
             "hosts": [rows[host.host_id] for host in selected],
         }
+        # The frozen Tmux Session v1 text type is nonempty, including option
+        # values. The released CLI rejects these at its output boundary too.
+        # Keep core observation values intact; never collapse an empty option
+        # into absence or emit a malformed legacy success document.
+        if any(
+            value == ""
+            for row in response["hosts"]
+            for session in row["sessions"]
+            for value in session.get("options", {}).values()
+        ):
+            raise ContractError(
+                "operation_failed",
+                "requested option values cannot be represented by Tmux Session v1",
+            )
         encode_document(response)  # Preserve the released whole-response byte bound.
         return response

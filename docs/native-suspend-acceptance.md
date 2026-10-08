@@ -4,6 +4,13 @@ G3 requires actual host sleep/wake in each direction. Source clock-jump tests,
 SIGSTOP, transport delays and existing headless profiles do not establish this.
 No whole-host suspend was executed by this preparation.
 
+The user explicitly deferred sleep on both Snap and Starship because both hosts
+are actively working. Keep both power states and alarms untouched while that
+deferral is in force. Continue independent awake-host acceptance and review;
+the physical G3 cases remain open. This is a deferral, not physical acceptance
+or removal of the producer/frontend/deployment gates. Do not repeat the timing
+request during this pass.
+
 Read-only preflight on 2026-10-07 found `freeze mem disk` on both hosts, Snap
 using `[s2idle]` and Starship offering `s2idle [deep]`. Both expose an RTC0
 wakealarm path. These observations establish advertised interfaces, not permission

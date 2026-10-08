@@ -1,0 +1,54 @@
+# Installed fresh direct acceptance
+
+Run from Snap after the source gate:
+
+```sh
+uv run --extra dev python scripts/accept-native-direct --output /tmp/native-direct.json
+```
+
+The tool installs one wheel on Snap and Starship, using the existing private
+default-server/unit fixture. It stops both owned observer services before the
+direct checks. Actual installed `tmux-observer-client snapshot --access direct`
+invocations must collect independently, without activating a service.
+
+The public Host Mesh catalogs are copied to private preferences. The configured
+SSH executable adds only an isolated remote HOME, TMUX_TMPDIR and PATH before
+executing actual strict, non-PTY SSH. The installed collector is exposed under
+its default `$HOME/.local/share/tmux-observer/bin/tmux-observer` path in that
+private HOME. The client uses its production command renderer and public CLI;
+there is no remote-executable injection into DirectInventory. Ordinary provider
+preferences, route history, home directories and native servers remain untouched.
+
+The independent acceptance reader checks actual output bytes. Legacy success
+and failure shapes are validated against the unchanged canonical Tmux Session
+v1 schemas, after verifying the whole bundle against the extraction baseline.
+Separate native queries establish full references, names, attachment/window
+counts, geometry, hooks and explicitly set options. Rename is a fixture operator
+action and must preserve the full reference while fresh reads expose the new name.
+
+Checks include both directions, selected local/remote hosts, casefold resolution,
+explicit panes/options, stale revision and unknown-host refusal, present/broken
+versus absent Mesh, reached-host executable absence, no service activation and
+native passivity. The direct 128-host bound remains source-tested; this native
+fixture has two hosts. This gate does not establish cached-service freshness,
+physical sleep, Rofi rendering or managed endpoint selection.
+
+## Review findings
+
+The initial native check found a real producer compatibility defect: local host
+rows omitted the required legacy `route` field. Complete and failed rows now
+include `route: null` for local or unknown routes. The source regression uses
+unchanged pinned schema bytes and their original bundle manifest.
+
+Expanded native checks also exposed the frozen legacy text restriction: its
+option values cannot be empty strings. The released Tmux Plus public validator
+rejects the same native empty-option response. The fresh legacy facade now emits
+a typed `operation_failed` envelope for this unrepresentable profile; it neither
+publishes malformed success JSON nor converts empty strings to absence. Installed
+core `collect` is checked separately and preserves `""` versus `null`, as required
+by Observation v1. No legacy contract/schema bytes or frontend behavior were
+changed. Any future widening of that legacy contract is a separate compatibility
+decision with its own bundle/pin review.
+
+The tool retains failed investigation outcomes outside the committed acceptance
+records. Only a clean committed source result can establish this native checkpoint.
