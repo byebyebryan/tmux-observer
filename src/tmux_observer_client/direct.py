@@ -269,7 +269,16 @@ class DirectInventory:
                 last = ("operation_failed", "SSH did not prove the selected owner was reached")
         return failed_row(host, *last)
 
-    def inventory(self, *, requested_hosts=(), mesh_revision=None, panes=False, option_names=()):
+    def inventory(
+        self,
+        *,
+        requested_hosts=(),
+        mesh_revision=None,
+        panes=False,
+        option_names=(),
+        with_viewers=False,
+        desktop_config=None,
+    ):
         profile(panes, option_names)
         deadline = boottime_ms() + 15000
         mesh = self.mesh.load(timeout_seconds=5)
@@ -296,6 +305,7 @@ class DirectInventory:
             wanted.update(matches)
         selected = [host for host in hosts if not wanted or host.host_id in wanted]
         rows = {}
+        local_profile = None
         with ThreadPoolExecutor(
             max_workers=4, thread_name_prefix="tmux-observer-direct"
         ) as executor:
@@ -316,12 +326,17 @@ class DirectInventory:
                 if host.local:
                     from tmux_observer.collector import Collector
 
-                    value = (self.local or Collector(host.host_id)).collect(
+                    native = self.local or Collector(host.host_id)
+                    value = native.collect(
                         panes=panes,
                         option_names=option_names,
                         budget_ms=max(1, min(2000, deadline - boottime_ms())),
                     )
                     rows[host.host_id] = observation_row(host, value)
+                    if with_viewers:
+                        from tmux_observer.attachment_collector import AttachmentCollector
+
+                        local_profile = AttachmentCollector(native).sample(value, deadline)
             for host in selected:
                 if not host.local:
                     rows[host.host_id] = futures[host.host_id].result()
@@ -333,6 +348,17 @@ class DirectInventory:
             "meshRevision": revision,
             "hosts": [rows[host.host_id] for host in selected],
         }
+        if with_viewers:
+            from ._fresh_desktop import enrich
+
+            response = enrich(
+                response,
+                endpoint=mesh.local_host.host_id if mesh else hosts[0].host_id,
+                executable=mesh.policy.executable if mesh else None,
+                profile=local_profile,
+                deadline=min(deadline, boottime_ms() + 2000),
+                config=desktop_config,
+            )
         # The frozen Tmux Session v1 text type is nonempty, including option
         # values. The released CLI rejects these at its output boundary too.
         # Keep core observation values intact; never collapse an empty option

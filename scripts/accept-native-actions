@@ -80,7 +80,7 @@ def worker(output, installed_root):
 
     class MissingMesh:
         @staticmethod
-        def load():
+        def load(**_kwargs):
             return None
 
     def request(operation, reference=None, expected=None, parameters=None, options=None):
@@ -160,6 +160,40 @@ def worker(output, installed_root):
         ]
         record["nativeCreatedReference"] = reference
         passed("fixed_default_create_ignores_ambient_alternate_server_without_service")
+        from tmux_observer_client.direct import DirectInventory
+
+        before_fresh = (
+            native.run(
+                [
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}\t#{session_attached}\t#{session_last_attached}\t#{session_windows}",
+                ]
+            ),
+            native.run(["show-options", "-g"]),
+            native.run(["show-hooks", "-g"]),
+        )
+        fresh = DirectInventory(mesh=MissingMesh()).inventory(with_viewers=True)
+        fresh_rows = fresh["hosts"][0]["sessions"]
+        assert any(
+            row["sessionId"] == reference["sessionId"]
+            and row["serverGeneration"] == reference["serverGeneration"]
+            for row in fresh_rows
+        )
+        assert all(row["localViewer"]["state"] == "unknown" for row in fresh_rows)
+        assert before_fresh == (
+            native.run(
+                [
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}\t#{session_attached}\t#{session_last_attached}\t#{session_windows}",
+                ]
+            ),
+            native.run(["show-options", "-g"]),
+            native.run(["show-hooks", "-g"]),
+        )
+        record["explicitFreshProfileSampled"] = True
+        passed("fresh_optional_profile_is_passive_and_headless_presence_remains_unknown")
         renamed_name = "owned-renamed-" + token
         refused = sdk.execute(
             request("rename", reference, name, {"name": renamed_name}, {"@owned": "wrong"})
