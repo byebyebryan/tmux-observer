@@ -1,0 +1,206 @@
+{
+  "owner": {
+    "scope": "instrumented owned passive diagnostic; inclusive timings are not additive",
+    "seconds": 45.08155179792084,
+    "selfCpuSeconds": 0.325449,
+    "childCpuSeconds": 0.417983,
+    "functions": {
+      "MainThread:validate_tree": {
+        "calls": 531,
+        "inclusiveCpuSeconds": 0.05961006999999999
+      },
+      "MainThread:encode_document": {
+        "calls": 256,
+        "inclusiveCpuSeconds": 0.035739718000000135
+      },
+      "MainThread:validate_service_frame": {
+        "calls": 53,
+        "inclusiveCpuSeconds": 0.03047789099999996
+      },
+      "MainThread:validate_attachment_delivery": {
+        "calls": 24,
+        "inclusiveCpuSeconds": 0.015487614000000031
+      },
+      "tmux-observer-native_0:ReadRunner.__call__": {
+        "calls": 115,
+        "inclusiveCpuSeconds": 0.06261211000000003
+      },
+      "tmux-observer-native_0:validate_tree": {
+        "calls": 69,
+        "inclusiveCpuSeconds": 0.011165511999999985
+      },
+      "tmux-observer-native_0:validate_observation": {
+        "calls": 46,
+        "inclusiveCpuSeconds": 0.014900653000000017
+      },
+      "tmux-observer-native_0:Collector.collect": {
+        "calls": 23,
+        "inclusiveCpuSeconds": 0.06201334100000001
+      },
+      "MainThread:validate_observation": {
+        "calls": 75,
+        "inclusiveCpuSeconds": 0.019793153000000112
+      },
+      "tmux-observer-native_0:validate_attachments": {
+        "calls": 23,
+        "inclusiveCpuSeconds": 0.00866029200000004
+      },
+      "tmux-observer-native_0:AttachmentCollector.sample": {
+        "calls": 23,
+        "inclusiveCpuSeconds": 0.06474732100000002
+      },
+      "MainThread:_preflight": {
+        "calls": 39,
+        "inclusiveCpuSeconds": 0.0006465719999999842
+      },
+      "MainThread:decode_document": {
+        "calls": 39,
+        "inclusiveCpuSeconds": 0.0032538729999999766
+      },
+      "MainThread:validate_attachments": {
+        "calls": 45,
+        "inclusiveCpuSeconds": 0.01757934700000005
+      }
+    }
+  },
+  "fleet": {
+    "scope": "instrumented owned passive diagnostic; inclusive timings are not additive",
+    "seconds": 44.99169189296663,
+    "selfCpuSeconds": 1.019661,
+    "childCpuSeconds": 0.26960799999999996,
+    "functions": {
+      "MainThread:FleetPublisher.connection_tick": {
+        "calls": 881,
+        "inclusiveCpuSeconds": 0.29540511400000113
+      },
+      "tmux-desktop_0:validate_tree": {
+        "calls": 312,
+        "inclusiveCpuSeconds": 0.036545981999999706
+      },
+      "tmux-desktop_0:encode_document": {
+        "calls": 111,
+        "inclusiveCpuSeconds": 0.009511926999999865
+      },
+      "MainThread:validate_tree": {
+        "calls": 2513,
+        "inclusiveCpuSeconds": 0.3054223250000023
+      },
+      "MainThread:encode_document": {
+        "calls": 1362,
+        "inclusiveCpuSeconds": 0.18800867899999968
+      },
+      "MainThread:input_hash": {
+        "calls": 165,
+        "inclusiveCpuSeconds": 0.15519031399999977
+      },
+      "MainThread:FleetState.input_key": {
+        "calls": 165,
+        "inclusiveCpuSeconds": 0.18303438999999927
+      },
+      "MainThread:validate_fleet_view": {
+        "calls": 148,
+        "inclusiveCpuSeconds": 0.06621753399999997
+      },
+      "MainThread:FleetState.view": {
+        "calls": 148,
+        "inclusiveCpuSeconds": 0.1753068349999999
+      },
+      "MainThread:FleetState.material": {
+        "calls": 131,
+        "inclusiveCpuSeconds": 0.030687742999999587
+      },
+      "MainThread:FleetPublisher.project_changed": {
+        "calls": 881,
+        "inclusiveCpuSeconds": 0.1866678089999988
+      },
+      "tmux-mesh_0:_preflight": {
+        "calls": 3,
+        "inclusiveCpuSeconds": 7.524699999999997e-05
+      },
+      "tmux-mesh_0:validate_tree": {
+        "calls": 3,
+        "inclusiveCpuSeconds": 8.994800000000007e-05
+      },
+      "tmux-mesh_0:decode_document": {
+        "calls": 3,
+        "inclusiveCpuSeconds": 0.00027446899999999973
+      },
+      "tmux-desktop_0:_preflight": {
+        "calls": 72,
+        "inclusiveCpuSeconds": 0.014550442999999995
+      },
+      "tmux-desktop_0:decode_document": {
+        "calls": 23,
+        "inclusiveCpuSeconds": 0.011564696000000013
+      },
+      "tmux-desktop_0:validate_attachment_delivery": {
+        "calls": 71,
+        "inclusiveCpuSeconds": 0.04563799900000009
+      },
+      "tmux-desktop_0:_niri_windows": {
+        "calls": 33,
+        "inclusiveCpuSeconds": 0.018242785999999997
+      },
+      "tmux-desktop_0:input_hash": {
+        "calls": 17,
+        "inclusiveCpuSeconds": 0.014529170999999994
+      },
+      "tmux-desktop_0:FleetPublisher.desktop_work": {
+        "calls": 17,
+        "inclusiveCpuSeconds": 0.13653722799999998
+      },
+      "MainThread:FleetState.accept_desktop": {
+        "calls": 17,
+        "inclusiveCpuSeconds": 0.07221549200000024
+      },
+      "MainThread:_preflight": {
+        "calls": 111,
+        "inclusiveCpuSeconds": 0.01896473799999987
+      },
+      "MainThread:decode_document": {
+        "calls": 111,
+        "inclusiveCpuSeconds": 0.05116762400000015
+      },
+      "MainThread:validate_observation": {
+        "calls": 222,
+        "inclusiveCpuSeconds": 0.04835988599999956
+      },
+      "MainThread:validate_service_frame": {
+        "calls": 222,
+        "inclusiveCpuSeconds": 0.10547008200000035
+      },
+      "MainThread:validate_attachment_delivery": {
+        "calls": 160,
+        "inclusiveCpuSeconds": 0.08827292700000079
+      },
+      "MainThread:current_attachments": {
+        "calls": 160,
+        "inclusiveCpuSeconds": 0.10586380800000018
+      },
+      "tmux-route-report_0:_preflight": {
+        "calls": 1,
+        "inclusiveCpuSeconds": 9.553000000000035e-06
+      },
+      "tmux-route-report_0:validate_tree": {
+        "calls": 1,
+        "inclusiveCpuSeconds": 1.3076000000000103e-05
+      },
+      "tmux-route-report_0:decode_document": {
+        "calls": 1,
+        "inclusiveCpuSeconds": 5.01779999999999e-05
+      },
+      "tmux-desktop_0:current_attachments": {
+        "calls": 48,
+        "inclusiveCpuSeconds": 0.03585190499999998
+      },
+      "tmux-desktop_0:validate_attachments": {
+        "calls": 67,
+        "inclusiveCpuSeconds": 0.021864505999999943
+      },
+      "MainThread:validate_attachments": {
+        "calls": 151,
+        "inclusiveCpuSeconds": 0.04180907400000017
+      }
+    }
+  }
+}

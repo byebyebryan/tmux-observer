@@ -1,0 +1,932 @@
+{
+  "state": "failed_resource_target",
+  "gate": "B5-normal-resources",
+  "scope": "installed two-host owners passively observing ordinary default servers with enabled local associations, real SSH and actual Niri/process matching; private preferences/units/IPC only; no native mutation or GUI input",
+  "cases": [
+    "both_installed_native_profiles_and_passive_desktop_readers_ready",
+    "hundred_warm_queries_per_endpoint_meet_deadlines",
+    "owned_fleet_teardown_preserves_native_sessions_geometry_and_hooks"
+  ],
+  "endpoints": {
+    "snap": {
+      "wheelSha256": "a71428d0d2488e79ab2ccc2ad9115bd15c72e648213c4062c1235fe341213d46",
+      "templateSha256": {
+        "tmux-observer-owner@.service": "812fc7c76a7bce28c9b99b6b5d79fd8a909e0ab334c4a45d9e7890b69c65b7b0",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+      "nativeReference": {
+        "hostId": "snap",
+        "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+        "sessionReferences": [
+          {
+            "sessionId": "$50",
+            "createdAt": 1791479177
+          },
+          {
+            "sessionId": "$41",
+            "createdAt": 1791252708
+          },
+          {
+            "sessionId": "$40",
+            "createdAt": 1791243553
+          },
+          {
+            "sessionId": "$37",
+            "createdAt": 1791223249
+          },
+          {
+            "sessionId": "$49",
+            "createdAt": 1791477581
+          },
+          {
+            "sessionId": "$51",
+            "createdAt": 1791489973
+          },
+          {
+            "sessionId": "$39",
+            "createdAt": 1791238809
+          },
+          {
+            "sessionId": "$45",
+            "createdAt": 1791331856
+          }
+        ]
+      },
+      "clock": {
+        "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "80H1VV3",
+      "uid": 1000,
+      "readyAssociationCounts": {
+        "state": "ready",
+        "generation": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+        "sessions": 8,
+        "clients": 14
+      },
+      "warmSamples": {
+        "rpcMs": [
+          10.256462,
+          7.166012,
+          6.794293,
+          5.728797,
+          4.220253,
+          3.56403,
+          2.96461,
+          2.552126,
+          2.368384,
+          2.336623,
+          2.344793,
+          2.335335,
+          2.26357,
+          2.30743,
+          2.350829,
+          2.320392,
+          2.247759,
+          2.3603,
+          2.340714,
+          2.210242,
+          2.344973,
+          2.342818,
+          2.209342,
+          2.320619,
+          2.557009,
+          2.444895,
+          2.486599,
+          2.512746,
+          2.278312,
+          3.018273,
+          2.558103,
+          2.547613,
+          2.417259,
+          2.335274,
+          2.402578,
+          2.475434,
+          3.124948,
+          2.59071,
+          3.103879,
+          2.499413,
+          2.490826,
+          2.546981,
+          2.346607,
+          2.454075,
+          3.170083,
+          2.661159,
+          2.499352,
+          2.530718,
+          2.46628,
+          2.428726,
+          2.441981,
+          2.47195,
+          2.599865,
+          2.744527,
+          2.680028,
+          2.535089,
+          2.279486,
+          2.558067,
+          2.54511,
+          2.513059,
+          2.48532,
+          2.694516,
+          2.60321,
+          2.693431,
+          2.72451,
+          2.684738,
+          3.1871,
+          3.790903,
+          2.893309,
+          3.016659,
+          3.19717,
+          2.510882,
+          2.45069,
+          2.385272,
+          2.436437,
+          2.25378,
+          2.393662,
+          2.3938,
+          2.506037,
+          2.506377,
+          2.448882,
+          2.339556,
+          2.516908,
+          2.457808,
+          2.439631,
+          2.35217,
+          2.570323,
+          2.586237,
+          2.474223,
+          5.259761,
+          2.502779,
+          2.55965,
+          2.375947,
+          2.474435,
+          2.376373,
+          2.499097,
+          2.285314,
+          2.440548,
+          2.397079,
+          5.873921
+        ],
+        "cliMs": [
+          38.328953,
+          37.390747,
+          35.543399,
+          42.710262,
+          54.55511,
+          37.614301,
+          36.589309,
+          54.288893,
+          39.407703,
+          36.536617,
+          39.68613,
+          36.964242,
+          46.389692,
+          37.257287,
+          39.159372,
+          35.560996,
+          46.466658,
+          45.081977,
+          36.336537,
+          35.485375,
+          39.936714,
+          39.167503,
+          39.723449,
+          44.518003,
+          36.843759,
+          45.042142,
+          34.850464,
+          37.350582,
+          32.330517,
+          33.746607,
+          37.607242,
+          39.883772,
+          38.38998,
+          32.884282,
+          34.770922,
+          36.261501,
+          33.355382,
+          34.305507,
+          36.094445,
+          34.412647,
+          37.467616,
+          34.150499,
+          34.110276,
+          36.165471,
+          35.91418,
+          34.837768,
+          36.81679,
+          34.185094,
+          35.095925,
+          33.935429,
+          34.499973,
+          43.959346,
+          37.932399,
+          37.891409,
+          38.907617,
+          32.612247,
+          33.784457,
+          34.035476,
+          34.57546,
+          35.002662,
+          35.78405,
+          34.637133,
+          40.108377,
+          35.403657,
+          44.312755,
+          36.865732,
+          38.330827,
+          33.557179,
+          35.755022,
+          37.836879,
+          37.803281,
+          34.267953,
+          45.887158,
+          34.74133,
+          39.385005,
+          35.377905,
+          35.015974,
+          34.562446,
+          36.974142,
+          38.295772,
+          33.790662,
+          35.525084,
+          39.065936,
+          35.559011,
+          43.350774,
+          33.072634,
+          35.553807,
+          39.468129,
+          33.62977,
+          34.569456,
+          35.8968,
+          34.19889,
+          35.833587,
+          34.11638,
+          34.761044,
+          35.973084,
+          38.170698,
+          34.03251,
+          38.337571,
+          34.14573
+        ],
+        "frameSummary": {
+          "readerId": "b1af6485-f676-4daa-874b-9117c3ec0b85",
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "meshState": "ready",
+          "desktopState": "ready",
+          "hostCounts": [
+            {
+              "hostId": "snap",
+              "local": true,
+              "sessions": 8
+            },
+            {
+              "hostId": "starship",
+              "local": false,
+              "sessions": 8
+            }
+          ]
+        }
+      }
+    },
+    "starship": {
+      "wheelSha256": "a71428d0d2488e79ab2ccc2ad9115bd15c72e648213c4062c1235fe341213d46",
+      "templateSha256": {
+        "tmux-observer-owner@.service": "812fc7c76a7bce28c9b99b6b5d79fd8a909e0ab334c4a45d9e7890b69c65b7b0",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "13debc1a8b7b99705fb17616ae09a886",
+      "nativeReference": {
+        "hostId": "starship",
+        "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+        "sessionReferences": [
+          {
+            "sessionId": "$39",
+            "createdAt": 1791393220
+          },
+          {
+            "sessionId": "$51",
+            "createdAt": 1791491690
+          },
+          {
+            "sessionId": "$47",
+            "createdAt": 1791429111
+          },
+          {
+            "sessionId": "$50",
+            "createdAt": 1791478740
+          },
+          {
+            "sessionId": "$38",
+            "createdAt": 1791393055
+          },
+          {
+            "sessionId": "$16",
+            "createdAt": 1790980842
+          },
+          {
+            "sessionId": "$46",
+            "createdAt": 1791428739
+          },
+          {
+            "sessionId": "$52",
+            "createdAt": 1791503972
+          }
+        ]
+      },
+      "clock": {
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "starship",
+      "uid": 1000,
+      "readyAssociationCounts": {
+        "state": "ready",
+        "generation": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+        "sessions": 8,
+        "clients": 6
+      },
+      "warmSamples": {
+        "rpcMs": [
+          2.666052,
+          2.36958,
+          2.33882,
+          2.35403,
+          2.3461,
+          2.358951,
+          2.37629,
+          2.28443,
+          2.20601,
+          2.21945,
+          2.27584,
+          2.3189,
+          2.24027,
+          2.20922,
+          2.18626,
+          2.192229,
+          2.26411,
+          2.23048,
+          2.20937,
+          2.2065,
+          2.29476,
+          2.23073,
+          2.21096,
+          2.240099,
+          2.204729,
+          2.27401,
+          2.28681,
+          2.26548,
+          2.251849,
+          2.20116,
+          2.18473,
+          2.18293,
+          2.176809,
+          2.24344,
+          2.27776,
+          2.27787,
+          2.27163,
+          2.18777,
+          2.1842,
+          2.218099,
+          2.19463,
+          2.29124,
+          2.30898,
+          2.270761,
+          2.32653,
+          2.24933,
+          2.22044,
+          2.703452,
+          2.44978,
+          2.289481,
+          2.235889,
+          2.253321,
+          2.201309,
+          2.20283,
+          2.17785,
+          2.186639,
+          2.23915,
+          2.20657,
+          2.490511,
+          2.35567,
+          2.352931,
+          2.35672,
+          2.341561,
+          2.34158,
+          2.35526,
+          3.147014,
+          3.498726,
+          2.37993,
+          2.361761,
+          2.34156,
+          2.34436,
+          2.357351,
+          2.33619,
+          2.351991,
+          2.33498,
+          2.3436,
+          2.347561,
+          2.33645,
+          2.672152,
+          2.24412,
+          2.196899,
+          2.20975,
+          2.30785,
+          2.20775,
+          2.25417,
+          2.2206,
+          2.377871,
+          2.38419,
+          2.336401,
+          2.35344,
+          2.34027,
+          2.341641,
+          2.35947,
+          2.361161,
+          2.35558,
+          2.3306,
+          2.360171,
+          2.475851,
+          2.33101,
+          2.451051
+        ],
+        "cliMs": [
+          38.396969,
+          33.709559,
+          33.387347,
+          33.712249,
+          34.209621,
+          32.605004,
+          35.775437,
+          35.435537,
+          35.397266,
+          38.343959,
+          36.637972,
+          34.17992,
+          31.017027,
+          34.192101,
+          31.567199,
+          30.425834,
+          30.221424,
+          32.783714,
+          30.998397,
+          33.273447,
+          32.763244,
+          32.514514,
+          32.246382,
+          30.925436,
+          31.005777,
+          32.541183,
+          29.898742,
+          29.247479,
+          28.925198,
+          28.914567,
+          28.988398,
+          30.068113,
+          31.78368,
+          32.888985,
+          30.604135,
+          33.237107,
+          32.567823,
+          31.047787,
+          29.48562,
+          31.426059,
+          32.101992,
+          33.511437,
+          34.080031,
+          31.441098,
+          33.292277,
+          32.392363,
+          31.432819,
+          32.674634,
+          31.580629,
+          31.345419,
+          32.219191,
+          30.314784,
+          31.541509,
+          32.052762,
+          32.472903,
+          33.037576,
+          30.351264,
+          32.129641,
+          31.61866,
+          30.679955,
+          33.91395,
+          32.496813,
+          33.421198,
+          34.498832,
+          30.690145,
+          33.098456,
+          34.775533,
+          33.631809,
+          31.642789,
+          32.918456,
+          33.044665,
+          31.124748,
+          30.831465,
+          31.566219,
+          33.582718,
+          32.957135,
+          34.645863,
+          33.136656,
+          33.162357,
+          34.416771,
+          33.493358,
+          32.938205,
+          32.914456,
+          33.652188,
+          33.490848,
+          33.016505,
+          31.533029,
+          33.674599,
+          33.89905,
+          31.82687,
+          34.152791,
+          31.135917,
+          31.366598,
+          32.112662,
+          32.558904,
+          30.179813,
+          33.368837,
+          32.070941,
+          33.97974,
+          31.013927
+        ],
+        "frameSummary": {
+          "readerId": "4d3c818c-c9ab-4a7d-95e6-463e99feafed",
+          "contextId": "13debc1a8b7b99705fb17616ae09a886",
+          "meshState": "ready",
+          "desktopState": "ready",
+          "hostCounts": [
+            {
+              "hostId": "starship",
+              "local": true,
+              "sessions": 8
+            },
+            {
+              "hostId": "snap",
+              "local": false,
+              "sessions": 8
+            }
+          ]
+        }
+      }
+    }
+  },
+  "cleanup": true,
+  "harnessCommit": "2cebf8c074e52044bcfc9cacd4785de76dec8e2d",
+  "harnessTreeDirty": false,
+  "sourceCommit": "2cebf8c074e52044bcfc9cacd4785de76dec8e2d",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "2cebf8c074e52044bcfc9cacd4785de76dec8e2d",
+      "epoch": 1791511008,
+      "tree": "0cb32855ca0d6aaa696eb101f13ad960f84beac4"
+    },
+    "wheelSha256": "a71428d0d2488e79ab2ccc2ad9115bd15c72e648213c4062c1235fe341213d46",
+    "descriptorSha256": "c299cd4ef6eb5ffd61a990576826c7ab1499c3c24987fcdc882fb8d84f0ecdfa",
+    "sourceFilesMatchHarness": true
+  },
+  "backgroundProfiles": {
+    "snap": {
+      "state": "complete",
+      "durationMs": 600670,
+      "samples": [
+        {
+          "atMs": 550960668,
+          "services": {
+            "owner": {
+              "cpuUsec": 209570,
+              "rssBytes": 27955200,
+              "memoryCurrentBytes": 12324864,
+              "processes": 2
+            },
+            "fleet": {
+              "cpuUsec": 811780,
+              "rssBytes": 41254912,
+              "memoryCurrentBytes": 18591744,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "656313": {
+              "cpuUsec": 50000.0,
+              "rssBytes": 19652608,
+              "incarnation": "55095167",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 26,
+          "fleetCounters": {
+            "sshStarts": 2,
+            "ownerPayloadReceivedBytes": 48092,
+            "ownerControlSentBytes": 1020
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9374,
+            "connections": 2
+          }
+        },
+        {
+          "atMs": 551561338,
+          "services": {
+            "owner": {
+              "cpuUsec": 14663481,
+              "rssBytes": 23281664,
+              "memoryCurrentBytes": 12189696,
+              "processes": 1
+            },
+            "fleet": {
+              "cpuUsec": 23888577,
+              "rssBytes": 42696704,
+              "memoryCurrentBytes": 20557824,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "656313": {
+              "cpuUsec": 2490000.0,
+              "rssBytes": 19775488,
+              "incarnation": "55095167",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 1510,
+          "fleetCounters": {
+            "sshStarts": 2,
+            "ownerPayloadReceivedBytes": 3208785,
+            "ownerControlSentBytes": 61404
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9408,
+            "connections": 2
+          }
+        }
+      ],
+      "servicePeakProcesses": {
+        "owner": {
+          "rssBytes": 28200960,
+          "atMs": 551071934,
+          "processes": [
+            {
+              "pid": 655870,
+              "cpuUsec": 1400000.0,
+              "rssBytes": 23072768,
+              "incarnation": "55095044",
+              "name": "tmux-observer"
+            },
+            {
+              "pid": 662498,
+              "cpuUsec": 0.0,
+              "rssBytes": 5128192,
+              "incarnation": "55107192",
+              "name": "tmux: client"
+            }
+          ]
+        },
+        "fleet": {
+          "rssBytes": 66588672,
+          "atMs": 551401345,
+          "processes": [
+            {
+              "pid": 655872,
+              "cpuUsec": 15490000.0,
+              "rssBytes": 30777344,
+              "incarnation": "55095045",
+              "name": "python"
+            },
+            {
+              "pid": 656376,
+              "cpuUsec": 130000.0,
+              "rssBytes": 11808768,
+              "incarnation": "55095212",
+              "name": "ssh"
+            },
+            {
+              "pid": 675705,
+              "cpuUsec": 30000.0,
+              "rssBytes": 24002560,
+              "incarnation": "55140129",
+              "name": "python3"
+            }
+          ]
+        }
+      },
+      "serviceCpuPercent": {
+        "owner": 2.406298133750645,
+        "fleet": 3.8418427755672835
+      },
+      "bridgeCpuPercent": 0.4062130620806766,
+      "serviceMaxObservedRssBytes": {
+        "owner": 28200960,
+        "fleet": 66588672
+      },
+      "maxObservedBridgeRssBytes": 19775488,
+      "nativeCommands": 1484,
+      "meshCalls": {
+        "list": 40,
+        "report-route": 4
+      },
+      "fleetCounters": {
+        "sshStarts": 0,
+        "ownerPayloadReceivedBytes": 3160693,
+        "ownerControlSentBytes": 60384
+      },
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups"
+      ],
+      "measuredSampleCount": 600
+    },
+    "starship": {
+      "state": "complete",
+      "durationMs": 600391,
+      "samples": [
+        {
+          "atMs": 551373426,
+          "services": {
+            "owner": {
+              "cpuUsec": 140115,
+              "rssBytes": 22745088,
+              "memoryCurrentBytes": 11984896,
+              "processes": 1
+            },
+            "fleet": {
+              "cpuUsec": 532824,
+              "rssBytes": 40841216,
+              "memoryCurrentBytes": 19505152,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "2192800": {
+              "cpuUsec": 30000.0,
+              "rssBytes": 19312640,
+              "incarnation": "55136516",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 25,
+          "fleetCounters": {
+            "sshStarts": 1,
+            "ownerPayloadReceivedBytes": 51242,
+            "ownerControlSentBytes": 1000
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9376,
+            "connections": 2
+          }
+        },
+        {
+          "atMs": 551973817,
+          "services": {
+            "owner": {
+              "cpuUsec": 5481782,
+              "rssBytes": 23359488,
+              "memoryCurrentBytes": 12808192,
+              "processes": 1
+            },
+            "fleet": {
+              "cpuUsec": 10630309,
+              "rssBytes": 42438656,
+              "memoryCurrentBytes": 20361216,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "2192800": {
+              "cpuUsec": 730000.0,
+              "rssBytes": 19402752,
+              "incarnation": "55136516",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 1505,
+          "fleetCounters": {
+            "sshStarts": 1,
+            "ownerPayloadReceivedBytes": 3168577,
+            "ownerControlSentBytes": 60400
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9408,
+            "connections": 2
+          }
+        }
+      ],
+      "servicePeakProcesses": {
+        "owner": {
+          "rssBytes": 25325568,
+          "atMs": 551941689,
+          "processes": [
+            {
+              "pid": 2192752,
+              "cpuUsec": 2070000.0,
+              "rssBytes": 23351296,
+              "incarnation": "55136396",
+              "name": "tmux-observer"
+            },
+            {
+              "pid": 2202932,
+              "cpuUsec": 0.0,
+              "rssBytes": 1974272,
+              "incarnation": "55194168",
+              "name": "tmux"
+            }
+          ]
+        },
+        "fleet": {
+          "rssBytes": 42438656,
+          "atMs": 551940686,
+          "processes": [
+            {
+              "pid": 2192754,
+              "cpuUsec": 7390000.0,
+              "rssBytes": 30707712,
+              "incarnation": "55136397",
+              "name": "python"
+            },
+            {
+              "pid": 2192770,
+              "cpuUsec": 30000.0,
+              "rssBytes": 11730944,
+              "incarnation": "55136412",
+              "name": "ssh"
+            }
+          ]
+        }
+      },
+      "serviceCpuPercent": {
+        "owner": 0.889698046772853,
+        "fleet": 1.6818181818181819
+      },
+      "bridgeCpuPercent": 0.11659068840139176,
+      "serviceMaxObservedRssBytes": {
+        "owner": 25325568,
+        "fleet": 42438656
+      },
+      "maxObservedBridgeRssBytes": 19402752,
+      "nativeCommands": 1480,
+      "meshCalls": {
+        "list": 40,
+        "report-route": 4
+      },
+      "fleetCounters": {
+        "sshStarts": 0,
+        "ownerPayloadReceivedBytes": 3117335,
+        "ownerControlSentBytes": 59400
+      },
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups"
+      ],
+      "measuredSampleCount": 601
+    }
+  },
+  "normalResourceAssessment": {
+    "snap": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 85991424,
+      "ownerMaxObservedRssBytes": 28200960,
+      "combinedCpuPercent": 6.36473159771932,
+      "withinSelectedTargets": false
+    },
+    "starship": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 62214144,
+      "ownerMaxObservedRssBytes": 25325568,
+      "combinedCpuPercent": 2.9777292906717117,
+      "withinSelectedTargets": true
+    }
+  },
+  "limits": [
+    "Sampled RSS can miss transient peaks",
+    "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
+    "Two physical hosts and private catalog/preferences; no managed selection"
+  ],
+  "archiveLimits": [
+    "Profile sample arrays retain first and last only; measuredSampleCount and computed all-sample maxima are retained",
+    "Warm frame bodies are replaced by counts and states; raw local evidence retains the complete validated frames"
+  ]
+}

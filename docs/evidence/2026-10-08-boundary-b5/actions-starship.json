@@ -1,0 +1,50 @@
+{
+  "state": "passed",
+  "cases": [
+    "fixed_default_create_ignores_ambient_alternate_server_without_service",
+    "fresh_optional_profile_is_passive_and_headless_presence_remains_unknown",
+    "required_option_mismatch_refuses_rename_before_native_write",
+    "rename_and_kill_validate_frozen_full_reference_name_and_options",
+    "deleted_or_changed_reference_cannot_authorize_another_native_target",
+    "committed_create_survives_real_terminal_spawn_failure",
+    "deferred_holder_timeout_removes_only_its_owned_pending_session",
+    "ordinary_default_references_preserved"
+  ],
+  "cleanup": true,
+  "harnessCommit": "2cebf8c074e52044bcfc9cacd4785de76dec8e2d",
+  "harnessTreeDirty": false,
+  "sourceCommit": "2cebf8c074e52044bcfc9cacd4785de76dec8e2d",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "2cebf8c074e52044bcfc9cacd4785de76dec8e2d",
+      "epoch": 1791511008,
+      "tree": "0cb32855ca0d6aaa696eb101f13ad960f84beac4"
+    },
+    "wheelSha256": "a71428d0d2488e79ab2ccc2ad9115bd15c72e648213c4062c1235fe341213d46",
+    "descriptorSha256": "c299cd4ef6eb5ffd61a990576826c7ab1499c3c24987fcdc882fb8d84f0ecdfa",
+    "sourceFilesMatchHarness": true
+  },
+  "installedPackageMembersVerified": 74,
+  "endpoint": "starship",
+  "scope": "installed action SDK; owned default/alternate servers; no GUI or observation services",
+  "installedImportOriginsVerified": true,
+  "observationServicesImported": false,
+  "nativeCreatedReference": {
+    "hostId": "starship",
+    "serverGeneration": "tmux-v1:1791511829:2207064:/tmp/observer-native-actions-7vzlegtw/tmux-1000/default",
+    "sessionId": "$1",
+    "createdAt": 1791511829
+  },
+  "explicitFreshProfileSampled": true,
+  "ordinaryDefaultReferencesPreserved": 8,
+  "limits": [
+    "Injected missing Mesh, no native remote route acceptance",
+    "No Kitty/Niri/Rofi acceptance; verified focus/close is a separate Starship gate",
+    "No installed or managed selection implied"
+  ],
+  "ownedTemporaryRootRemoved": true,
+  "installedWorkerExit": 0,
+  "wheelSha256": "a71428d0d2488e79ab2ccc2ad9115bd15c72e648213c4062c1235fe341213d46"
+}

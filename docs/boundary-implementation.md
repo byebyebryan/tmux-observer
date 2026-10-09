@@ -289,3 +289,42 @@ their bounded CLI path. This follows Niri's
 [documented IPC protocol](https://github.com/YaLTeR/niri/blob/main/niri-ipc/src/lib.rs)
 and was compared passively against the actual Snap CLI window identities; owned
 framing tests and separate frozen/native/resource acceptance remain required.
+
+Frozen Observer `2cebf8c` and Plus `7a9155e` reproduce identical committed-source
+wheels (`a71428d…` and `92fe44eb…`). The source gates pass 312 and 287 tests.
+Current installed native gates pass 14 collector and 11 association cases per
+host, eight headless action cases per host, four actual SSH action cases, seven
+Snap window-action cases and nine Snap desktop-observation cases. Starship
+receives no graphical input. The exact frontend passes thirty installed CLI
+cases across both endpoints and twenty-one Snap picker cases; ready/confirmation
+screenshots are inspected. Warm frame p95 is 100.50 ms, observed launch surfaces
+are 177–179 ms, and one owned Refresh notice clears in 246.47 ms. Callback/surface
+timing does not establish compositor presentation. Current records are under
+[`evidence/2026-10-08-boundary-b5/`](evidence/2026-10-08-boundary-b5/); the Plus
+repository retains its exact picker record and owned screenshots separately.
+
+The enabled-profile sixteen-owner capacity run passes eleven cases with fifteen
+actual SSH links and thirty-two readers. Conservative sampled fleet/bridge RSS
+is 497.86 MiB against 768 MiB; native topology and capacity CPU remain outside
+that synthetic logical-owner acceptance. The current actual-session ten-minute
+run again fails Snap's unchanged five-percent CPU gate: 6.3647%, with Starship at
+2.9777%. Memory, cached-query deadlines, native references and hooks pass. The
+failed resource record is retained in
+[`normal-socket-failed-cpu.json`](evidence/2026-10-08-boundary-b4/normal-socket-failed-cpu.json).
+No release or managed promotion follows these functional passes.
+
+An owned forty-five-second
+[CPU diagnostic](evidence/2026-10-08-boundary-b5/cpu-diagnostic.json) confirms that
+the remaining cost is local: 115 native process starts, 2,513 main-thread wire
+tree checks and 165 input hashes. Timings are instrumented, inclusive and not
+additive; this diagnostic is not normal-resource acceptance. The ten-minute run
+starts no new Observer SSH connections and receives about 3 MiB of owner protocol
+payload per endpoint. The resource review records alternatives; the user asks
+for the CPU cause before choosing any replacement ceiling. Five percent remains
+the promotion gate while the remaining repeated work is investigated.
+
+Chezmoi source `e553f90` repairs coordinated rollback of both exact package
+payloads; `565e9b9` requires current desktop evidence and, for an explicitly
+profile-enabled selection, a current scope-matching local association receipt.
+Ten owned filesystem/readiness tests pass. These are helper source checks;
+installed paired rollback/reselection and managed selection remain pending.

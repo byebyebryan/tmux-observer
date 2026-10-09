@@ -99,3 +99,44 @@ within the measured scope. Revised G3 is accepted for always-on hosts with the
 [clean frozen-wheel recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json);
 physical sleep/wake is optional. Consumer migration and managed rollout retain
 separate gates.
+
+## Boundary extraction CPU review, 2026-10-08
+
+The boundary extraction adds the passive native client-association profile. Its
+normal acceptance now reads both endpoints' actual default-server clients and
+matching desktop windows, rather than an unattached private fixture. The
+unchanged five-percent target remains a promotion gate.
+
+The [latest ten-minute profile](evidence/2026-10-08-boundary-b4/normal-socket-failed-cpu.json)
+uses frozen Observer `2cebf8c`, preserves eight ordinary sessions per endpoint,
+and sends no graphical input. Snap measures 6.3647% combined owner/fleet/associated
+bridge CPU; Starship measures 2.9777%. Sampled fleet/associated-bridge RSS is
+82.01/59.33 MiB against 96 MiB, and owner RSS is 26.89/24.15 MiB against 64 MiB.
+One hundred validated warm queries per endpoint meet the existing deadline.
+Native session references and hooks survive owned-service teardown. The candidate
+fails the selected CPU gate and remains unpublished and unselected.
+
+Read coalescing, prepared projection reuse, dependency-stamp reuse, bounded wire
+check reuse and fixed read-only Niri socket requests are implemented and tested.
+They preserve the two-second owner cadence, existing leases and independent
+validation boundaries. The measured result is lower than the preceding 7.2507%
+Snap profile, but the runs also contain ordinary desktop changes; this comparison
+does not isolate each optimization's contribution.
+
+Two concrete resource directions remain:
+
+1. Review an eight-percent normal combined CPU ceiling for the current Python
+   implementation, then validate the exact frozen candidate against that selected
+   ceiling. This is eight percent of one core, not eight percent of the whole
+   machine. Keep 96/64/768 MiB, query deadlines, logical caps, cadence and freshness
+   unchanged. Preserve every failed five-percent record. This proposed budget
+   has not been selected or accepted.
+2. Retain five percent as a hard promotion gate and continue implementation and
+   resource measurement. Further optimization must preserve all passive/native,
+   framing, scope, deadline and cleanup requirements; it cannot silently slow
+   renewal, subtract instrumentation or omit associated process costs.
+
+Recommendation: review the first direction for this standard-library Python
+delivery. The second remains valid if its lower CPU ceiling is a product
+requirement. Functional/native/graphical acceptance and paired rollback are
+independent of this pending resource decision.
