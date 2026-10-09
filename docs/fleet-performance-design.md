@@ -54,7 +54,7 @@ larger contract is deferred in favor of the independently useful fleet pass.
 | FP1 | Checked input/accounting, unchanged Mesh, facts versus receipt work; adverse scope/expiry/capacity regressions | Complete; 367 tests and contract/style checks pass |
 | FP2 | Remote proof scheduling and remote viewer disposition; fixed-input before/after comparison | Complete; frozen native acceptance pending |
 | FP3 | Frozen producer native/recovery/resource/capacity acceptance; independent pinned consumer and Snap GUI | Complete within the declared always-on scope |
-| FP4 | Published paired artifacts; scoped both-host bytes/readiness/recovery/rollback and preserved source drift | Pending |
+| FP4 | Published paired artifacts; scoped both-host bytes/readiness/recovery/rollback and preserved source drift | Managed acceptance complete; source reconciliation being recorded |
 
 Use identical synthetic input streams for causal function-work comparisons;
 measure ordinary ten-minute native fleet separately. Report owner, fleet,
@@ -148,4 +148,30 @@ query deadlines hold; ordinary references, generations and hooks survive.
 Fleet CPU is lower than the previous ordinary run's 3.1532% / 1.8755%, but
 working desktops/activity differ, so that comparison is not a causal savings
 estimate. The controlled fixed-input result above establishes the bookkeeping
-reduction. Managed promotion remains pending in FP4.
+reduction.
+
+## Final paired managed result
+
+The selected pair is Observer 0.4.0a1 / Plus **0.10.0a2**. Frontend a1's immutable
+tag retained the old CI filename even though its main-branch review fixed it;
+that tag failed the download step. A2 includes the correction in frozen runtime
+`1b45adad7488bc077b01b7e94a61fc2b2265abb4` and passes main/tag CI. Its packaged
+frontend Python/native/Observer-pin bytes are identical to a1; Observer's exact
+wheel, seven bundles, resource results and native acceptance remain unchanged.
+Independent a2 wheel and managed Mod+G checks each pass all 23 Snap GUI cases.
+
+Both endpoints select the published pair through seventeen scoped chezmoi
+targets. Checks verify all 173 Observer members and 299 Plus files/manifest,
+current local native bindings and independent fresh remote desktop evidence.
+Owner/reader restart, paired rollback to 0.3.0a1/0.9.0a1 and exact reselection
+pass. Installed full-reference lifecycle checks pass from both endpoints. Final
+native, fresh and prepared views agree on nine Snap and ten Starship sessions,
+with matching generations. Ordinary references/hooks and unrelated Agent/Kitty
+controls survive. Starship receives no foreground input.
+
+The initial a1 Starship recovery call overlapped Snap rollback and timed out;
+serial recovery passed after the peer was steady. All final a2 recovery checks
+are serialized and pass without relaxing readiness. Source reconciliation keeps
+private Agent history and the unrelated Starship Kitty source edit; it publishes
+only the isolated intended chezmoi selection and evidence. Physical suspend and
+retained remote viewer contracts remain explicitly deferred.
