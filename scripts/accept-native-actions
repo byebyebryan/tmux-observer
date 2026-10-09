@@ -5,6 +5,8 @@ import argparse
 import hashlib
 import json
 import os
+import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -231,17 +233,204 @@ def worker(output, installed_root):
     return 0 if record["state"] == "passed" and record["cleanup"] else 1
 
 
+def remote_worker(output, installed_root):
+    """Actual SSH and fixed action programs; privately scope only native fixtures."""
+    sys.path.insert(0, str(installed_root))
+    from tmux_observer_actions.public import ActionClient, ActionConfig
+    from tmux_observer_actions.remote_lifecycle import RemoteLifecycle
+    from tmux_observer_client.mesh import MeshHost, MeshPolicy, MeshRoute, MeshSnapshot
+
+    record = {"state": "running", "cases": [], "cleanup": False, "endpoint": os.uname().nodename}
+    root = None
+    token = uuid.uuid4().hex[:12]
+    host = "fixture-remote-actions-" + token
+    revision = "sha256:" + hashlib.sha256(host.encode()).hexdigest()
+    policy = MeshPolicy("/usr/bin/ssh", 3, 1, 30)
+    snapshot = MeshSnapshot(
+        revision,
+        "fixture-local-" + token,
+        policy,
+        (
+            MeshHost("fixture-local-" + token, "Owned local", True, (), ()),
+            MeshHost(host, "Owned remote", False, (), (MeshRoute("starship", 0, None, None),)),
+        ),
+    )
+    dispatches = []
+
+    class OwnedMesh:
+        @staticmethod
+        def load():
+            return snapshot
+
+        @staticmethod
+        def report_route(**kwargs):
+            assert kwargs["mesh_revision"] == revision and kwargs["route"] == "starship"
+            return True
+
+    def ssh(program, check=True):
+        return command(
+            ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", "starship", program],
+            check=check,
+        )
+
+    def native(arguments):
+        return ssh(
+            "env TMUX_TMPDIR="
+            + shlex.quote(root)
+            + " tmux -u -L default "
+            + " ".join(map(shlex.quote, arguments))
+        ).stdout.strip()
+
+    def runner(argv, **kwargs):
+        # The public API has no arbitrary server selector. The native gate
+        # wraps only its owned SSH process with a private socket namespace.
+        dispatches.append(argv[-1])
+        wrapped = [
+            *argv[:-1],
+            "export TMUX_TMPDIR="
+            + shlex.quote(root)
+            + "; export TMUX=/owned-alternate,1,0 TMUX_PANE=%99; "
+            + argv[-1],
+        ]
+        kwargs.pop("check", None)
+        return subprocess.run(wrapped, check=False, **kwargs)
+
+    def request(operation, reference=None, name=None, parameters=None, options=None):
+        return {
+            "protocol": "tmux-observer.action.v1",
+            "schemaVersion": 1,
+            "requestId": uuid.uuid4().hex,
+            "operation": operation,
+            "hostId": host,
+            "meshRevision": revision,
+            "sessionRef": reference,
+            "guards": {"expectedName": name, "requiredOptions": options or {}},
+            "parameters": parameters or {},
+        }
+
+    try:
+        assert (
+            Path(sys.modules["tmux_observer_actions.public"].__file__)
+            .resolve()
+            .is_relative_to(installed_root.resolve())
+        )
+        record["installedImportOriginsVerified"] = True
+        baseline = set(
+            ssh(
+                "env -u TMUX -u TMUX_PANE tmux -u -L default list-sessions -F '#{session_id} #{session_created}'",
+                check=False,
+            ).stdout.splitlines()
+        )
+        root = ssh("mktemp -d /tmp/observer-remote-actions-XXXXXXXX").stdout.strip()
+        assert re.fullmatch(r"/tmp/observer-remote-actions-[A-Za-z0-9]+", root)
+        native(
+            ["-f", "/dev/null", "new-session", "-d", "-s", "owned-anchor-" + token, "sleep", "90"]
+        )
+        remote = RemoteLifecycle(OwnedMesh(), ActionConfig(), runner=runner)
+        sdk = ActionClient(ActionConfig(), mesh_adapter=OwnedMesh(), remote_lifecycle=remote)
+        name = "owned-remote-" + token
+        created = sdk.execute(
+            request(
+                "create",
+                parameters={
+                    "name": name,
+                    "cwd": "/tmp",
+                    "options": {"@owned": token},
+                    "command": ["sleep", "90"],
+                    "deferUntilAttached": False,
+                    "attachTimeout": None,
+                    "open": False,
+                },
+            )
+        )
+        assert created["ok"] and created["outcome"]["nativeEffect"] == "confirmed", created
+        reference = created["sessionRef"]
+        assert reference["hostId"] == host and reference["serverGeneration"].endswith("/default")
+        assert (
+            native(["display-message", "-p", "-t", reference["sessionId"], "#{session_name}"])
+            == name
+        )
+        record["cases"].append("actual_ssh_create_fixed_default_and_complete_acknowledgement")
+        renamed_name = name + "-renamed"
+        refused = sdk.execute(
+            request("rename", reference, name, {"name": renamed_name}, {"@owned": "wrong"})
+        )
+        assert not refused["ok"] and not refused["automaticRetry"]
+        assert (
+            native(["display-message", "-p", "-t", reference["sessionId"], "#{session_name}"])
+            == name
+        )
+        record["cases"].append("actual_remote_required_option_refusal_preserves_target")
+        renamed = sdk.execute(
+            request("rename", reference, name, {"name": renamed_name}, {"@owned": token})
+        )
+        assert renamed["ok"] and renamed["sessionRef"] == reference, renamed
+        killed = sdk.execute(request("kill", reference, renamed_name, options={"@owned": token}))
+        assert killed["ok"] and killed["outcome"]["nativeEffect"] == "confirmed", killed
+        assert native(["list-sessions", "-F", "#{session_id}"]) == "$0"
+        record["cases"].append("actual_ssh_rename_and_kill_preserve_frozen_reference_binding")
+        assert len(dispatches) == 4
+        record["singleDispatchPerOperation"] = True
+        after = set(
+            ssh(
+                "env -u TMUX -u TMUX_PANE tmux -u -L default list-sessions -F '#{session_id} #{session_created}'",
+                check=False,
+            ).stdout.splitlines()
+        )
+        assert baseline <= after
+        record["ordinaryDefaultReferencesPreserved"] = len(baseline)
+        record["cases"].append("ordinary_remote_default_references_preserved")
+        record["limits"] = [
+            "Private TMUX_TMPDIR transport wrapper and injected catalog/route reporter",
+            "Real SSH and native fixed programs; no terminal, Rofi or managed selection",
+        ]
+        record["state"] = "passed"
+    except (AssertionError, OSError, ValueError, subprocess.SubprocessError) as error:
+        record.update(
+            state="failed", failure=type(error).__name__, failureMessage=str(error)[:1200]
+        )
+    finally:
+        if root is not None and re.fullmatch(r"/tmp/observer-remote-actions-[A-Za-z0-9]+", root):
+            ssh(
+                "env TMUX_TMPDIR=" + shlex.quote(root) + " tmux -u -L default kill-server",
+                check=False,
+            )
+            end = time.monotonic() + 3
+            absent = False
+            while time.monotonic() < end:
+                absent = (
+                    ssh(
+                        "env TMUX_TMPDIR="
+                        + shlex.quote(root)
+                        + " tmux -u -L default list-sessions",
+                        check=False,
+                    ).returncode
+                    != 0
+                )
+                if absent:
+                    break
+                time.sleep(0.05)
+            removed = ssh(
+                "rm -rf -- " + shlex.quote(root) + "; test ! -e " + shlex.quote(root), check=False
+            )
+            record["cleanup"] = absent and removed.returncode == 0
+        Path(output).write_text(json.dumps(record, indent=2) + "\n")
+    return 0 if record["state"] == "passed" and record["cleanup"] else 1
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifact", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--remote-starship", action="store_true")
     parser.add_argument("--installed-root", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.worker:
         if args.artifact is not None or args.installed_root is None:
             parser.error("worker requires one installed root and no artifact")
-        return worker(args.output, args.installed_root)
+        selected = remote_worker if args.remote_starship else worker
+        return selected(args.output, args.installed_root)
     from artifact_input import stage_wheel
 
     record = {"state": "preparing", "cases": [], "cleanup": False}
@@ -271,6 +460,7 @@ def main():
                 "-I",
                 str(Path(__file__).resolve()),
                 "--worker",
+                *(["--remote-starship"] if args.remote_starship else []),
                 "--installed-root",
                 str(target),
                 "--output",

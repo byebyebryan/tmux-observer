@@ -1,0 +1,367 @@
+#!/usr/bin/env python3
+"""Installed explicit actions on owned Starship Kitty/Niri windows."""
+
+import argparse
+import hashlib
+import json
+import os
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+import uuid
+import zipfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def command(argv, *, env=None, timeout=15, check=True):
+    return subprocess.run(
+        argv, env=env, timeout=timeout, capture_output=True, text=True, check=check
+    )
+
+
+def wait_for(probe, label, timeout=10):
+    end = time.monotonic() + timeout
+    while time.monotonic() < end:
+        value = probe()
+        if value:
+            return value
+        time.sleep(0.1)
+    raise AssertionError("owned action wait expired: " + label)
+
+
+def worker(output, installed_root):
+    sys.path.insert(0, str(installed_root))
+    from tmux_observer_actions.model import SessionReference
+    from tmux_observer_actions.public import ActionClient, ActionConfig
+    from tmux_observer_actions.tmux import TmuxClient
+    from tmux_observer_client._desktop_context import context_fingerprint
+    from tmux_observer_client._niri_observation import _niri_windows
+    from tmux_observer_client._process_evidence import _proc
+    from tmux_observer_client.mesh import MeshHost, MeshPolicy, MeshSnapshot
+    from tmux_observer_client.public import desktop_context_id
+
+    record = {"state": "running", "cases": [], "cleanup": False, "endpoint": os.uname().nodename}
+    original = dict(os.environ)
+    desktop = dict(original)
+    manager = command(["systemctl", "--user", "show-environment"]).stdout
+    for line in manager.splitlines():
+        key, separator, value = line.partition("=")
+        if separator and key in ("DISPLAY", "WAYLAND_DISPLAY", "XDG_RUNTIME_DIR", "NIRI_SOCKET"):
+            desktop[key] = value
+    desktop.pop("TMUX", None)
+    desktop.pop("TMUX_PANE", None)
+    os.environ.clear()
+    os.environ.update(desktop)
+    windows = _niri_windows(("niri",))
+    assert windows is not None and desktop.get("NIRI_SOCKET")
+    focused = next((row for row in windows if row.get("is_focused")), None)
+    original_proc = _proc(focused["pid"]) if focused is not None else None
+    context = desktop_context_id()
+    original_context = context_fingerprint(context)
+    ordinary = [
+        "tmux",
+        "-u",
+        "-L",
+        "default",
+        "list-sessions",
+        "-F",
+        "#{session_id}\t#{session_created}",
+    ]
+    before = command(ordinary, env=desktop, check=False)
+    baseline = set(before.stdout.splitlines()) if before.returncode == 0 else set()
+    temporary = tempfile.TemporaryDirectory(prefix="observer-action-desktop-")
+    root = Path(temporary.name)
+    fixture = {**desktop, "TMUX_TMPDIR": str(root), "SHELL": "/bin/sh"}
+    for key in ("XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_STATE_HOME"):
+        fixture[key] = str(root / key.casefold())
+    token = uuid.uuid4().hex[:12]
+    host = "fixture-actions-" + token
+    revision = "sha256:" + hashlib.sha256(host.encode()).hexdigest()
+    snapshot = MeshSnapshot(
+        revision, host, MeshPolicy("ssh", 1, 1, 30), (MeshHost(host, host, True, (), ()),)
+    )
+
+    class OwnedMesh:
+        @staticmethod
+        def load():
+            return snapshot
+
+    server = None
+    owned_pids = set()
+
+    def request(operation, reference=None, name=None, parameters=None):
+        return {
+            "protocol": "tmux-observer.action.v1",
+            "schemaVersion": 1,
+            "requestId": uuid.uuid4().hex,
+            "operation": operation,
+            "hostId": host,
+            "meshRevision": revision,
+            "sessionRef": reference,
+            "guards": {"expectedName": name, "requiredOptions": {}},
+            "parameters": parameters or {},
+        }
+
+    def viewers(reference, name):
+        result = sdk.execute(request("viewers", reference, name))
+        assert result["ok"], result
+        return result["legacyResult"]
+
+    def registered(reference, name, count):
+        row = viewers(reference, name)
+        if row["status"] == "verified" and len(row["viewers"]) == count:
+            current = _niri_windows(("niri",)) or []
+            ids = {value["windowId"] for value in row["viewers"]}
+            owned_pids.update(value["pid"] for value in current if value["id"] in ids)
+            return row["viewers"]
+        return None
+
+    def passed(name):
+        record["cases"].append(name)
+
+    try:
+        assert hasattr(os, "pidfd_open") and hasattr(signal, "pidfd_send_signal")
+        record["nativePidfdBindings"] = True
+        for name in ("tmux_observer_actions.public", "tmux_observer_actions.tmux"):
+            assert (
+                Path(sys.modules[name].__file__).resolve().is_relative_to(installed_root.resolve())
+            )
+        record["installedImportOriginsVerified"] = True
+        os.environ.clear()
+        os.environ.update(fixture)
+        command(
+            [
+                "tmux",
+                "-u",
+                "-L",
+                "default",
+                "-f",
+                "/dev/null",
+                "new-session",
+                "-d",
+                "-s",
+                "owned-anchor-" + token,
+                "sleep",
+                "90",
+            ],
+            env=fixture,
+        )
+        native = TmuxClient()
+        server = _proc(int(native.format(None, "#{pid}")))
+        assert server is not None
+        sdk = ActionClient(
+            ActionConfig(terminal=("kitty", "--config", "NONE", "-o", "confirm_os_window_close=0")),
+            mesh_adapter=OwnedMesh(),
+        )
+        references = []
+        for suffix in ("first", "second"):
+            name = "owned-action-" + suffix + "-" + token
+            result = sdk.execute(
+                request(
+                    "create",
+                    parameters={
+                        "name": name,
+                        "cwd": "/tmp",
+                        "options": {"@owned": token},
+                        "command": ["sleep", "90"],
+                        "deferUntilAttached": False,
+                        "attachTimeout": None,
+                        "open": False,
+                    },
+                )
+            )
+            assert result["ok"], result
+            references.append((result["sessionRef"], name))
+        reference, name = references[0]
+        second_ref, _second_name = references[1]
+        opened = sdk.execute(request("open", reference, name, {"viewerPolicy": "new"}))
+        assert opened["ok"] and opened["outcome"]["terminalSpawn"] == "confirmed", opened
+        first = wait_for(lambda: registered(reference, name, 1), "first native viewer")[0]
+        reused = sdk.execute(request("open", reference, name, {"viewerPolicy": "verified"}))
+        assert reused["ok"] and reused["outcome"]["focus"] == "confirmed", reused
+        assert not reused["legacyResult"]["terminalLaunched"]
+        wait_for(
+            lambda: any(
+                row["id"] == first["windowId"] and row.get("is_focused")
+                for row in (_niri_windows(("niri",)) or [])
+            ),
+            "native focus",
+        )
+        passed("registered_native_viewer_reused_and_actual_window_focused")
+        opened = sdk.execute(request("open", reference, name, {"viewerPolicy": "new"}))
+        assert opened["ok"] and opened["legacyResult"]["terminalLaunched"]
+        wait_for(lambda: registered(reference, name, 2), "second explicit viewer")
+        for policy in ("reuse_unique", "verified"):
+            refused = sdk.execute(request("open", reference, name, {"viewerPolicy": policy}))
+            assert not refused["ok"] and refused["error"]["code"] == "viewer_ambiguous", refused
+            assert refused["outcome"]["terminalSpawn"] == "not_requested"
+        passed("explicit_new_viewer_allowed_duplicates_refuse_implicit_reuse_or_spawn")
+        native.run(["set-option", "-t", reference["sessionId"], "destroy-unattached", "on"])
+        refused = sdk.execute(
+            request("close-viewer", reference, name, {"viewerId": first["viewerId"]})
+        )
+        assert not refused["ok"] and refused["outcome"]["viewerClose"] == "not_requested", refused
+        assert len(registered(reference, name, 2)) == 2
+        native.run(["set-option", "-t", reference["sessionId"], "destroy-unattached", "off"])
+        passed("destroy_unattached_on_refuses_close_before_signal")
+        closed = sdk.execute(
+            request("close-viewer", reference, name, {"viewerId": first["viewerId"]})
+        )
+        assert closed["ok"] and closed["outcome"]["viewerClose"] == "confirmed", closed
+        remaining = wait_for(lambda: registered(reference, name, 1), "remaining viewer")[0]
+        assert remaining["viewerId"] != first["viewerId"] and native.find(
+            SessionReference(
+                host, reference["serverGeneration"], reference["sessionId"], reference["createdAt"]
+            )
+        )
+        replay = sdk.execute(
+            request("close-viewer", reference, name, {"viewerId": first["viewerId"]})
+        )
+        assert replay["ok"] and replay["outcome"]["viewerClose"] == "already_closed", replay
+        assert registered(reference, name, 1)[0] == remaining
+        passed("pidfd_close_removes_exact_viewer_preserves_session_and_other_viewer")
+        clients = native.run(
+            ["list-clients", "-t", reference["sessionId"], "-F", "#{client_tty}"]
+        ).splitlines()
+        assert len(clients) == 1
+        native.run(["switch-client", "-c", clients[0], "-t", second_ref["sessionId"]])
+        refused = sdk.execute(
+            request("close-viewer", reference, name, {"viewerId": remaining["viewerId"]})
+        )
+        assert not refused["ok"] and refused["error"]["code"] == "viewer_unverified", refused
+        assert native.client_pids(second_ref["sessionId"])
+        assert any(row["id"] == remaining["windowId"] for row in (_niri_windows(("niri",)) or []))
+        passed("actual_client_switch_revokes_old_handle_without_closing_new_attachment")
+        native.run(["switch-client", "-c", clients[0], "-t", reference["sessionId"]])
+        recovered = wait_for(lambda: registered(reference, name, 1), "returned native binding")[0]
+        closed = sdk.execute(
+            request("close-viewer", reference, name, {"viewerId": recovered["viewerId"]})
+        )
+        assert closed["ok"] and native.find(
+            SessionReference(
+                host, reference["serverGeneration"], reference["sessionId"], reference["createdAt"]
+            )
+        ), closed
+        passed("returned_native_binding_can_be_guardedly_closed")
+        after = command(ordinary, env=desktop, check=False)
+        assert baseline <= set(after.stdout.splitlines())
+        record["ordinaryDefaultReferencesPreserved"] = len(baseline)
+        passed("ordinary_default_references_preserved")
+        record["limits"] = [
+            "Injected local-only Mesh; no native remote-route acceptance",
+            "No Rofi or managed-selection acceptance",
+        ]
+        record["state"] = "passed"
+    except (AssertionError, OSError, ValueError, subprocess.SubprocessError) as error:
+        record.update(
+            state="failed", failure=type(error).__name__, failureMessage=str(error)[:1200]
+        )
+    finally:
+        command(["tmux", "-u", "-L", "default", "kill-server"], env=fixture, check=False)
+        end = time.monotonic() + 5
+        while (
+            (server is not None and _proc(server.pid) == server)
+            or any(row.get("pid") in owned_pids for row in (_niri_windows(("niri",)) or []))
+        ) and time.monotonic() < end:
+            time.sleep(0.1)
+        record["cleanup"] = (server is None or _proc(server.pid) != server) and not any(
+            row.get("pid") in owned_pids for row in (_niri_windows(("niri",)) or [])
+        )
+        if (
+            focused is not None
+            and original_proc is not None
+            and context_fingerprint(context) == original_context
+            and _proc(focused["pid"]) == original_proc
+            and any(
+                row.get("id") == focused["id"] and row.get("pid") == focused["pid"]
+                for row in (_niri_windows(("niri",)) or [])
+            )
+        ):
+            restored = command(
+                ["niri", "msg", "action", "focus-window", "--id", str(focused["id"])],
+                env=desktop,
+                check=False,
+            )
+            record["originalFocusRestoreAccepted"] = restored.returncode == 0
+        os.environ.clear()
+        os.environ.update(original)
+        temporary.cleanup()
+        record["ownedTemporaryRootRemoved"] = not root.exists()
+        Path(output).write_text(json.dumps(record, indent=2) + "\n")
+    return 0 if record["state"] == "passed" and record["cleanup"] else 1
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--artifact", type=Path)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--worker-python", type=Path, default=Path("/usr/bin/python"))
+    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--installed-root", type=Path, help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    if args.worker:
+        return worker(args.output, args.installed_root)
+    if os.uname().nodename.casefold() != "starship":
+        parser.error("this authorized graphical gate runs on Starship only")
+    from artifact_input import stage_wheel
+
+    record = {"state": "preparing", "cases": [], "cleanup": False}
+    with tempfile.TemporaryDirectory(prefix="observer-action-desktop-install-") as temporary:
+        stage = Path(temporary)
+        wheel = stage_wheel(stage / "wheel", record, repo=ROOT, descriptor=args.artifact)
+        target = stage / "python"
+        command(
+            ["uv", "pip", "install", "--no-deps", "--target", str(target), str(wheel)], timeout=30
+        )
+        with zipfile.ZipFile(wheel) as archive:
+            members = [
+                name
+                for name in archive.namelist()
+                if name.startswith(
+                    ("tmux_observer/", "tmux_observer_client/", "tmux_observer_actions/")
+                )
+            ]
+            assert members and all(
+                (target / name).read_bytes() == archive.read(name) for name in members
+            )
+        record["installedPackageMembersVerified"] = len(members)
+        report = stage / "native.json"
+        completed = command(
+            [
+                str(args.worker_python),
+                "-I",
+                str(Path(__file__).resolve()),
+                "--worker",
+                "--installed-root",
+                str(target),
+                "--output",
+                str(report),
+            ],
+            timeout=90,
+            check=False,
+        )
+        if report.is_file():
+            record.update(json.loads(report.read_text()))
+        else:
+            record.update(
+                state="failed",
+                failure="worker_report_missing",
+                workerDiagnostic=completed.stderr[-2048:],
+            )
+        record["installedWorkerExit"] = completed.returncode
+        record["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    args.output.write_text(json.dumps(record, indent=2) + "\n")
+    print(
+        json.dumps(
+            {"state": record["state"], "cases": len(record["cases"]), "cleanup": record["cleanup"]}
+        )
+    )
+    return 0 if record["state"] == "passed" and record["cleanup"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
