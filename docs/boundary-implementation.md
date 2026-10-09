@@ -10,11 +10,11 @@ operations tuple.
 | Gate | State | Evidence / next action |
 | --- | --- | --- |
 | B0 contracts | Committed/pushed; CI passed | `bf5f838`; three new bundles, independent corpus, split pure domains and blocked-import checks |
-| B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
-| B2 desktop | Source and frozen Starship native passed; final resource gate pending | 219 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
+| B1 native associations | Source, both-host frozen native and final resource gates passed | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
+| B2 desktop | Source, frozen native and final resource gates passed | 219 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
 | B3 actions | Source and frozen native gates passed | UI-neutral SDK/legacy facade; both-host native, actual SSH writes and Starship focus/close; 285 tests |
-| B4 frontend | Source, installed CLI and Snap GUI passed | Narrow lazy clients, C5 picker intents, unchanged legacy CLI argv and test-only historical baseline; 287 tests and 30 installed CLI cases |
-| B5 selection | Pending | Exact candidate artifacts, normal/capacity profiling, published/scoped managed selection and rollback |
+| B4 frontend | Source, installed CLI and Snap artifact/managed GUI passed | Narrow lazy clients, C5 picker intents, unchanged legacy CLI argv and test-only historical baseline; 287 tests and 30 installed CLI cases |
+| B5 selection | Complete in declared scope | Exact frozen artifacts, normal/capacity gates, both published releases, scoped managed recovery/paired rollback/reselection and Snap binding acceptance |
 
 The final B0 source gate passed 196 tests, 24 new independent valid/invalid
 fixtures, eight existing fixtures, compile and Ruff checks. Doc links/fences and
@@ -491,3 +491,30 @@ expiry/reconnect and complete owned cleanup with prior focus restored. Ready and
 confirmation screenshots are inspected. The [release review](tmux-observer-0.2.0a1.md)
 names all frozen gates. Publication and managed recovery/paired rollback/
 reselection remain independent; Starship receives no foreground input.
+
+## B5 completion audit
+
+Observer 0.2.0a1 and Plus 0.8.0a1 are published with exact frozen runtime
+bytes. Downloaded wheels/descriptors/checksums, six contract bundles and native
+zip manifest match. Producer review CI `37881716576` and consumer published-wheel
+CI `37881944178` pass. The consumer CI initially exposed six historical spawn
+fixtures that resolved an operator-installed launcher; explicit fixture argv
+repairs only the tests, and the complete hermetic gate passes 287 tests.
+
+Managed selection `027c049` installs the matching pair through scoped chezmoi
+on both hosts. The [operations record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-boundary-operations.md)
+links independent installed-byte/control verification, new-reader recovery,
+performed paired rollback, complete baseline byte verification and reselection.
+Both endpoints' prepared/fresh views match independent native references and
+generations for eight/ten ordinary sessions. Their original full references,
+server incarnation and hooks survive. Installed headless lifecycle checks from
+each endpoint exercise both owners and leave SSH usage history unchanged.
+
+The installed Snap Mod+G gate passes all 21 picker cases at warm-frame p95
+95.39 ms, with screenshots inspected and prior focus restored. There is no
+Starship foreground input. The five-percent CPU and accepted memory/query
+ceilings remain unchanged; prior failures retain their original identity.
+All B0–B5 gates are complete in this always-on, two-physical-host scope.
+Physical suspend, native-event collection, stronger remote binding and capacity
+CPU/unsampled peaks remain explicit optional or separate work. Unrelated source,
+private Agent commits, ordinary sessions and live work are preserved.

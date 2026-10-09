@@ -58,6 +58,15 @@ fixture, not sixteen native hosts, capacity CPU or unsampled transient peaks.
 Always-on hosts are the accepted scope. Physical suspend and passive native-event
 experiments remain optional follow-ups.
 
-Publication, scoped managed selection and verified recovery/paired rollback/
-reselection are still independent B5 gates. The installed pair remains Observer
-0.1.0a1 / Tmux Plus 0.7.0a2 until their managed record establishes otherwise.
+Both releases are published, and downloaded assets match their exact wheel,
+contract/native bundle, descriptor and checksums. Producer review CI
+`37881716576` and consumer published-wheel CI `37881944178` pass. Scoped managed
+selection, installed recovery, performed paired rollback and reselection pass
+on both hosts; all matching baseline payload/control bytes are independently
+verified before reselection. Snap's installed Mod+G gate passes 21 cases at
+warm-frame p95 95.39 ms with inspected screenshots and prior focus restored.
+Both prepared/fresh rosters match independent native full references and server
+generations for eight/ten ordinary sessions. The
+[managed operations record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-boundary-operations.md)
+owns those independent gates. The selected pair is now Observer 0.2.0a1 / Plus
+0.8.0a1. All B0–B5 work is complete within the declared always-on scope.

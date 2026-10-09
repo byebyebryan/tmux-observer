@@ -1,5 +1,12 @@
 # Implementation status
 
+The subsequent [B0–B5 component boundary delivery](boundary-implementation.md)
+is also accepted in its declared scope: Observer 0.2.0a1 / Tmux Plus 0.8.0a1
+published and selected on Snap/Starship, with separate artifact/native/resource,
+Snap graphical and both-host managed recovery/paired rollback gates. The
+[release record](tmux-observer-0.2.0a1.md) names its exact runtime freeze and limits.
+The first-delivery history below retains its original evidence and scope.
+
 Updated: 2026-10-08. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 

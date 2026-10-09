@@ -12,8 +12,9 @@ The implemented extraction follows the reviewed
 networking, desktop association, action clients and UI retain separate authority.
 The [0.2.0a1 release record](docs/tmux-observer-0.2.0a1.md) names the frozen
 artifact, [executable contracts](docs/boundary-wire-v1.md), native/action,
-consumer and resource acceptance. Publication and managed acceptance are
-independent gates in the [implementation ledger](docs/boundary-implementation.md).
+consumer and resource acceptance. Publication and scoped managed recovery/paired
+rollback acceptance also pass as independent gates in the
+[implementation ledger](docs/boundary-implementation.md).
 
 ## Status
 
@@ -139,4 +140,5 @@ acceptance. The original backlog remains the first-delivery baseline. T16 action
 extraction is refined by [B0–B5](docs/component-boundaries.md#next-implementation-sequence),
 including native attachment associations and desktop contract cleanup. T17 native
 event collection remains optional. B0–B4 and the frozen native/resource/consumer
-gates pass; B5 publication and managed selection remain separately recorded.
+gates pass; B5 publication and managed selection are complete in the recorded
+always-on two-host scope.
