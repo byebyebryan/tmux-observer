@@ -87,6 +87,7 @@ Host Mesh v1 behavior must remain compatible during migration.
 | --- | --- |
 | [Component boundaries](docs/component-boundaries.md) | Current ownership decisions, contract domains and next extraction sequence |
 | [Component boundary review](docs/component-boundaries-review.md) | Source findings, adversarial cases and remaining implementation gates |
+| [Local performance design](docs/local-performance-design.md) | Next-pass attachment-driven Kitty associations, accepted limitations and measurement plan |
 | [Architecture](docs/architecture.md) | Ownership, process topology, extraction and decisions |
 | [Observation contract](docs/observation-contract.md) | Identity, facts, coverage, clocks and uncertainty |
 | [Service and networking](docs/service-and-networking.md) | Cached reads, subscriptions, SSH, refresh and recovery |

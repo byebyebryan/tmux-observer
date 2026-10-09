@@ -223,3 +223,15 @@ the full earlier-to-current CPU change to a particular optimization. Every
 earlier failed record remains separate. These passes establish the declared
 resource gates; graphical adoption, publication and managed selection still
 require their independent evidence.
+
+### Next local performance pass: narrower desktop scope
+
+The 2026-10-08 follow-up selects ordinary local Kitty window open/close as the
+initial supported case. The [local performance design](local-performance-design.md)
+proposes using native client changes to discover and retire retained window
+bindings, instead of repeating full matching for stable clients. Tab relocation
+and other desktop changes that preserve the client are accepted limitations.
+Retained associations need explicit evidence/display semantics; renewing native
+attachments does not renew a previous desktop observation. This is a design
+direction for the next pass, not a change to the frozen measurements above or
+an implemented resource saving.
