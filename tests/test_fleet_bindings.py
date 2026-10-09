@@ -115,6 +115,28 @@ class FleetBindingTests(unittest.TestCase):
         FleetPublisher.current_binding_key(publisher, 203)
         self.assertEqual(self.state.binding_key.call_count, 2)
 
+    def test_quiet_desktop_ticks_do_not_project_the_fleet_to_check_host_topology(self):
+        self.state.descriptions.append(
+            {**self.state.descriptions[0], "hostId": "remote", "local": False}
+        )
+        self.state.inputs = Mock(side_effect=AssertionError("unscheduled full projection"))
+        publisher = SimpleNamespace(
+            state=self.state,
+            fingerprint=lambda _: "stable",
+            context_fingerprint="stable",
+            desktop_job=None,
+            desktop_future=None,
+            desktop_eligible=lambda _: set(),
+            profile_enabled=True,
+            desktop_input="stable",
+            current_input_key=lambda _: "stable",
+            last_desktop_start=0,
+            next_desktop=3000,
+        )
+        for now in range(1100, 1200):
+            FleetPublisher.desktop_tick(publisher, Mock(), now)
+        self.state.inputs.assert_not_called()
+
     def test_wire_rejects_mixed_native_scope_counts_and_action_handles(self):
         baseline = self.state.view(201)
         for mutate in (

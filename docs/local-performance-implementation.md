@@ -184,3 +184,14 @@ Public validators and outgoing reference/expiry semantics remain intact. Three
 new regressions cover mutable branch ownership, independent remote inputs and
 local dependency invalidation. The full source gate passes 355 tests. A new
 runtime freeze and repeated native/resource acceptance are required.
+
+The `01bad43` follow-up passes the same ten native local cases, simulated
+recovery and eleven installed capacity cases (514,617,344-byte sampled peak,
+sixteen logical owners/fifteen real SSH links/thirty-two readers). Its ordinary
+profile is superseded before completion after a more precise diagnostic finds
+the new desktop scheduler projecting all owners on every quiet loop just to
+check for remote topology. The partial profile and cleaned interruption are
+retained, not called a passing ten-minute gate. The corrected scheduler checks
+the immutable host descriptions; a regression exercises one hundred quiet
+ticks without projecting any native owner input. The full source gate passes
+356 tests before the next freeze. No publication or managed selection occurs.

@@ -719,7 +719,7 @@ class FleetPublisher:
         if (
             self.profile_enabled
             and not eligible
-            and not any(not host["local"] for host in self.state.inputs(now))
+            and not any(not host["local"] for host in self.state.descriptions)
         ):
             return
         changed = self.desktop_input != self.current_input_key(now)
