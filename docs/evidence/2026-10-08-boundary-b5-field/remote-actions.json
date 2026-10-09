@@ -1,0 +1,36 @@
+{
+  "state": "passed",
+  "cases": [
+    "actual_ssh_create_fixed_default_and_complete_acknowledgement",
+    "actual_remote_required_option_refusal_preserves_target",
+    "actual_ssh_rename_and_kill_preserve_frozen_reference_binding",
+    "ordinary_remote_default_references_preserved"
+  ],
+  "cleanup": true,
+  "harnessCommit": "d10ba29e506365a91c90e094deb28c128523edc2",
+  "harnessTreeDirty": false,
+  "sourceCommit": "d10ba29e506365a91c90e094deb28c128523edc2",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "d10ba29e506365a91c90e094deb28c128523edc2",
+      "epoch": 1791516605,
+      "tree": "c65b9bbeef94cf4eaef51713aeeff937cb3dbd65"
+    },
+    "wheelSha256": "aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345",
+    "descriptorSha256": "641e03e20269c607df6bee4dd838e84d9649f8a2d2a28810de9995ef2df83739",
+    "sourceFilesMatchHarness": true
+  },
+  "installedPackageMembersVerified": 74,
+  "endpoint": "80H1VV3",
+  "installedImportOriginsVerified": true,
+  "singleDispatchPerOperation": true,
+  "ordinaryDefaultReferencesPreserved": 10,
+  "limits": [
+    "Private TMUX_TMPDIR transport wrapper and injected catalog/route reporter",
+    "Real SSH and native fixed programs; no terminal, Rofi or managed selection"
+  ],
+  "installedWorkerExit": 0,
+  "wheelSha256": "aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345"
+}

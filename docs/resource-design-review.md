@@ -203,3 +203,23 @@ preservation, memory, cached-query deadlines and cleanup pass. Snap remains
 above the five-percent ceiling. A subsequent clock-isolation correction and
 field-name traversal optimization require their own frozen acceptance. No failed
 profile is rounded, relabeled or promoted as passing.
+
+### Current frozen resource acceptance
+
+The [ten-minute system-Python profile](evidence/2026-10-08-boundary-b5-field/normal.json)
+at clean runtime/harness `d10ba29` passes: Snap 4.3229% and Starship 2.6156%
+combined CPU against the unchanged five-percent ceiling. Fleet/associated-bridge
+sampled RSS is 56.25/75.80 MiB against 96 MiB, with owner RSS below 64 MiB.
+One hundred warm queries per endpoint meet the existing deadlines. Original
+eight/ten ordinary references, server generation and hooks survive teardown;
+owned roots/services are removed. Both runtimes are system Python 3.14.7.
+
+The matching [SSH capacity fixture](evidence/2026-10-08-boundary-b5-field/capacity.json)
+passes eleven cases at 497.26 MiB against 768 MiB, with sixteen synthetic logical
+owners, fifteen actual SSH links and thirty-two readers on two physical hosts.
+This does not establish capacity CPU, sixteen physical native hosts or transient
+peaks missed by sampling. Ordinary workload/runtime variation prevents assigning
+the full earlier-to-current CPU change to a particular optimization. Every
+earlier failed record remains separate. These passes establish the declared
+resource gates; graphical adoption, publication and managed selection still
+require their independent evidence.

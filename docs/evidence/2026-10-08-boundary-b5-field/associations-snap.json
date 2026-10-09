@@ -1,0 +1,46 @@
+{
+  "state": "passed",
+  "cases": [
+    "installed_current_binding_and_process_incarnation",
+    "reads_preserve_counts_last_attached_geometry_options_hooks",
+    "default_owner_export_contains_no_pid_roster",
+    "rename_preserves_complete_reference",
+    "native_switch_replaces_previous_association",
+    "real_process_uid_guard_rejects_without_client_effect",
+    "observer_does_not_hold_destroy_unattached_session_alive",
+    "owner_stop_preserves_native_client_and_removes_owned_endpoints",
+    "server_replacement_clears_old_associations",
+    "no_server_is_complete_empty_without_activation",
+    "ordinary_default_references_preserved"
+  ],
+  "cleanup": true,
+  "sourceTreeDirty": false,
+  "harnessCommit": "d10ba29e506365a91c90e094deb28c128523edc2",
+  "harnessTreeDirty": false,
+  "sourceCommit": "d10ba29e506365a91c90e094deb28c128523edc2",
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "d10ba29e506365a91c90e094deb28c128523edc2",
+      "epoch": 1791516605,
+      "tree": "c65b9bbeef94cf4eaef51713aeeff937cb3dbd65"
+    },
+    "wheelSha256": "aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345",
+    "descriptorSha256": "641e03e20269c607df6bee4dd838e84d9649f8a2d2a28810de9995ef2df83739",
+    "sourceFilesMatchHarness": true
+  },
+  "installedPackageMembersVerified": 74,
+  "scope": "installed owned native server and PTY; no GUI",
+  "installedImportOriginsVerified": true,
+  "noServerSample": {
+    "startedAt": 557186451,
+    "finishedAt": 557186458,
+    "observedAt": 1791517312019,
+    "coverage": "complete",
+    "error": null
+  },
+  "ordinaryDefaultReferencesPreserved": 8,
+  "ownedTemporaryRootRemoved": true,
+  "wheelSha256": "aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345",
+  "installedWorkerExit": 0
+}

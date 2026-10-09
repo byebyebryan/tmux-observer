@@ -458,3 +458,28 @@ over 10,000 identical actual trees measures 1.640/1.664 seconds before and
 1.474/1.402 seconds after. This function saving is not whole-service acceptance.
 The complete source gate passes 328 tests; fresh frozen resource acceptance
 must include both this change and clock isolation.
+
+Frozen runtime `d10ba29` reproduces the 152-member wheel
+`aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345`.
+The [current exact-artifact evidence](evidence/2026-10-08-boundary-b5-field/)
+passes fourteen collector and eleven association cases on each host, eight
+headless action cases per host, four actual SSH actions, nine Snap desktop cases,
+seven Snap window-action cases and thirty installed frontend CLI cases. Every
+owned teardown preserves ordinary session references. Starship receives no
+foreground input. The source gate passes 328 tests and CI `37879561013` is green.
+
+The ten-minute ordinary-session profile now passes the unchanged CPU/memory/query
+gates: Snap 4.3229% CPU and 56.25 MiB fleet/associated bridge; Starship 2.6156%
+and 75.80 MiB. Owner peaks remain below 64 MiB, original eight/ten references,
+generation and hooks survive teardown, and both owned roots are removed.
+Both use system Python 3.14.7. Ordinary workload/runtime changes prevent treating
+earlier-to-current differences as isolated optimization effects; the CPU means
+are not instantaneous bounds. Earlier failures remain recorded and unselected.
+
+The enabled-profile capacity fixture passes eleven cases at 497.26 MiB sampled
+aggregate RSS against 768 MiB. It uses sixteen synthetic logical owners on two
+physical endpoints, fifteen actual SSH links and thirty-two readers. It proves
+the declared fixture's query/retention/process bounds, not sixteen native physical
+hosts, capacity CPU or shorter-than-sampled memory peaks. The matching frontend
+freeze is `c6bece1`; its native library is unchanged. Current Snap picker,
+publication and managed recovery/paired rollback/reselection remain separate gates.

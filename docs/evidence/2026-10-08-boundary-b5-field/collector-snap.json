@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "gate": "G1",
+  "sourceCommit": "d10ba29e506365a91c90e094deb28c128523edc2",
+  "sourceTreeDirty": false,
+  "nativeVersion": "tmux 3.7c",
+  "python": "3.13.7",
+  "scope": "owned TMUX_TMPDIR; owned default and alternate servers; no ordinary socket mutations",
+  "cases": [
+    {
+      "name": "verified absence does not create a server",
+      "result": "passed"
+    },
+    {
+      "name": "independent native identity metadata panes and explicit option comparison",
+      "result": "passed"
+    },
+    {
+      "name": "repeated reads preserve attachment counts roster windows and hooks",
+      "result": "passed",
+      "samples": 10,
+      "durationsMs": [
+        3,
+        5,
+        5,
+        4,
+        4,
+        4,
+        5,
+        4,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "rename and explicit empty pending marker retain identity",
+      "result": "passed"
+    },
+    {
+      "name": "native_C_locale_preserves_unicode_and_uses_batched_metadata",
+      "result": "passed",
+      "readCommands": 2
+    },
+    {
+      "name": "native legacy read fallback retains generation and roster checks",
+      "result": "passed"
+    },
+    {
+      "name": "mid-read disappearance retries to verified absence and reader holds no session alive",
+      "result": "passed"
+    },
+    {
+      "name": "real server restart and reused session ID reject old generation",
+      "result": "passed"
+    },
+    {
+      "name": "live empty server remains distinct from absent server",
+      "result": "passed"
+    },
+    {
+      "name": "isolated installed wheel CLI and exact packaged contracts ignore ambient alternate TMUX",
+      "result": "passed"
+    },
+    {
+      "name": "installed_C_locale_preserves_native_unicode_metadata",
+      "result": "passed"
+    },
+    {
+      "name": "installed CLI absent default remains empty while alternate server is alive",
+      "result": "passed"
+    },
+    {
+      "name": "installed missing executable is unsupported not false empty",
+      "result": "passed"
+    },
+    {
+      "name": "installed invalid context emits typed operation error",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Suspend deadline evidence is synthetic BOOTTIME injection, not physical suspend",
+    "Creation-time conflicts within one generation are synthetic; real restart/reused IDs tested",
+    "No service, remote, GUI or managed deployment acceptance"
+  ],
+  "harnessCommit": "d10ba29e506365a91c90e094deb28c128523edc2",
+  "harnessTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "d10ba29e506365a91c90e094deb28c128523edc2",
+      "epoch": 1791516605,
+      "tree": "c65b9bbeef94cf4eaef51713aeeff937cb3dbd65"
+    },
+    "wheelSha256": "aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345",
+    "descriptorSha256": "641e03e20269c607df6bee4dd838e84d9649f8a2d2a28810de9995ef2df83739",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345",
+  "result": "passed",
+  "observedAtUnixMs": 1791517310497
+}
