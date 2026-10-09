@@ -1,0 +1,192 @@
+{
+  "gate": "LP4-native-local-bindings",
+  "state": "passed",
+  "cases": [
+    {
+      "name": "bootstrap_existing_client_qualified_and_zero_client_none",
+      "resolvedAt": 577297019
+    },
+    {
+      "name": "hundred_warm_reads_passive",
+      "p95Ms": 0.628734
+    },
+    {
+      "name": "stable_clients_zero_rediscovery_and_periodic_desktop_jobs",
+      "seconds": 120.06851166498382,
+      "counters": {
+        "discoveryJobs": 1,
+        "discoveryClients": 1,
+        "desktopJobs": 0
+      }
+    },
+    {
+      "name": "session_switch_reuses_binding_with_current_full_reference"
+    },
+    {
+      "name": "kitty_close_revokes_binding_from_native_detach"
+    },
+    {
+      "name": "new_kitty_client_rediscovers"
+    },
+    {
+      "name": "explicit_refresh_rediscovery_and_terminal_ticket",
+      "resolvedAt": 577423359
+    },
+    {
+      "name": "owner_replacement_requires_new_binding_scope"
+    },
+    {
+      "name": "reader_restart_bootstraps_existing_client"
+    },
+    {
+      "name": "compositor_socket_incarnation_invalidates_retained_scope"
+    },
+    {
+      "name": "owned_native_generation_and_hooks_preserved"
+    }
+  ],
+  "scope": "installed frozen wheel, private default tmux server and units, actual Snap Kitty/Niri; explicit missing Mesh injection; no Starship foreground input",
+  "limits": [
+    "Local CPU uses an isolated two-session fixture, not ordinary two-host workload",
+    "No relocation, physical suspend, capacity or managed acceptance"
+  ],
+  "cleanup": true,
+  "baselineOnly": false,
+  "harnessCommit": "42e9ebf2121280fd00b135e855cf2569f9791c94",
+  "harnessTreeDirty": true,
+  "sourceCommit": "42e9ebf2121280fd00b135e855cf2569f9791c94",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "42e9ebf2121280fd00b135e855cf2569f9791c94",
+      "epoch": 1791536505,
+      "tree": "4ebe00e4a083b1e70b0abe3c1dea59808028ac73"
+    },
+    "wheelSha256": "ae5cb6ec2310a0eb6901f39d5c405b4858d717f07883e024628cdd80587eab9e",
+    "descriptorSha256": "be3d8d9d4585494bedfadf8e1acd078aed4c107029d0d56cba926b08099b7657",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "ae5cb6ec2310a0eb6901f39d5c405b4858d717f07883e024628cdd80587eab9e",
+  "warmRpcMs": [
+    0.628734,
+    0.651442,
+    0.548033,
+    0.668413,
+    0.592015,
+    0.598797,
+    0.690901,
+    0.542154,
+    0.589629,
+    0.55857,
+    0.514261,
+    0.520845,
+    0.505327,
+    0.51565,
+    0.502024,
+    0.501299,
+    0.512194,
+    0.509455,
+    0.494105,
+    0.506081,
+    0.517808,
+    0.441012,
+    0.46381,
+    0.480745,
+    0.475457,
+    0.416295,
+    0.484721,
+    0.454107,
+    0.468383,
+    0.453315,
+    0.496427,
+    0.448749,
+    0.446288,
+    0.45613,
+    0.429523,
+    0.419857,
+    0.42588,
+    0.397774,
+    0.415432,
+    0.460698,
+    0.427825,
+    0.465825,
+    0.435798,
+    0.415622,
+    0.469802,
+    0.479688,
+    0.461269,
+    0.595664,
+    0.556363,
+    0.499421,
+    0.457744,
+    0.483655,
+    0.596467,
+    0.540476,
+    0.576761,
+    0.527732,
+    0.619677,
+    0.52425,
+    0.541357,
+    0.597937,
+    0.609706,
+    0.532,
+    0.511261,
+    0.56237,
+    0.575618,
+    0.524903,
+    0.549971,
+    0.484712,
+    0.514402,
+    0.519656,
+    0.54551,
+    0.516932,
+    0.505609,
+    0.536059,
+    0.513488,
+    0.510334,
+    0.454411,
+    0.546011,
+    0.545226,
+    0.450184,
+    0.502421,
+    0.453232,
+    0.494421,
+    0.626434,
+    0.567682,
+    0.535622,
+    0.504628,
+    0.503395,
+    0.491283,
+    0.521312,
+    0.565431,
+    0.555483,
+    0.498459,
+    0.761124,
+    0.575411,
+    0.499833,
+    0.537648,
+    0.46045,
+    0.554378,
+    1.05423
+  ],
+  "localResourceProfile": {
+    "seconds": 120.06851166498382,
+    "serviceCpuPercent": {
+      "owner": 0.9086587189855021,
+      "fleet": 0.8861399089952179
+    },
+    "combinedCpuPercent": 1.79479862798072,
+    "serviceMaxObservedRssBytes": {
+      "owner": 21147648,
+      "fleet": 27365376
+    },
+    "accounting": "service cgroup CPU includes all short-lived native subprocesses; RSS sampled once per second"
+  },
+  "logs": {
+    "kitty-82e48d226f3b4571b6134ad9c3c032ee.log": "[0.112] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.112] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.112] Application escape mode is not supported, the extended keyboard protocol should be used instead\n",
+    "fleet.log": "",
+    "owner.log": "",
+    "kitty-5ee0ca5fb1024a839963326252daebf8.log": "[0.205] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.205] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.205] Application escape mode is not supported, the extended keyboard protocol should be used instead\n"
+  }
+}

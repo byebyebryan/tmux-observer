@@ -80,7 +80,7 @@ foreground input; Starship is in active use.
 | CP0 | Reviewed design, full-path baseline and work attribution | Complete |
 | CP1 | Structural/decoded admission savings with public/adverse regression gates | Complete; 371 source tests and all seven bundles/style checks pass |
 | CP2 | Outgoing/native/Mesh review and measured implementation or explicit disposition | Complete; retained plain-reference reuse and separate Mesh provider startup change |
-| CP3 | Frozen producer, independent pinned consumer, native/resource/capacity/Snap UI | Pending |
+| CP3 | Frozen producer, independent pinned consumer, native/resource/capacity/Snap UI | Complete; exact producer/native/resources and 23 independent Snap picker cases pass |
 | CP4 | Published artifacts, scoped both-host deploy/recovery/rollback/actions and preserved source drift | Pending |
 
 The [first](evidence/2026-10-09-cpu-performance/owner-baseline-1.json) and
@@ -163,3 +163,55 @@ interrupted after its readiness/query cases; owned cleanup completed and no
 ten-minute resource result was accepted. The package constant is corrected and
 the source gate now compares it with project metadata. All runtime acceptance
 is rerun on the corrected freeze; earlier records retain their original scope.
+
+## Frozen producer acceptance
+
+The corrected runtime is `42e9ebf2121280fd00b135e855cf2569f9791c94`, Observer
+0.5.0a1 wheel SHA-256
+`ae5cb6ec2310a0eb6901f39d5c405b4858d717f07883e024628cdd80587eab9e`.
+Repeated builds match all 173 members, including the unchanged seven bundles
+and complete 78-module runtime. All 371 source tests and style/contract checks
+pass; [runtime CI](https://github.com/byebyebryan/tmux-observer/actions/runs/37909172950)
+passes independently. The [descriptor](evidence/2026-10-09-cpu-performance/core-candidate.json)
+retains its builder-only `built_unaccepted` label; evidence names each gate.
+
+Matched frozen-wheel pipeline runs use baseline
+[3.339](evidence/2026-10-09-cpu-performance/frozen-baseline-1.json) /
+[3.357](evidence/2026-10-09-cpu-performance/frozen-baseline-2.json) CPU seconds and
+candidate [2.462](evidence/2026-10-09-cpu-performance/frozen-candidate-1.json) /
+[2.504](evidence/2026-10-09-cpu-performance/frozen-candidate-2.json).
+Mean fixed-pipeline CPU is about 26% lower; bytes, revisions, harness and Python
+3.14 match. This excludes actual native/IPC/desktop work.
+
+Independent frozen gates pass: [collector](evidence/2026-10-09-cpu-performance/collector.json)
+14 cases, [owner](evidence/2026-10-09-cpu-performance/owner.json) eleven,
+[two-host fleet](evidence/2026-10-09-cpu-performance/fleet.json) fifteen,
+[native local bindings](evidence/2026-10-09-cpu-performance/bindings.json) eleven,
+[actual remote desktop](evidence/2026-10-09-cpu-performance/remote-desktop.json)
+seven and [simulated recovery](evidence/2026-10-09-cpu-performance/recovery.json)
+four. [Capacity](evidence/2026-10-09-cpu-performance/capacity.json) passes eleven
+cases with fifteen actual SSH links and 32 readers. Sampled fleet/children/
+associated-bridge RSS peaks at 500.39 MiB against 768 MiB; the partial label
+preserves synthetic-owner/two-physical-host limits and no capacity CPU claim.
+
+The [ten-minute ordinary profile](evidence/2026-10-09-cpu-performance/normal.json)
+passes with combined logical owner/fleet/associated-bridge CPU **3.6248% Snap /
+2.1750% Starship** against 5%. Owner CPU is 1.3839% / 0.7521%; fleet/children
+2.1277% / 1.2034%; associated bridge 0.1132% / 0.2196%.
+Sampled fleet/children/associated-bridge RSS is 60.35 / 77.66 MiB against 96;
+owners are below 64 MiB. Each endpoint has 1,188 native invocations, 192 matching
+remote proofs, zero new SSH starts and zero local rediscovery; fresh remote
+desktop jobs number 198 / 199. Native timing and warm-query deadlines pass;
+ordinary full references, generations and hooks survive owned teardown.
+
+The previous ordinary profile was 4.4701% / 2.4262%. The new observed totals are
+lower, but active desktops/activity differ, so this is not a causal percentage
+savings estimate. One-second RSS samples may miss transient peaks. This native
+gate uses the previously selected Mesh provider; the separately measured new
+provider has its own installed-byte and managed rollout gate. Producer resource
+acceptance does not establish frontend graphics, managed selection or physical
+suspend. The independent pinned Plus 0.11.0a1 passes 293 source tests and all
+23 exact-wheel Snap graphical cases; repeated consumer wheels/bundles match.
+The [consumer record](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/cpu-performance.md)
+names its separate runtime, pin, screenshot and cleanup evidence. Scoped managed
+deployment acceptance remains open.
