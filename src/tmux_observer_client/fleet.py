@@ -502,7 +502,11 @@ class FleetPublisher:
 
     def attachment_work(self):
         try:
-            return read_local_attachments(self.state.host_id, owner_path=self.owner_path)
+            from .attachments import _PreparedAttachments
+
+            return _PreparedAttachments(
+                read_local_attachments(self.state.host_id, owner_path=self.owner_path)
+            )
         except (IPCError, OSError, ValueError):
             return None
 

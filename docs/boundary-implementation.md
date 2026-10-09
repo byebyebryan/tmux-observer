@@ -377,3 +377,20 @@ services. It excludes the associated remote bridge and is not ten-minute
 acceptance. It shows that the earlier private, unattached fixture cannot be
 used as a current ordinary-session baseline. No replacement CPU ceiling has
 been approved; the five-percent promotion gate remains.
+
+The prepared reader now admits local association delivery into a private,
+deeply immutable receipt after full wire and semantic validation of an owned
+copy. Repeated current-authority checks reuse that receipt and its complete
+reference set, while still checking local host, UID, current clock and PID
+namespaces, publisher, generation, owner/profile expiry and full session
+coverage on every use. Generic mutable records retain full validation on every
+call. The private receipt is never exported on a wire boundary; independent
+IPC validation remains unchanged. Input hashes remain byte-equivalent to the
+mutable-record path, and returned hash facts retain no mutable alias.
+
+Three regressions cover source/returned-tree mutation, malformed/exotic
+admission, current scope changes and exact lease expiry. A same-process fixture
+benchmark of 10,000 authority checks measures 0.991 seconds CPU for generic
+records and 0.120 seconds for prepared receipts. This measures one function,
+excludes admission cost and does not establish whole-service CPU acceptance.
+Frozen artifact/native/normal-resource gates remain required.

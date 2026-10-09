@@ -14,7 +14,12 @@ from tmux_observer.attachments import validate_attachment_delivery
 from tmux_observer_client._desktop_input import input_hash, reference
 from tmux_observer_client._desktop_types import LocalViewerObservation
 from tmux_observer_client._errors import ContractError
-from tmux_observer_client.attachments import CachedClients, current_attachments
+from tmux_observer_client.attachments import (
+    CachedClients,
+    _PreparedAttachments,
+    association_facts,
+    current_attachments,
+)
 from tmux_observer_client.desktop import association_batch
 
 
@@ -55,6 +60,57 @@ def prepared():
 
 
 class PreparedAttachmentsTests(unittest.TestCase):
+    def test_prepared_receipt_has_no_mutable_alias_and_preserves_wire_input_hash(self):
+        host, frame, now = prepared()
+        original = input_hash([host], now=now)
+        immutable = _PreparedAttachments(frame)
+        host["localAttachments"] = immutable
+        self.assertEqual(original, input_hash([host], now=now))
+        self.assertEqual(CachedClients([host], now + 2000).client_pids_by_session(), {"$2": {123}})
+        frame["snapshot"]["clients"][0]["processStartTicks"] += 1
+        facts = association_facts(host, immutable, now)
+        facts["clients"][0]["clientPid"] = 999
+        self.assertEqual(original, input_hash([host], now=now))
+        with self.assertRaises(TypeError):
+            immutable["snapshot"]["clients"][0]["clientPid"] = 999
+        self.assertIs(copy.deepcopy(immutable), immutable)
+
+    def test_prepared_receipt_still_checks_current_scope_and_every_lease_boundary(self):
+        host, frame, now = prepared()
+        immutable = _PreparedAttachments(frame)
+        self.assertIs(current_attachments(host, immutable, now), immutable)
+        for mutate in (
+            lambda value: value.update(local=False),
+            lambda value: value.update(hostId="other"),
+            lambda value: value["owner"].update(publisherId="other"),
+            lambda value: value["owner"].update(serverGeneration="other"),
+            lambda value: value["owner"].update(localExpiry=now),
+            lambda value: value["sessions"][0].update(createdAt=1),
+        ):
+            changed = copy.deepcopy(host)
+            mutate(changed)
+            self.assertIsNone(current_attachments(changed, immutable, now))
+        self.assertIsNone(current_attachments(host, immutable, frame["receipt"]["expiresAt"]))
+        with patch("tmux_observer_client.attachments.domain", return_value={"bootId": "other"}):
+            self.assertIsNone(current_attachments(host, immutable, now))
+        with patch("tmux_observer_client.attachments.pid_namespace", return_value="pid:999"):
+            self.assertIsNone(current_attachments(host, immutable, now))
+        with patch("tmux_observer_client.attachments.os.getuid", return_value=os.getuid() + 1):
+            self.assertIsNone(current_attachments(host, immutable, now))
+
+    def test_prepared_receipt_cannot_admit_malformed_or_exotic_python_records(self):
+        _host, frame, _now = prepared()
+
+        class Exotic(dict):
+            pass
+
+        for value in (Exotic(frame), {**frame, "protocol": "wrong"}):
+            with self.assertRaises(ValueError):
+                _PreparedAttachments(value)
+        frame["snapshot"]["clients"][0]["sessionRef"]["createdAt"] += 1
+        with self.assertRaises(ValueError):
+            _PreparedAttachments(frame)
+
     def test_local_only_scan_handles_absent_remote_executable(self):
         from tmux_observer_client.desktop import scan
 
