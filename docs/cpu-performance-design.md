@@ -79,7 +79,7 @@ foreground input; Starship is in active use.
 | --- | --- | --- |
 | CP0 | Reviewed design, full-path baseline and work attribution | Complete |
 | CP1 | Structural/decoded admission savings with public/adverse regression gates | Complete; 371 source tests and all seven bundles/style checks pass |
-| CP2 | Outgoing/native/Mesh review and measured implementation or explicit disposition | Pending |
+| CP2 | Outgoing/native/Mesh review and measured implementation or explicit disposition | Complete; retained plain-reference reuse and separate Mesh provider startup change |
 | CP3 | Frozen producer, independent pinned consumer, native/resource/capacity/Snap UI | Pending |
 | CP4 | Published artifacts, scoped both-host deploy/recovery/rollback/actions and preserved source drift | Pending |
 
@@ -111,3 +111,38 @@ and the same full wire digest and revisions. Runtime module hashes identify
 the uncommitted candidate source used at measurement time; package version alone
 does not identify it. Preliminary runs using the development Python 3.13 are
 excluded from this comparison. Whole-service native acceptance remains open.
+
+## CP2 disposition
+
+Plain JSON session rows now return their checked full reference from the existing
+session semantic check; observation scope checks reuse it. Exotic Python inputs
+retain the original second read/check because schema access can mutate subclasses.
+The public session validator still returns the same checked dictionary. The
+updated harness records the native-validation module hash as well. Matched
+CP1 [2.569](evidence/2026-10-09-cpu-performance/cp2-base-1.json) /
+[2.598](evidence/2026-10-09-cpu-performance/cp2-base-2.json) CPU seconds versus
+CP2 [2.471](evidence/2026-10-09-cpu-performance/cp2-candidate-1.json) /
+[2.447](evidence/2026-10-09-cpu-performance/cp2-candidate-2.json) show about 5%
+additional fixed-pipeline savings. Bytes, revisions and structural-check counts
+remain identical. All 371 source tests and seven bundle/style checks pass.
+
+Native command sharing is deferred. The roster must be accepted and published
+before optional attachment work, and optional failure/deadline cannot invalidate
+a usable roster. The four existing native invocations retain both membership
+and process-incarnation brackets. Pending annotations retain explicit empty
+versus absent semantics. A format-only pending shortcut would lose that meaning.
+
+Outgoing checked-byte caches and faster copies are also deferred. Current public
+frame factories return mutable dictionaries; generic callers/subclasses require
+their final structural guard. Checked bytes would need a separate producer-owned
+factory and fan-out ownership review. The existing full canonical encoding,
+nested size checks and defensive retained copies remain intact.
+
+The public Mesh CLI retains its fifteen-second discovery bound. A separate,
+source-accepted provider change in rofi-ssh-plus `a67be31` lazily loads picker,
+launcher and history code only for their commands. Its matched fresh-process
+fixture reduces mean CPU from 51.9 to 44.2 ms per invocation, about 15%, with
+identical configured replies and all 76 tests passing. At this cadence its whole
+service saving is small. Mesh has no public watch API; Observer imports no
+provider implementation or private files. The provider's immutable managed
+archive pin and installed checks remain separate rollout requirements.

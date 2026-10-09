@@ -155,6 +155,7 @@ def main():
             for name in (
                 "tmux_observer._wire",
                 "tmux_observer._owner_state",
+                "tmux_observer._native_validation",
                 "tmux_observer._delivery_validation",
                 "tmux_observer_client._owner_document",
             )

@@ -59,6 +59,10 @@ def sample(value: object) -> dict:
 
 
 def session(value: object) -> dict:
+    return _session_with_reference(value)[0]
+
+
+def _session_with_reference(value: object) -> tuple[dict, tuple]:
     value = obj(
         value,
         "name",
@@ -71,7 +75,7 @@ def session(value: object) -> dict:
         "currentWindow",
         "currentPath",
     )
-    reference(value)
+    ref = reference(value)
     if "viewerId" in value or "closeSafe" in value:
         raise ValidationError("action authority in passive session")
     for key in ("name", "sessionPath", "currentWindow", "currentPath"):
@@ -95,7 +99,7 @@ def session(value: object) -> dict:
             nullable(pane["pid"], integer)
             nullable(pane["currentPath"], string)
             nullable(pane["currentCommand"], string)
-    return value
+    return value, ref
 
 
 def validate_observation(value: object) -> dict:
@@ -139,8 +143,11 @@ def _observation_after_tree(value: object, *, plain: bool) -> dict:
     ids = set()
     pane_ids = set()
     for row in rows:
-        session(row)
-        ref = reference(row)
+        if plain:
+            _row, ref = _session_with_reference(row)
+        else:
+            session(row)
+            ref = reference(row)
         if ref[0] != owner["hostId"] or ref[1] != generation or ref[2] in ids:
             raise ValidationError("session scope or identity conflict")
         ids.add(ref[2])
