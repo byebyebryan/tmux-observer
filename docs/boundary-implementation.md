@@ -13,7 +13,7 @@ operations tuple.
 | B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
 | B2 desktop | Source and frozen Starship native passed; final resource gate pending | 219 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
 | B3 actions | Source and frozen native gates passed | UI-neutral SDK/legacy facade; both-host native, actual SSH writes and Starship focus/close; 285 tests |
-| B4 frontend | Source candidate in progress | Narrow lazy clients, C5 picker intents, unchanged legacy CLI argv and test-only historical baseline; installed/GUI pending |
+| B4 frontend | Source, installed CLI and Snap GUI passed | Narrow lazy clients, C5 picker intents, unchanged legacy CLI argv and test-only historical baseline; 287 tests and 30 installed CLI cases |
 | B5 selection | Pending | Exact candidate artifacts, normal/capacity profiling, published/scoped managed selection and rollback |
 
 The final B0 source gate passed 196 tests, 24 new independent valid/invalid
@@ -36,9 +36,12 @@ Candidate tooling now validates format-2 three-package/six-bundle coverage and
 retains format-1 verification for existing accepted artifacts. Repeated frozen
 builds and both-host native proof precede downstream runtime selection.
 
-Snap receives passive/headless checks only. Graphical acceptance uses isolated
-Starship preferences and disposable sessions/windows, preserving ordinary focus
-and sessions. A compositor idle overlay is a separate graphical obstacle, not
+The latest user instruction moves further foreground acceptance to Snap because
+Starship is now in active use. Earlier Starship graphical evidence remains valid
+for its recorded candidate; no further Starship graphical input is authorized.
+Snap acceptance uses isolated preferences and disposable sessions/windows,
+preserving ordinary focus and sessions. A compositor idle overlay is a separate
+graphical obstacle, not
 authorization to unlock or alter the desktop. No host suspension/RTC tests or
 native-event experiments are included. Physical sleep remains optional/unrun.
 
@@ -179,3 +182,43 @@ The packaged owner unit explicitly enables local associations; a manually starte
 headless owner still defaults to the optional profile being disabled. This unit
 is an unselected candidate. Integrated both-host native/resource acceptance must
 include the enabled profile before any managed promotion.
+
+
+The B4 runtime source checkpoints are Observer `b192638` (290 source tests)
+and Plus `1148dcf` (287 source tests). Repeat committed-source builds produced
+identical wheel bytes: Observer
+`5f481b8d14bc3e876728c5cb2a223fe1abe844f5a02c12840f2395a8db7c6592`
+(152 members) and Plus
+`111634792da3f06ec1a0327f0a05606f12cab9c97902cc0e751b53d7ca06b418`
+(35 members). All three Observer package roots are independently pinned by the
+consumer. Superseded frontend native/action/network implementations reside only
+in the test baseline and are excluded from the wheel.
+
+The [installed frontend CLI](evidence/2026-10-08-boundary-b4/frontend-direct.json)
+passed 30 native cases across both hosts. Current native SDK checks passed eight
+cases on each host, four actual SSH cases and seven Snap desktop action cases,
+with owned cleanup and ordinary full-reference preservation. These records are
+under `evidence/2026-10-08-boundary-b4/` and retain their actual harness provenance.
+The Plus repo records 21 passed frozen Snap picker cases, inspected screenshots,
+104.55 ms warm frame p95 and 175-177 ms observed launch surfaces. Its earlier
+Starship run passed 11 cases then lost a transient warning during automatic
+reconnect; the revised fault keeps the owned delivery supervisor stopped through
+expiry while the renderer continues. It retains the 15-second warning deadline
+and independently checks read-only reconnect.
+
+The [enabled-profile capacity check](evidence/2026-10-08-boundary-b4/capacity.json)
+passed 11 cases with sixteen synthetic owners, fifteen actual SSH links and
+thirty-two readers. Conservative combined fleet/bridge RSS was 498.42 MiB against
+768 MiB; all ten near-cap validated queries finished within 250 ms (max 150.21 ms).
+Owner association profiles are enabled with synthetic empty-client inputs;
+native sampling and ordinary desktop matching remain separate resource evidence.
+
+The [ten-minute normal probe](evidence/2026-10-08-boundary-b4/normal-failed-cpu.json)
+passed functional/query/memory checks but failed the unchanged Snap CPU target:
+5.1656% against 5% (Starship 3.1436%). Sampled fleet/associated-bridge peaks were
+73.80/87.53 MiB against 96 MiB. This private native fixture had no attached
+clients or matching ordinary windows, and the recorded harness was dirty; it
+cannot establish final resource acceptance. The failure remains recorded and
+blocks managed promotion of this candidate. The next pass coalesces bounded
+native reads and measures passive observation of actual existing sessions and
+windows without sending graphical input on either host.

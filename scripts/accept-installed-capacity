@@ -220,6 +220,8 @@ def worker(root, role, host):
         print(desktop_context_id())
         return 0
     if role == "owner":
+        from tmux_observer._clock import pid_namespace
+        from tmux_observer.attachments import ATTACHMENTS_PROTOCOL
         from tmux_observer.owner import OwnerPublisher
 
         host_number(host)
@@ -254,8 +256,44 @@ def worker(root, role, host):
                 write_json(root / (host + ".count"), {"calls": self.calls})
                 return value
 
+        collector = SyntheticCollector()
+
+        class SyntheticAttachments:
+            def __init__(self):
+                self.collector = collector
+                self.namespace = pid_namespace()
+
+            def sample(self, observation, deadline):
+                assert boottime_ms() < deadline
+                return {
+                    "protocol": ATTACHMENTS_PROTOCOL,
+                    "schemaVersion": 1,
+                    "source": collector.source,
+                    "clock": collector.clock,
+                    "pidNamespace": self.namespace,
+                    "sample": {
+                        **observation["sample"],
+                        "finishedAt": boottime_ms(),
+                    },
+                    "serverGeneration": observation["serverGeneration"],
+                    "sessions": [
+                        {
+                            key: row[key]
+                            for key in ("hostId", "serverGeneration", "sessionId", "createdAt")
+                        }
+                        for row in observation["sessions"]
+                    ],
+                    "clients": [],
+                }
+
         publisher = OwnerPublisher(
-            host, path=root / (host + ".sock"), collector=SyntheticCollector()
+            host,
+            path=root / (host + ".sock"),
+            collector=collector,
+            local_attachments=True,
+            attachment_collector=SyntheticAttachments(),
+            attachment_path=root
+            / ("attachments.sock" if host == "fixture-00" else host + "-attachments.sock"),
         )
     elif role == "fleet":
         from tmux_observer_client.fleet import FleetPublisher
@@ -436,6 +474,7 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
             "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
             "Fixture owners/readers/coordinator are outside the fleet tree; every fleet bridge child is included",
             "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
+            "All sixteen owners enable local association scheduling and IPC with synthetic empty-client profiles; native client sampling cost is covered by the separate normal resource gate",
         ],
     }
     if ssh_host:
@@ -734,6 +773,21 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
                 )
 
             _initial, initial_size = wait(complete)
+            from tmux_observer_client.attachments import read_local_attachments
+
+            wait(
+                lambda: (
+                    frame
+                    if (
+                        frame := read_local_attachments(
+                            "fixture-00", owner_path=root / "fixture-00.sock"
+                        )
+                    )["receipt"]["state"]
+                    == "ready"
+                    else None
+                )
+            )
+            passed("enabled_local_association_profile_is_current_without_mesh_export")
             passed(
                 "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
                 frameBytes=initial_size,

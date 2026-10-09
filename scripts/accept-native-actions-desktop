@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Installed explicit actions on owned Starship Kitty/Niri windows."""
+"""Installed explicit actions on owned Kitty/Niri windows on a named endpoint."""
 
 import argparse
 import hashlib
@@ -300,13 +300,19 @@ def main():
     parser.add_argument("--artifact", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--worker-python", type=Path, default=Path("/usr/bin/python"))
+    parser.add_argument(
+        "--expected-hostname", help="explicit native endpoint identity for GUI input"
+    )
     parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("--installed-root", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.worker:
         return worker(args.output, args.installed_root)
-    if os.uname().nodename.casefold() != "starship":
-        parser.error("this authorized graphical gate runs on Starship only")
+    if (
+        not args.expected_hostname
+        or os.uname().nodename.casefold() != args.expected_hostname.casefold()
+    ):
+        parser.error("graphical gate requires this endpoint's exact --expected-hostname")
     from artifact_input import stage_wheel
 
     record = {"state": "preparing", "cases": [], "cleanup": False}
