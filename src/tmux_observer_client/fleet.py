@@ -119,6 +119,8 @@ class FleetPublisher:
         self.publish_needed = False
         self.input_key_dirty = True
         self.cached_input_key = None
+        self.prepared_view = None
+        self.prepared_dependencies = None
         self.input_expiry = None
 
     def handle(self, peer, request, now):
@@ -197,13 +199,37 @@ class FleetPublisher:
         return self.cached_input_key
 
     def project_changed(self, now):
+        dependencies = (
+            tuple(self.state.mesh.items()),
+            tuple(self.state.desktop.items()),
+            id(self.state.viewers),
+            id(self.state.attachments),
+            tuple(
+                (
+                    host,
+                    owner.epoch,
+                    owner.sequence,
+                    id(owner.confirmed),
+                    owner.expiry,
+                    owner.transport,
+                    id(owner.error),
+                    getattr(owner, "selected_route", None),
+                )
+                for host, owner in self.state.owners.items()
+            ),
+        )
+        if dependencies != self.prepared_dependencies:
+            self.mark_changed()
         if not self.projection_dirty and (
             self.projection_expiry is None or now < self.projection_expiry
         ):
             return
         # Only validated input/health changes or an actual lease boundary need
         # the full projection/hash. Reads still render and validate at their now.
-        self.publish_needed |= self.state.material(now)
+        view = self.state.view(now, _input_key=self.current_input_key(now))
+        self.publish_needed |= self.state.material(now, _view=view)
+        self.prepared_view = view
+        self.prepared_dependencies = dependencies
         self.projection_dirty = False
         expiries = [owner.expiry for owner in self.state.owners.values() if owner.expiry > now]
         if self.state.attachments is not None:
@@ -217,7 +243,7 @@ class FleetPublisher:
 
     def frame(self, now, **kwargs):
         self.project_changed(now)
-        return self.state.frame(now, **kwargs)
+        return self.state.frame(now, _view=self.prepared_view, **kwargs)
 
     def disconnect(self, now, *, remotes_only=False, code="stale_scope"):
         self.mark_changed()
@@ -456,12 +482,11 @@ class FleetPublisher:
             return
         if self.attachment_future is not None and self.attachment_future.done():
             value = self.attachment_future.result()
-            previous = self.state.input_key(now)
             self.state.attachments = value
-            if previous != self.state.input_key(now):
-                self.mark_changed()
-            # Receipt-only renewal still moves the next projection expiry.
-            self.projection_dirty = self.input_key_dirty = True
+            # A receipt-only renewal also moves the next projection expiry.
+            # The prepared projection computes the new hash once; comparison
+            # here previously repeated that work without changing admission.
+            self.mark_changed()
             self.attachment_future = None
         if self.attachment_future is None and now >= self.next_attachment:
             self.attachment_future = executor.submit(self.attachment_work)

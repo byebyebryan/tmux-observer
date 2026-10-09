@@ -87,18 +87,26 @@ def _preflight(text: str) -> None:
 def validate_tree(value: object) -> None:
     pending = [(value, 0)]
     nodes = 0
+    seen_strings = set()
     while pending:
         item, depth = pending.pop()
         nodes += 1
         if nodes > MAX_NODES or depth > MAX_DEPTH:
             raise WireError("JSON structure exceeds the wire bound")
         if isinstance(item, str):
+            # Strings are immutable. Repeated field names and metadata need one
+            # content check per document, while every occurrence still counts
+            # toward the structural bounds above.
+            if type(item) is str and item in seen_strings:
+                continue
             if len(item) > STRING_LIMIT or _CONTROL_CHARACTERS.search(item) is not None:
                 raise WireError("unclean or oversized string")
             try:
                 item.encode("utf-8", "strict")
             except UnicodeError as error:
                 raise WireError("invalid Unicode string") from error
+            if type(item) is str:
+                seen_strings.add(item)
         elif isinstance(item, dict):
             if depth == MAX_DEPTH:
                 raise WireError("JSON structure exceeds the wire bound")

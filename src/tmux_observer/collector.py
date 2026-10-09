@@ -163,6 +163,36 @@ class Collector:
         self.identities(rows)
         return rows
 
+    def opening_bracket(self, deadline, fast):
+        if not fast:
+            return self.generation(deadline, False), self.table(deadline, False)
+        output = self.read(
+            [
+                "display-message",
+                "-p",
+                format_fields(GENERATION),
+                ";",
+                "list-sessions",
+                "-F",
+                format_fields(FIELDS),
+            ],
+            deadline,
+            absent=True,
+            empty=True,
+        )
+        if not output:
+            # Some native versions return `no sessions` for a live empty
+            # server; retain its independent generation and empty roster read.
+            return self.generation(deadline, True), self.table(deadline, True)
+        opening, separator, table = output.partition("\n")
+        generations = self.rows(opening, 3)
+        if len(generations) != 1:
+            raise FastUnavailable()
+        generation = self.fast_generation(generations[0])
+        rows = self.rows(table if separator else "", len(FIELDS))
+        self.identities(rows)
+        return generation, rows
+
     @staticmethod
     def identities(rows):
         if len(rows) > 256:
@@ -241,7 +271,7 @@ class Collector:
 
     def batch(self, deadline, fast, with_panes, names):
         try:
-            generation = self.generation(deadline, fast)
+            generation, rows = self.opening_bracket(deadline, fast)
         except NoServer:
             try:
                 self.generation(deadline, fast)
@@ -249,7 +279,6 @@ class Collector:
                 return None, []
             raise Race()
         try:
-            rows = self.table(deadline, fast)
             identities = self.identities(rows)
             options = (
                 {sid: self.options(sid, names, deadline) for sid in identities}

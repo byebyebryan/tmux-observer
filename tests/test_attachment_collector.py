@@ -59,7 +59,9 @@ class AttachmentCollectorTests(unittest.TestCase):
         native, collector, observation = self.source()
         value = self.sample(collector, observation)
         self.assertEqual(value["sample"]["coverage"], "complete")
-        chained = [args for args, _deadline in native.calls if ";" in args]
+        chained = [
+            args for args, _deadline in native.calls if ";" in args and args[0] == "list-clients"
+        ]
         self.assertEqual(len(chained), 1)
         self.assertEqual(chained[0][:3], ["list-clients", "-F", CLIENT_FIELDS])
         self.assertEqual(chained[0][4:6], ["list-sessions", "-F"])

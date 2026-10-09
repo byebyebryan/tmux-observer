@@ -137,3 +137,32 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(self.fleet.current_input_key(10100), input_hash([]))
         self.assertEqual(self.fleet.state.input_key.call_count, 2)
         executor.submit.assert_not_called()
+
+    def test_published_mutation_cannot_change_retained_projection(self):
+        first = self.frame(200)
+        first["snapshot"]["hosts"][0]["sessions"][0]["localViewer"] = {
+            "state": "open",
+            "confidence": "confirmed",
+            "reason": None,
+        }
+        first["snapshot"]["desktop"]["expiresAt"] = 10**12
+        next_frame = self.frame(201)
+        self.assertEqual(
+            next_frame["snapshot"]["hosts"][0]["sessions"][0]["localViewer"]["state"], "none"
+        )
+        expired = self.frame(10160)
+        self.assertEqual(expired["snapshot"]["desktop"]["state"], "expired")
+        self.assertEqual(
+            expired["snapshot"]["hosts"][0]["sessions"][0]["localViewer"]["state"], "unknown"
+        )
+
+    def test_prepared_reads_reuse_input_hash_until_dependency_expiry(self):
+        self.fleet.state.input_key = Mock(wraps=self.fleet.state.input_key)
+        for now in range(200, 301):
+            self.frame(now)
+        self.assertEqual(self.fleet.state.input_key.call_count, 1)
+        frame = self.frame(10100)
+        self.assertEqual(self.fleet.state.input_key.call_count, 2)
+        self.assertEqual(
+            frame["snapshot"]["hosts"][0]["sessions"][0]["localViewer"]["state"], "unknown"
+        )

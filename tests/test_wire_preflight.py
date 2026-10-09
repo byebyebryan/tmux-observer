@@ -8,6 +8,17 @@ from tmux_observer import _wire as wire
 
 
 class WirePreflightTests(unittest.TestCase):
+    def test_repeated_strings_keep_occurrence_bounds_and_content_rejection(self):
+        with patch.object(wire, "MAX_NODES", 4):
+            wire.validate_tree(["same", "same", "same"])
+            with self.assertRaises(wire.WireError):
+                wire.validate_tree(["same"] * 4)
+        for value in ("bad\n", "\ud800", "x" * (wire.STRING_LIMIT + 1)):
+            with self.subTest(value=value[:10]), self.assertRaises(wire.WireError):
+                wire.validate_tree(["same", "same", value, value])
+        with patch.object(wire, "MAX_DEPTH", 2), self.assertRaises(wire.WireError):
+            wire.validate_tree(["same", [[["same"]]]])
+
     def test_escaped_structural_characters_and_unicode_are_not_container_tokens(self):
         value = [r"\"{}[]", '"\\[]{}', "α界🐟", "\\" * 16000]
         self.assertEqual(wire.decode_document(wire.encode_document(value)), value)

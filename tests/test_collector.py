@@ -99,7 +99,9 @@ class CollectorTests(unittest.TestCase):
         native = NativeFixture()
         value = Collector("fixture", runner=native).collect()
         self.assertEqual(value["sample"]["coverage"], "complete")
-        self.assertEqual(sum(args[0] == "display-message" for args, _ in native.calls), 1)
+        self.assertEqual(
+            sum(args[0] == "display-message" and ";" not in args for args, _ in native.calls), 1
+        )
         self.assertEqual(sum(args[0] == "list-sessions" for args, _ in native.calls), 2)
 
     def test_live_empty_fast_final_bracket_still_probes_native_generation(self):
@@ -109,7 +111,9 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(value["sample"]["coverage"], "complete")
         self.assertIsNotNone(value["serverGeneration"])
         self.assertEqual(value["sessions"], [])
-        self.assertEqual(sum(args[0] == "display-message" for args, _ in native.calls), 2)
+        self.assertEqual(
+            sum(args[0] == "display-message" and ";" not in args for args, _ in native.calls), 2
+        )
 
     def test_mixed_final_generations_cannot_publish_partial_native_rows(self):
         native = NativeFixture()

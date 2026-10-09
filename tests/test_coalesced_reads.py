@@ -2,11 +2,37 @@
 
 import unittest
 
+from tests.test_collector import NativeFixture
 from tmux_observer._process import READ_COMMAND_LIMIT, ProcessError, allowed_read
 from tmux_observer.annotations import PENDING, PlusPendingProfile
+from tmux_observer.collector import Collector, FastUnavailable
 
 
 class CoalescedReadTests(unittest.TestCase):
+    def test_opening_scope_and_roster_share_one_read_with_full_closing_bracket(self):
+        native = NativeFixture()
+        top_level = []
+
+        def read(args, deadline):
+            top_level.append((args, deadline))
+            return native(args, deadline)
+
+        value = Collector("fixture", runner=read).collect()
+        self.assertEqual(value["sample"]["coverage"], "complete")
+        self.assertEqual(len(top_level), 3)
+        self.assertIn(";", top_level[0][0])
+        self.assertEqual(top_level[-1][0][0], "list-sessions")
+        self.assertEqual(len({deadline for _, deadline in top_level}), 1)
+        self.assertTrue(all(allowed_read(args) for args, _ in top_level))
+
+    def test_malformed_opening_scope_or_roster_cannot_supply_partial_facts(self):
+        for output in ("bad", "a\tb\tc\nd\te", "/tmp/x\t1\t2\n$1\t2\nbad"):
+            native = NativeFixture()
+            collector = Collector("fixture", runner=native)
+            collector.read = lambda *_args, selected=output, **_kwargs: selected
+            with self.subTest(output=output), self.assertRaises(FastUnavailable):
+                collector.opening_bracket(999, True)
+
     def test_every_chained_command_must_be_a_bounded_read(self):
         read = ["list-clients", "-F", "#{client_pid}"]
         self.assertTrue(allowed_read([*read, ";", *read]))

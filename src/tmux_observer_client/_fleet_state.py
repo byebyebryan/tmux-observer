@@ -250,13 +250,15 @@ class FleetState:
             return False
         return state == "ready"
 
-    def view(self, now, *, ticket=None):
+    def view(self, now, *, ticket=None, _input_key=None):
         hosts = self.hosts(now)
         desktop = copy.deepcopy(self.desktop)
         if desktop["state"] == "ready":
             if now >= desktop["expiresAt"]:
                 desktop["state"] = "expired"
-            elif desktop["inputHash"] != self.input_key(now):
+            elif desktop["inputHash"] != (
+                self.input_key(now) if _input_key is None else _input_key
+            ):
                 desktop["state"] = "warming"
         for host in hosts:
             current = owner_current({"mesh": self.mesh}, host, now=now)
@@ -299,8 +301,8 @@ class FleetState:
             }
         return copy.deepcopy(validate_fleet_view(value))
 
-    def material(self, now):
-        view = self.view(now)
+    def material(self, now, *, _view=None):
+        view = self.view(now) if _view is None else _view
         value = {
             "mesh": view["mesh"],
             "desktop": {
@@ -334,8 +336,12 @@ class FleetState:
             self.revision += 1
         return changed
 
-    def frame(self, now, *, kind="view", sequence=0, request_id=None, ticket=None):
-        view = self.view(now)
+    def frame(self, now, *, kind="view", sequence=0, request_id=None, ticket=None, _view=None):
+        # Only the publisher supplies a validated projection whose dependencies
+        # have not changed or crossed a lease boundary. Revalidate the complete
+        # outgoing frame at its current time, and never expose the retained tree.
+        view = self.view(now) if _view is None else copy.deepcopy(_view)
+        view.update(encodedAt=now, viewRevision=self.revision)
         return validate_fleet_frame(
             {
                 "protocol": FLEET_PROTOCOL,

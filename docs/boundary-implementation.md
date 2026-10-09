@@ -242,3 +242,23 @@ using private installed services/IPC/provider preferences and captured Niri
 contexts. Its harness refuses native mutations and skips server creation and
 server teardown. It requires actual client profiles and positive matching
 windows on both endpoints before measurement. No graphical input is sent.
+
+The [actual-session ten-minute probe](evidence/2026-10-08-boundary-b4/normal-actual-failed-cpu.json)
+used the frozen `c84ca2e` wheel on both endpoints, with eight ordinary sessions
+each and fourteen/six native clients. Snap failed the unchanged combined CPU
+target at 6.7263%; Starship passed at 4.0018%. Fleet/associated-bridge sampled RSS
+was 89.00/80.39 MiB against 96 MiB, and owner RSS remained below 64 MiB. Warm query
+deadlines and native reference/hook preservation passed. This remains a rejected
+resource candidate; it is neither published nor selected.
+
+The next repair shares the opening native generation/roster read, bringing the
+ordinary minimal owner plus association profile to five process starts per
+sample for up to 32 sessions. The reader retains an independently validated
+projection between dependency changes and exact lease boundaries, checks a
+cheap dependency stamp on every projection request, and validates every complete
+outgoing frame at its current time. Returned trees cannot modify that retained
+projection. Document validation checks each repeated immutable string once,
+while still counting every occurrence toward depth/node limits and rejecting
+unclean, oversized or invalid Unicode values. Sampling cadence, network proof,
+query deadlines and all resource targets remain unchanged; installed acceptance
+must measure this new candidate separately.
