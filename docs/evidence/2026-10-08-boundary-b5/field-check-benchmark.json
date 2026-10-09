@@ -1,0 +1,9 @@
+{
+  "scope": "same-process system Python, 10000 identical actual fleet trees; not acceptance",
+  "cpuSeconds": {
+    "before": 1.640426325,
+    "after": 1.474147863,
+    "before_repeat": 1.6640466210000002,
+    "after_repeat": 1.4021805600000006
+  }
+}

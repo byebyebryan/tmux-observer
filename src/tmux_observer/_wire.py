@@ -144,9 +144,17 @@ def validate_tree(value: object) -> bool:
                 raise WireError("JSON structure exceeds the wire bound")
             child_depth = depth + 1
             for key in item:
-                if not isinstance(key, str):
+                if type(key) is str and key in seen_strings:
+                    # Its immutable content is already checked. Count this
+                    # occurrence at the parent's checked child depth without
+                    # allocating and later popping another pending node.
+                    nodes += 1
+                    if nodes > MAX_NODES:
+                        raise WireError("JSON structure exceeds the wire bound")
+                elif not isinstance(key, str):
                     raise WireError("object key is not a string")
-                pending.append((key, child_depth))
+                else:
+                    pending.append((key, child_depth))
             pending.extend((child, child_depth) for child in item.values())
         elif kind is list:
             if depth == MAX_DEPTH:

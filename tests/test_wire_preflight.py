@@ -50,6 +50,15 @@ class WirePreflightTests(unittest.TestCase):
         with patch.object(wire, "MAX_DEPTH", 2), self.assertRaises(wire.WireError):
             wire.validate_tree(["same", [[["same"]]]])
 
+    def test_prechecked_field_names_still_count_every_occurrence_and_depth(self):
+        value = [{"same": "same"}, {"same": "same"}]
+        with patch.object(wire, "MAX_NODES", 7):
+            self.assertTrue(wire.validate_tree(value))
+        with patch.object(wire, "MAX_NODES", 6), self.assertRaises(wire.WireError):
+            wire.validate_tree(value)
+        with patch.object(wire, "MAX_DEPTH", 1), self.assertRaises(wire.WireError):
+            wire.validate_tree(value)
+
     def test_escaped_structural_characters_and_unicode_are_not_container_tokens(self):
         value = [r"\"{}[]", '"\\[]{}', "α界🐟", "\\" * 16000]
         self.assertEqual(wire.decode_document(wire.encode_document(value)), value)

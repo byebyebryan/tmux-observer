@@ -196,3 +196,10 @@ The function saving does not establish lower whole-service CPU in this run;
 ordinary remote payload is also larger. It fails Snap's existing CPU ceiling
 and remains unselected. The next measured hot path is the full tree traversal,
 which still checks every incoming and outgoing document independently.
+
+The [tree-check candidate](evidence/2026-10-08-boundary-b5/normal-tree-failed-cpu.json)
+measures 5.0971%/2.6546% combined CPU. Native reference/generation/hook
+preservation, memory, cached-query deadlines and cleanup pass. Snap remains
+above the five-percent ceiling. A subsequent clock-isolation correction and
+field-name traversal optimization require their own frozen acceptance. No failed
+profile is rounded, relabeled or promoted as passing.

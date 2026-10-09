@@ -440,3 +440,21 @@ Snap and Starship verify the currently selected 69-member Core/210-member
 frontend pair and all 15 managed controls, with ordinary references preserved.
 Those captures prepare rollback; they do not prove a performed rollback or
 authorize promotion without the outstanding frozen gates.
+
+The [exact-type traversal profile](evidence/2026-10-08-boundary-b5/normal-tree-failed-cpu.json)
+at runtime/harness `7acbbfe` measures Snap 5.0971% and Starship 2.6546% CPU.
+Memory, warm-query deadlines, baseline full references/generation/hooks and
+cleanup pass. Eight/ten ordinary sessions remain before and after fleet
+teardown. Snap still fails five percent; this record stays unselected. It also
+predates the clock-isolation fix, so it cannot establish that corrected artifact.
+
+The next traversal change counts already-checked immutable field names directly
+at their checked child depth, avoiding a temporary pending-node allocation.
+Every occurrence still counts; first appearances and Python subclasses keep
+their complete checks. An additional exact-limit regression rejects the seventh
+node under a six-node cap and retains the depth boundary. A
+[same-process benchmark](evidence/2026-10-08-boundary-b5/field-check-benchmark.json)
+over 10,000 identical actual trees measures 1.640/1.664 seconds before and
+1.474/1.402 seconds after. This function saving is not whole-service acceptance.
+The complete source gate passes 328 tests; fresh frozen resource acceptance
+must include both this change and clock isolation.
