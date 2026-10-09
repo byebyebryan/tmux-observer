@@ -5,6 +5,14 @@ repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd -- "$repo_root"
 export PYTHONPATH="$repo_root/src${PYTHONPATH:+:$PYTHONPATH}"
 export PYTHONDONTWRITEBYTECODE=1
+python3 - <<'PY'
+import tomllib
+from pathlib import Path
+from tmux_observer import __version__
+
+version = tomllib.loads(Path("pyproject.toml").read_text())["project"]["version"]
+assert __version__ == version, "package version differs from wheel metadata"
+PY
 python3 scripts/check-contracts
 python3 scripts/check-boundary-contracts
 python3 -m unittest discover -s tests -v

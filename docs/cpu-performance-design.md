@@ -155,3 +155,11 @@ by elapsed owner time divided by the unchanged two-second cadence, verifies
 monotonic counters and preserves native roster/lifetime checks. Queries that
 cross a scheduled boundary may see the next attempt; reads still schedule none.
 The same frozen wheel must pass the corrected gate before acceptance.
+
+The first freeze `83d42e5` passed collector/owner/fleet cases, but the consumer
+exact-pin check correctly rejected its stale Python version constant against
+0.5.0a1 wheel metadata. That wheel is superseded. The ordinary resource run was
+interrupted after its readiness/query cases; owned cleanup completed and no
+ten-minute resource result was accepted. The package constant is corrected and
+the source gate now compares it with project metadata. All runtime acceptance
+is rerun on the corrected freeze; earlier records retain their original scope.
