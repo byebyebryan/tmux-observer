@@ -10,6 +10,9 @@ The implemented extraction follows the reviewed
 [component boundaries](docs/component-boundaries.md) and
 [source review](docs/component-boundaries-review.md): native tmux facts,
 networking, desktop association, action clients and UI retain separate authority.
+The accepted [0.4.0a1 fleet performance pass](docs/fleet-performance-design.md)
+records reduced fleet bookkeeping, measured resource use and paired managed
+deployment with Tmux Plus 0.10.0a2 on Snap and Starship.
 The [0.3.0a1 local performance release](docs/tmux-observer-0.3.0a1.md) records
 attachment-driven Kitty retention and separate native/resource evidence.
 The [0.2.0a1 release record](docs/tmux-observer-0.2.0a1.md) names the frozen
