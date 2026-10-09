@@ -483,3 +483,11 @@ the declared fixture's query/retention/process bounds, not sixteen native physic
 hosts, capacity CPU or shorter-than-sampled memory peaks. The matching frontend
 freeze is `c6bece1`; its native library is unchanged. Current Snap picker,
 publication and managed recovery/paired rollback/reselection remain separate gates.
+
+The matching `c6bece1` frontend now passes its [exact Snap picker gate](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/evidence/2026-10-08-boundary-b5-field/snap-picker.json):
+21 cases, 100 warm frames at p95 94.40 ms, view cycling after original lease
+expiry, remembered context, active typing, refresh feedback, frozen confirmation,
+expiry/reconnect and complete owned cleanup with prior focus restored. Ready and
+confirmation screenshots are inspected. The [release review](tmux-observer-0.2.0a1.md)
+names all frozen gates. Publication and managed recovery/paired rollback/
+reselection remain independent; Starship receives no foreground input.

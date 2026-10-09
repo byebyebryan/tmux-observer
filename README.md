@@ -1,18 +1,19 @@
 # Tmux Observer
 
-Shared observation foundation under development for local and remote tmux clients.
+Shared observation foundation for local and remote tmux clients.
 Tmux Observer publishes host-local session metadata through a passive direct
 collector and shared owner service. The prepared fleet service has passed
 two-host awake/native and simulated recovery acceptance for always-on hosts.
 Rofi Tmux Plus consumes its prepared views and retains presentation policy.
 
-The next extraction is defined by the reviewed
+The implemented extraction follows the reviewed
 [component boundaries](docs/component-boundaries.md) and
 [source review](docs/component-boundaries-review.md): native tmux facts,
 networking, desktop association, action clients and UI retain separate authority.
-The [implementation loop](docs/boundary-implementation.md) now freezes
-[executable boundary contracts](docs/boundary-wire-v1.md); native/action and
-managed acceptance remain separate from that source work.
+The [0.2.0a1 release record](docs/tmux-observer-0.2.0a1.md) names the frozen
+artifact, [executable contracts](docs/boundary-wire-v1.md), native/action,
+consumer and resource acceptance. Publication and managed acceptance are
+independent gates in the [implementation ledger](docs/boundary-implementation.md).
 
 ## Status
 
@@ -22,8 +23,10 @@ collector and owner service passed isolated native/artifact acceptance.
 Fleet/read acceptance has passed for the [always-on scope](docs/always-on-acceptance.md).
 Physical sleep/wake is optional and unverified. Frontend migration and scoped
 managed deployment passed separate installed/native gates on Snap and Starship;
-graphical acceptance uses Starship only. Lifecycle extraction and native tmux
-event experiments remain separate follow-ups.
+the first delivery's graphical scope is recorded there. The subsequent boundary
+delivery passes Snap graphical checks while Starship is in active use. Lifecycle
+extraction is implemented in a separate UI-neutral action package. Native tmux
+event experiments remain an optional follow-up.
 
 ```sh
 uv run tmux-observer collect --host-id snap
@@ -120,8 +123,8 @@ close, create, rename or kill a session.
 3. Add a separate fleet reader, SSH transport and desktop observation adapter.
 4. Migrate Rofi reads and correct completion feedback after producer acceptance.
 5. Publish and deploy accepted prepared reads through scoped chezmoi changes.
-6. Independently extract lifecycle implementation and preserve the old CLI facade
-   as a separate follow-up; it need not delay the read-service rollout.
+6. Independently extract lifecycle implementation and preserve the old CLI facade;
+   the boundary delivery implements this after the accepted read-service rollout.
 
 Native tmux event collection is a later optional checkpoint. Initial local
 collection is polling; local and SSH subscribers still receive published views
@@ -135,4 +138,5 @@ Deliveries A–E/T01–T15 are complete in the recorded always-on two-host scope
 acceptance. The original backlog remains the first-delivery baseline. T16 action
 extraction is refined by [B0–B5](docs/component-boundaries.md#next-implementation-sequence),
 including native attachment associations and desktop contract cleanup. T17 native
-event collection remains optional. B0 source work is recorded separately; no new native/action runtime is selected.
+event collection remains optional. B0–B4 and the frozen native/resource/consumer
+gates pass; B5 publication and managed selection remain separately recorded.
