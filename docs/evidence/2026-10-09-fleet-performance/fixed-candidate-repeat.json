@@ -1,0 +1,331 @@
+{
+  "cpuSeconds": 2.123621227,
+  "finalRevision": 3,
+  "functions": [
+    {
+      "calls": 1469038,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.5968685140000001,
+      "line": 110,
+      "name": "deepcopy",
+      "selfSeconds": 0.242217699
+    },
+    {
+      "calls": 1809,
+      "file": "src/tmux_observer/_wire.py",
+      "inclusiveSeconds": 0.590993141,
+      "line": 117,
+      "name": "validate_tree",
+      "selfSeconds": 0.33906993300000005
+    },
+    {
+      "calls": 900,
+      "file": "src/tmux_observer_client/fleet.py",
+      "inclusiveSeconds": 0.5893671970000001,
+      "line": 466,
+      "name": "before_input",
+      "selfSeconds": 0.0019970910000000003
+    },
+    {
+      "calls": 900,
+      "file": "src/tmux_observer_client/_owner_document.py",
+      "inclusiveSeconds": 0.585992496,
+      "line": 11,
+      "name": "__init__",
+      "selfSeconds": 0.000643057
+    },
+    {
+      "calls": 900,
+      "file": "src/tmux_observer/_delivery_validation.py",
+      "inclusiveSeconds": 0.585349439,
+      "line": 165,
+      "name": "_checked_service_frame",
+      "selfSeconds": 0.009832786000000001
+    },
+    {
+      "calls": 150,
+      "file": "src/tmux_observer_client/_fleet_state.py",
+      "inclusiveSeconds": 0.543946888,
+      "line": 225,
+      "name": "accept_desktop",
+      "selfSeconds": 0.007333639
+    },
+    {
+      "calls": 78886,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.5378122710000001,
+      "line": 198,
+      "name": "_deepcopy_dict",
+      "selfSeconds": 0.246960064
+    },
+    {
+      "calls": 300,
+      "file": "src/tmux_observer_client/fleet.py",
+      "inclusiveSeconds": 0.52672692,
+      "line": 410,
+      "name": "frame",
+      "selfSeconds": 0.000607502
+    },
+    {
+      "calls": 300,
+      "file": "src/tmux_observer_client/_fleet_state.py",
+      "inclusiveSeconds": 0.523178117,
+      "line": 431,
+      "name": "frame",
+      "selfSeconds": 0.0009859390000000001
+    },
+    {
+      "calls": 459,
+      "file": "scripts/measure-fleet-work",
+      "inclusiveSeconds": 0.426318945,
+      "line": 161,
+      "name": "wrapped",
+      "selfSeconds": 0.000568076
+    },
+    {
+      "calls": 300,
+      "file": "src/tmux_observer_client/_contract_validation.py",
+      "inclusiveSeconds": 0.40848860800000003,
+      "line": 247,
+      "name": "validate_fleet_frame",
+      "selfSeconds": 0.003342152
+    },
+    {
+      "calls": 5132,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.390562642,
+      "line": 172,
+      "name": "_deepcopy_list",
+      "selfSeconds": 0.013272106
+    },
+    {
+      "calls": 153,
+      "file": "src/tmux_observer_client/_fleet_state.py",
+      "inclusiveSeconds": 0.342599729,
+      "line": 326,
+      "name": "view",
+      "selfSeconds": 0.006546581
+    },
+    {
+      "calls": 453,
+      "file": "src/tmux_observer_client/_contract_validation.py",
+      "inclusiveSeconds": 0.32505162800000004,
+      "line": 53,
+      "name": "_fleet_view_after_tree",
+      "selfSeconds": 0.026634489
+    },
+    {
+      "calls": 18060,
+      "file": "src/tmux_observer/_native_validation.py",
+      "inclusiveSeconds": 0.26490588600000003,
+      "line": 61,
+      "name": "session",
+      "selfSeconds": 0.039653995000000004
+    },
+    {
+      "calls": 900,
+      "file": "src/tmux_observer/_native_validation.py",
+      "inclusiveSeconds": 0.24771067500000002,
+      "line": 106,
+      "name": "_observation_after_tree",
+      "selfSeconds": 0.014946333000000001
+    },
+    {
+      "calls": 906,
+      "file": "src/tmux_observer_client/_fleet_state.py",
+      "inclusiveSeconds": 0.24112571500000002,
+      "line": 142,
+      "name": "hosts",
+      "selfSeconds": 0.0017955470000000002
+    },
+    {
+      "calls": 1812,
+      "file": "src/tmux_observer_client/_remote_state.py",
+      "inclusiveSeconds": 0.239086555,
+      "line": 255,
+      "name": "project",
+      "selfSeconds": 0.001819882
+    },
+    {
+      "calls": 36120,
+      "file": "src/tmux_observer/_native_validation.py",
+      "inclusiveSeconds": 0.22704962,
+      "line": 33,
+      "name": "reference",
+      "selfSeconds": 0.036995617
+    },
+    {
+      "calls": 201972,
+      "file": "src/tmux_observer/_validation_common.py",
+      "inclusiveSeconds": 0.20449693900000002,
+      "line": 33,
+      "name": "string",
+      "selfSeconds": 0.078703935
+    },
+    {
+      "calls": 753,
+      "file": "src/tmux_observer_client/_fleet_state.py",
+      "inclusiveSeconds": 0.20428990200000002,
+      "line": 159,
+      "name": "inputs",
+      "selfSeconds": 0.0025844070000000004
+    },
+    {
+      "calls": 153,
+      "file": "src/tmux_observer_client/_contract_validation.py",
+      "inclusiveSeconds": 0.19275783800000001,
+      "line": 48,
+      "name": "validate_fleet_view",
+      "selfSeconds": 0.0004605
+    },
+    {
+      "calls": 303,
+      "file": "src/tmux_observer_client/_fleet_state.py",
+      "inclusiveSeconds": 0.16108139300000002,
+      "line": 176,
+      "name": "input_key",
+      "selfSeconds": 0.000896265
+    },
+    {
+      "calls": 12300,
+      "file": "src/tmux_observer_client/fleet.py",
+      "inclusiveSeconds": 0.158458188,
+      "line": 300,
+      "name": "project_changed",
+      "selfSeconds": 0.046503466
+    },
+    {
+      "calls": 900,
+      "file": "src/tmux_observer_client/_remote_state.py",
+      "inclusiveSeconds": 0.153872152,
+      "line": 94,
+      "name": "receive",
+      "selfSeconds": 0.005815392
+    },
+    {
+      "calls": 91701,
+      "file": "src/tmux_observer/_validation_common.py",
+      "inclusiveSeconds": 0.135975915,
+      "line": 21,
+      "name": "obj",
+      "selfSeconds": 0.084027033
+    },
+    {
+      "calls": 600,
+      "file": "src/tmux_observer_client/_remote_state.py",
+      "inclusiveSeconds": 0.11629423700000001,
+      "line": 67,
+      "name": "confirm",
+      "selfSeconds": 0.0031905960000000004
+    },
+    {
+      "calls": 4209,
+      "file": "src/tmux_observer/_wire.py",
+      "inclusiveSeconds": 0.106710882,
+      "line": 210,
+      "name": "_encode_after_validation",
+      "selfSeconds": 0.005006228000000001
+    },
+    {
+      "calls": 58163,
+      "file": "~",
+      "inclusiveSeconds": 0.10308594700000001,
+      "line": 0,
+      "name": "<method 'extend' of 'list' objects>",
+      "selfSeconds": 0.05999982500000001
+    },
+    {
+      "calls": 4209,
+      "file": "__init__.py",
+      "inclusiveSeconds": 0.09989718,
+      "line": 185,
+      "name": "dumps",
+      "selfSeconds": 0.005949376
+    },
+    {
+      "calls": 176724,
+      "file": "src/tmux_observer/_validation_common.py",
+      "inclusiveSeconds": 0.09595423600000001,
+      "line": 41,
+      "name": "nullable",
+      "selfSeconds": 0.035483222
+    },
+    {
+      "calls": 88194,
+      "file": "__init__.py",
+      "inclusiveSeconds": 0.095561166,
+      "line": 169,
+      "name": "fullmatch",
+      "selfSeconds": 0.031851326
+    },
+    {
+      "calls": 4209,
+      "file": "encoder.py",
+      "inclusiveSeconds": 0.09276224300000001,
+      "line": 185,
+      "name": "encode",
+      "selfSeconds": 0.005311204
+    },
+    {
+      "calls": 600,
+      "file": "src/tmux_observer_client/_owner_document.py",
+      "inclusiveSeconds": 0.092190966,
+      "line": 17,
+      "name": "retained",
+      "selfSeconds": 0.00048694200000000003
+    },
+    {
+      "calls": 456,
+      "file": "src/tmux_observer/_wire.py",
+      "inclusiveSeconds": 0.08772658200000001,
+      "line": 205,
+      "name": "encode_document",
+      "selfSeconds": 0.0006695770000000001
+    }
+  ],
+  "gate": "fixed-input-fleet-work",
+  "harnessSha256": "cb380b434cefa48ca1e227b513d92fb8e13f675cb9af84b0f2d74c9485448161",
+  "limits": [
+    "Synthetic fixed-input bookkeeping, not native or whole-service CPU",
+    "Function inclusive times overlap and cannot be summed",
+    "Remote proof scheduler and actual desktop work measured separately"
+  ],
+  "result": "passed",
+  "runtimeModules": {
+    "tmux_observer._delivery_validation": {
+      "path": "/home/bryan/code/tmux-observer/src/tmux_observer/_delivery_validation.py",
+      "sha256": "a3d7e0fd5ac62578cd67351124e7f60998a05bb5622a907d76b562ccf8446c99"
+    },
+    "tmux_observer_client._fleet_state": {
+      "path": "/home/bryan/code/tmux-observer/src/tmux_observer_client/_fleet_state.py",
+      "sha256": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b"
+    },
+    "tmux_observer_client._remote_state": {
+      "path": "/home/bryan/code/tmux-observer/src/tmux_observer_client/_remote_state.py",
+      "sha256": "413e89b17935f6975374efe345ecd37ca7c63321e7a40c514405ab5135fbeee2"
+    },
+    "tmux_observer_client.fleet": {
+      "path": "/home/bryan/code/tmux-observer/src/tmux_observer_client/fleet.py",
+      "sha256": "3722bdc434f8fbc9dd7b00ec281827c9ef54cbbdcbda691a88a833a803441066"
+    }
+  },
+  "runtimeVersion": "0.3.0a1",
+  "schemaVersion": 1,
+  "sourceCommit": "e23489967f2d82c09a57a3b25b1d9cbced47bc02",
+  "sourceDirty": true,
+  "workCounts": {
+    "inputHash": 303,
+    "material": 3,
+    "projection": 153
+  },
+  "workload": {
+    "cycleMs": 2000,
+    "cycles": 300,
+    "desktop": "fixed negative batches each two cycles",
+    "materialRenamesPerOwner": 2,
+    "owners": 2,
+    "proofs": "fixed each cycle",
+    "quietTicksPerCycle": 40,
+    "sessionsPerOwner": 10
+  }
+}

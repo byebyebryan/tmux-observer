@@ -60,7 +60,13 @@ def serve_fleet(root, host_id):
     from tmux_observer_client.fleet import FleetPublisher
     from tmux_observer_client.ssh import RemoteConnection
 
-    counters = {"sshStarts": 0, "ownerPayloadReceivedBytes": 0, "ownerControlSentBytes": 0}
+    counters = {
+        "sshStarts": 0,
+        "ownerPayloadReceivedBytes": 0,
+        "ownerControlSentBytes": 0,
+        "remoteProbeRequests": 0,
+        "matchingRemoteProofs": 0,
+    }
 
     class CountedRemote(RemoteConnection):
         def __init__(self, *args, **kwargs):
@@ -68,6 +74,7 @@ def serve_fleet(root, host_id):
 
             def received(connection, value, matched, now):
                 counters["ownerPayloadReceivedBytes"] += len(encode_document(value, limit=LIMIT))
+                counters["matchingRemoteProofs"] += bool(matched)
                 if callback is not None:
                     callback(connection, value, matched, now)
 
@@ -78,6 +85,7 @@ def serve_fleet(root, host_id):
         def send(self, request, now):
             super().send(request, now)
             counters["ownerControlSentBytes"] += len(encode_document(request, limit=16384))
+            counters["remoteProbeRequests"] += request["operation"] == "probe"
 
     publisher = FleetPublisher(
         host_id,

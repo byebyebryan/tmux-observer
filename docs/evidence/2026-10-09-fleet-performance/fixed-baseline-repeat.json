@@ -1,0 +1,331 @@
+{
+  "cpuSeconds": 4.229191364,
+  "finalRevision": 3,
+  "functions": [
+    {
+      "calls": 7348,
+      "file": "_wire.py",
+      "inclusiveSeconds": 1.872827411,
+      "line": 117,
+      "name": "validate_tree",
+      "selfSeconds": 1.081334494
+    },
+    {
+      "calls": 1500,
+      "file": "scripts/measure-fleet-work",
+      "inclusiveSeconds": 1.282721151,
+      "line": 161,
+      "name": "wrapped",
+      "selfSeconds": 0.002033023
+    },
+    {
+      "calls": 1800,
+      "file": "_delivery_validation.py",
+      "inclusiveSeconds": 1.136779761,
+      "line": 161,
+      "name": "validate_service_frame",
+      "selfSeconds": 0.017774946
+    },
+    {
+      "calls": 4798,
+      "file": "_wire.py",
+      "inclusiveSeconds": 1.0777116720000002,
+      "line": 205,
+      "name": "encode_document",
+      "selfSeconds": 0.0073006930000000005
+    },
+    {
+      "calls": 900,
+      "file": "fleet.py",
+      "inclusiveSeconds": 0.958298274,
+      "line": 381,
+      "name": "before_input",
+      "selfSeconds": 0.00344982
+    },
+    {
+      "calls": 2013559,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.8589950230000001,
+      "line": 110,
+      "name": "deepcopy",
+      "selfSeconds": 0.336757961
+    },
+    {
+      "calls": 12300,
+      "file": "fleet.py",
+      "inclusiveSeconds": 0.8571121700000001,
+      "line": 239,
+      "name": "project_changed",
+      "selfSeconds": 0.031220947000000002
+    },
+    {
+      "calls": 450,
+      "file": "_fleet_state.py",
+      "inclusiveSeconds": 0.831578263,
+      "line": 305,
+      "name": "view",
+      "selfSeconds": 0.009677187
+    },
+    {
+      "calls": 108686,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.751593277,
+      "line": 198,
+      "name": "_deepcopy_dict",
+      "selfSeconds": 0.334419664
+    },
+    {
+      "calls": 900,
+      "file": "_remote_state.py",
+      "inclusiveSeconds": 0.690502699,
+      "line": 49,
+      "name": "receive",
+      "selfSeconds": 0.006953857000000001
+    },
+    {
+      "calls": 150,
+      "file": "_fleet_state.py",
+      "inclusiveSeconds": 0.597874554,
+      "line": 205,
+      "name": "accept_desktop",
+      "selfSeconds": 0.006739099
+    },
+    {
+      "calls": 450,
+      "file": "_contract_validation.py",
+      "inclusiveSeconds": 0.55799871,
+      "line": 48,
+      "name": "validate_fleet_view",
+      "selfSeconds": 0.001357204
+    },
+    {
+      "calls": 750,
+      "file": "_contract_validation.py",
+      "inclusiveSeconds": 0.5363149,
+      "line": 53,
+      "name": "_fleet_view_after_tree",
+      "selfSeconds": 0.044015552
+    },
+    {
+      "calls": 9600,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.534092788,
+      "line": 172,
+      "name": "_deepcopy_list",
+      "selfSeconds": 0.022218355000000002
+    },
+    {
+      "calls": 300,
+      "file": "fleet.py",
+      "inclusiveSeconds": 0.518493388,
+      "line": 325,
+      "name": "frame",
+      "selfSeconds": 0.000599253
+    },
+    {
+      "calls": 300,
+      "file": "_fleet_state.py",
+      "inclusiveSeconds": 0.516653694,
+      "line": 410,
+      "name": "frame",
+      "selfSeconds": 0.0010035620000000002
+    },
+    {
+      "calls": 1800,
+      "file": "_native_validation.py",
+      "inclusiveSeconds": 0.491925017,
+      "line": 106,
+      "name": "_observation_after_tree",
+      "selfSeconds": 0.030038322000000003
+    },
+    {
+      "calls": 33000,
+      "file": "_native_validation.py",
+      "inclusiveSeconds": 0.482966691,
+      "line": 61,
+      "name": "session",
+      "selfSeconds": 0.07284650200000001
+    },
+    {
+      "calls": 1650,
+      "file": "_fleet_state.py",
+      "inclusiveSeconds": 0.43717345100000005,
+      "line": 122,
+      "name": "hosts",
+      "selfSeconds": 0.0038530060000000004
+    },
+    {
+      "calls": 3300,
+      "file": "_remote_state.py",
+      "inclusiveSeconds": 0.432885766,
+      "line": 188,
+      "name": "project",
+      "selfSeconds": 0.006105200000000001
+    },
+    {
+      "calls": 66000,
+      "file": "_native_validation.py",
+      "inclusiveSeconds": 0.41292072100000005,
+      "line": 33,
+      "name": "reference",
+      "selfSeconds": 0.06736845200000001
+    },
+    {
+      "calls": 300,
+      "file": "_contract_validation.py",
+      "inclusiveSeconds": 0.40147327600000005,
+      "line": 247,
+      "name": "validate_fleet_frame",
+      "selfSeconds": 0.0032716010000000003
+    },
+    {
+      "calls": 750,
+      "file": "_fleet_state.py",
+      "inclusiveSeconds": 0.39263796300000003,
+      "line": 156,
+      "name": "input_key",
+      "selfSeconds": 0.0023078400000000002
+    },
+    {
+      "calls": 900,
+      "file": "fleet.py",
+      "inclusiveSeconds": 0.38317875,
+      "line": 407,
+      "name": "owner_frame",
+      "selfSeconds": 0.0016312960000000002
+    },
+    {
+      "calls": 1800,
+      "file": "~",
+      "inclusiveSeconds": 0.382042816,
+      "line": 0,
+      "name": "<built-in method builtins.sum>",
+      "selfSeconds": 0.001513283
+    },
+    {
+      "calls": 2699,
+      "file": "fleet.py",
+      "inclusiveSeconds": 0.380018768,
+      "line": 410,
+      "name": "<genexpr>",
+      "selfSeconds": 0.001402777
+    },
+    {
+      "calls": 367800,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.36769491400000004,
+      "line": 33,
+      "name": "string",
+      "selfSeconds": 0.141826206
+    },
+    {
+      "calls": 1200,
+      "file": "_fleet_state.py",
+      "inclusiveSeconds": 0.324045242,
+      "line": 139,
+      "name": "inputs",
+      "selfSeconds": 0.004183794
+    },
+    {
+      "calls": 166760,
+      "file": "~",
+      "inclusiveSeconds": 0.295336873,
+      "line": 0,
+      "name": "<method 'extend' of 'list' objects>",
+      "selfSeconds": 0.172441124
+    },
+    {
+      "calls": 11548,
+      "file": "_wire.py",
+      "inclusiveSeconds": 0.260710196,
+      "line": 210,
+      "name": "_encode_after_validation",
+      "selfSeconds": 0.012473172000000001
+    },
+    {
+      "calls": 11548,
+      "file": "__init__.py",
+      "inclusiveSeconds": 0.24382862600000002,
+      "line": 185,
+      "name": "dumps",
+      "selfSeconds": 0.015049807
+    },
+    {
+      "calls": 161550,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.242004972,
+      "line": 21,
+      "name": "obj",
+      "selfSeconds": 0.149001566
+    },
+    {
+      "calls": 450,
+      "file": "fleet.py",
+      "inclusiveSeconds": 0.241845898,
+      "line": 217,
+      "name": "current_input_key",
+      "selfSeconds": 0.0012586420000000001
+    },
+    {
+      "calls": 11548,
+      "file": "encoder.py",
+      "inclusiveSeconds": 0.22583348,
+      "line": 185,
+      "name": "encode",
+      "selfSeconds": 0.013643279000000001
+    },
+    {
+      "calls": 11548,
+      "file": "encoder.py",
+      "inclusiveSeconds": 0.207074695,
+      "line": 207,
+      "name": "iterencode",
+      "selfSeconds": 0.207074695
+    }
+  ],
+  "gate": "fixed-input-fleet-work",
+  "harnessSha256": "cb380b434cefa48ca1e227b513d92fb8e13f675cb9af84b0f2d74c9485448161",
+  "limits": [
+    "Synthetic fixed-input bookkeeping, not native or whole-service CPU",
+    "Function inclusive times overlap and cannot be summed",
+    "Remote proof scheduler and actual desktop work measured separately"
+  ],
+  "result": "passed",
+  "runtimeModules": {
+    "tmux_observer._delivery_validation": {
+      "path": "/tmp/tmux-local-lp4-pair-venv/lib/python3.14/site-packages/tmux_observer/_delivery_validation.py",
+      "sha256": "e5b2924ae643b0b437730fb5966108deee230b56cd968f46ca0ba03d42e4307c"
+    },
+    "tmux_observer_client._fleet_state": {
+      "path": "/tmp/tmux-local-lp4-pair-venv/lib/python3.14/site-packages/tmux_observer_client/_fleet_state.py",
+      "sha256": "081907dc03f37351066889fe80a00e8349c0bf44c1c3880192d5c3f5db1c7f66"
+    },
+    "tmux_observer_client._remote_state": {
+      "path": "/tmp/tmux-local-lp4-pair-venv/lib/python3.14/site-packages/tmux_observer_client/_remote_state.py",
+      "sha256": "6bc478adb67294fedb7cac7755410abf43e977ff09dceee95bb912fff489f7dd"
+    },
+    "tmux_observer_client.fleet": {
+      "path": "/tmp/tmux-local-lp4-pair-venv/lib/python3.14/site-packages/tmux_observer_client/fleet.py",
+      "sha256": "1bc2a2b7feee9816f870074c25174bfe6cb9484ba1030efb21cf1918452709f3"
+    }
+  },
+  "runtimeVersion": "0.3.0a1",
+  "schemaVersion": 1,
+  "sourceCommit": "e23489967f2d82c09a57a3b25b1d9cbced47bc02",
+  "sourceDirty": true,
+  "workCounts": {
+    "inputHash": 750,
+    "material": 300,
+    "projection": 450
+  },
+  "workload": {
+    "cycleMs": 2000,
+    "cycles": 300,
+    "desktop": "fixed negative batches each two cycles",
+    "materialRenamesPerOwner": 2,
+    "owners": 2,
+    "proofs": "fixed each cycle",
+    "quietTicksPerCycle": 40,
+    "sessionsPerOwner": 10
+  }
+}
