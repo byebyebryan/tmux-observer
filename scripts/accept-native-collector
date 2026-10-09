@@ -182,7 +182,7 @@ def main():
 
             def disappear(arguments, deadline):
                 nonlocal changed
-                if not changed and arguments[0] == "show-options":
+                if not changed and "show-options" in arguments:
                     changed = True
                     native("kill-session", "-t", sid)
                 return runner(arguments, deadline)
@@ -203,7 +203,7 @@ def main():
 
             def restart(arguments, deadline):
                 nonlocal changed
-                if not changed and arguments[0] == "show-options":
+                if not changed and "show-options" in arguments:
                     changed = True
                     native("kill-server")
                     owned_session("restarted")
