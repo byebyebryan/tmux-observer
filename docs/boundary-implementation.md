@@ -11,7 +11,7 @@ operations tuple.
 | --- | --- | --- |
 | B0 contracts | Committed/pushed; CI passed | `bf5f838`; three new bundles, independent corpus, split pure domains and blocked-import checks |
 | B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
-| B2 desktop | Source gate passed; native gate pending | 216 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
+| B2 desktop | Source and frozen Starship native passed; final resource gate pending | 219 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
 | B3 actions | Pending | Extract write package, exact native guards, uncertainty/cleanup and independent native proof |
 | B4 frontend | Pending | Narrow clients, compatibility corpus/deltas, remembered/frozen/expiry behavior, Starship GUI |
 | B5 selection | Pending | Exact candidate artifacts, normal/capacity profiling, published/scoped managed selection and rollback |
@@ -109,3 +109,13 @@ The diagnostic harness only wraps existing reads, publishes no raw titles/argv,
 and records its dirty harness state separately from the frozen wheel.
 Source regressions cover binding-stable churn, changed bindings and duplicate
 IDs in the closing compositor capture. The failed wheel is not accepted.
+
+Frozen B2 source `2d127af` produced the 134-member wheel
+`88f615be9d4075e9e56b5af11791797b35fb11606510b1587272ef7ec71b849b`.
+The [clean installed Starship gate](evidence/2026-10-08-b2-desktop-starship.json)
+passed all nine native/desktop cases, including context replacement, compositor
+failure independent of owner facts and headless sharing. Owned viewers/services
+were stopped, owned roots removed and ordinary sessions/focus preserved. The
+source gate passed 219 tests, independent contract corpora and compile/Ruff checks.
+This proves the installed desktop adapter; Rofi adoption, two-host resources and
+managed selection remain later gates. Snap had no graphical probes.
