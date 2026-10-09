@@ -74,6 +74,19 @@ candidate uses the same Python 3.14 interpreter. Baseline process CPU is
 Both produce revision 3. These synthetic bookkeeping results do not establish
 whole-service CPU savings or network traffic reduction.
 
+Repeating that harness on the frozen installed 0.4.0a1 wheel uses 2.088/2.091
+CPU seconds with the same counts and revision. Its recorded runtime module
+digests match the candidate descriptor exactly. The earlier development-tree
+profiles remain available separately.
+
+The separate unchanged-owner proof simulation uses installed baseline and
+candidate wheels with two-second samples, fifty-millisecond receive ticks and
+a five-millisecond proof RTT over 600 logical seconds. Matching proofs fall from
+300 to 197; candidate stream frames renew no validity by themselves. Encoded
+request/reply/push bytes total 949,837 versus 774,353 (18.5% less). These are
+synthetic one-session application payloads, not encrypted SSH bytes or a working
+desktop traffic measurement. Both runs retain the same 299 source pushes.
+
 Admission returns a private checked document and byte sizes already calculated
 by the complete wire validator. Capacity is reserved before copying retained
 state. Standalone receives still validate dictionaries; scope, ordering, nonce
@@ -107,3 +120,18 @@ or complete-absence rows would therefore weaken the contract. A future retained
 remote mode must name its weaker display evidence and independent invalidators,
 then receive producer and consumer acceptance. Current remote scans and fresh
 action-time checks remain unchanged in this pass.
+
+The source gate passes 367 tests and all seven bundle/style checks. Runtime
+`ad6073953c3e1f4237950fffc53b8e0a111120fa` builds Observer 0.4.0a1 twice with
+SHA-256 `efb1e7b72e0128bf45c10803d366304f7b108aec5ac5aaf2fffafa4efb23d880`.
+The later lockfile/harness/evidence commits do not replace that frozen wheel.
+The two-host native fixture passes fifteen recovery/query/passivity cases;
+its `passed_partial` result explicitly omits resource and graphical acceptance.
+The independent four recovery simulations, eleven native binding cases and
+seven actual remote desktop cases pass. Capacity passes eleven cases with
+fifteen real SSH links and thirty-two readers; the conservative sampled
+fleet/SSH/associated-bridge peak is 500.44 MiB against 768 MiB. Its partial label
+preserves the synthetic-owner and two-physical-host limits. The current frozen
+consumer is 0.10.0a1, independently pinned to all 78 runtime modules; 293 tests
+and 23 Snap graphical cases pass. Ordinary ten-minute resources and managed
+promotion remain pending in FP3/FP4.

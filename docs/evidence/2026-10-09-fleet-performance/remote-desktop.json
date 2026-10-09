@@ -1,0 +1,141 @@
+{
+  "gate": "T12-native-remote-desktop-partial",
+  "sourceCommit": "ad6073953c3e1f4237950fffc53b8e0a111120fa",
+  "sourceTreeDirty": false,
+  "scope": "one installed wheel; private two-host default servers/units and Mesh; actual Snap Niri and owned Kitty/manual SSH windows",
+  "cases": [
+    {
+      "name": "installed_fleet_matches_native_unattached_remote_reference_in_actual_snap_desktop",
+      "result": "passed"
+    },
+    {
+      "name": "actual_manual_ssh_window_native_attachment_and_unique_title_prove_only_matched_display_presence",
+      "result": "passed",
+      "window": {
+        "windowId": 136,
+        "windowPid": 1865804,
+        "sshPid": 1865834
+      },
+      "nativeClients": [
+        {
+          "pid": 2902458,
+          "sessionId": "$0",
+          "createdAt": 1791530022
+        }
+      ],
+      "reference": {
+        "hostId": "starship",
+        "serverGeneration": "tmux-v1:1791530022:2901991:/tmp/to-fleet-108b9427254b41b5860bb4feedf0cb92/native/tmux-1000/default",
+        "sessionId": "$0",
+        "createdAt": 1791530022,
+        "attachedClients": 1,
+        "windowCount": 1,
+        "name": "owned-starship"
+      }
+    },
+    {
+      "name": "two_real_manual_ssh_windows_are_ambiguous_while_native_attached_count_remains_positive",
+      "result": "passed",
+      "secondWindow": {
+        "windowId": 137,
+        "windowPid": 1865894,
+        "sshPid": 1865933
+      }
+    },
+    {
+      "name": "closing_only_duplicate_owned_window_restores_unique_qualified_match",
+      "result": "passed"
+    },
+    {
+      "name": "native_owner_rename_revokes_old_qualified_title_then_rejoins_updated_owned_window",
+      "result": "passed"
+    },
+    {
+      "name": "remote_owner_loss_and_replacement_require_new_proof_and_desktop_join_without_closing_native_viewer",
+      "result": "passed"
+    },
+    {
+      "name": "owned_remote_viewers_and_fleets_stop_with_native_sessions_creation_windows_and_hooks_preserved",
+      "result": "passed"
+    }
+  ],
+  "endpoints": {
+    "snap": {
+      "wheelSha256": "efb1e7b72e0128bf45c10803d366304f7b108aec5ac5aaf2fffafa4efb23d880",
+      "pythonRuntime": {
+        "version": "3.13.7 (main, Sep 18 2025, 19:47:49) [Clang 20.1.4 ]",
+        "executable": "/tmp/to-fleet-108b9427254b41b5860bb4feedf0cb92/venv/bin/python"
+      },
+      "templateSha256": {
+        "tmux-observer-owner@.service": "812fc7c76a7bce28c9b99b6b5d79fd8a909e0ab334c4a45d9e7890b69c65b7b0",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+      "nativeReference": {
+        "hostId": "snap",
+        "serverGeneration": "tmux-v1:1791530021:1865504:/tmp/to-fleet-108b9427254b41b5860bb4feedf0cb92/native/tmux-1000/default",
+        "sessionId": "$0",
+        "createdAt": 1791530021,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-snap"
+      },
+      "clock": {
+        "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "80H1VV3",
+      "uid": 1000
+    },
+    "starship": {
+      "wheelSha256": "efb1e7b72e0128bf45c10803d366304f7b108aec5ac5aaf2fffafa4efb23d880",
+      "pythonRuntime": {
+        "version": "3.13.14 (main, Jun 23 2026, 15:18:27) [Clang 22.1.3 ]",
+        "executable": "/tmp/to-fleet-108b9427254b41b5860bb4feedf0cb92/venv/bin/python"
+      },
+      "templateSha256": {
+        "tmux-observer-owner@.service": "812fc7c76a7bce28c9b99b6b5d79fd8a909e0ab334c4a45d9e7890b69c65b7b0",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "56f3b556513888c367fd19e975edba47",
+      "nativeReference": {
+        "hostId": "starship",
+        "serverGeneration": "tmux-v1:1791530022:2901991:/tmp/to-fleet-108b9427254b41b5860bb4feedf0cb92/native/tmux-1000/default",
+        "sessionId": "$0",
+        "createdAt": 1791530022,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-starship"
+      },
+      "clock": {
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "starship",
+      "uid": 1000
+    }
+  },
+  "limits": [
+    "Manual SSH observations are qualified display metadata, not verified lifecycle handles",
+    "No Starship graphical, Rofi rendering, physical suspend, managed rollout or declared-capacity acceptance",
+    "Resource profile is optional; terminal/process content and raw argv/environment are never persisted"
+  ],
+  "harnessCommit": "216b4c0a7284fc95e1ea4eb7299bd2ba15f6c7b2",
+  "harnessTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "ad6073953c3e1f4237950fffc53b8e0a111120fa",
+      "epoch": 1791529704,
+      "tree": "9b4b679bf735b6eb57835c8994d36305f7536c8c"
+    },
+    "wheelSha256": "efb1e7b72e0128bf45c10803d366304f7b108aec5ac5aaf2fffafa4efb23d880",
+    "descriptorSha256": "6cd2b9af4fb90246544bea69592d37b2e97b15991bb2ae95c51dae56d7b1b494",
+    "sourceFilesMatchHarness": true
+  },
+  "result": "passed_partial"
+}

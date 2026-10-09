@@ -1,0 +1,22 @@
+{
+  "gate": "unchanged-owner-proof-traffic",
+  "harnessSha256": "ebcb19a7f537b3641739fd88c4de39e2c57e374deceaadcca45c046ed2d1797d",
+  "limits": [
+    "Synthetic unchanged facts and clock, not actual SSH or wire encryption overhead",
+    "Material changes and explicit refresh retain immediate proof; native fleet measures working desktops separately"
+  ],
+  "matchingProofs": 197,
+  "probes": 197,
+  "proofRttMs": 5,
+  "pushBytes": 438786,
+  "pushes": 299,
+  "receiveTickMs": 50,
+  "remoteStateSha256": "413e89b17935f6975374efe345ecd37ca7c63321e7a40c514405ab5135fbeee2",
+  "replyBytes": 294394,
+  "requestBytes": 41173,
+  "result": "passed",
+  "runtimeVersion": "0.4.0a1",
+  "schemaVersion": 1,
+  "seconds": 600,
+  "sourceCadenceMs": 2000
+}

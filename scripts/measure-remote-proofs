@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""Deterministic unchanged-owner proof traffic; no SSH or native operations."""
+
+import argparse
+import copy
+import hashlib
+import importlib.metadata
+import json
+from pathlib import Path
+
+import tmux_observer_client._remote_state as remote_module
+from tmux_observer.native import FRAME_LIMIT, encode_document
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def measure(seconds):
+    value = json.loads((ROOT / "contracts/service-v1/fixtures/ready.json").read_text())
+    owner = remote_module.RemoteState(value["source"]["hostId"])
+    owner.start("owned-watch", 100)
+    value.update(kind="resync", sequence=0, requestId="owned-watch")
+    owner.receive(value, 150)
+    counts = {
+        "pushes": 0,
+        "probes": 0,
+        "matchingProofs": 0,
+        "requestBytes": 0,
+        "replyBytes": 0,
+        "pushBytes": 0,
+    }
+    for now in range(200, 200 + seconds * 1000, 50):
+        if now > 200 and (now - 200) % 2000 == 0:
+            sample = (now - 200) // 2000
+            started = 100 + sample * 2000
+            value["snapshot"]["sample"].update(startedAt=started, finishedAt=started + 20)
+            value["receipt"].update(
+                attempted=sample + 1,
+                accepted=sample + 1,
+                acceptedAttempt=sample + 1,
+                startedAt=started,
+                acceptedAt=started + 25,
+                expiresAt=started + 10000,
+                lastAttemptAt=started,
+                remainingMs=started + 10000 - now,
+            )
+            value.update(
+                kind="heartbeat", requestId=None, sequence=owner.sequence + 1, encodedAt=now
+            )
+            owner.receive(copy.deepcopy(value), now)
+            counts["pushes"] += 1
+            counts["pushBytes"] += len(encode_document(value, limit=FRAME_LIMIT))
+        owner.expire(now)
+        request = owner.probe(now)
+        if request is not None:
+            proof = copy.deepcopy(value)
+            proof.update(
+                kind="status",
+                requestId=request["requestId"],
+                sequence=owner.sequence + 1,
+                encodedAt=now + 5,
+            )
+            proof["receipt"]["remainingMs"] = proof["receipt"]["expiresAt"] - proof["encodedAt"]
+            counts["matchingProofs"] += bool(owner.receive(proof, now + 5))
+            counts["probes"] += 1
+            counts["requestBytes"] += len(encode_document(request, limit=16384))
+            counts["replyBytes"] += len(encode_document(proof, limit=FRAME_LIMIT))
+        assert owner.transport == "ready" and owner.expiry > now
+    assert counts["probes"] == counts["matchingProofs"]
+    return counts
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--seconds", type=int, default=600)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    assert 10 <= args.seconds <= 3600
+    value = {
+        "schemaVersion": 1,
+        "result": "passed",
+        "gate": "unchanged-owner-proof-traffic",
+        "runtimeVersion": importlib.metadata.version("tmux-observer"),
+        "remoteStateSha256": hashlib.sha256(Path(remote_module.__file__).read_bytes()).hexdigest(),
+        "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "seconds": args.seconds,
+        "sourceCadenceMs": 2000,
+        "receiveTickMs": 50,
+        "proofRttMs": 5,
+        "limits": [
+            "Synthetic unchanged facts and clock, not actual SSH or wire encryption overhead",
+            "Material changes and explicit refresh retain immediate proof; native fleet measures working desktops separately",
+        ],
+        **measure(args.seconds),
+    }
+    args.output.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+    print(json.dumps(value))
+
+
+if __name__ == "__main__":
+    main()
