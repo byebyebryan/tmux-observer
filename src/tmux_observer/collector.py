@@ -186,15 +186,7 @@ class Collector:
                 ),
                 5,
             )
-            identities = self.identities(rows)
-            if not rows:
-                # Empty output carries no generation. Keep its separate probe
-                # so a live empty server cannot become verified absence.
-                return identities, self.generation(deadline, True)
-            generations = {self.fast_generation(row[2:]) for row in rows}
-            if len(generations) != 1:
-                raise Race()
-            return identities, generations.pop()
+            return self.final_rows(rows, deadline)
         else:
             ids = self.read(
                 ["list-sessions", "-F", "#{session_id}"], deadline, absent=True, empty=True
@@ -202,6 +194,16 @@ class Collector:
             self.identities([(sid, "0") for sid in ids])
             rows = [(sid, self.field(sid, "session_created", deadline)) for sid in ids]
         return self.identities(rows), self.generation(deadline, False)
+
+    def final_rows(self, rows, deadline):
+        identities = self.identities(rows)
+        if not rows:
+            # A live empty server still requires its own generation probe.
+            return identities, self.generation(deadline, True)
+        generations = {self.fast_generation(row[2:]) for row in rows}
+        if len(generations) != 1:
+            raise Race()
+        return identities, generations.pop()
 
     def options(self, sid, names, deadline):
         return self.annotation_profile.sample(self.read, sid, names, deadline)
@@ -249,7 +251,11 @@ class Collector:
         try:
             rows = self.table(deadline, fast)
             identities = self.identities(rows)
-            options = {sid: self.options(sid, names, deadline) for sid in identities}
+            options = (
+                {sid: self.options(sid, names, deadline) for sid in identities}
+                if names
+                else self.annotation_profile.sample_pending(self.read, identities, deadline)
+            )
             panes = (
                 self.panes(identities, deadline, fast)
                 if with_panes and rows

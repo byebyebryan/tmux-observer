@@ -26,7 +26,7 @@ def load(path, name):
 
 def worker(root, host):
     helper = load(root / "accept-native-fleet", "normal_native_worker")
-    endpoint = helper.Endpoint(root, host)
+    endpoint = helper.Endpoint(root, host, native_fixture=False)
     # Capture only the read adapter's desktop context. No graphical launch,
     # focus command, keyboard synthesis, or ordinary preference mutation.
     manager = helper.command(["systemctl", "--user", "show-environment"]).stdout.decode()
@@ -57,6 +57,7 @@ def worker(root, host):
                         if frame["snapshot"]
                         else None,
                         "sessions": len(frame["snapshot"]["sessions"]) if frame["snapshot"] else 0,
+                        "clients": len(frame["snapshot"]["clients"]) if frame["snapshot"] else 0,
                     }
                 else:
                     result = endpoint.dispatch(request)
@@ -82,7 +83,7 @@ def coordinate(artifact, output):
     record = {
         "state": "running",
         "gate": "B5-normal-resources",
-        "scope": "installed two-host owners with enabled local associations, real SSH, passive Niri/process reads, private default servers/preferences/units; no GUI input",
+        "scope": "installed two-host owners passively observing ordinary default servers with enabled local associations, real SSH and actual Niri/process matching; private preferences/units/IPC only; no native mutation or GUI input",
         "cases": [],
         "endpoints": {},
         "cleanup": False,
@@ -140,9 +141,17 @@ def coordinate(artifact, output):
                         for row in view["hosts"]
                     )
                     and associations["state"] == "ready"
-                    and associations["sessions"] == 1
+                    and associations["sessions"]
+                    == len(record["endpoints"][host]["nativeReference"]["sessionReferences"])
+                    and associations["clients"] > 0
+                    and any(
+                        row["localViewer"].get("state") == "open"
+                        for source in view["hosts"]
+                        for row in source["sessions"]
+                    )
                 ):
                     ready.add(host)
+                    record["endpoints"][host]["readyAssociationCounts"] = associations
             time.sleep(0.1)
         assert len(ready) == 2, "installed native profile/desktop inputs did not become current"
         record["cases"].append("both_installed_native_profiles_and_passive_desktop_readers_ready")
@@ -200,7 +209,7 @@ def coordinate(artifact, output):
         )
         record["limits"] = [
             "Sampled RSS can miss transient peaks",
-            "Existing desktop windows are read passively; no owned viewer launch or Rofi proof",
+            "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
             "Two physical hosts and private catalog/preferences; no managed selection",
         ]
     except Exception as error:  # noqa: BLE001 - persist owned acceptance failures

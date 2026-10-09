@@ -222,3 +222,23 @@ cannot establish final resource acceptance. The failure remains recorded and
 blocks managed promotion of this candidate. The next pass coalesces bounded
 native reads and measures passive observation of actual existing sessions and
 windows without sending graphical input on either host.
+
+
+The resource repair coalesces read-only native commands within the existing
+absolute deadline and output limits. Every command in a chain is independently
+allowlisted, with at most 64 commands. Minimal Plus annotation reads retain
+explicit present-empty/absent semantics and verified session markers; expanded
+option requests retain their original per-option reads. Closing client and full
+server/reference rows share one process, while both client snapshots and process
+birth checks remain required. For up to 32 sessions, the minimal owner plus
+association profile uses six native process starts per sample instead of
+`6 + session_count`. Cadence, freshness, query deadlines and resource budgets
+are unchanged. Simulation tests cover hostile chains, malformed/reordered scope,
+client/session reuse, empty closing rows and command limits; frozen native proof
+and actual-session resource acceptance remain required.
+
+The normal resource endpoint now observes ordinary default servers passively,
+using private installed services/IPC/provider preferences and captured Niri
+contexts. Its harness refuses native mutations and skips server creation and
+server teardown. It requires actual client profiles and positive matching
+windows on both endpoints before measurement. No graphical input is sent.

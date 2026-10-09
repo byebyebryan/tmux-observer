@@ -6,7 +6,7 @@ import time
 from ._clock import boottime_ms, pid_namespace
 from ._process import ProcessError
 from .attachments import ATTACHMENTS_PROTOCOL, CLIENT_LIMIT, validate_attachments
-from .collector import FastUnavailable, NoServer, Race, number
+from .collector import FIELDS, GENERATION, FastUnavailable, NoServer, Race, format_fields, number
 from .native import validate_observation
 
 CLIENT_FIELDS = "#{client_pid}\t#{session_id}\t#{session_created}"
@@ -54,6 +54,10 @@ class AttachmentCollector:
         rows = native.rows(
             native.read(["list-clients", "-F", CLIENT_FIELDS], deadline, absent=True), 3
         )
+        return self.client_rows(rows, references)
+
+    @staticmethod
+    def client_rows(rows, references):
         if len(rows) > CLIENT_LIMIT:
             raise ProcessError("capacity", "local native client capacity exceeded")
         clients = {}
@@ -66,6 +70,38 @@ class AttachmentCollector:
                 raise Race()
             clients[identifier] = ref
         return clients
+
+    def closing_bracket(self, references, deadline):
+        """Read closing clients and full native scope with one passive process."""
+        native = self.collector
+        output = native.read(
+            [
+                "list-clients",
+                "-F",
+                CLIENT_FIELDS,
+                ";",
+                "list-sessions",
+                "-F",
+                format_fields((*FIELDS[:2], *GENERATION)),
+            ],
+            deadline,
+            absent=True,
+            empty=True,
+        )
+        client_lines, session_lines = [], []
+        for line in output.splitlines():
+            width = len(line.split("\t"))
+            if width == 3 and not session_lines:
+                client_lines.append(line)
+            elif width == 5:
+                session_lines.append(line)
+            else:
+                raise FastUnavailable()
+        clients = self.client_rows(native.rows("\n".join(client_lines), 3), references)
+        identities, generation = native.final_rows(
+            native.rows("\n".join(session_lines), 5), deadline
+        )
+        return clients, identities, generation
 
     def sample(self, observation, deadline):
         started = boottime_ms()
@@ -127,10 +163,12 @@ class AttachmentCollector:
                     pid: self.process_identity(pid, self.collector.source["uid"], deadline)
                     for pid in first
                 }
-                second = self.clients(references, deadline)
                 try:
-                    identities, final_generation = self.collector.final_bracket(deadline, fast)
+                    second, identities, final_generation = self.closing_bracket(
+                        references, deadline
+                    )
                 except FastUnavailable:
+                    second = self.clients(references, deadline)
                     identities, final_generation = self.collector.final_bracket(deadline, False)
                 if (
                     first != second

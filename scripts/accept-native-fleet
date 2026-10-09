@@ -322,7 +322,9 @@ def profile_native(root, seconds):
 
 
 class Endpoint:
-    def __init__(self, root, host_id):
+    def __init__(self, root, host_id, *, native_fixture=True):
+        assert type(native_fixture) is bool
+        self.native_fixture = native_fixture
         self.root, self.host_id = private_root(root), host_id
         self.venv = root / "venv"
         self.python = str(self.venv / "bin/python")
@@ -331,7 +333,9 @@ class Endpoint:
         self.env.pop("TMUX", None)
         self.env.pop("TMUX_PANE", None)
         self.env.update(
-            TMUX_TMPDIR=str(root / "native"),
+            TMUX_TMPDIR=str(root / "native")
+            if native_fixture
+            else os.environ.get("TMUX_TMPDIR", "/tmp"),
             XDG_CONFIG_HOME=str(root / "config"),
             XDG_STATE_HOME=str(root / "state"),
             NIRI_SOCKET="",
@@ -341,9 +345,17 @@ class Endpoint:
         self.native_prefix = [shutil.which("tmux"), "-f", "/dev/null", "-L", "default"]
         self.watches = []
         self.baseline = self.hooks = None
+        self.passive_generation = None
         self.profile_process = None
 
     def native(self, *args, ok=True):
+        if not self.native_fixture:
+            assert args and args[0] in {
+                "display-message",
+                "list-sessions",
+                "list-clients",
+                "show-hooks",
+            }, "passive normal endpoint refuses native mutations"
         return command([*self.native_prefix, *args], env=self.env, ok=ok).stdout.decode().strip()
 
     def start(self):
@@ -437,7 +449,8 @@ class Endpoint:
             executable=True,
         )
         self.env["PATH"] = str(binary) + ":" + os.environ["PATH"]
-        self.native("new-session", "-d", "-s", "owned-" + self.host_id, "sleep 3600")
+        if self.native_fixture:
+            self.native("new-session", "-d", "-s", "owned-" + self.host_id, "sleep 3600")
         self.baseline = self.roster()
         self.hooks = self.native("show-hooks")
         owner_unit = owned_unit(self.root, "owner")
@@ -513,13 +526,16 @@ class Endpoint:
         from tmux_observer_client.public import desktop_context_id
 
         self.context = desktop_context_id(self.env)
+        native_reference = self.independent_native()
+        if not self.native_fixture:
+            self.passive_generation = native_reference["serverGeneration"]
         return {
             "wheelSha256": self.wheel_digest,
             "templateSha256": self.template_hashes,
             "actualMeshRevision": actual["meshRevision"],
             "nativeVersion": command([self.native_prefix[0], "-V"]).stdout.decode().strip(),
             "contextId": self.context,
-            "nativeReference": self.independent_native(),
+            "nativeReference": native_reference,
             "clock": {
                 "bootId": Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
                 "timeNamespace": "time:" + os.readlink("/proc/self/ns/time").split("[")[1][:-1],
@@ -532,11 +548,24 @@ class Endpoint:
         path = self.native("display-message", "-p", "#{socket_path}")
         started = self.native("display-message", "-p", "#{start_time}")
         pid = self.native("display-message", "-p", "#{pid}")
-        row = self.native(
+        output = self.native(
             "list-sessions",
             "-F",
-            "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}|#{session_name}",
-        ).split("|")
+            "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}|#{session_name}"
+            if self.native_fixture
+            else "#{session_id}|#{session_created}",
+        )
+        if not self.native_fixture:
+            rows = [row.split("|") for row in output.splitlines()]
+            assert rows and all(len(row) == 2 for row in rows), "invalid ordinary native roster"
+            return {
+                "hostId": self.host_id,
+                "serverGeneration": f"tmux-v1:{started}:{pid}:{path}",
+                "sessionReferences": [
+                    {"sessionId": fields[0], "createdAt": int(fields[1])} for fields in rows
+                ],
+            }
+        row = output.split("|")
         assert len(row) == 5
         return {
             "hostId": self.host_id,
@@ -552,7 +581,9 @@ class Endpoint:
         return self.native(
             "list-sessions",
             "-F",
-            "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}",
+            "#{session_id}|#{session_created}|#{session_attached}|#{session_windows}"
+            if self.native_fixture
+            else "#{session_id}|#{session_created}",
         )
 
     def frame(self, **kwargs):
@@ -688,6 +719,8 @@ class Endpoint:
             return {"selectedRoute": selected, "changedAt": boottime_ms()}
         if op == "passivity":
             assert self.roster() == self.baseline and self.native("show-hooks") == self.hooks
+            if not self.native_fixture:
+                assert self.independent_native()["serverGeneration"] == self.passive_generation
             return {"preserved": True}
         if op == "profile_start":
             assert self.profile_process is None
@@ -737,7 +770,7 @@ class Endpoint:
             manager("stop", unit, ok=False)
             manager("disable", unit, ok=False)
             manager("reset-failed", unit, ok=False)
-        if (self.root / "native").is_dir():
+        if self.native_fixture and (self.root / "native").is_dir():
             self.native("kill-server", ok=False)
         for stream in self.watches:
             stream.close()

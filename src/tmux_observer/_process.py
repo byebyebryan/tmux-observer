@@ -34,7 +34,23 @@ READ_FIELDS = frozenset(
 )
 
 
+READ_COMMAND_LIMIT = 64
+
+
 def allowed_read(args: list[str]) -> bool:
+    """Admit bounded chains only when every individual command is a read."""
+    commands, current = [], []
+    for argument in args:
+        if argument == ";":
+            commands.append(current)
+            current = []
+        else:
+            current.append(argument)
+    commands.append(current)
+    return len(commands) <= READ_COMMAND_LIMIT and all(_allowed_command(row) for row in commands)
+
+
+def _allowed_command(args: list[str]) -> bool:
     if not args:
         return False
     if args[0] == "show-options":

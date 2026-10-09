@@ -55,6 +55,24 @@ class AttachmentCollectorTests(unittest.TestCase):
         self.assertEqual(native.client_reads, 2)
         self.assertTrue(all(allowed_read(args) for args, _deadline in native.calls))
 
+    def test_closing_client_and_generation_share_one_bounded_read_chain(self):
+        native, collector, observation = self.source()
+        value = self.sample(collector, observation)
+        self.assertEqual(value["sample"]["coverage"], "complete")
+        chained = [args for args, _deadline in native.calls if ";" in args]
+        self.assertEqual(len(chained), 1)
+        self.assertEqual(chained[0][:3], ["list-clients", "-F", CLIENT_FIELDS])
+        self.assertEqual(chained[0][4:6], ["list-sessions", "-F"])
+
+    def test_empty_closing_rows_keep_live_generation_instead_of_proving_absence(self):
+        native, collector, observation = self.source()
+        native.client_rows = ""
+        native.final = ""
+        value = self.sample(collector, observation)
+        self.assertEqual(value["sample"]["coverage"], "failed")
+        self.assertEqual(value["clients"], [])
+        self.assertIsNone(value["serverGeneration"])
+
     def test_client_switch_during_sample_is_unknown_not_old_binding(self):
         native, collector, observation = self.source()
         native.client_after = lambda count: Completed(0, f"123\t${count}\t101\n", "")

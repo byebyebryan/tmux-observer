@@ -18,6 +18,15 @@ class NativeFixture:
 
     def __call__(self, args, deadline):
         self.calls.append((args, deadline))
+        if ";" in args:
+            output, start = "", 0
+            for end in [i for i, value in enumerate(args) if value == ";"] + [len(args)]:
+                value = self(args[start:end], deadline)
+                if value.returncode:
+                    return value
+                output += value.stdout
+                start = end + 1
+            return Completed(0, output, "")
         if self.before is not None:
             special = self.before(args)
             if special is not None:
@@ -38,7 +47,11 @@ class NativeFixture:
             return Completed(0, "$1\n", "")
         if args[0] == "display-message":
             name = args[-1][2:-1]
-            values = dict(zip(FIELDS, self.row.strip("\n").split("\t"), strict=True))
+            rows = self.row.splitlines()
+            row = next(
+                (row for row in rows if len(args) == 5 and row.split("\t")[0] == args[3]), rows[0]
+            )
+            values = dict(zip(FIELDS, row.split("\t"), strict=True))
             values.update(socket_path="/tmp/fixture/default", start_time="100", pid="200")
             return Completed(0, values[name] + "\n", "")
         raise AssertionError(args)
