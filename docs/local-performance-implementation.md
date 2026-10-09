@@ -56,7 +56,7 @@ current target validation in the action package.
 | Checkpoint | Work and acceptance | State |
 | --- | --- | --- |
 | LP0 | Source review, bounded design, contract choice and ordinary-session constraints | Reviewed design |
-| LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Contract accepted at source; discovery/cache pending |
+| LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Source accepted; passive Snap bootstrap diagnostic passed |
 | LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Pending |
 | LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Pending |
 | LP4 | Frozen artifacts, native open/close/switch/bootstrap acceptance, local and normal-fleet CPU/update measurements, Snap GUI | Pending |
@@ -76,3 +76,22 @@ native receipts, and rejects expired/extended dependencies, detached positives,
 unsupported absence, duplicate identities and action handles. The source gate
 passes 329 tests, all contract readers, compile, Ruff and whitespace checks.
 This accepts no native discovery, consumer projection, artifact or deployment.
+
+### LP1 discovery/cache checkpoint
+
+The new adapter discovers only new client ancestry, brackets process identity
+and compositor captures, and retains its discovery time through native receipt
+renewals. Fourteen new cases cover bootstrap, detach/replacement, session
+switching, count races, failure/expiry, three settling attempts, explicit
+rediscovery, context/publisher change, late-result rejection, shared-process
+ambiguity and process/window reuse. The source gate passes 343 tests and all
+other required checks.
+
+A passive diagnostic against Snap's current prepared owner/native-client inputs
+resolves seven local associations and the one zero-client session, with no
+unknown rows. Bootstrap performs one discovery job in 2.036 ms wall time; forty
+successive preparations perform zero additional discovery jobs and average
+0.377 ms process CPU per preparation. These are descriptive uncommitted-source
+microbenchmarks with existing native clients, not a whole-service CPU profile,
+frozen artifact acceptance or an open/close graphical test. Running services
+remain on the previously selected pair.
