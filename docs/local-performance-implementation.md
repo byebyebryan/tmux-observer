@@ -58,7 +58,7 @@ current target validation in the action package.
 | LP0 | Source review, bounded design, contract choice and ordinary-session constraints | Reviewed design |
 | LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Source accepted; passive Snap bootstrap diagnostic passed |
 | LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Source accepted; frozen/native acceptance pending |
-| LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Pending |
+| LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Source accepted; new pin/artifact pending |
 | LP4 | Frozen artifacts, native open/close/switch/bootstrap acceptance, local and normal-fleet CPU/update measurements, Snap GUI | Pending |
 | LP5 | Publish accepted pair, scoped chezmoi selection/recovery and rollback checks on both hosts | Pending |
 
@@ -128,3 +128,23 @@ attempts. It is retained as a failed assertion, not reclassified as acceptance.
 The follow-up distinguishes stable bindings from unresolved settling and shows
 the latter stopping at its declared bound. Complete native open/close/switch,
 explicit-refresh/recovery and resource gates remain in LP4.
+
+### LP3 consumer source checkpoint
+
+Tmux Plus projects local qualified retained associations independently of remote
+C3 expiry. Context/watch loss and native lease expiry revoke them; receipt-only
+renewal does not wake the picker or change discovery time. Five focused cases
+exercise that behavior, invalid extension rejection without native fallback and
+selection payloads containing no retained window/action authority. The complete
+frontend source gate passes 292 tests. Its old accepted pin remains unchanged
+until the producer's frozen artifact is accepted. A first system-interpreter
+gate attempt failed because the required Observer dependency was unavailable;
+the accepted gate uses the existing pinned frontend virtual environment.
+
+### LP4 packaging source checkpoint
+
+The candidate version is Observer 0.3.0a1. Descriptor format 3 includes all seven
+contract bundles and the pure retained-contract module. Formats 1/2 remain
+verifiable for rollback; neither can silently acquire retained payload. Existing
+six bundles remain immutable. The source gate passes 352 tests, including new
+descriptor coverage/compatibility checks. Frozen/native acceptance remains open.

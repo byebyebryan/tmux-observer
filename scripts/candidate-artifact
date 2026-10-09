@@ -24,6 +24,8 @@ ROOT = Path(__file__).resolve().parent.parent
 MAX_WHEEL = 8 * 1024 * 1024
 LEGACY_BUNDLES = ("observation-v1", "service-v1", "fleet-v1")
 BOUNDARY_BUNDLES = (*LEGACY_BUNDLES, "attachments-v1", "desktop-v1", "action-v1")
+BINDINGS_BUNDLES = (*BOUNDARY_BUNDLES, "bindings-v1")
+BUNDLE_SETS = {1: LEGACY_BUNDLES, 2: BOUNDARY_BUNDLES, 3: BINDINGS_BUNDLES}
 
 
 def command(argv, *, env=None):
@@ -147,7 +149,7 @@ def verify(descriptor):
     require(len(raw) <= 256 * 1024, "candidate descriptor capacity exceeded")
     value = json.loads(raw, object_pairs_hook=pairs)
     require(
-        value["schemaVersion"] in (1, 2) and type(value["schemaVersion"]) is int,
+        value["schemaVersion"] in BUNDLE_SETS and type(value["schemaVersion"]) is int,
         "unsupported candidate descriptor",
     )
     require(value["state"] == "built_unaccepted", "builder cannot assert acceptance or promotion")
@@ -189,8 +191,7 @@ def verify(descriptor):
         "source-member mapping differs",
     )
     require(
-        set(value["contractBundles"])
-        == set(LEGACY_BUNDLES if value["schemaVersion"] == 1 else BOUNDARY_BUNDLES),
+        set(value["contractBundles"]) == set(BUNDLE_SETS[value["schemaVersion"]]),
         "contract bundle set differs",
     )
     if value["schemaVersion"] == 1:
@@ -209,6 +210,17 @@ def verify(descriptor):
                 )
             ),
             "boundary descriptor lacks complete package roots",
+        )
+    if value["schemaVersion"] < 3:
+        require(
+            "tmux_observer_client/bindings_contract.py" not in members
+            and not any("/contracts/bindings-v1/" in name for name in members),
+            "older descriptor cannot acquire retained binding payload",
+        )
+    else:
+        require(
+            "tmux_observer_client/bindings_contract.py" in members,
+            "bindings descriptor lacks pure contract module",
         )
     with zipfile.ZipFile(wheel) as zipped:
         for bundle, digest in value["contractBundles"].items():
@@ -309,8 +321,14 @@ def build(repo, revision, output):
         wheels = list(dist.glob("*.whl"))
         require(len(wheels) == 1, "one candidate wheel required")
         wheel = wheels[0]
-        format_version = 2 if (source / "src/tmux_observer_actions").is_dir() else 1
-        members, package = wheel_contents(wheel, member_limit=512 if format_version == 2 else 256)
+        format_version = (
+            3
+            if (source / "contracts/bindings-v1").is_dir()
+            else 2
+            if (source / "src/tmux_observer_actions").is_dir()
+            else 1
+        )
+        members, package = wheel_contents(wheel, member_limit=512 if format_version >= 2 else 256)
         require(package["version"] == configuration["project"]["version"], "built version differs")
         require(package["generator"] == "setuptools (" + backend[0] + ")", "built backend differs")
         mapping = verify_source_payload(source, members)
@@ -333,7 +351,7 @@ def build(repo, revision, output):
             },
             "contractBundles": {
                 bundle: sha256((source / "contracts" / bundle / "SHA256SUMS").read_bytes())
-                for bundle in (BOUNDARY_BUNDLES if format_version == 2 else LEGACY_BUNDLES)
+                for bundle in BUNDLE_SETS[format_version]
             },
             "sourceFiles": mapping,
             "members": members,

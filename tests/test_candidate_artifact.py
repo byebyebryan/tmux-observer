@@ -161,6 +161,51 @@ class CandidateArtifactTests(unittest.TestCase):
         )
         self.write_descriptor()
 
+    def test_bindings_descriptor_preserves_old_formats_and_requires_seventh_bundle(self):
+        additions = {
+            "tmux_observer_actions/__init__.py": b"# separate writes\n",
+            "tmux_observer_client/bindings_contract.py": b"# pure retained contract\n",
+        }
+        for bundle in artifact.BINDINGS_BUNDLES[len(artifact.LEGACY_BUNDLES) :]:
+            prefix = "tmux_observer-0.1.0a1.data/data/share/tmux-observer/contracts/" + bundle
+            additions[prefix + "/schema.json"] = b"{}\n"
+            additions[prefix + "/SHA256SUMS"] = (
+                artifact.sha256(b"{}\n") + "  schema.json\n"
+            ).encode()
+        for name, raw in additions.items():
+            target = self.source / artifact.source_member(name)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(raw)
+        self.payload.update(additions)
+        self.write_wheel()
+        members, package = artifact.wheel_contents(self.wheel)
+        self.value.update(
+            schemaVersion=3,
+            members=members,
+            package=package,
+            sourceFiles=artifact.verify_source_payload(self.source, members),
+            contractBundles={
+                bundle: artifact.sha256(
+                    (self.source / "contracts" / bundle / "SHA256SUMS").read_bytes()
+                )
+                for bundle in artifact.BINDINGS_BUNDLES
+            },
+        )
+        self.value["wheel"].update(
+            bytes=self.wheel.stat().st_size, sha256=artifact.sha256(self.wheel.read_bytes())
+        )
+        self.write_descriptor()
+        artifact.verify(self.descriptor)
+        self.value["schemaVersion"] = 2
+        self.value["contractBundles"].pop("bindings-v1")
+        self.write_descriptor()
+        with self.assertRaisesRegex(ValueError, "older descriptor"):
+            artifact.verify(self.descriptor)
+        self.value["schemaVersion"] = 3
+        self.write_descriptor()
+        with self.assertRaisesRegex(ValueError, "bundle set"):
+            artifact.verify(self.descriptor)
+
     def test_frozen_input_skips_build_and_separates_harness_provenance(self):
         self.initialize_checkout()
         (self.source / "README.md").write_text("harness documentation changed\n")
