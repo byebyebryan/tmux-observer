@@ -13,6 +13,7 @@ from tmux_observer_client._desktop_input import input_hash, reference
 from tmux_observer_client._fleet_state import FleetState
 from tmux_observer_client._fleet_tickets import FleetTickets
 from tmux_observer_client.fleet import FleetPublisher
+from tmux_observer_client.mesh import MeshHost, MeshPolicy, MeshRoute, MeshSnapshot
 
 
 class ProjectionTests(unittest.TestCase):
@@ -174,7 +175,7 @@ class ProjectionTests(unittest.TestCase):
             frame["snapshot"]["hosts"][0]["sessions"][0]["localViewer"]["state"], "unknown"
         )
 
-    def test_new_owner_hashed_by_scheduler_is_not_hashed_again_by_projection(self):
+    def test_receipt_only_owner_update_reuses_input_hash_and_projection(self):
         self.frame(200)
         owner = self.fleet.state.owners[self.host]
         value = copy.deepcopy(self.owner_frame)
@@ -185,5 +186,89 @@ class ProjectionTests(unittest.TestCase):
         self.fleet.state.input_key = Mock(wraps=self.fleet.state.input_key)
         self.fleet.current_input_key(220)
         frame = self.frame(221)
-        self.assertEqual(self.fleet.state.input_key.call_count, 1)
+        self.assertEqual(self.fleet.state.input_key.call_count, 0)
         self.assertEqual(frame["snapshot"]["hosts"][0]["owner"]["encodedAt"], 220)
+        self.assertEqual(self.fleet.state.material.call_count, 1)
+
+    def test_renewed_lease_updates_receipt_and_expires_at_new_deadline(self):
+        first = self.frame(200)
+        self.fleet.state.input_key = Mock(wraps=self.fleet.state.input_key)
+        value = copy.deepcopy(self.owner_frame)
+        value.update(kind="heartbeat", sequence=1, requestId=None, encodedAt=9130)
+        value["snapshot"]["sample"].update(startedAt=9100, finishedAt=9120)
+        value["receipt"].update(
+            attempted=2,
+            accepted=2,
+            acceptedAttempt=2,
+            startedAt=9100,
+            acceptedAt=9125,
+            expiresAt=19100,
+            lastAttemptAt=9100,
+            remainingMs=9970,
+        )
+        owner = self.fleet.state.owners[self.host]
+        matched = owner.receive(value, 9150)
+        self.fleet.owner_frame(SimpleNamespace(state=owner), value, matched, 9150)
+        renewed = self.frame(9150)
+        self.assertEqual(renewed["viewRevision"], first["viewRevision"])
+        self.assertEqual(renewed["snapshot"]["hosts"][0]["owner"]["localExpiry"], 19100)
+        self.assertEqual(self.fleet.state.input_key.call_count, 0)
+        # Cross the previous owner deadline before the independent desktop expiry.
+        self.frame(10100)
+        self.assertEqual(self.fleet.state.input_key.call_count, 0)
+        self.frame(19100)
+        self.assertEqual(self.fleet.current_input_key(19100), input_hash([]))
+        self.assertEqual(self.fleet.state.input_key.call_count, 1)
+
+    def test_activity_changes_material_but_not_desktop_input(self):
+        first = self.frame(200)
+        self.fleet.state.input_key = Mock(wraps=self.fleet.state.input_key)
+        value = copy.deepcopy(self.owner_frame)
+        value.update(kind="heartbeat", sequence=1, requestId=None)
+        value["snapshot"]["sessions"][0]["activityAt"] += 1
+        owner = self.fleet.state.owners[self.host]
+        owner.receive(value, 220)
+        self.fleet.owner_frame(SimpleNamespace(state=owner), value, False, 220)
+        frame = self.frame(221)
+        self.assertGreater(frame["viewRevision"], first["viewRevision"])
+        self.assertEqual(self.fleet.state.input_key.call_count, 0)
+        self.assertEqual(frame["snapshot"]["desktop"]["state"], "ready")
+
+    def test_unchanged_mesh_and_health_updates_keep_desktop_epoch_and_input_identity(self):
+        mesh = MeshSnapshot(
+            "sha256:" + "a" * 64,
+            self.host,
+            MeshPolicy("ssh", 5, 1, 300),
+            (
+                MeshHost(self.host, self.host, True, (), ()),
+                MeshHost("remote", "Remote", False, (), (MeshRoute("route", 0, None, None),)),
+            ),
+        )
+        state = self.fleet.state
+        state.catalog(mesh)
+        descriptions, epoch = state.descriptions, state.desktop["epoch"]
+        state.catalog(copy.deepcopy(mesh))
+        changed_health = MeshSnapshot(
+            mesh.revision,
+            mesh.local_host_id,
+            mesh.policy,
+            (
+                mesh.hosts[0],
+                MeshHost("remote", "Remote", False, (), (MeshRoute("route", 0, 1234, None),)),
+            ),
+        )
+        state.catalog(changed_health)
+        self.assertIs(state.descriptions, descriptions)
+        self.assertEqual(state.desktop["epoch"], epoch)
+        changed_route = MeshSnapshot(
+            mesh.revision,
+            mesh.local_host_id,
+            mesh.policy,
+            (
+                mesh.hosts[0],
+                MeshHost("remote", "Remote", False, (), (MeshRoute("other", 0, None, None),)),
+            ),
+        )
+        state.catalog(changed_route)
+        self.assertIsNot(state.descriptions, descriptions)
+        self.assertGreater(state.desktop["epoch"], epoch)

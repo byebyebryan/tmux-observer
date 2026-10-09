@@ -6,9 +6,42 @@ import copy
 import os
 import uuid
 
-from tmux_observer.delivery import SERVICE_PROTOCOL, remote_expiry, validate_service_frame
+from tmux_observer.delivery import SERVICE_PROTOCOL, remote_expiry
 
 from ._errors import ContractError
+from ._owner_document import OwnerDocument
+
+
+def _facts(value, *, desktop=False):
+    if value is None:
+        return None
+    snapshot = value["snapshot"]
+    rows = snapshot["sessions"] if snapshot is not None else None
+    if desktop and rows is not None:
+        rows = [
+            tuple(
+                row[key]
+                for key in (
+                    "hostId",
+                    "serverGeneration",
+                    "sessionId",
+                    "createdAt",
+                    "name",
+                    "attachedClients",
+                    "pending",
+                )
+            )
+            for row in rows
+        ]
+    return (
+        value["source"],
+        value["clock"],
+        value["publisherId"],
+        snapshot["serverGeneration"] if snapshot is not None else None,
+        value["receipt"]["state"],
+        value["error"],
+        rows,
+    )
 
 
 class RemoteState:
@@ -28,12 +61,24 @@ class RemoteState:
         self.last_frame = None
         self.next_probe = 0
         self.error = None
+        self.confirmed_size = self.candidate_size = 0
+        self.fact_revision = self.input_revision = 0
+
+    def confirm(self, document):
+        # Compare checked payloads, never trust the producer's revision alone.
+        self.fact_revision += _facts(document.value) != _facts(self.confirmed)
+        self.input_revision += _facts(document.value, desktop=True) != _facts(
+            self.confirmed, desktop=True
+        )
+        self.confirmed = document.retained()
+        self.confirmed_size = document.full_size
 
     def start(self, nonce, now):
         self.epoch += 1
         self.transport = "connecting"
         self.handshake = (nonce, now + (2000 if self.local_clock is not None else 15000))
         self.scope = self.sequence = self.pending = self.candidate = None
+        self.candidate_size = 0
         self.last_frame = None
         self.expiry = 0
         self.proof = None
@@ -48,7 +93,8 @@ class RemoteState:
 
     def receive(self, value, now):
         try:
-            validate_service_frame(value)
+            document = value if isinstance(value, OwnerDocument) else OwnerDocument(value)
+            value = document.value
             if value["source"]["hostId"] != self.host_id:
                 raise ValueError("foreign logical host")
             if self.local_clock is not None and (
@@ -104,7 +150,8 @@ class RemoteState:
             self.last_frame = now  # Liveness only; never renews positive validity.
             # Pushes carry candidates, not a second retained full owner snapshot.
             # A matching probe supplies the full document that becomes confirmed.
-            self.candidate = copy.deepcopy({**value, "snapshot": None})
+            self.candidate = document.header()
+            self.candidate_size = document.header_size
             evidence = value["receipt"]
             if self.local_clock is None and value["kind"] in ("gap", "resync"):
                 # A missing transition could include a failed source. A full
@@ -112,12 +159,12 @@ class RemoteState:
                 self.expiry = 0
                 self.proof = None
             if evidence["state"] != "ready":
-                self.confirmed = copy.deepcopy(value)
+                self.confirm(document)
                 self.expiry = 0
                 self.proof = None
                 self.error = copy.deepcopy(value["error"])
             elif self.local_clock is not None:
-                self.confirmed = copy.deepcopy(value)
+                self.confirm(document)
                 self.expiry = evidence["expiresAt"]
                 self.proof = None
                 self.error = copy.deepcopy(value["error"])
@@ -129,7 +176,7 @@ class RemoteState:
                     raise ValueError("late or malformed matching probe")
                 remaining = evidence["remainingMs"]
                 expiry = remote_expiry(pending["sentAt"], now, remaining, 100)
-                self.confirmed = copy.deepcopy(value)
+                self.confirm(document)
                 self.proof = (
                     None
                     if self.local_clock is not None
@@ -153,7 +200,7 @@ class RemoteState:
                 and evidence["state"] == "ready"
                 and (
                     self.confirmed is None
-                    or evidence["acceptedAttempt"] != self.confirmed["receipt"]["acceptedAttempt"]
+                    or _facts(value) != _facts(self.confirmed)
                     or value["kind"] in ("gap", "resync")
                 )
             ):
@@ -185,7 +232,7 @@ class RemoteState:
         elif self.last_frame is not None and now - self.last_frame >= 10000:
             self.fail("deadline", "owner subscription became silent")
 
-    def project(self):
+    def project_header(self):
         frame = self.confirmed or self.candidate
         snapshot = frame["snapshot"] if frame is not None else None
         owner = {
@@ -203,4 +250,9 @@ class RemoteState:
             "proof": self.proof,
             "error": self.error,
         }
-        return copy.deepcopy(owner), copy.deepcopy(snapshot["sessions"] if snapshot else [])
+        return copy.deepcopy(owner)
+
+    def project(self):
+        frame = self.confirmed or self.candidate
+        snapshot = frame["snapshot"] if frame is not None else None
+        return self.project_header(), copy.deepcopy(snapshot["sessions"] if snapshot else [])

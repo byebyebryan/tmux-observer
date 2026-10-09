@@ -12,6 +12,7 @@ from tmux_observer.delivery import SERVICE_PROTOCOL
 from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
 
 from ._errors import ContractError
+from ._owner_document import OwnerDocument
 from ._remote_state import RemoteState
 
 
@@ -134,8 +135,12 @@ class LocalConnection:
                         "owner_unavailable", "local owner returned a scoped operation failure"
                     )
                 if self.on_input is not None:
-                    self.on_input(self, value, now)
-                matched = self.state.receive(value, now)
+                    admitted = self.on_input(self, value, now)
+                else:
+                    admitted = None
+                matched = self.state.receive(
+                    admitted if isinstance(admitted, OwnerDocument) else value, now
+                )
                 if self.on_frame is not None:
                     self.on_frame(self, value, matched, now)
             if len(self.incoming) > FRAME_LIMIT:

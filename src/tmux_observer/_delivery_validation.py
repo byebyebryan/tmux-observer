@@ -159,6 +159,11 @@ def ticket(value: object) -> dict:
 
 
 def validate_service_frame(value: object) -> dict:
+    return _checked_service_frame(value)[0]
+
+
+def _checked_service_frame(value: object) -> tuple[dict, int, int]:
+    """Return the same checked frame and its already bounded encoded sizes."""
     plain = validate_tree(value)
     value = obj(
         value,
@@ -231,9 +236,11 @@ def validate_service_frame(value: object) -> dict:
         raise ValidationError("protocol error lacks diagnostic")
     overhead = dict(value)
     overhead["snapshot"] = None
-    _encode_after_validation(overhead, limit=ENVELOPE_LIMIT, plain=plain)
-    _encode_after_validation(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, plain=plain)
-    return value
+    header_size = len(_encode_after_validation(overhead, limit=ENVELOPE_LIMIT, plain=plain))
+    full_size = len(
+        _encode_after_validation(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, plain=plain)
+    )
+    return value, full_size, header_size
 
 
 def remote_expiry(sent_at: int, received_at: int, remaining_ms: int, margin_ms: int = 100) -> int:

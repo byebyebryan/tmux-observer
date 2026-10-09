@@ -1,0 +1,228 @@
+#!/usr/bin/env python3
+"""Fixed-input fleet bookkeeping profile; no native, SSH or desktop operations."""
+
+import argparse
+import copy
+import cProfile
+import hashlib
+import importlib.metadata
+import json
+import os
+import pstats
+import subprocess
+import time
+from pathlib import Path
+from types import SimpleNamespace
+
+from tmux_observer_client._desktop_input import reference
+from tmux_observer_client._fleet_state import FleetState
+from tmux_observer_client._fleet_tickets import FleetTickets
+from tmux_observer_client.fleet import FleetPublisher
+from tmux_observer_client.mesh import MeshHost, MeshPolicy, MeshRoute, MeshSnapshot
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def measure(cycles, sessions):
+    seed = json.loads((ROOT / "contracts/service-v1/fixtures/ready.json").read_text())
+    seed["source"]["uid"] = seed["snapshot"]["source"]["uid"] = os.getuid()
+    local = seed["source"]["hostId"]
+    fleet = FleetPublisher(local, scanner=False)
+    fleet.state = FleetState(local, "0" * 32, seed["clock"])
+    fleet.tickets = FleetTickets(fleet.state)
+    mesh = MeshSnapshot(
+        "sha256:" + "a" * 64,
+        local,
+        MeshPolicy("ssh", 5, 1, 300),
+        (
+            MeshHost(local, local, True, (), ()),
+            MeshHost(
+                "fixture-remote",
+                "fixture-remote",
+                False,
+                (),
+                (MeshRoute("fixture-route", 0, None, None),),
+            ),
+        ),
+    )
+    fleet.state.catalog(mesh)
+    docs = {}
+    for host, owner in fleet.state.owners.items():
+        value = copy.deepcopy(seed)
+        value["source"]["hostId"] = value["snapshot"]["source"]["hostId"] = host
+        if host != local:
+            value["publisherId"] = "22222222-2222-4222-8222-222222222222"
+        row = value["snapshot"]["sessions"][0]
+        value["snapshot"]["sessions"] = [
+            {**row, "hostId": host, "sessionId": "$" + str(i), "name": "fixture-" + str(i)}
+            for i in range(sessions)
+        ]
+        owner.start("owned-watch", 100)
+        value.update(kind="resync", requestId="owned-watch", sequence=0)
+        owner.receive(value, 150)
+        if host != local:
+            owner.selected_route = "fixture-route"
+        docs[host] = value
+    fleet.state.material = counted(fleet.state.material, "material", counts := {})
+    fleet.state.input_key = counted(fleet.state.input_key, "inputHash", counts)
+    fleet.state.view = counted(fleet.state.view, "projection", counts)
+    profile = cProfile.Profile()
+    cpu = time.process_time()
+    profile.enable()
+    for cycle in range(cycles):
+        now = 2100 + cycle * 2000
+        for host, owner in fleet.state.owners.items():
+            value = copy.deepcopy(docs[host])
+            value.update(
+                kind="heartbeat", sequence=owner.sequence + 1, requestId=None, encodedAt=now + 30
+            )
+            value["snapshot"]["sample"].update(startedAt=now, finishedAt=now + 20)
+            value["receipt"].update(
+                attempted=cycle + 2,
+                accepted=cycle + 2,
+                acceptedAttempt=cycle + 2,
+                startedAt=now,
+                acceptedAt=now + 25,
+                expiresAt=now + 10000,
+                lastAttemptAt=now,
+                remainingMs=9970,
+            )
+            # Two fixed material changes; receipt-only work remains separately observable.
+            if cycles // 3 <= cycle < 2 * cycles // 3:
+                value["snapshot"]["sessions"][0]["name"] = "renamed"
+                value["viewRevision"] = 2
+            elif cycle >= 2 * cycles // 3:
+                value["viewRevision"] = 3
+            connection = SimpleNamespace(state=owner)
+            admitted = fleet.before_input(connection, value, now + 40)
+            matched = owner.receive(admitted if admitted is not None else value, now + 40)
+            fleet.owner_frame(connection, value, matched, now + 40)
+            if host != local:
+                # Fixed matching proofs isolate bookkeeping from scheduler admission.
+                owner.pending = {"requestId": "owned-proof", "sentAt": now + 41}
+                proof = {
+                    **value,
+                    "kind": "status",
+                    "requestId": "owned-proof",
+                    "sequence": owner.sequence + 1,
+                }
+                admitted = fleet.before_input(connection, proof, now + 45)
+                matched = owner.receive(admitted if admitted is not None else proof, now + 45)
+                fleet.owner_frame(connection, proof, matched, now + 45)
+        if cycle % 7 == 0:
+            fleet.catalog_result((now, now + 1, mesh, None), now + 50)
+        if cycle % 2 == 0:
+            observations = {
+                reference(row): {"state": "none", "reason": None}
+                for host in fleet.state.inputs(now + 60)
+                for row in host["sessions"]
+            }
+            assert fleet.state.accept_desktop(
+                epoch=fleet.state.desktop["epoch"],
+                key=fleet.current_input_key(now + 60),
+                started=now + 60,
+                finished=now + 61,
+                now=now + 62,
+                state="ready",
+                observations=observations,
+                error=None,
+            )
+            fleet.mark_changed()
+        for tick in range(40):
+            fleet.project_changed(now + 70 + tick * 40)
+        frame = fleet.frame(now + 1700)
+        assert len(frame["snapshot"]["hosts"]) == 2
+        assert all(len(host["sessions"]) == sessions for host in frame["snapshot"]["hosts"])
+    profile.disable()
+    cpu = time.process_time() - cpu
+    stats = pstats.Stats(profile)
+    hottest = sorted(stats.stats.items(), key=lambda item: item[1][3], reverse=True)[:35]
+    return {
+        "cpuSeconds": cpu,
+        "workCounts": counts,
+        "finalRevision": fleet.state.revision,
+        "functions": [
+            {
+                "file": str(Path(key[0]).relative_to(ROOT))
+                if str(key[0]).startswith(str(ROOT))
+                else Path(key[0]).name,
+                "line": key[1],
+                "name": key[2],
+                "calls": value[1],
+                "selfSeconds": value[2],
+                "inclusiveSeconds": value[3],
+            }
+            for key, value in hottest
+        ],
+    }
+
+
+def counted(function, name, counts):
+    def wrapped(*args, **kwargs):
+        counts[name] = counts.get(name, 0) + 1
+        return function(*args, **kwargs)
+
+    return wrapped
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cycles", type=int, default=300)
+    parser.add_argument("--sessions", type=int, default=10)
+    parser.add_argument("--output", required=True, type=Path)
+    args = parser.parse_args()
+    assert args.cycles >= 3 and 1 <= args.sessions <= 256
+    result = {
+        "schemaVersion": 1,
+        "gate": "fixed-input-fleet-work",
+        "result": "passed",
+        "sourceCommit": subprocess.check_output(
+            ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
+        ).strip(),
+        "sourceDirty": bool(
+            subprocess.check_output(
+                ["git", "-C", str(ROOT), "status", "--porcelain"], text=True
+            ).strip()
+        ),
+        "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "runtimeVersion": importlib.metadata.version("tmux-observer"),
+        "runtimeModules": {
+            name: {
+                "path": module.__file__,
+                "sha256": hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest(),
+            }
+            for name in (
+                "tmux_observer._delivery_validation",
+                "tmux_observer_client.fleet",
+                "tmux_observer_client._remote_state",
+                "tmux_observer_client._fleet_state",
+            )
+            for module in [__import__(name, fromlist=["_"])]
+        },
+        "workload": {
+            "owners": 2,
+            "sessionsPerOwner": args.sessions,
+            "cycles": args.cycles,
+            "cycleMs": 2000,
+            "quietTicksPerCycle": 40,
+            "proofs": "fixed each cycle",
+            "desktop": "fixed negative batches each two cycles",
+            "materialRenamesPerOwner": 2,
+        },
+        "limits": [
+            "Synthetic fixed-input bookkeeping, not native or whole-service CPU",
+            "Function inclusive times overlap and cannot be summed",
+            "Remote proof scheduler and actual desktop work measured separately",
+        ],
+        **measure(args.cycles, args.sessions),
+    }
+    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    print(
+        json.dumps(
+            {key: result[key] for key in ("result", "cpuSeconds", "workCounts", "finalRevision")}
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

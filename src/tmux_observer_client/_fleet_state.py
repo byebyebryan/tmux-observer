@@ -29,6 +29,7 @@ class FleetState:
         self.signature = None
         self.mesh = {"state": "warming", "revision": None, "localHostId": host_id}
         self.descriptions = []
+        self.catalog_identity = None
         self.owners = {}
         self.error = None
         self.desktop = {
@@ -61,6 +62,7 @@ class FleetState:
                 }
             ]
             state, revision = "local_only", None
+            identity = None
         else:
             if snapshot.local_host_id != self.host_id:
                 self.catalog_error(
@@ -86,9 +88,27 @@ class FleetState:
                 for host in snapshot.hosts
             ]
             state, revision = "ready", snapshot.revision
-        changed = self.mesh != {"state": state, "revision": revision, "localHostId": self.host_id}
-        self.mesh = {"state": state, "revision": revision, "localHostId": self.host_id}
-        self.descriptions = descriptions
+            # Health timestamps guide future route selection in the current
+            # Mesh snapshot; they do not replace a live association or topology.
+            identity = (
+                snapshot.policy,
+                tuple(
+                    (
+                        host.host_id,
+                        host.display,
+                        host.local,
+                        host.aliases,
+                        tuple((route.destination, route.configured_index) for route in host.routes),
+                    )
+                    for host in snapshot.hosts
+                ),
+            )
+        mesh = {"state": state, "revision": revision, "localHostId": self.host_id}
+        changed = self.mesh != mesh or self.catalog_identity != identity
+        if changed:
+            self.mesh = mesh
+            self.descriptions = descriptions
+            self.catalog_identity = identity
         self.error = None
         wanted = {host["hostId"] for host in descriptions}
         self.owners = {key: owner for key, owner in self.owners.items() if key in wanted}
@@ -284,7 +304,8 @@ class FleetState:
                     inputHash=key,
                     error=None,
                 )
-                self.viewers = copy.deepcopy(observations)
+                if observations != self.viewers:
+                    self.viewers = copy.deepcopy(observations)
                 self.association = copy.deepcopy(association)
             elif state in ("failed", "unsupported") and error is not None:
                 self.desktop.update(state=state, error=copy.deepcopy(error))

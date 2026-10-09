@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import os
 import random
 import threading
@@ -14,15 +13,15 @@ from tmux_observer._clock import boottime_ms, domain
 from tmux_observer._hub import SocketHub
 from tmux_observer._ipc import IPCError
 from tmux_observer._tickets import TicketError
-from tmux_observer.delivery import validate_service_frame
-from tmux_observer.native import FRAME_LIMIT, encode_document
 from tmux_observer_client.contract import FLEET_PROTOCOL
 
+from ._binding_projection import project_bindings
 from ._desktop_context import context_fingerprint
 from ._errors import ContractError
 from ._fleet_state import FleetState
 from ._fleet_tickets import FleetTickets
 from ._local_stream import LocalConnection
+from ._owner_document import OwnerDocument
 from .attachments import read_local_attachments
 from .direct import REMOTE_EXEC
 from .mesh import HostMeshAdapter
@@ -135,6 +134,10 @@ class FleetPublisher:
         self.prepared_view = None
         self.prepared_dependencies = None
         self.input_expiry = None
+        self.attachment_value = self.attachment_facts = None
+        self.attachment_revision = 0
+        self.binding_value = self.binding_facts = None
+        self.binding_revision = 0
 
     def handle(self, peer, request, now):
         rid = request["requestId"]
@@ -194,19 +197,81 @@ class FleetPublisher:
 
     def mark_changed(self):
         self.projection_dirty = True
-        self.input_key_dirty = True
 
-    def input_dependencies(self):
+    def attachment_dependencies(self, now):
+        value = self.state.attachments
+        if value is not self.attachment_value:
+            snapshot = value["snapshot"] if value is not None else None
+            facts = (
+                None
+                if value is None
+                else (
+                    *(value[key] for key in ("source", "clock", "publisherId", "pidNamespace")),
+                    None
+                    if snapshot is None
+                    else tuple(
+                        snapshot[key]
+                        for key in (
+                            "source",
+                            "clock",
+                            "pidNamespace",
+                            "serverGeneration",
+                            "sessions",
+                            "clients",
+                        )
+                    ),
+                )
+            )
+            self.attachment_revision += facts != self.attachment_facts
+            self.attachment_value, self.attachment_facts = value, facts
+        current = (
+            value is not None
+            and value["receipt"]["state"] == "ready"
+            and value["receipt"]["expiresAt"] > now
+        )
+        return self.attachment_revision, current
+
+    def binding_dependencies_for_projection(self, now):
+        value = self.state.bindings
+        if value is not self.binding_value:
+            facts = (
+                None
+                if value is None
+                else (
+                    value["epoch"],
+                    value["rows"],
+                    value["receipt"]["state"],
+                    value["receipt"]["error"],
+                )
+            )
+            self.binding_revision += facts != self.binding_facts
+            self.binding_value, self.binding_facts = value, facts
+        current = (
+            value is not None
+            and value["receipt"]["state"] == "ready"
+            and value["receipt"]["expiresAt"] > now
+        )
+        return self.binding_revision, current
+
+    @staticmethod
+    def owner_current(owner, now):
+        return (
+            owner.confirmed is not None
+            and owner.confirmed["receipt"]["state"] == "ready"
+            and owner.expiry > now
+        )
+
+    def input_dependencies(self, now):
         return (
             tuple(self.state.mesh.items()),
             id(self.state.descriptions),
-            id(self.state.attachments),
+            self.attachment_dependencies(now),
             tuple(
                 (
                     host,
                     owner.epoch,
-                    id(owner.confirmed),
-                    owner.expiry,
+                    owner.input_revision,
+                    self.owner_current(owner, now),
                     owner.transport,
                     getattr(owner, "selected_route", None),
                 )
@@ -215,13 +280,8 @@ class FleetPublisher:
         )
 
     def current_input_key(self, now):
-        dependencies = self.input_dependencies()
-        if (
-            self.input_key_dirty
-            or dependencies != self.cached_input_dependencies
-            or self.input_expiry is not None
-            and now >= self.input_expiry
-        ):
+        dependencies = self.input_dependencies(now)
+        if self.input_key_dirty or dependencies != self.cached_input_dependencies:
             self.cached_input_key = self.state.input_key(now)
             self.cached_input_dependencies = dependencies
             self.input_key_dirty = False
@@ -237,45 +297,72 @@ class FleetPublisher:
         return self.cached_input_key
 
     def project_changed(self, now):
+        input_key = self.current_input_key(now)
+        binding_key = self.current_binding_key(now)
         dependencies = (
             tuple(self.state.mesh.items()),
-            tuple(self.state.desktop.items()),
+            id(self.state.descriptions),
+            self.state.error,
+            tuple(
+                self.state.desktop[key]
+                for key in ("contextId", "epoch", "state", "inputHash", "error")
+            ),
+            self.state.desktop["state"] == "ready" and self.state.desktop["expiresAt"] > now,
             id(self.state.viewers),
-            id(self.state.attachments),
-            id(self.state.bindings),
+            input_key,
+            binding_key,
+            self.state.bindings_key,
+            self.binding_dependencies_for_projection(now),
             self.state.binding_epoch,
             tuple(
                 (
                     host,
                     owner.epoch,
-                    owner.sequence,
-                    id(owner.confirmed),
-                    owner.expiry,
+                    owner.fact_revision,
+                    self.owner_current(owner, now),
                     owner.transport,
-                    id(owner.error),
+                    owner.error,
                     getattr(owner, "selected_route", None),
                 )
                 for host, owner in self.state.owners.items()
             ),
         )
-        if dependencies != self.prepared_dependencies:
-            # The scheduler may already have hashed the newest inputs. Its
-            # independent dependency check avoids computing that same hash
-            # again solely to rebuild the projection.
-            self.projection_dirty = True
-        if not self.projection_dirty and (
-            self.projection_expiry is None or now < self.projection_expiry
-        ):
+        if dependencies == self.prepared_dependencies:
+            if self.projection_dirty:
+                # Checked receipts move leases and health metadata, not facts.
+                # Outgoing frames still validate the complete owned projection.
+                for host in self.prepared_view["hosts"]:
+                    owner = self.state.owners[host["hostId"]]
+                    host["owner"] = owner.project_header()
+                    if self.state.mesh["state"] not in ("ready", "local_only"):
+                        host["owner"]["localExpiry"] = 0
+                    if host["local"] and self.state.bindings is not None:
+                        projected = project_bindings(
+                            self.state.bindings,
+                            accepted_key=self.state.bindings_key,
+                            current_key=binding_key,
+                            now=now,
+                        )
+                        if projected is not None:
+                            host["localBindings"] = projected
+                        else:
+                            host.pop("localBindings", None)
+                desktop = self.prepared_view["desktop"]
+                for key in ("startedAt", "acceptedAt", "expiresAt"):
+                    desktop[key] = self.state.desktop[key]
+                self.update_expiries(now)
+                self.projection_dirty = False
             return
         # Only validated input/health changes or an actual lease boundary need
         # the full projection/hash. Reads still render and validate at their now.
-        view = self.state.view(
-            now, _input_key=self.current_input_key(now), _binding_key=self.current_binding_key(now)
-        )
+        view = self.state.view(now, _input_key=input_key, _binding_key=binding_key)
         self.publish_needed |= self.state.material(now, _view=view)
         self.prepared_view = view
         self.prepared_dependencies = dependencies
         self.projection_dirty = False
+        self.update_expiries(now)
+
+    def update_expiries(self, now):
         expiries = [owner.expiry for owner in self.state.owners.values() if owner.expiry > now]
         if self.state.attachments is not None:
             expiry = self.state.attachments["receipt"]["expiresAt"]
@@ -296,22 +383,19 @@ class FleetPublisher:
         owner = self.state.owners.get(self.state.host_id)
         dependencies = (
             tuple(self.state.mesh.items()),
-            id(self.state.attachments),
+            self.attachment_dependencies(now),
             self.state.binding_epoch,
             None
             if owner is None
             else (
                 owner.epoch,
-                owner.sequence,
-                id(owner.confirmed),
-                owner.expiry,
+                owner.input_revision,
+                self.owner_current(owner, now),
                 owner.transport,
-                id(owner.error),
+                owner.error,
             ),
         )
-        if dependencies != self.cached_binding_dependencies or (
-            self.binding_expiry is not None and now >= self.binding_expiry
-        ):
+        if dependencies != self.cached_binding_dependencies:
             self.cached_binding_key = self.state.binding_key(now)
             self.cached_binding_dependencies = dependencies
             expiries = [owner.expiry] if owner is not None and owner.expiry > now else []
@@ -353,12 +437,12 @@ class FleetPublisher:
         if error is not None:
             self.catalog_failure(now, error["code"], error["message"])
             return
-        previous = copy.deepcopy(self.state.mesh)
+        previous = self.state.mesh.copy(), self.state.catalog_identity
         if not self.state.catalog(snapshot):
             self.tickets.invalidate(now)
             self.disconnect(now)
             return
-        if previous != self.state.mesh:
+        if previous != (self.state.mesh, self.state.catalog_identity):
             self.tickets.invalidate(now)
             self.disconnect(now)
             self.reports.clear()
@@ -379,22 +463,16 @@ class FleetPublisher:
         return started, boottime_ms(), snapshot, error
 
     def before_input(self, connection, value, now):
-        validate_service_frame(value)
+        document = OwnerDocument(value)
         owner = connection.state
-        header_size = len(encode_document({**value, "snapshot": None}, limit=FRAME_LIMIT))
+        header_size = document.header_size
         will_confirm = (
             owner.local_clock is not None
             or value["receipt"]["state"] != "ready"
             or owner.pending is not None
             and value["requestId"] == owner.pending["requestId"]
         )
-        full_size = (
-            len(encode_document(value, limit=FRAME_LIMIT))
-            if will_confirm
-            else (
-                len(encode_document(owner.confirmed, limit=FRAME_LIMIT)) if owner.confirmed else 0
-            )
-        )
+        full_size = document.full_size if will_confirm else owner.confirmed_size
         if (
             sum(size for host, size in self.retained.items() if host != owner.host_id)
             + header_size
@@ -403,15 +481,12 @@ class FleetPublisher:
         ):
             self.capacity = True
             raise ContractError("capacity", "retained owner document pool exceeded its bound")
+        return document
 
     def owner_frame(self, connection, value, matched, now):
         self.mark_changed()
         owner = connection.state
-        self.retained[owner.host_id] = sum(
-            len(encode_document(frame, limit=FRAME_LIMIT))
-            for frame in (owner.confirmed, owner.candidate)
-            if frame is not None
-        )
+        self.retained[owner.host_id] = owner.confirmed_size + owner.candidate_size
         self.tickets.receive(connection, value, matched, now)
 
     def queue_report(self, connection, now, status):

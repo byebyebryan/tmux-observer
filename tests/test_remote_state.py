@@ -64,6 +64,40 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(self.remote.expiry, 0)
         self.assertEqual(self.remote.transport, "failed")
 
+    def test_unchanged_sample_keeps_scheduled_proof_without_renewing_validity(self):
+        self.handshake()
+        frame = self.confirm()
+        expiry, proof = self.remote.expiry, copy.deepcopy(self.remote.proof)
+        revisions = self.remote.fact_revision, self.remote.input_revision
+        frame.update(kind="heartbeat", requestId=None, sequence=2, encodedAt=1130)
+        frame["snapshot"]["sample"].update(startedAt=1100, finishedAt=1120)
+        frame["receipt"].update(
+            attempted=2,
+            accepted=2,
+            acceptedAttempt=2,
+            startedAt=1100,
+            acceptedAt=1125,
+            expiresAt=11100,
+            lastAttemptAt=1100,
+            remainingMs=9970,
+        )
+        self.remote.receive(frame, 1150)
+        self.assertIsNone(self.remote.probe(1151))
+        self.assertEqual(self.remote.next_probe, 3250)
+        self.assertEqual((self.remote.expiry, self.remote.proof), (expiry, proof))
+        self.assertEqual((self.remote.fact_revision, self.remote.input_revision), revisions)
+        self.assertIsNotNone(self.remote.probe(3250))
+
+    def test_changed_facts_request_immediate_proof_even_with_same_declared_revision(self):
+        self.handshake()
+        frame = self.confirm()
+        before = copy.deepcopy(self.remote.confirmed)
+        frame.update(kind="heartbeat", requestId=None, sequence=2)
+        frame["snapshot"]["sessions"][0]["name"] = "new-name"
+        self.remote.receive(frame, 300)
+        self.assertIsNotNone(self.remote.probe(301))
+        self.assertEqual(self.remote.confirmed, before)
+
     def test_late_probe_and_suspend_jump_fail_before_accepting(self):
         for now in (2200, 999999):
             self.setUp()

@@ -99,13 +99,9 @@ class FleetBindingTests(unittest.TestCase):
         self.state.owners["remote"].project.assert_not_called()
 
     def test_remote_renewal_does_not_rebuild_local_binding_key(self):
-        publisher = SimpleNamespace(
-            binding_adapter=True,
-            state=self.state,
-            cached_binding_key=None,
-            cached_binding_dependencies=None,
-            binding_expiry=None,
-        )
+        publisher = FleetPublisher(self.host_id, scanner=False)
+        publisher.binding_adapter = True
+        publisher.state = self.state
         self.state.binding_key = Mock(wraps=self.state.binding_key)
         first = FleetPublisher.current_binding_key(publisher, 201)
         self.state.owners["remote"] = Mock(sequence=100, expiry=3000)
@@ -113,6 +109,9 @@ class FleetBindingTests(unittest.TestCase):
         self.state.binding_key.assert_called_once()
         self.state.owners[self.host_id].sequence += 1
         FleetPublisher.current_binding_key(publisher, 203)
+        self.assertEqual(self.state.binding_key.call_count, 1)
+        self.state.owners[self.host_id].input_revision += 1
+        FleetPublisher.current_binding_key(publisher, 204)
         self.assertEqual(self.state.binding_key.call_count, 2)
 
     def test_quiet_desktop_ticks_do_not_project_the_fleet_to_check_host_topology(self):
