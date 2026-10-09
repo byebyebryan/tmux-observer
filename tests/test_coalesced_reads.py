@@ -19,9 +19,9 @@ class CoalescedReadTests(unittest.TestCase):
 
         value = Collector("fixture", runner=read).collect()
         self.assertEqual(value["sample"]["coverage"], "complete")
-        self.assertEqual(len(top_level), 3)
+        self.assertEqual(len(top_level), 2)
         self.assertIn(";", top_level[0][0])
-        self.assertEqual(top_level[-1][0][0], "list-sessions")
+        self.assertEqual(top_level[-1][0][-3], "list-sessions")
         self.assertEqual(len({deadline for _, deadline in top_level}), 1)
         self.assertTrue(all(allowed_read(args) for args, _ in top_level))
 
@@ -89,6 +89,44 @@ class CoalescedReadTests(unittest.TestCase):
         result = PlusPendingProfile.sample_pending(read, identifiers, 999)
         self.assertEqual(set(result), set(identifiers))
         self.assertEqual(len(captured), 3)
+        self.assertTrue(all(deadline == 999 for _args, deadline in captured))
+
+    def test_annotations_and_closing_rows_keep_independent_parsing(self):
+        captured = []
+
+        def read(args, deadline, **_kwargs):
+            self.assertTrue(allowed_read(args))
+            captured.append((args, deadline))
+            return (
+                "$1\n" + PENDING + " ''\n$2\n$1\t1\t/tmp/default\t2\t3\n$2\t1\t/tmp/default\t2\t3"
+            )
+
+        values, closing = PlusPendingProfile.sample_pending_and_closing(
+            read, ["$1", "$2"], 999, ["list-sessions", "-F", "#{session_id}"]
+        )
+        self.assertEqual(values, {"$1": (True, {}), "$2": (False, {})})
+        self.assertEqual(closing.splitlines()[0], "$1\t1\t/tmp/default\t2\t3")
+        self.assertEqual(len(captured), 1)
+        self.assertEqual(captured[0][1], 999)
+
+    def test_closing_chain_stays_bounded_for_the_largest_native_roster(self):
+        captured = []
+
+        def read(args, deadline, **_kwargs):
+            self.assertTrue(allowed_read(args))
+            captured.append((args, deadline))
+            rows = [args[i + 3] for i, value in enumerate(args) if value == "display-message"]
+            if "list-sessions" in args:
+                rows.append("closing")
+            return "\n".join(rows)
+
+        identifiers = ["$" + str(i) for i in range(256)]
+        values, closing = PlusPendingProfile.sample_pending_and_closing(
+            read, identifiers, 999, ["list-sessions", "-F", "#{session_id}"]
+        )
+        self.assertEqual(set(values), set(identifiers))
+        self.assertEqual(closing, "closing")
+        self.assertEqual(len(captured), 9)
         self.assertTrue(all(deadline == 999 for _args, deadline in captured))
 
 

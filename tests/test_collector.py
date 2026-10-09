@@ -100,7 +100,7 @@ class CollectorTests(unittest.TestCase):
         value = Collector("fixture", runner=native).collect()
         self.assertEqual(value["sample"]["coverage"], "complete")
         self.assertEqual(
-            sum(args[0] == "display-message" and ";" not in args for args, _ in native.calls), 1
+            sum(args[0] == "display-message" and ";" not in args for args, _ in native.calls), 2
         )
         self.assertEqual(sum(args[0] == "list-sessions" for args, _ in native.calls), 2)
 

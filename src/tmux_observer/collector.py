@@ -280,17 +280,32 @@ class Collector:
             raise Race()
         try:
             identities = self.identities(rows)
-            options = (
-                {sid: self.options(sid, names, deadline) for sid in identities}
-                if names
-                else self.annotation_profile.sample_pending(self.read, identities, deadline)
-            )
-            panes = (
-                self.panes(identities, deadline, fast)
-                if with_panes and rows
-                else {sid: [] for sid in identities}
-            )
-            final_ids, final_generation = self.final_bracket(deadline, fast)
+            if (
+                fast
+                and not names
+                and not with_panes
+                and type(self.annotation_profile) is PlusPendingProfile
+            ):
+                options, closing = self.annotation_profile.sample_pending_and_closing(
+                    self.read,
+                    identities,
+                    deadline,
+                    ["list-sessions", "-F", format_fields((*FIELDS[:2], *GENERATION))],
+                )
+                final_ids, final_generation = self.final_rows(self.rows(closing, 5), deadline)
+                panes = {sid: [] for sid in identities}
+            else:
+                options = (
+                    {sid: self.options(sid, names, deadline) for sid in identities}
+                    if names
+                    else self.annotation_profile.sample_pending(self.read, identities, deadline)
+                )
+                panes = (
+                    self.panes(identities, deadline, fast)
+                    if with_panes and rows
+                    else {sid: [] for sid in identities}
+                )
+                final_ids, final_generation = self.final_bracket(deadline, fast)
         except NoServer as error:
             raise Race() from error
         if generation != final_generation or identities != final_ids:

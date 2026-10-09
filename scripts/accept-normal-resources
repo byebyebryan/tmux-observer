@@ -26,7 +26,9 @@ def load(path, name):
 
 def worker(root, host):
     helper = load(root / "accept-native-fleet", "normal_native_worker")
-    endpoint = helper.Endpoint(root, host, native_fixture=False)
+    endpoint = helper.Endpoint(
+        root, host, native_fixture=False, python_executable="/usr/bin/python3"
+    )
     # Capture only the read adapter's desktop context. No graphical launch,
     # focus command, keyboard synthesis, or ordinary preference mutation.
     manager = helper.command(["systemctl", "--user", "show-environment"]).stdout.decode()

@@ -100,6 +100,11 @@ def session(value: object) -> dict:
 
 def validate_observation(value: object) -> dict:
     plain = validate_tree(value)
+    return _observation_after_tree(value, plain=plain)
+
+
+def _observation_after_tree(value: object, *, plain: bool) -> dict:
+    """Check semantics/bytes after a complete enclosing plain-tree check."""
     value = obj(
         value,
         "protocol",

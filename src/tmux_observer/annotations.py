@@ -13,6 +13,38 @@ PENDING = "@rofi_tmux_plus_pending"
 class PlusPendingProfile:
     name = "plus_pending_v1"
 
+    @staticmethod
+    def pending_commands(selected):
+        commands = []
+        for sid in selected:
+            if commands:
+                commands.append(";")
+            commands.extend(("display-message", "-p", "-t", sid, "#{session_id}", ";"))
+            commands.extend(("show-options", "-q", "-t", sid, PENDING))
+        return commands
+
+    @staticmethod
+    def pending_rows(output, selected):
+        lines = output.splitlines()
+        offset = 0
+        result = {}
+        for sid in selected:
+            if offset >= len(lines) or lines[offset] != sid:
+                raise ProcessError("malformed_metadata", "native annotation scope changed")
+            offset += 1
+            value = ""
+            if offset < len(lines) and lines[offset].startswith(PENDING + " "):
+                value = lines[offset]
+                offset += 1
+            try:
+                pending, _values = parse_explicit_user_options(value, (), pending_name=PENDING)
+            except TmuxWireError as problem:
+                raise ProcessError(
+                    "malformed_metadata", "invalid native option metadata"
+                ) from problem
+            result[sid] = pending, {}
+        return result, lines[offset:]
+
     @classmethod
     def sample_pending(cls, read, session_ids, deadline):
         """Coalesce minimal annotations, retaining explicit empty/absent meaning."""
@@ -22,33 +54,35 @@ class PlusPendingProfile:
         result = {}
         for start in range(0, len(identifiers), 32):
             selected = identifiers[start : start + 32]
-            commands = []
-            for sid in selected:
-                if commands:
-                    commands.append(";")
-                commands.extend(("display-message", "-p", "-t", sid, "#{session_id}", ";"))
-                commands.extend(("show-options", "-q", "-t", sid, PENDING))
-            output = read(commands, deadline, absent=True)
-            lines = output.splitlines()
-            offset = 0
-            for sid in selected:
-                if offset >= len(lines) or lines[offset] != sid:
-                    raise ProcessError("malformed_metadata", "native annotation scope changed")
-                offset += 1
-                value = ""
-                if offset < len(lines) and lines[offset].startswith(PENDING + " "):
-                    value = lines[offset]
-                    offset += 1
-                try:
-                    pending, _values = parse_explicit_user_options(value, (), pending_name=PENDING)
-                except TmuxWireError as problem:
-                    raise ProcessError(
-                        "malformed_metadata", "invalid native option metadata"
-                    ) from problem
-                result[sid] = pending, {}
-            if offset != len(lines):
+            output = read(cls.pending_commands(selected), deadline, absent=True)
+            values, remaining = cls.pending_rows(output, selected)
+            result.update(values)
+            if remaining:
                 raise ProcessError("malformed_metadata", "unexpected native annotation output")
         return result
+
+    @classmethod
+    def sample_pending_and_closing(cls, read, session_ids, deadline, closing_command):
+        """Keep explicit annotation scope and closing rows in one bounded chain."""
+        identifiers = list(session_ids)
+        if not identifiers:
+            return {}, read(closing_command, deadline, absent=True, empty=True)
+        result, closing = {}, ""
+        # Two commands per annotation plus one final command stay below 64.
+        for start in range(0, len(identifiers), 31):
+            selected = identifiers[start : start + 31]
+            last = start + len(selected) == len(identifiers)
+            commands = cls.pending_commands(selected)
+            if last:
+                commands.extend((";", *closing_command))
+            output = read(commands, deadline, absent=True, empty=True)
+            values, remaining = cls.pending_rows(output, selected)
+            result.update(values)
+            if last:
+                closing = "\n".join(remaining)
+            elif remaining:
+                raise ProcessError("malformed_metadata", "unexpected native annotation output")
+        return result, closing
 
     @staticmethod
     def sample(read, session_id, names, deadline):

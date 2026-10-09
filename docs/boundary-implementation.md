@@ -328,3 +328,29 @@ payloads; `565e9b9` requires current desktop evidence and, for an explicitly
 profile-enabled selection, a current scope-matching local association receipt.
 Ten owned filesystem/readiness tests pass. These are helper source checks;
 installed paired rollback/reselection and managed selection remain pending.
+
+The next CPU repair reuses a complete enclosing plain-JSON tree check for nested
+snapshot validation within that same invocation. Every public entry still walks
+the complete tree; all nested semantic, scope, byte and header checks remain.
+Python subclasses retain the full nested fallback and final recheck. Five new
+adversarial cases cover mutation during outer/nested schema access, independent
+native/association snapshot byte ceilings and the separate header ceiling.
+Same-interpreter microbenchmarks over 3,000 records show roughly one-third lower
+service, association-delivery and actual fleet-frame validation CPU. This is
+function-level evidence, not a normal-resource pass.
+
+The minimal C1 path also shares explicit annotation reads with the complete
+closing native roster/generation query. Scope markers and present-empty/absent
+semantics remain checked, and every chain stays within 64 read-only commands and
+the original absolute deadline. Up to 31 sessions need two C1 process starts;
+the independent C2 association sample still needs its two starts and both client
+captures/process-birth checks. Larger rosters are bounded in chunks, while
+expanded/legacy/custom-profile reads retain their previous path. The source gate
+passes 319 tests; frozen native evidence is required for this new candidate.
+
+The normal-resource harness now explicitly uses `/usr/bin/python3` on each
+endpoint, matching the managed launchers, and records the installed interpreter
+identity. Earlier fixtures used UV's selected interpreter. That runtime difference
+must be disclosed rather than treated as evidence of the managed CPU cost.
+The next profile retains the five-percent gate, counts all associated children,
+and keeps the existing safety instrumentation, cadence, freshness and deadlines.

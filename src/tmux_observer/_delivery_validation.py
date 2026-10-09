@@ -1,6 +1,11 @@
 """Pure service contract; imports no implementations."""
 
-from ._native_validation import scope_key, source, validate_observation
+from ._native_validation import (
+    _observation_after_tree,
+    scope_key,
+    source,
+    validate_observation,
+)
 from ._validation_common import (
     HOST,
     OWNER_LEASE_MS,
@@ -192,7 +197,10 @@ def validate_service_frame(value: object) -> dict:
     evidence = receipt(value["receipt"])
     snapshot = value["snapshot"]
     if snapshot is not None:
-        validate_observation(snapshot)
+        if plain:
+            _observation_after_tree(snapshot, plain=True)
+        else:
+            validate_observation(snapshot)
         if (
             scope_key(snapshot["source"]) != scope_key(owner)
             or snapshot["sample"]["coverage"] != "complete"
@@ -223,7 +231,7 @@ def validate_service_frame(value: object) -> dict:
         raise ValidationError("protocol error lacks diagnostic")
     overhead = dict(value)
     overhead["snapshot"] = None
-    encode_document(overhead, limit=ENVELOPE_LIMIT)
+    _encode_after_validation(overhead, limit=ENVELOPE_LIMIT, plain=plain)
     _encode_after_validation(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, plain=plain)
     return value
 

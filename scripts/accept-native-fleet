@@ -322,9 +322,10 @@ def profile_native(root, seconds):
 
 
 class Endpoint:
-    def __init__(self, root, host_id, *, native_fixture=True):
+    def __init__(self, root, host_id, *, native_fixture=True, python_executable=None):
         assert type(native_fixture) is bool
         self.native_fixture = native_fixture
+        self.python_executable = python_executable
         self.root, self.host_id = private_root(root), host_id
         self.venv = root / "venv"
         self.python = str(self.venv / "bin/python")
@@ -361,7 +362,10 @@ class Endpoint:
     def start(self):
         wheel = next(self.root.glob("*.whl"))
         self.wheel_digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
-        command(["uv", "venv", str(self.venv)])
+        command(
+            ["uv", "venv", str(self.venv)]
+            + (["--python", self.python_executable] if self.python_executable is not None else [])
+        )
         command(["uv", "pip", "install", "--python", self.python, "--no-deps", str(wheel)])
         actual = json.loads(command(["rofi-ssh-plus", "mesh", "list", "--json"]).stdout)
         assert actual["localHostId"] == self.host_id and len(actual["hosts"]) == 2
@@ -531,6 +535,16 @@ class Endpoint:
             self.passive_generation = native_reference["serverGeneration"]
         return {
             "wheelSha256": self.wheel_digest,
+            "pythonRuntime": json.loads(
+                command(
+                    [
+                        self.python,
+                        "-I",
+                        "-c",
+                        "import json,sys;print(json.dumps({'version':sys.version,'executable':sys.executable}))",
+                    ]
+                ).stdout
+            ),
             "templateSha256": self.template_hashes,
             "actualMeshRevision": actual["meshRevision"],
             "nativeVersion": command([self.native_prefix[0], "-V"]).stdout.decode().strip(),

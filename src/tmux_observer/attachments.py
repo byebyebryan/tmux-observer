@@ -24,7 +24,7 @@ from ._validation_common import (
 from ._validation_common import (
     closed_error as error,
 )
-from ._wire import ENVELOPE_LIMIT, _encode_after_validation, encode_document, validate_tree
+from ._wire import ENVELOPE_LIMIT, _encode_after_validation, validate_tree
 
 ATTACHMENTS_PROTOCOL = "tmux-observer.attachments.v1"
 ATTACHMENT_DELIVERY_PROTOCOL = "tmux-observer.attachments-delivery.v1"
@@ -35,6 +35,11 @@ PID_NAMESPACE = r"pid:[0-9]+"
 
 def validate_attachments(value):
     plain = validate_tree(value)
+    return _attachments_after_tree(value, plain=plain)
+
+
+def _attachments_after_tree(value, *, plain):
+    """Keep nested semantic/byte bounds after an enclosing plain-tree check."""
     value = exact(
         value,
         "protocol",
@@ -116,7 +121,10 @@ def validate_attachment_delivery(value):
     problem = error(value["error"])
     snapshot = value["snapshot"]
     if snapshot is not None:
-        validate_attachments(snapshot)
+        if plain:
+            _attachments_after_tree(snapshot, plain=True)
+        else:
+            validate_attachments(snapshot)
         if (
             scope_key(snapshot["source"]) != scope_key(owner)
             or clock_key(snapshot["clock"]) != clock_key(domain)
@@ -139,7 +147,7 @@ def validate_attachment_delivery(value):
     if evidence["state"] in ("failed", "unsupported") and problem is None:
         raise ValidationError("failed association source lacks diagnostic")
     overhead = {**value, "snapshot": None}
-    encode_document(overhead, limit=ENVELOPE_LIMIT)
+    _encode_after_validation(overhead, limit=ENVELOPE_LIMIT, plain=plain)
     _encode_after_validation(value, limit=ATTACHMENTS_LIMIT + ENVELOPE_LIMIT, plain=plain)
     return value
 

@@ -24,7 +24,6 @@ from tmux_observer._wire import (
     DOCUMENT_LIMIT,
     ENVELOPE_LIMIT,
     _encode_after_validation,
-    encode_document,
     validate_tree,
 )
 
@@ -46,6 +45,11 @@ def viewer(value: object) -> dict:
 
 def validate_fleet_view(value: object) -> dict:
     plain = validate_tree(value)
+    return _fleet_view_after_tree(value, plain=plain)
+
+
+def _fleet_view_after_tree(value: object, *, plain: bool) -> dict:
+    """Keep view semantics and byte bounds within a checked plain envelope."""
     value = obj(
         value,
         "protocol",
@@ -271,7 +275,10 @@ def validate_fleet_frame(value: object) -> dict:
     error(value["error"])
     snapshot = value["snapshot"]
     if snapshot is not None:
-        validate_fleet_view(snapshot)
+        if plain:
+            _fleet_view_after_tree(snapshot, plain=True)
+        else:
+            validate_fleet_view(snapshot)
         if any(
             snapshot[key] != value[key]
             for key in ("readerId", "contextId", "encodedAt", "viewRevision")
@@ -290,6 +297,6 @@ def validate_fleet_frame(value: object) -> dict:
         raise ValidationError("missing fleet control outcome")
     overhead = dict(value)
     overhead["snapshot"] = None
-    encode_document(overhead, limit=ENVELOPE_LIMIT)
+    _encode_after_validation(overhead, limit=ENVELOPE_LIMIT, plain=plain)
     _encode_after_validation(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, plain=plain)
     return value
