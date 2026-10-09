@@ -3,7 +3,7 @@ Description=Passive tmux owner publisher for %i
 
 [Service]
 Type=simple
-ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer owner --host-id %i
+ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer owner --host-id %i --local-attachments
 Restart=on-failure
 RestartSec=2
 TimeoutStopSec=5

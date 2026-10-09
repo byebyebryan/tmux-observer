@@ -1,6 +1,7 @@
 """Fresh optional inputs keep scope/leases separate and sampling explicit."""
 
 import copy
+import time
 import unittest
 from unittest.mock import Mock, patch
 
@@ -68,7 +69,7 @@ class FreshDesktopTests(unittest.TestCase):
             patch("tmux_observer_client._fresh_desktop.observe_local_viewers") as scan,
         ):
 
-            def observe(targets, _config, *, local_tmux, deadline):
+            def observe(targets, _config, *, local_tmux, deadline, now_millis):
                 self.assertIsInstance(local_tmux, FreshClients)
                 self.assertEqual(local_tmux.client_pids_by_session(), {"$1": {123}})
                 return ViewerObservationBatch(
@@ -86,6 +87,10 @@ class FreshDesktopTests(unittest.TestCase):
         self.assertEqual(sample.call_count, 1)
         self.assertEqual(mesh.load.call_count, 1)
         self.assertEqual(result["hosts"][0]["sessions"][0]["localViewer"]["state"], "open")
+        self.assertEqual(result["viewerEndpoint"]["hostId"], "fixture")
+        self.assertLess(
+            abs(result["viewerEndpoint"]["observedAt"] - time.time_ns() // 1000000), 1000
+        )
 
     def test_adapter_failure_is_display_uncertainty_without_poisoning_native_row(self):
         response = {"hosts": [copy.deepcopy(self.row)]}
@@ -100,6 +105,26 @@ class FreshDesktopTests(unittest.TestCase):
         row = result["hosts"][0]
         self.assertEqual(row["status"], "ok")
         self.assertEqual(row["sessions"][0]["localViewer"]["state"], "unknown")
+
+    def test_optional_scan_exception_keeps_native_success_and_complete_unknown_projection(self):
+        response = {"hosts": [copy.deepcopy(self.row)]}
+        with patch(
+            "tmux_observer_client._fresh_desktop.observe_local_viewers",
+            side_effect=RuntimeError("owned adapter failure"),
+        ):
+            result = enrich(
+                response,
+                endpoint="fixture",
+                executable=None,
+                profile=self.profile,
+                deadline=boottime_ms() + 2000,
+            )
+        self.assertEqual(result["hosts"][0]["status"], "ok")
+        self.assertEqual(
+            result["hosts"][0]["sessions"][0]["localViewer"],
+            {"state": "unknown", "reason": "inventory_incomplete"},
+        )
+        self.assertEqual(result["viewerEndpoint"]["hostId"], "fixture")
 
 
 if __name__ == "__main__":

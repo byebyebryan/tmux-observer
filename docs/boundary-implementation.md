@@ -13,7 +13,7 @@ operations tuple.
 | B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
 | B2 desktop | Source and frozen Starship native passed; final resource gate pending | 219 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
 | B3 actions | Source and frozen native gates passed | UI-neutral SDK/legacy facade; both-host native, actual SSH writes and Starship focus/close; 285 tests |
-| B4 frontend | Pending | Narrow clients, compatibility corpus/deltas, remembered/frozen/expiry behavior, Starship GUI |
+| B4 frontend | Source candidate in progress | Narrow lazy clients, C5 picker intents, unchanged legacy CLI argv and test-only historical baseline; installed/GUI pending |
 | B5 selection | Pending | Exact candidate artifacts, normal/capacity profiling, published/scoped managed selection and rollback |
 
 The final B0 source gate passed 196 tests, 24 new independent valid/invalid
@@ -165,3 +165,17 @@ client-switch invalidation/recovery. Private server namespaces and injected
 catalog/reporting isolate these checks; they do not establish ordinary Mesh
 provider selection. Ordinary references survived and owned roots/viewers were
 removed. Starship focus restoration was accepted. Snap had no GUI input.
+
+The direct client now owns the optional explicit native association job for fresh
+`inventory --with-viewers`. Its desktop projection consumes that job's profile
+and never invokes a collector. Both-host frozen `feae678` headless native probes
+passed eight cases including unchanged attachment counts, options/hooks and
+ordinary references. Consumer review subsequently found a missing legacy caller
+endpoint/timestamp and optional-scan failure isolation. Those producer defects
+were reopened and repaired, with wall-clock endpoint milliseconds preserved and
+unknown display facts on scan failure. The source gate now passes 290 tests.
+
+The packaged owner unit explicitly enables local associations; a manually started
+headless owner still defaults to the optional profile being disabled. This unit
+is an unselected candidate. Integrated both-host native/resource acceptance must
+include the enabled profile before any managed promotion.

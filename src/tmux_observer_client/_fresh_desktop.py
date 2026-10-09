@@ -5,6 +5,7 @@ The explicit direct orchestrator owns the optional passive native job.
 """
 
 import os
+import time
 
 from tmux_observer._clock import boottime_ms, domain, pid_namespace
 from tmux_observer.attachments import validate_attachments
@@ -88,12 +89,24 @@ def enrich(response, *, endpoint, executable, profile, deadline, config=None):
             )
             rows[reference] = row
     local = next((host for host in hosts if host["local"] and host["hostId"] == endpoint), None)
-    batch = observe_local_viewers(
-        targets,
-        config or DesktopConfig(),
-        local_tmux=FreshClients(local, profile, deadline),
-        deadline=deadline / 1000,
-    )
-    for reference, observation in batch.observations.items():
-        rows[reference]["localViewer"] = observation.as_dict()
+    observed_at = time.time_ns() // 1000000
+    try:
+        batch = observe_local_viewers(
+            targets,
+            config or DesktopConfig(),
+            local_tmux=FreshClients(local, profile, deadline),
+            deadline=deadline / 1000,
+            now_millis=lambda: observed_at,
+        )
+        observations = batch.observations
+    except Exception:  # noqa: BLE001 - optional projection cannot replace healthy native inventory
+        observations = {}
+    for reference, row in rows.items():
+        observation = observations.get(reference)
+        row["localViewer"] = (
+            observation.as_dict()
+            if observation is not None
+            else {"state": "unknown", "reason": "inventory_incomplete"}
+        )
+    response["viewerEndpoint"] = {"hostId": endpoint, "observedAt": observed_at}
     return response
