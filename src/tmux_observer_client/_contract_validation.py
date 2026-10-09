@@ -27,6 +27,8 @@ from tmux_observer._wire import (
     validate_tree,
 )
 
+from .bindings_contract import validate_fleet_bindings
+
 FLEET_PROTOCOL = "tmux-observer.fleet.v1"
 
 
@@ -224,6 +226,10 @@ def _fleet_view_after_tree(value: object, *, plain: bool) -> dict:
                 row["attachedClients"] is None or row["attachedClients"] == 0
             ):
                 raise ValidationError("qualified match lacks owner attachment evidence")
+        if host.get("localBindings") is not None:
+            validate_fleet_bindings(
+                host["localBindings"], host, context_id=context, clock_value=value["clock"], now=now
+            )
     if mesh_state in ("ready", "local_only") and (local_count != 1 or local_host not in seen):
         raise ValidationError("missing logical local host")
     if mesh_state == "local_only" and (len(hosts) != 1 or mesh["revision"] is not None):

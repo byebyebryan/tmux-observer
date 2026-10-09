@@ -10,9 +10,11 @@ from tmux_observer._wire import WireError
 from tmux_observer.native import encode_document
 from tmux_observer_client.contract import FLEET_PROTOCOL, validate_fleet_frame, validate_fleet_view
 
+from ._binding_projection import binding_key, project_bindings
 from ._contract_validation import viewer
 from ._desktop_input import input_hash, reference
 from ._remote_state import RemoteState
+from .bindings_contract import validate_fleet_bindings
 from .desktop_contract import validate_desktop
 from .public import owner_current
 
@@ -42,6 +44,9 @@ class FleetState:
         self.viewers = {}
         self.attachments = None
         self.association = None
+        self.bindings = None
+        self.bindings_key = None
+        self.binding_epoch = 0
         validate_fleet_view(self.view(0))
 
     def catalog(self, snapshot):
@@ -151,6 +156,38 @@ class FleetState:
     def input_key(self, now):
         return input_hash(self.inputs(now), now=now)
 
+    def local_input(self, now):
+        return next((host for host in self.inputs(now) if host["local"]), None)
+
+    def binding_key(self, now):
+        return binding_key(
+            self.local_input(now), now=now, context_id=self.context_id, epoch=self.binding_epoch
+        )
+
+    def invalidate_bindings(self):
+        self.binding_epoch += 1
+        self.bindings = self.bindings_key = None
+
+    def accept_bindings(self, value, *, key, epoch, started, finished, now):
+        if (
+            value is None
+            or epoch != self.binding_epoch
+            or key != self.binding_key(now)
+            or not started <= finished <= now < started + 2000
+        ):
+            return False
+        host = self.local_input(now)
+        try:
+            validate_fleet_bindings(
+                value, host, context_id=self.context_id, clock_value=self.clock, now=now
+            )
+            if value["epoch"] != epoch or not started <= value["receipt"]["preparedAt"] <= finished:
+                return False
+        except (ValueError, TypeError, KeyError):
+            return False
+        self.bindings, self.bindings_key = copy.deepcopy(value), key
+        return True
+
     def accept_desktop(
         self, *, epoch, key, started, finished, now, state, observations, error, association=None
     ):
@@ -251,7 +288,7 @@ class FleetState:
             return False
         return state == "ready"
 
-    def view(self, now, *, ticket=None, _input_key=None):
+    def view(self, now, *, ticket=None, _input_key=None, _binding_key=None):
         hosts = self.hosts(now)
         desktop = copy.deepcopy(self.desktop)
         if desktop["state"] == "ready":
@@ -273,6 +310,13 @@ class FleetState:
                         reference(row), {"state": "unknown", "reason": "inventory_incomplete"}
                     )
                 row["localViewer"] = copy.deepcopy(presence)
+            if host["local"] and self.bindings is not None:
+                host["localBindings"] = project_bindings(
+                    self.bindings,
+                    accepted_key=self.bindings_key,
+                    current_key=self.binding_key(now) if _binding_key is None else _binding_key,
+                    now=now,
+                )
         value = {
             "protocol": FLEET_PROTOCOL,
             "schemaVersion": 1,
@@ -327,6 +371,14 @@ class FleetState:
                         "error": host["owner"]["error"],
                     },
                     "sessions": host["sessions"],
+                    "localBindings": None
+                    if host.get("localBindings") is None
+                    else {
+                        "epoch": host["localBindings"]["epoch"],
+                        "rows": host["localBindings"]["rows"],
+                        "state": host["localBindings"]["receipt"]["state"],
+                        "error": host["localBindings"]["receipt"]["error"],
+                    },
                 }
                 for host in view["hosts"]
             ],

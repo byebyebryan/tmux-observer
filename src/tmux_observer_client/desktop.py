@@ -10,6 +10,7 @@ from tmux_observer.native import Session
 
 from ._desktop_input import input_hash, reference
 from ._desktop_scan import DesktopConfig, ViewerTarget, _niri_windows, observe_local_viewers
+from ._desktop_types import LocalViewerObservation
 from .attachments import CachedClients, current_attachments
 from .desktop_contract import DESKTOP_PROTOCOL, validate_desktop
 
@@ -20,6 +21,7 @@ class DesktopResult:
     observations: dict
     error: dict | None
     association: dict | None = None
+    bindings: dict | None = None
 
     def __iter__(self):
         return iter((self.state, self.observations, self.error))
@@ -199,3 +201,42 @@ def scan(hosts, *, deadline, config=None, context_id=None, epoch=0):
         now=boottime_ms(),
     )
     return DesktopResult("ready", observations, None, modern)
+
+
+def scan_remote(hosts, *, deadline, context_id, epoch):
+    """Keep fresh remote observations without rediscovering stable local clients."""
+    started = deadline - 2000
+    result = scan(
+        [host for host in hosts if not host["local"]],
+        deadline=deadline,
+        context_id=context_id,
+        epoch=epoch,
+    )
+    state, observations, error = result
+    if state != "ready":
+        return result
+    observations.update(
+        {
+            reference(row): {"state": "unknown", "reason": "retained_association_only"}
+            for host in hosts
+            if host["local"]
+            for row in host["sessions"]
+        }
+    )
+    # Preserve the remote adapter's evidence classes and confidence exactly.
+    # Only the local legacy rows become unknown; retained local evidence has
+    # its own versioned extension and cannot impersonate a fresh C3 capture.
+    modern = association_batch(
+        hosts,
+        {
+            ref: LocalViewerObservation("unknown", reason="retained_association_only")
+            for ref in observations
+        },
+        context_id=context_id,
+        epoch=epoch,
+        started=started,
+        now=boottime_ms(),
+    )
+    remote_rows = {reference(row["sessionRef"]): row for row in result.association["rows"]}
+    modern["rows"] = [remote_rows.get(reference(row["sessionRef"]), row) for row in modern["rows"]]
+    return DesktopResult(state, observations, error, validate_desktop(modern))

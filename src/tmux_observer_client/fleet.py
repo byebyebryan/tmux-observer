@@ -48,6 +48,8 @@ class DesktopJob:
     hosts: list
     started: list = field(default_factory=list)
     begun: bool = False
+    binding_key: tuple | None = None
+    binding_epoch: int = 0
 
 
 class FleetPublisher:
@@ -95,6 +97,16 @@ class FleetPublisher:
             )
         self.scanner, self.fingerprint = scanner, fingerprint
         self.attachment_future = None
+        self.binding_adapter = None
+        if self.profile_enabled:
+            from ._local_bindings import RetainedBindings
+
+            self.binding_adapter = RetainedBindings()
+        self.binding_future = self.binding_job = None
+        self.binding_dependencies = None
+        self.cached_binding_key = self.cached_binding_dependencies = None
+        self.binding_expiry = None
+        self.last_binding_start = 0
         self.next_attachment = 0
         self.local_connection, self.remote_connection = local_connection, remote_connection
         self.tickets = FleetTickets(self.state)
@@ -230,6 +242,8 @@ class FleetPublisher:
             tuple(self.state.desktop.items()),
             id(self.state.viewers),
             id(self.state.attachments),
+            id(self.state.bindings),
+            self.state.binding_epoch,
             tuple(
                 (
                     host,
@@ -255,7 +269,9 @@ class FleetPublisher:
             return
         # Only validated input/health changes or an actual lease boundary need
         # the full projection/hash. Reads still render and validate at their now.
-        view = self.state.view(now, _input_key=self.current_input_key(now))
+        view = self.state.view(
+            now, _input_key=self.current_input_key(now), _binding_key=self.current_binding_key(now)
+        )
         self.publish_needed |= self.state.material(now, _view=view)
         self.prepared_view = view
         self.prepared_dependencies = dependencies
@@ -268,7 +284,28 @@ class FleetPublisher:
         desktop = self.state.desktop
         if desktop["state"] == "ready" and desktop["expiresAt"] > now:
             expiries.append(desktop["expiresAt"])
+        if self.state.bindings is not None:
+            expiry = self.state.bindings["receipt"]["expiresAt"]
+            if expiry is not None and expiry > now:
+                expiries.append(expiry)
         self.projection_expiry = min(expiries, default=None)
+
+    def current_binding_key(self, now):
+        if self.binding_adapter is None:
+            return None
+        dependencies = self.input_dependencies(), self.state.binding_epoch
+        if dependencies != self.cached_binding_dependencies or (
+            self.binding_expiry is not None and now >= self.binding_expiry
+        ):
+            self.cached_binding_key = self.state.binding_key(now)
+            self.cached_binding_dependencies = dependencies
+            expiries = [owner.expiry for owner in self.state.owners.values() if owner.expiry > now]
+            if self.state.attachments is not None:
+                expiry = self.state.attachments["receipt"]["expiresAt"]
+                if expiry is not None and expiry > now:
+                    expiries.append(expiry)
+            self.binding_expiry = min(expiries, default=None)
+        return self.cached_binding_key
 
     def frame(self, now, **kwargs):
         self.project_changed(now)
@@ -534,7 +571,25 @@ class FleetPublisher:
                 if self.profile_enabled
                 else {}
             )
-            result = self.scanner(job.hosts, deadline=started + 2000, **kwargs)
+            bindings = None
+            scanner = self.scanner
+            if self.profile_enabled:
+                if job.parents:
+                    local = next((host for host in job.hosts if host["local"]), None)
+                    bindings = self.binding_adapter.prepare(
+                        local,
+                        context_id=self.state.context_id,
+                        epoch=job.binding_epoch,
+                        deadline=started + 2000,
+                        force=True,
+                    )
+                else:
+                    from .desktop import scan_remote
+
+                    scanner = scan_remote
+            result = scanner(job.hosts, deadline=started + 2000, **kwargs)
+            if bindings is not None and hasattr(result, "bindings"):
+                result.bindings = bindings
             state, observations, _error = result
             if state not in ("ready", "failed", "unsupported") or not isinstance(
                 observations, dict
@@ -548,12 +603,53 @@ class FleetPublisher:
             )
         return started, boottime_ms(), result
 
+    def binding_work(self, host, epoch):
+        started = boottime_ms()
+        try:
+            value = self.binding_adapter.prepare(
+                host, context_id=self.state.context_id, epoch=epoch, deadline=started + 2000
+            )
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            value = None
+        return started, boottime_ms(), value
+
+    def binding_tick(self, executor, now):
+        if self.binding_adapter is None:
+            return
+        if self.binding_future is not None and self.binding_future.done():
+            started, finished, value = self.binding_future.result()
+            self.last_binding_start = started
+            key, epoch = self.binding_job
+            self.state.accept_bindings(
+                value, key=key, epoch=epoch, started=started, finished=finished, now=now
+            )
+            self.mark_changed()
+            self.binding_future = self.binding_job = None
+        # One shared adapter and executor also serve explicit rediscovery.
+        if self.binding_future is not None or self.desktop_future is not None:
+            return
+        key = self.current_binding_key(now)
+        if key is None:
+            return
+        owner = self.state.owners.get(self.state.host_id)
+        dependencies = key, id(self.state.attachments), owner.expiry
+        retry_at = self.binding_adapter.retry_at
+        if now >= self.last_binding_start + 1000 and (
+            dependencies != self.binding_dependencies or retry_at is not None and now >= retry_at
+        ):
+            self.binding_dependencies = dependencies
+            self.binding_job = key, self.state.binding_epoch
+            self.binding_future = executor.submit(
+                self.binding_work, self.state.local_input(now), self.state.binding_epoch
+            )
+
     def desktop_tick(self, executor, now):
         fingerprint = self.fingerprint(self.state.context_id)
         if fingerprint != self.context_fingerprint:
             self.context_fingerprint = fingerprint
             self.mark_changed()
             self.state.invalidate_desktop()
+            self.state.invalidate_bindings()
             self.tickets.invalidate(now, desktop_only=True)
             self.next_desktop = now
             self.desktop_input = None
@@ -581,6 +677,15 @@ class FleetPublisher:
                 error=error,
                 association=getattr(result, "association", None),
             )
+            if getattr(result, "bindings", None) is not None:
+                self.state.accept_bindings(
+                    result.bindings,
+                    key=job.binding_key,
+                    epoch=job.binding_epoch,
+                    started=started,
+                    finished=finished,
+                    now=now,
+                )
             self.tickets.desktop_finish(
                 job.attempt,
                 now,
@@ -596,6 +701,12 @@ class FleetPublisher:
         ):
             return
         eligible = self.desktop_eligible(now)
+        if (
+            self.profile_enabled
+            and not eligible
+            and not any(not host["local"] for host in self.state.inputs(now))
+        ):
+            return
         changed = self.desktop_input != self.current_input_key(now)
         if now >= self.last_desktop_start + 1000 and (
             now >= self.next_desktop or eligible or changed
@@ -607,6 +718,8 @@ class FleetPublisher:
                 self.current_input_key(now),
                 eligible,
                 self.state.inputs(now),
+                binding_key=self.current_binding_key(now),
+                binding_epoch=self.state.binding_epoch,
             )
             self.desktop_job = job
             self.desktop_input = job.key
@@ -638,6 +751,7 @@ class FleetPublisher:
                 if now - previous >= 3000:
                     self.disconnect(now, remotes_only=True, code="clock_jump")
                     self.state.invalidate_desktop()
+                    self.state.invalidate_bindings()
                     self.tickets.invalidate(now, desktop_only=True)
                 previous = now
                 if self.catalog_future is not None and self.catalog_future.done():
@@ -657,6 +771,7 @@ class FleetPublisher:
                 self.report_tick(report_executor, now)
                 self.tickets.tick(self.connections, now)
                 self.attachment_tick(desktop_executor, now)
+                self.binding_tick(desktop_executor, now)
                 self.desktop_tick(desktop_executor, now)
                 now = boottime_ms()
                 self.project_changed(now)

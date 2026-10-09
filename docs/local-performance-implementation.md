@@ -57,7 +57,7 @@ current target validation in the action package.
 | --- | --- | --- |
 | LP0 | Source review, bounded design, contract choice and ordinary-session constraints | Reviewed design |
 | LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Source accepted; passive Snap bootstrap diagnostic passed |
-| LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Pending |
+| LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Source accepted; frozen/native acceptance pending |
 | LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Pending |
 | LP4 | Frozen artifacts, native open/close/switch/bootstrap acceptance, local and normal-fleet CPU/update measurements, Snap GUI | Pending |
 | LP5 | Publish accepted pair, scoped chezmoi selection/recovery and rollback checks on both hosts | Pending |
@@ -95,3 +95,36 @@ successive preparations perform zero additional discovery jobs and average
 microbenchmarks with existing native clients, not a whole-service CPU profile,
 frozen artifact acceptance or an open/close graphical test. Running services
 remain on the previously selected pair.
+
+### LP2 prepared fleet checkpoint
+
+The fleet schedules retained local preparation from local native inputs and
+bounded settling retries. A local-only reader has no periodic C3 desktop job.
+Remote jobs retain their existing fresh-capture schedule and evidence classes;
+their local legacy rows remain unknown. Explicit desktop refresh rediscoveries
+use the same serialized adapter and preserve existing ticket/deadline behavior.
+Context/clock replacement invalidates retained bindings independently. Reads
+project only accepted prepared data and include binding expiry in their next
+revalidation boundary.
+
+Eight additional source cases cover independent C3/binding evidence, enclosing
+scope/count/coverage guards, same-count client replacement, stale/late results,
+mutable aliases, expiry despite renewed native deliveries, quiet renewal and
+remote evidence compatibility. The full source gate passes 351 tests and all
+other required checks.
+
+An isolated Snap local-only fleet diagnostic publishes seven retained-open
+rows, one unresolved row and one zero-client row from current installed native
+owner inputs. Fourteen initial clients need one shared discovery; seven clients
+without a resolved local window receive the remaining two settling attempts.
+Discovery then stops at three jobs/twenty-eight client attempts while native
+receipts continue renewing. There are zero periodic C3 jobs and no publisher
+exceptions. The owned fleet endpoint/thread are removed. This eight-second
+working-source diagnostic is not artifact, graphical or CPU acceptance.
+
+The first diagnostic's assertion of zero additional discovery immediately after
+bootstrap failed because it counted these legitimate unresolved-client settling
+attempts. It is retained as a failed assertion, not reclassified as acceptance.
+The follow-up distinguishes stable bindings from unresolved settling and shows
+the latter stopping at its declared bound. Complete native open/close/switch,
+explicit-refresh/recovery and resource gates remain in LP4.
