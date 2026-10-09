@@ -1,0 +1,48 @@
+{
+  "state": "passed",
+  "cases": [
+    "fixed_default_create_ignores_ambient_alternate_server_without_service",
+    "required_option_mismatch_refuses_rename_before_native_write",
+    "rename_and_kill_validate_frozen_full_reference_name_and_options",
+    "deleted_or_changed_reference_cannot_authorize_another_native_target",
+    "committed_create_survives_real_terminal_spawn_failure",
+    "deferred_holder_timeout_removes_only_its_owned_pending_session",
+    "ordinary_default_references_preserved"
+  ],
+  "cleanup": true,
+  "harnessCommit": "b0c99bc137475cc53d2aac00d157f4220c65c345",
+  "harnessTreeDirty": false,
+  "sourceCommit": "b0c99bc137475cc53d2aac00d157f4220c65c345",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "b0c99bc137475cc53d2aac00d157f4220c65c345",
+      "epoch": 1791505813,
+      "tree": "9db9ba8cebff8d8846af1edb58d0f47d435fa7e3"
+    },
+    "wheelSha256": "76fde2ef94c10456b7958e814e5b15b4d11de12c329f77b1acdeabe5cbc1707d",
+    "descriptorSha256": "76613c577713c8c7680467f13c502b114e1b4c088ab427fecdb70befeb32a992",
+    "sourceFilesMatchHarness": true
+  },
+  "installedPackageMembersVerified": 73,
+  "endpoint": "starship",
+  "scope": "installed action SDK; owned default/alternate servers; no GUI or observation services",
+  "installedImportOriginsVerified": true,
+  "observationServicesImported": false,
+  "nativeCreatedReference": {
+    "hostId": "starship",
+    "serverGeneration": "tmux-v1:1791505916:1990096:/tmp/observer-native-actions-v_5r14q5/tmux-1000/default",
+    "sessionId": "$1",
+    "createdAt": 1791505916
+  },
+  "ordinaryDefaultReferencesPreserved": 8,
+  "limits": [
+    "Injected missing Mesh, no native remote route acceptance",
+    "No Kitty/Niri/Rofi acceptance; verified focus/close is a separate Starship gate",
+    "No installed or managed selection implied"
+  ],
+  "ownedTemporaryRootRemoved": true,
+  "installedWorkerExit": 0,
+  "wheelSha256": "76fde2ef94c10456b7958e814e5b15b4d11de12c329f77b1acdeabe5cbc1707d"
+}

@@ -12,7 +12,7 @@ operations tuple.
 | B0 contracts | Committed/pushed; CI passed | `bf5f838`; three new bundles, independent corpus, split pure domains and blocked-import checks |
 | B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
 | B2 desktop | Source and frozen Starship native passed; final resource gate pending | 219 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
-| B3 actions | Source passed; frozen native gates pending | UI-neutral SDK and legacy facade, native guards, separate effect tracking and no uncertain write retry; 285 tests |
+| B3 actions | Source and frozen native gates passed | UI-neutral SDK/legacy facade; both-host native, actual SSH writes and Starship focus/close; 285 tests |
 | B4 frontend | Pending | Narrow clients, compatibility corpus/deltas, remembered/frozen/expiry behavior, Starship GUI |
 | B5 selection | Pending | Exact candidate artifacts, normal/capacity profiling, published/scoped managed selection and rollback |
 
@@ -150,3 +150,18 @@ preliminary checkout-built installed headless probe passed seven owned native
 cases, preserved eight ordinary references and removed its private servers. It
 is development evidence only. Frozen both-host native actions, actual Starship
 focus/close, frontend parity, resources and selection remain separate gates.
+
+Frozen B3 source `b0c99bc` produced the 151-member wheel
+`76fde2ef94c10456b7958e814e5b15b4d11de12c329f77b1acdeabe5cbc1707d`.
+Installed headless gates passed seven cases on
+[Snap](evidence/2026-10-08-b3-actions-snap.json) and
+[Starship](evidence/2026-10-08-b3-actions-starship.json), checking all 73 Python
+package members. A clean `8d80e9c` harness passed
+[four actual SSH cases](evidence/2026-10-08-b3-remote-actions.json) and
+[seven Starship desktop cases](evidence/2026-10-08-b3-desktop-actions-starship.json).
+These include native required-option refusal, exact rename/kill, unique focus,
+duplicate refusal, actual pidfd close, destroy-unattached refusal and native
+client-switch invalidation/recovery. Private server namespaces and injected
+catalog/reporting isolate these checks; they do not establish ordinary Mesh
+provider selection. Ordinary references survived and owned roots/viewers were
+removed. Starship focus restoration was accepted. Snap had no GUI input.

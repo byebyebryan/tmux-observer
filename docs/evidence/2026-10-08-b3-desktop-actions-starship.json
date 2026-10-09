@@ -1,0 +1,41 @@
+{
+  "state": "passed",
+  "cases": [
+    "registered_native_viewer_reused_and_actual_window_focused",
+    "explicit_new_viewer_allowed_duplicates_refuse_implicit_reuse_or_spawn",
+    "destroy_unattached_on_refuses_close_before_signal",
+    "pidfd_close_removes_exact_viewer_preserves_session_and_other_viewer",
+    "actual_client_switch_revokes_old_handle_without_closing_new_attachment",
+    "returned_native_binding_can_be_guardedly_closed",
+    "ordinary_default_references_preserved"
+  ],
+  "cleanup": true,
+  "harnessCommit": "8d80e9cc635b849e6dc9ce1996f21491b6d66e47",
+  "harnessTreeDirty": false,
+  "sourceCommit": "b0c99bc137475cc53d2aac00d157f4220c65c345",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "b0c99bc137475cc53d2aac00d157f4220c65c345",
+      "epoch": 1791505813,
+      "tree": "9db9ba8cebff8d8846af1edb58d0f47d435fa7e3"
+    },
+    "wheelSha256": "76fde2ef94c10456b7958e814e5b15b4d11de12c329f77b1acdeabe5cbc1707d",
+    "descriptorSha256": "76613c577713c8c7680467f13c502b114e1b4c088ab427fecdb70befeb32a992",
+    "sourceFilesMatchHarness": true
+  },
+  "installedPackageMembersVerified": 73,
+  "endpoint": "starship",
+  "nativePidfdBindings": true,
+  "installedImportOriginsVerified": true,
+  "ordinaryDefaultReferencesPreserved": 8,
+  "limits": [
+    "Injected local-only Mesh; no native remote-route acceptance",
+    "No Rofi or managed-selection acceptance"
+  ],
+  "originalFocusRestoreAccepted": true,
+  "ownedTemporaryRootRemoved": true,
+  "installedWorkerExit": 0,
+  "wheelSha256": "76fde2ef94c10456b7958e814e5b15b4d11de12c329f77b1acdeabe5cbc1707d"
+}
