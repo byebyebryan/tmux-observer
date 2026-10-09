@@ -81,7 +81,7 @@ foreground input; Starship is in active use.
 | CP1 | Structural/decoded admission savings with public/adverse regression gates | Complete; 371 source tests and all seven bundles/style checks pass |
 | CP2 | Outgoing/native/Mesh review and measured implementation or explicit disposition | Complete; retained plain-reference reuse and separate Mesh provider startup change |
 | CP3 | Frozen producer, independent pinned consumer, native/resource/capacity/Snap UI | Complete; exact producer/native/resources and 23 independent Snap picker cases pass |
-| CP4 | Published artifacts, scoped both-host deploy/recovery/rollback/actions and preserved source drift | Pending |
+| CP4 | Published artifacts, scoped both-host deploy/recovery/rollback/actions and preserved source drift | Complete; matched downloads/CI, exact installed bytes, serial recovery/rollback/reselection, 23 managed Snap cases and normal-source verification pass |
 
 The [first](evidence/2026-10-09-cpu-performance/owner-baseline-1.json) and
 [repeat](evidence/2026-10-09-cpu-performance/owner-baseline-2.json) frozen 0.4.0a1
@@ -214,4 +214,31 @@ suspend. The independent pinned Plus 0.11.0a1 passes 293 source tests and all
 23 exact-wheel Snap graphical cases; repeated consumer wheels/bundles match.
 The [consumer record](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/cpu-performance.md)
 names its separate runtime, pin, screenshot and cleanup evidence. Scoped managed
-deployment acceptance remains open.
+deployment acceptance now passes independently.
+
+## CP4 installed selection
+
+Published immutable Core 0.5.0a1 and Plus 0.11.0a1 downloads match the accepted
+checksums. The separately accepted Mesh startup provider `a69bd75` is selected
+with them on Snap and Starship. The
+[managed record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-cpu-performance-operations.md)
+captures eighteen-path preflight/application, all 173 Core, 321 frontend plus
+manifest and 68 provider files, serial recovery, actual matched package/control
+rollback plus separate provider rollback and baseline-verified reselection.
+Prepared/fresh/native full references and generations match nine Snap and ten
+Starship ordinary sessions. Disposable CLI actions pass from both endpoints;
+23 installed Snap picker cases pass. Ordinary references, generations, hooks,
+SSH history, Mesh revision, Agent selectors and unrelated Kitty bytes survive.
+Both ordinary chezmoi sources preserve their private history/edits and verify
+the selected installed scope independently.
+
+A separate one-minute passive sample of the installed three-package selection
+measures logical owner/fleet/associated-bridge CPU at **2.7866% Snap / 1.9130%
+Starship**. Owner/children use 1.0900% / 0.6181%, fleet/children 1.5799% / 1.0949%
+and associated bridges 0.1167% / 0.2000%. This descriptive interval is distinct
+from the producer ten-minute resource gate and is not a causal savings estimate.
+Fleet CPU still includes snapshot construction, bridge traffic, remote desktop
+and process scans, and public Mesh queries; it cannot be labeled networking
+CPU alone. Native two-second polling and fresh remote C3 scans remain. Native
+batching and outgoing caches retain their CP2 disposition. Physical suspend and
+Starship foreground acceptance remain outside the accepted scope.
