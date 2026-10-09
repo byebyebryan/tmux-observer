@@ -152,3 +152,39 @@ remain present in a later independent read. Preserve this failed run and
 remeasure with the corrected addition-tolerant preservation harness. These
 results improve on the earlier UV-interpreter candidate, but changes in runtime
 and active workload prevent assigning the full difference to code changes.
+
+### Why a small session picker has a measurable background CPU cost
+
+The picker is backed by two always-running components per endpoint. The owner
+renews native session facts every two seconds and independently samples the
+optional client-association profile. The fleet maintains two owner subscriptions,
+checks independent leases, prepares the aggregate view and performs current
+process/window matching for the desktop adapter. Those jobs continue with the
+picker closed so opening it can read prepared state.
+
+The system-Python profile attributes Snap's 5.2673% to 1.8287% local owner,
+3.2937% local fleet/children and 0.1449% associated remote bridge. These figures
+sum to about 53 ms CPU per second, across all counted processes, on one core.
+They measure CPU work rather than elapsed network waiting. The fleet still
+performs repeated decoding, semantic validation, copying, hashing and output
+encoding; desktop joins also read bounded process trees and recheck incarnations
+against opening/closing window captures. This is more work than a single
+`list-sessions` call, and some repeated checking of unchanged state is avoidable.
+
+Networking does not appear to be the leading issue in that run: there are zero
+new Observer SSH starts during measurement, about 3.1 MiB owner payload received
+per endpoint over ten minutes (roughly 5 KiB/s), and only forty Mesh catalog reads
+and four route reports per host. Native collection uses approximately 1,188
+read-only command processes per endpoint over ten minutes, about two per second.
+The older forty-five-second instrumented diagnostic separately identifies
+thousands of tree checks and repeated input hashes; its inclusive function
+timings cannot be summed or treated as attribution for the new runtime.
+
+The selected optimization direction is to eliminate redundant local work with
+immutable prepared data and coalesced bounded reads. It preserves independent
+incoming-wire validation, current identity/namespace/lease checks and the
+existing sampling cadence. The current immutable-receipt candidate remains
+subject to a fresh ten-minute profile. No higher ceiling, slower freshness or
+instrumentation subtraction is accepted. A future native event source would
+need its own design: tmux hooks or an attached control client change the native
+server/client state and do not automatically satisfy passive observation.
