@@ -206,3 +206,9 @@ class FleetStateTests(unittest.TestCase):
         self.assertEqual(self.state.revision, revision)
         owner.confirmed["snapshot"]["sessions"][0]["name"] = "renamed"
         self.assertTrue(self.state.material(231))
+
+    def test_malformed_projection_is_rejected_independently_of_capacity(self):
+        owner = self.state.owners[self.host_id]
+        owner.confirmed["snapshot"]["sessions"][0]["attachedClients"] = "invalid"
+        with self.assertRaises(ValueError):
+            self.state.view(200)

@@ -199,11 +199,19 @@ def coordinate(artifact, output):
                 and cpu <= 5,
             }
         record["normalResourceAssessment"] = assessments
-        for control in controls.values():
-            control.call("passivity")
-            control.call("stop_fleet")
-            control.call("passivity")
-        record["cases"].append("owned_fleet_teardown_preserves_native_sessions_geometry_and_hooks")
+        record["preservation"] = {}
+        for host, control in controls.items():
+            before = control.call("passivity")
+            stopped = control.call("stop_fleet")
+            after = control.call("passivity")
+            record["preservation"][host] = {
+                "beforeTeardown": before,
+                "teardown": stopped,
+                "afterTeardown": after,
+            }
+        record["cases"].append(
+            "owned_fleet_teardown_preserves_native_references_generation_and_hooks"
+        )
         record["state"] = (
             "passed"
             if all(row["withinSelectedTargets"] for row in assessments.values())

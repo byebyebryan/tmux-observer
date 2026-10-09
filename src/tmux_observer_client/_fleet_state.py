@@ -6,6 +6,7 @@ import copy
 import hashlib
 import uuid
 
+from tmux_observer._wire import WireError
 from tmux_observer.native import encode_document
 from tmux_observer_client.contract import FLEET_PROTOCOL, validate_fleet_frame, validate_fleet_view
 
@@ -287,8 +288,8 @@ class FleetState:
             "error": self.error,
         }
         try:
-            encode_document(value)
-        except ValueError:
+            validate_fleet_view(value)
+        except WireError:
             # No truncated complete fleet is ever published.
             value = {
                 **value,
@@ -299,7 +300,8 @@ class FleetState:
                     "message": "prepared fleet exceeds its document bound",
                 },
             }
-        return copy.deepcopy(validate_fleet_view(value))
+            validate_fleet_view(value)
+        return copy.deepcopy(value)
 
     def material(self, now, *, _view=None):
         view = self.view(now) if _view is None else _view

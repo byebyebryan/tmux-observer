@@ -188,3 +188,11 @@ subject to a fresh ten-minute profile. No higher ceiling, slower freshness or
 instrumentation subtraction is accepted. A future native event source would
 need its own design: tmux hooks or an attached control client change the native
 server/client state and do not automatically satisfy passive observation.
+
+The clean [immutable-receipt profile](evidence/2026-10-08-boundary-b5/normal-immutable-failed-cpu.json)
+finishes at 5.3614%/2.8556% combined CPU, with memory, warm-query deadlines,
+baseline native reference/generation/hook preservation and cleanup passing.
+The function saving does not establish lower whole-service CPU in this run;
+ordinary remote payload is also larger. It fails Snap's existing CPU ceiling
+and remains unselected. The next measured hot path is the full tree traversal,
+which still checks every incoming and outgoing document independently.

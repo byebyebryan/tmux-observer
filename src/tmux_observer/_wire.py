@@ -19,7 +19,6 @@ MAX_NODES = 100_000
 MAX_INT = 2**63 - 1
 _CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
 _ATOM = re.compile(r'[^"{}\[\],:\s]+')
-_PLAIN_TYPES = (dict, list, str, int, float, bool, type(None))
 
 
 class WireError(ValueError):
@@ -85,6 +84,36 @@ def _preflight(text: str) -> None:
             raise WireError("JSON structure exceeds the wire bound")
 
 
+def _exotic_node(item, depth, pending):
+    """Preserve the original checks and traversal for Python subclasses."""
+    if isinstance(item, str):
+        if len(item) > STRING_LIMIT or _CONTROL_CHARACTERS.search(item) is not None:
+            raise WireError("unclean or oversized string")
+        try:
+            item.encode("utf-8", "strict")
+        except UnicodeError as error:
+            raise WireError("invalid Unicode string") from error
+    elif isinstance(item, dict):
+        if depth == MAX_DEPTH:
+            raise WireError("JSON structure exceeds the wire bound")
+        if any(not isinstance(key, str) for key in item):
+            raise WireError("object key is not a string")
+        pending.extend((key, depth + 1) for key in item)
+        pending.extend((child, depth + 1) for child in item.values())
+    elif isinstance(item, list):
+        if depth == MAX_DEPTH:
+            raise WireError("JSON structure exceeds the wire bound")
+        pending.extend((child, depth + 1) for child in item)
+    elif isinstance(item, int):
+        if not -MAX_INT <= item <= MAX_INT:
+            raise WireError("integer exceeds the wire bound")
+    elif isinstance(item, float):
+        if not math.isfinite(item):
+            raise WireError("non-finite number")
+    else:
+        raise WireError("unsupported JSON value")
+
+
 def validate_tree(value: object) -> bool:
     """Validate bounds/content and report whether every value is a plain JSON type."""
     pending = [(value, 0)]
@@ -96,13 +125,12 @@ def validate_tree(value: object) -> bool:
         nodes += 1
         if nodes > MAX_NODES or depth > MAX_DEPTH:
             raise WireError("JSON structure exceeds the wire bound")
-        if type(item) not in _PLAIN_TYPES:
-            plain = False
-        if isinstance(item, str):
+        kind = type(item)
+        if kind is str:
             # Strings are immutable. Repeated field names and metadata need one
             # content check per document, while every occurrence still counts
             # toward the structural bounds above.
-            if type(item) is str and item in seen_strings:
+            if item in seen_strings:
                 continue
             if len(item) > STRING_LIMIT or _CONTROL_CHARACTERS.search(item) is not None:
                 raise WireError("unclean or oversized string")
@@ -110,29 +138,32 @@ def validate_tree(value: object) -> bool:
                 item.encode("utf-8", "strict")
             except UnicodeError as error:
                 raise WireError("invalid Unicode string") from error
-            if type(item) is str:
-                seen_strings.add(item)
-        elif isinstance(item, dict):
+            seen_strings.add(item)
+        elif kind is dict:
             if depth == MAX_DEPTH:
                 raise WireError("JSON structure exceeds the wire bound")
-            if any(not isinstance(key, str) for key in item):
-                raise WireError("object key is not a string")
-            pending.extend((key, depth + 1) for key in item)
-            pending.extend((child, depth + 1) for child in item.values())
-        elif isinstance(item, list):
+            child_depth = depth + 1
+            for key in item:
+                if not isinstance(key, str):
+                    raise WireError("object key is not a string")
+                pending.append((key, child_depth))
+            pending.extend((child, child_depth) for child in item.values())
+        elif kind is list:
             if depth == MAX_DEPTH:
                 raise WireError("JSON structure exceeds the wire bound")
-            pending.extend((child, depth + 1) for child in item)
-        elif item is None or isinstance(item, bool):
-            continue
-        elif isinstance(item, int):
+            child_depth = depth + 1
+            pending.extend((child, child_depth) for child in item)
+        elif kind is int:
             if not -MAX_INT <= item <= MAX_INT:
                 raise WireError("integer exceeds the wire bound")
-        elif isinstance(item, float):
+        elif item is None or kind is bool:
+            continue
+        elif kind is float:
             if not math.isfinite(item):
                 raise WireError("non-finite number")
         else:
-            raise WireError("unsupported JSON value")
+            plain = False
+            _exotic_node(item, depth, pending)
     return plain
 
 

@@ -8,6 +8,37 @@ from tmux_observer import _wire as wire
 
 
 class WirePreflightTests(unittest.TestCase):
+    def test_plain_and_subclass_values_keep_content_and_structural_bounds(self):
+        class Text(str):
+            pass
+
+        class Number(int):
+            pass
+
+        class Object(dict):
+            pass
+
+        class Array(list):
+            pass
+
+        self.assertTrue(wire.validate_tree({"a": [True, None, 2, 1.5, "text"]}))
+        for value in (Text("text"), Number(2), Object(a=2), Array([2]), {Text("a"): 2}):
+            self.assertFalse(wire.validate_tree(value))
+        for value in (
+            Text("bad\n"),
+            Text("\ud800"),
+            Text("x" * (wire.STRING_LIMIT + 1)),
+            Number(wire.MAX_INT + 1),
+            float("inf"),
+            {2: "wrong key"},
+            Object({2: "wrong key"}),
+        ):
+            with self.subTest(kind=type(value).__name__), self.assertRaises(wire.WireError):
+                wire.validate_tree(value)
+        for value in ([[]], Array([Array()]), {"a": {}}, Object(a=Object())):
+            with patch.object(wire, "MAX_DEPTH", 1), self.assertRaises(wire.WireError):
+                wire.validate_tree(value)
+
     def test_repeated_strings_keep_occurrence_bounds_and_content_rejection(self):
         with patch.object(wire, "MAX_NODES", 4):
             wire.validate_tree(["same", "same", "same"])

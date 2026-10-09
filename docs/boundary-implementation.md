@@ -394,3 +394,36 @@ benchmark of 10,000 authority checks measures 0.991 seconds CPU for generic
 records and 0.120 seconds for prepared receipts. This measures one function,
 excludes admission cost and does not establish whole-service CPU acceptance.
 Frozen artifact/native/normal-resource gates remain required.
+
+The [immutable-receipt ten-minute profile](evidence/2026-10-08-boundary-b5/normal-immutable-failed-cpu.json)
+at clean runtime/harness `4bf98f9` preserves ordinary baseline references,
+server generation and hooks, and removes owned services/roots. Warm query and
+memory targets pass, but Snap CPU still fails at 5.3614%; Starship passes at
+2.8556%. Fleet/associated-bridge sampled peaks are 79.50/80.17 MiB. Snap receives
+more remote payload than the preceding run as ordinary Starship sessions are
+added; these are not controlled comparisons. The function saving has not
+established whole-service CPU acceptance. The legacy preservation case label
+also mentions geometry; the ordinary-server assertion covers full references,
+generation and hooks, not unchanged ordinary geometry. Both failed records stay
+unmodified and unpublished; five percent remains the promotion gate.
+
+The new [owned system-Python diagnostic](evidence/2026-10-08-boundary-b5/cpu-immutable-diagnostic.json)
+uses the exact `4bf98f9` wheel locally and the deployed remote owner read-only.
+Its 45-second inclusive function timings are not additive or acceptance. The
+fleet spends 0.469 seconds CPU in main-thread tree checks, out of 1.445 seconds
+self CPU. A [same-process tree benchmark](evidence/2026-10-08-boundary-b5/tree-check-benchmark.json)
+over 10,000 identical captured fleet frames measures 2.15/2.17 seconds before
+and 1.44/1.43 seconds after exact-type dispatch and a single dictionary-key
+traversal. Every node/depth/string/integer/Unicode check remains; Python
+subclasses retain their original checks and traversal and cannot claim plain
+validation. Additional cases cover builtin/subclass content and structure limits.
+
+Preparing a fleet projection also now uses its full contract validator's byte
+check rather than serializing once for capacity and immediately serializing
+again during validation. Wire-bound failures still produce an explicit empty
+capacity outcome; malformed semantics still fail rather than publishing a
+partial or invalid view. Incoming/outgoing boundary validation remains complete.
+The normal harness records preservation counts before/after teardown and uses
+an accurate reference/generation/hook case label. Fresh frozen gates are required.
+The complete source gate passes 326 tests. No resource pass or managed promotion
+is implied by this source checkpoint.
