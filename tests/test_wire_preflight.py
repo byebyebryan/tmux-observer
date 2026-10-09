@@ -1,6 +1,7 @@
 """Bounds and escape cases at the optimized pre-parser boundary."""
 
 import json
+import random
 import unittest
 from unittest.mock import patch
 
@@ -8,6 +9,48 @@ from tmux_observer import _wire as wire
 
 
 class WirePreflightTests(unittest.TestCase):
+    def test_container_groups_preserve_legacy_acceptance_at_small_bounds(self):
+        rng = random.Random(909)
+        scalars = [
+            None,
+            True,
+            False,
+            0,
+            wire.MAX_INT,
+            wire.MAX_INT + 1,
+            1.5,
+            float("inf"),
+            "same",
+            "bad\n",
+            "\ud800",
+        ]
+
+        def tree(depth=0):
+            if depth >= 4 or rng.randrange(3) == 0:
+                return rng.choice(scalars)
+            if rng.randrange(2):
+                return [tree(depth + 1) for _ in range(rng.randrange(5))]
+            return {str(i): tree(depth + 1) for i in range(rng.randrange(5))}
+
+        def accepts(check, value):
+            try:
+                return check(value)
+            except wire.WireError:
+                return None
+
+        values = [tree() for _ in range(500)]
+        cycle = []
+        cycle.append(cycle)
+        values.extend([cycle, {"bad\n": 0}, {"\ud800": 0}])
+        for nodes, depth in ((wire.MAX_NODES, wire.MAX_DEPTH), (16, 4), (7, 2)):
+            with patch.multiple(wire, MAX_NODES=nodes, MAX_DEPTH=depth):
+                for i, value in enumerate(values):
+                    with self.subTest(nodes=nodes, depth=depth, case=i):
+                        self.assertEqual(
+                            accepts(wire.validate_tree, value),
+                            accepts(wire._validate_tree_fallback, value),
+                        )
+
     def test_plain_and_subclass_values_keep_content_and_structural_bounds(self):
         class Text(str):
             pass

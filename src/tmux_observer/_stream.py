@@ -10,10 +10,11 @@ import sys
 import uuid
 
 from tmux_observer._request_validation import validate_operation_error, validate_request
-from tmux_observer.delivery import SERVICE_PROTOCOL, validate_service_frame
+from tmux_observer.delivery import SERVICE_PROTOCOL
 from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
 
 from ._clock import boottime_ms, domain
+from ._delivery_validation import _decode_service_input
 from ._ipc import IPCError, connect, owner_socket
 
 
@@ -162,7 +163,7 @@ def stream_owner(host_id, *, path=None, bridge=False, request_id=None):
                     raw = bytes(raw) + b"\n"
                     owner_bytes = bytearray(rest)
                     owner_at = owner_at if rest else None
-                    value = decode_document(raw, limit=FRAME_LIMIT)
+                    value = _decode_service_input(raw)[0]
                     if value.get("kind") == "operation_error":
                         validate_operation_error(value)
                         if value["protocol"] != SERVICE_PROTOCOL:
@@ -170,7 +171,6 @@ def stream_owner(host_id, *, path=None, bridge=False, request_id=None):
                                 "scope_mismatch", "bridge received a foreign error protocol"
                             )
                     else:
-                        validate_service_frame(value)
                         if (
                             value["source"]["hostId"] != host_id
                             or value["source"]["uid"] != os.getuid()

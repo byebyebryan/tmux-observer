@@ -26,6 +26,7 @@ from ._validation_common import (
 from ._wire import (
     DOCUMENT_LIMIT,
     ENVELOPE_LIMIT,
+    _decode_and_check,
     _encode_after_validation,
     encode_document,
     validate_tree,
@@ -165,6 +166,25 @@ def validate_service_frame(value: object) -> dict:
 def _checked_service_frame(value: object) -> tuple[dict, int, int]:
     """Return the same checked frame and its already bounded encoded sizes."""
     plain = validate_tree(value)
+    return _service_after_tree(value, plain=plain)
+
+
+def _decode_service_frame(raw: bytes) -> tuple[dict, int, int]:
+    return _decode_and_check(raw, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, check=_service_after_tree)
+
+
+def _decode_service_input(raw: bytes) -> tuple[dict, int, int]:
+    def check(value, *, plain):
+        if isinstance(value, dict) and value.get("kind") == "operation_error":
+            from ._request_validation import validate_operation_error
+
+            return validate_operation_error(value), 0, 0
+        return _service_after_tree(value, plain=plain)
+
+    return _decode_and_check(raw, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, check=check)
+
+
+def _service_after_tree(value: object, *, plain: bool) -> tuple[dict, int, int]:
     value = obj(
         value,
         "protocol",

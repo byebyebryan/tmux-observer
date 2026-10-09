@@ -78,7 +78,7 @@ foreground input; Starship is in active use.
 | Checkpoint | Exit evidence | State |
 | --- | --- | --- |
 | CP0 | Reviewed design, full-path baseline and work attribution | Complete |
-| CP1 | Structural/decoded admission savings with public/adverse regression gates | Pending |
+| CP1 | Structural/decoded admission savings with public/adverse regression gates | Complete; 371 source tests and all seven bundles/style checks pass |
 | CP2 | Outgoing/native/Mesh review and measured implementation or explicit disposition | Pending |
 | CP3 | Frozen producer, independent pinned consumer, native/resource/capacity/Snap UI | Pending |
 | CP4 | Published artifacts, scoped both-host deploy/recovery/rollback/actions and preserved source drift | Pending |
@@ -92,3 +92,22 @@ CPU is 3.656/3.690 seconds, with 5,996 structural checks and identical wire dige
 Structural checks have 1.610 seconds inclusive in the first run; inclusive
 function times overlap and must not be summed. This isolates pipeline work,
 excluding native subprocesses, real IPC, remote proof timing and desktop scans.
+
+CP1 groups structural traversal by container and keeps the original defensive
+walk for Python subclasses. Fresh local/SSH/bridge input goes from the actual
+bounded decoder into immediate complete semantic admission, without repeating
+the enclosing plain-tree check. Public mutable-dictionary entry points retain
+their original full structural/semantic/byte checks. Control errors do not
+become checked owner documents. Scope/order/nonce/expiry/capacity checks and
+defensive retained ownership remain independent.
+
+The updated, identical-harness Python 3.14 comparison records frozen baseline
+[3.455](evidence/2026-10-09-cpu-performance/cp1-baseline-1.json) /
+[3.612](evidence/2026-10-09-cpu-performance/cp1-baseline-2.json) CPU seconds versus
+candidate [2.673](evidence/2026-10-09-cpu-performance/cp1-guarded-1.json) /
+[2.894](evidence/2026-10-09-cpu-performance/cp1-guarded-2.json).
+That is about 21% lower pipeline CPU, with structural checks 5,996 to 5,096
+and the same full wire digest and revisions. Runtime module hashes identify
+the uncommitted candidate source used at measurement time; package version alone
+does not identify it. Preliminary runs using the development Python 3.13 are
+excluded from this comparison. Whole-service native acceptance remains open.

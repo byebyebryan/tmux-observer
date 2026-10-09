@@ -116,6 +116,71 @@ def _exotic_node(item, depth, pending):
 
 def validate_tree(value: object) -> bool:
     """Validate bounds/content and report whether every value is a plain JSON type."""
+    # Keep one pending group per container rather than allocating a (value,
+    # depth) pair for every scalar and field name in every delivered snapshot.
+    pending = [((value,), 0)]
+    nodes = 0
+    seen_strings = set()
+    while pending:
+        values, depth = pending.pop()
+        if depth > MAX_DEPTH:
+            raise WireError("JSON structure exceeds the wire bound")
+        for item in values:
+            nodes += 1
+            if nodes > MAX_NODES:
+                raise WireError("JSON structure exceeds the wire bound")
+            kind = type(item)
+            if kind is str:
+                if item in seen_strings:
+                    continue
+                if len(item) > STRING_LIMIT or _CONTROL_CHARACTERS.search(item) is not None:
+                    raise WireError("unclean or oversized string")
+                try:
+                    item.encode("utf-8", "strict")
+                except UnicodeError as error:
+                    raise WireError("invalid Unicode string") from error
+                seen_strings.add(item)
+            elif kind is dict:
+                if depth == MAX_DEPTH:
+                    raise WireError("JSON structure exceeds the wire bound")
+                # Every key remains a node, including repeated immutable names.
+                nodes += len(item)
+                if nodes > MAX_NODES:
+                    raise WireError("JSON structure exceeds the wire bound")
+                for key in item:
+                    if type(key) is not str:
+                        return _validate_tree_fallback(value)
+                    if key in seen_strings:
+                        continue
+                    if len(key) > STRING_LIMIT or _CONTROL_CHARACTERS.search(key) is not None:
+                        raise WireError("unclean or oversized string")
+                    try:
+                        key.encode("utf-8", "strict")
+                    except UnicodeError as error:
+                        raise WireError("invalid Unicode string") from error
+                    seen_strings.add(key)
+                pending.append((item.values(), depth + 1))
+            elif kind is list:
+                if depth == MAX_DEPTH:
+                    raise WireError("JSON structure exceeds the wire bound")
+                pending.append((item, depth + 1))
+            elif kind is int:
+                if not -MAX_INT <= item <= MAX_INT:
+                    raise WireError("integer exceeds the wire bound")
+            elif item is None or kind is bool:
+                continue
+            elif kind is float:
+                if not math.isfinite(item):
+                    raise WireError("non-finite number")
+            else:
+                # Python subclasses can execute code during later schema reads.
+                # Preserve the original defensive walk and its non-plain result.
+                return _validate_tree_fallback(value)
+    return True
+
+
+def _validate_tree_fallback(value: object) -> bool:
+    """Original per-node walk for exotic/mutable Python subclasses."""
     pending = [(value, 0)]
     nodes = 0
     seen_strings = set()
@@ -176,6 +241,11 @@ def validate_tree(value: object) -> bool:
 
 
 def decode_document(raw: bytes, *, limit: int = DOCUMENT_LIMIT) -> object:
+    return _decode_and_check(raw, limit=limit)
+
+
+def _decode_and_check(raw: bytes, *, limit: int, check=None):
+    """Private immediate semantic admission after the actual raw/tree guards."""
     if not isinstance(raw, bytes) or len(raw) > limit:
         raise WireError("record exceeds the wire bound")
     if raw.count(b"\n") != 1 or not raw.endswith(b"\n"):
@@ -196,10 +266,10 @@ def decode_document(raw: bytes, *, limit: int = DOCUMENT_LIMIT) -> object:
         ).raw_decode(text)
         if end != len(text):
             raise WireError("trailing data")
-        validate_tree(value)
+        plain = validate_tree(value)
     except (ValueError, UnicodeError, RecursionError) as error:
         raise WireError("invalid bounded JSON record") from error
-    return value
+    return value if check is None else check(value, plain=plain)
 
 
 def encode_document(value: object, *, limit: int = DOCUMENT_LIMIT) -> bytes:

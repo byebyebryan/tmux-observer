@@ -463,7 +463,8 @@ class FleetPublisher:
         return started, boottime_ms(), snapshot, error
 
     def before_input(self, connection, value, now):
-        document = OwnerDocument(value)
+        document = value if isinstance(value, OwnerDocument) else OwnerDocument(value)
+        value = document.value
         owner = connection.state
         header_size = document.header_size
         will_confirm = (

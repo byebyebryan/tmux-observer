@@ -9,7 +9,7 @@ from tmux_observer._clock import boottime_ms, domain
 from tmux_observer._ipc import IPCError, connect, owner_socket
 from tmux_observer._request_validation import validate_operation_error, validate_request
 from tmux_observer.delivery import SERVICE_PROTOCOL
-from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, decode_document, encode_document
+from tmux_observer.native import FRAME_LIMIT, REQUEST_LIMIT, encode_document
 
 from ._errors import ContractError
 from ._owner_document import OwnerDocument
@@ -119,7 +119,7 @@ class LocalConnection:
                     break
                 first_byte = self.first_byte
                 raw, _, rest = self.incoming.partition(b"\n")
-                value = decode_document(bytes(raw) + b"\n", limit=FRAME_LIMIT)
+                value, document = OwnerDocument.decode_input(bytes(raw) + b"\n")
                 now = boottime_ms()
                 if first_byte is not None and now - first_byte >= 2000:
                     raise ValueError("local frame parsing exceeded its deadline")
@@ -135,11 +135,11 @@ class LocalConnection:
                         "owner_unavailable", "local owner returned a scoped operation failure"
                     )
                 if self.on_input is not None:
-                    admitted = self.on_input(self, value, now)
+                    admitted = self.on_input(self, document, now)
                 else:
                     admitted = None
                 matched = self.state.receive(
-                    admitted if isinstance(admitted, OwnerDocument) else value, now
+                    admitted if isinstance(admitted, OwnerDocument) else document, now
                 )
                 if self.on_frame is not None:
                     self.on_frame(self, value, matched, now)

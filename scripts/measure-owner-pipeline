@@ -10,9 +10,11 @@ import json
 import os
 import pstats
 import subprocess
+import sys
 import time
 from pathlib import Path
 
+from tmux_observer import _delivery_validation
 from tmux_observer._attachment_state import AttachmentState
 from tmux_observer._owner_state import OwnerState
 from tmux_observer.attachments import validate_attachment_delivery, validate_attachments
@@ -87,7 +89,10 @@ def measure(cycles, sessions):
         raw = encode_document(frame, limit=FRAME_LIMIT)
         digest.update(raw)
         # A bridge validates and forwards the unchanged original wire bytes.
-        validate_service_frame(decode_document(raw, limit=FRAME_LIMIT))
+        if hasattr(_delivery_validation, "_decode_service_input"):
+            _delivery_validation._decode_service_input(raw)
+        else:
+            validate_service_frame(decode_document(raw, limit=FRAME_LIMIT))
         for reader in readers:
             if hasattr(OwnerDocument, "from_wire"):
                 document = OwnerDocument.from_wire(raw)
@@ -143,6 +148,8 @@ def main():
         ).strip(),
         "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "runtimeVersion": importlib.metadata.version("tmux-observer"),
+        "pythonVersion": sys.version,
+        "pythonExecutable": sys.executable,
         "runtimeModules": {
             name: hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest()
             for name in (
