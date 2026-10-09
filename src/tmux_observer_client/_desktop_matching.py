@@ -21,13 +21,16 @@ def _is_tmux_attach(argv: Sequence[str], session_id: str) -> bool:
     return len(argv) >= 5 and "attach-session" in argv and argv[-2:] == ("-t", session_id)
 
 
-def _remote_attach_argv(executable: str, route: str, session_id: str) -> tuple[str, ...]:
+def _remote_attach_argv(
+    executable: str, route: str, session_id: str, *, fixed_default=False
+) -> tuple[str, ...]:
     # Match the process argv used by RemoteLifecycle._launch. OpenSSH receives
     # one remote shell command whose session ID is quoted as a literal target.
     import shlex
 
+    server = ("-L", "default") if fixed_default else ()
     remote = " ".join(
-        shlex.quote(item) for item in ("tmux", "-u", "attach-session", "-t", session_id)
+        shlex.quote(item) for item in ("tmux", "-u", *server, "attach-session", "-t", session_id)
     )
     return (Path(executable).name, "-t", route, remote)
 
@@ -96,12 +99,14 @@ def match_viewers(
         if not target.remote_route:
             unsupported_remote.add(target.session.reference)
             continue
-        argv = _remote_attach_argv(
-            target.remote_executable,
-            target.remote_route,
-            target.session.reference.session_id,
-        )
-        remote_by_argv[argv] = target
+        for fixed_default in (False, True):
+            argv = _remote_attach_argv(
+                target.remote_executable,
+                target.remote_route,
+                target.session.reference.session_id,
+                fixed_default=fixed_default,
+            )
+            remote_by_argv[argv] = target
         # A manually opened SSH shell does not name a tmux target. With a
         # current owner attachment and a unique matching title it can supply
         # only qualified display presence, never a verified operation handle.
@@ -196,7 +201,11 @@ def match_viewers(
                             local_conflict_refs.add(target.session.reference)
                         break
             if target is None:
-                remote_target = remote_by_argv.get(proc.argv)
+                remote_target = (
+                    remote_by_argv.get((Path(proc.argv[0]).name, *proc.argv[1:]))
+                    if proc.argv
+                    else None
+                )
                 if remote_target is not None:
                     process_refs.add(remote_target.session.reference)
 

@@ -1,0 +1,1162 @@
+# Adapted from rofi-tmux-plus 0.7.0a2; Copyright (c) 2026 Bryan; MIT.
+"""Nonce-marked remote Tmux Session v1 lifecycle operations.
+
+The remote side is a fixed POSIX shell program.  It receives request values as
+positional arguments only; in particular no session name, path, option, or
+command argument is ever spliced into shell source.
+"""
+
+from __future__ import annotations
+
+import secrets
+import shlex
+import subprocess
+import time
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
+
+from tmux_observer_client._command import BoundedCompleted, ProcessLaunchError, run_bounded
+from tmux_observer_client.mesh import HostMeshAdapter, MeshHost, MeshPolicy
+
+from ._progress import mark, native_confirmed, native_started
+from ._remote_framing import (
+    _MAX_OUTPUT,
+    _decode_field,
+    _number,
+    _transport_failure,
+    generate_nonce,
+    parse_reached_marker,
+    parse_remote_inventory,
+)
+from .config import Config, has_control, require_clean_text
+from .desktop_action import focus_session_window, focus_verified
+from .errors import ContractError, clean_message
+from .lifecycle import _validate_name, _validate_reference_inputs, local_mutation_lock
+from .model import Session
+from .tmux import validate_required_options, validate_session_id, validate_user_option
+from .viewer_service import (
+    ViewerInspection,
+    inspect_viewers,
+    kitty_configured,
+    launch_metadata,
+)
+
+_REMOTE_TIMEOUT_SECONDS = 12.0
+_MAX_ACTION_OUTPUT = _MAX_OUTPUT
+_ERROR_CODES = {
+    "invalid_cwd",
+    "operation_failed",
+    "session_exists",
+    "session_not_found",
+    "stale_session",
+    "tmux_missing",
+}
+
+
+# This holder owns the first operation-token write.  A creator therefore never
+# has an unmarked, fallible metadata window.  Its timeout cleanup rechecks the
+# token before killing, and the parent transaction independently checks the
+# full reference plus token before any rollback.
+_HOLDER = r'''set -u
+target="$(tmux display-message -p -t "$TMUX_PANE" '#{session_id}' 2>/dev/null || :)"
+token=$1
+timeout=$2
+defer=$3
+if [ -z "$target" ] || ! tmux set-option -q -t "$target" @rofi_tmux_plus_operation "$token"; then
+  [ -n "$target" ] && tmux kill-session -t "$target" 2>/dev/null || :
+  exit 1
+fi
+started="$(date +%s)"
+while [ "$(tmux show-options -qv -t "$target" @rofi_tmux_plus_release 2>/dev/null || :)" != "$token" ]; do
+  now="$(date +%s)"
+  if [ $((now - started)) -ge "$timeout" ]; then
+    marker="$(tmux show-options -qv -t "$target" @rofi_tmux_plus_operation 2>/dev/null || :)"
+    [ "$marker" = "$token" ] && tmux kill-session -t "$target" 2>/dev/null || :
+    exit 0
+  fi
+  sleep 0.05
+done
+tmux set-option -qu -t "$target" @rofi_tmux_plus_release 2>/dev/null || :
+if [ "$defer" = 1 ]; then
+  started="$(date +%s)"
+  while ! tmux list-clients -t "$target" 2>/dev/null | grep -q .; do
+    now="$(date +%s)"
+    if [ $((now - started)) -ge "$timeout" ]; then
+      marker="$(tmux show-options -qv -t "$target" @rofi_tmux_plus_pending 2>/dev/null || :)"
+      [ "$marker" = "$token" ] && tmux kill-session -t "$target" 2>/dev/null || :
+      exit 0
+    fi
+    sleep 0.10
+  done
+  tmux set-option -qu -t "$target" @rofi_tmux_plus_pending 2>/dev/null || :
+fi
+shift 3
+if [ "$1" = __ROFI_TMUX_PLUS_DEFAULT_SHELL__ ]; then exec "${SHELL:-/bin/sh}"; fi
+exec "$@"'''
+
+
+# Output uses the inventory framing for H/G/D plus a small action record.  All
+# error records are successful shell protocol records, so a domain failure is
+# distinguishable from SSH transport failure after the reached marker.
+_REMOTE_PROGRAM = rf"""set -u
+unset TMUX TMUX_PANE
+tmux() {{ command tmux -u -L default "$@"; }}
+hex() {{ LC_ALL=C od -An -v -tx1 | tr -d ' \n'; }}
+field() {{ printf '\t'; "$@" | hex; }}
+literal() {{ printf '\t'; printf '%s' "$1" | hex; }}
+reply_error() {{ printf X; literal "$1"; literal "$2"; printf '\n'; exit 0; }}
+native="$(hostname 2>/dev/null || uname -n 2>/dev/null || :)"
+printf H; literal "$native"; printf '\n'
+[ "$#" -ge 1 ] || reply_error operation_failed 'missing lifecycle action'
+action=$1; shift
+command -v tmux >/dev/null 2>&1 || reply_error tmux_missing 'tmux is not available'
+emit_records=0
+generation() {{
+  socket="$(tmux display-message -p '#{{socket_path}}' 2>/dev/null)" || return 1
+  started="$(tmux display-message -p '#{{start_time}}' 2>/dev/null)" || return 1
+  pid="$(tmux display-message -p '#{{pid}}' 2>/dev/null)" || return 1
+  [ -n "$socket" ] && [ -n "$started" ] && [ -n "$pid" ] || return 1
+  current_generation="tmux-v1:$started:$pid:$socket"
+  [ "$emit_records" = 1 ] && emit_generation_record
+  return 0
+}}
+emit_generation_record() {{
+  printf G; literal "$socket"; literal "$started"; literal "$pid"; printf '\n'
+}}
+descriptor() {{
+  sid=$1
+  created="$(tmux display-message -p -t "$sid" '#{{session_created}}' 2>/dev/null)" || return 1
+  name="$(tmux display-message -p -t "$sid" '#{{session_name}}' 2>/dev/null)" || return 1
+  activity="$(tmux display-message -p -t "$sid" '#{{session_activity}}' 2>/dev/null)" || return 1
+  last="$(tmux display-message -p -t "$sid" '#{{session_last_attached}}' 2>/dev/null)" || return 1
+  clients="$(tmux display-message -p -t "$sid" '#{{session_attached}}' 2>/dev/null)" || return 1
+  windows="$(tmux display-message -p -t "$sid" '#{{session_windows}}' 2>/dev/null)" || return 1
+  path="$(tmux display-message -p -t "$sid" '#{{session_path}}' 2>/dev/null)" || return 1
+  window="$(tmux display-message -p -t "$sid" '#{{window_name}}' 2>/dev/null)" || return 1
+  current_path="$(tmux display-message -p -t "$sid" '#{{pane_current_path}}' 2>/dev/null)" || return 1
+  pending=0
+  tmux show-options -q -t "$sid" | awk '$0 == "@rofi_tmux_plus_pending" || index($0,"@rofi_tmux_plus_pending ") == 1 {{ f=1 }} END {{ exit !f }}' && pending=1
+  descriptor_sid=$sid
+  descriptor_created=$created
+  descriptor_name=$name
+  descriptor_clients=$clients
+  descriptor_activity=$activity
+  descriptor_last=$last
+  descriptor_windows=$windows
+  descriptor_path=$path
+  descriptor_window=$window
+  descriptor_current_path=$current_path
+  descriptor_pending=$pending
+  [ "$emit_records" = 1 ] && emit_descriptor_record
+  return 0
+}}
+emit_descriptor_record() {{
+  printf D; literal "$descriptor_sid"; literal "$descriptor_created"; literal "$descriptor_name"; literal "$descriptor_activity"; literal "$descriptor_last"; literal "$descriptor_clients"; literal "$descriptor_windows"; literal "$descriptor_path"; literal "$descriptor_window"; literal "$descriptor_current_path"; literal "$descriptor_pending"; printf '\n'
+}}
+validate() {{
+  expected_generation=$1; sid=$2; expected_created=$3; expected_name=$4
+  generation || reply_error stale_session 'the selected tmux server changed; refresh and try again'
+  [ "$current_generation" = "$expected_generation" ] || reply_error stale_session 'the selected tmux server changed; refresh and try again'
+  descriptor "$sid" || reply_error session_not_found 'the selected tmux session no longer exists'
+  [ "$descriptor_created" = "$expected_created" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+  [ -z "$expected_name" ] || [ "$descriptor_name" = "$expected_name" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+}}
+required_write_options() {{
+  guard_sid=$1; shift
+  [ "$#" -eq 0 ] && return 0
+  guard_count=$1; shift
+  case "$guard_count" in ''|*[!0-9]*) reply_error operation_failed 'invalid write option guards' ;; esac
+  [ "$#" -eq $((guard_count * 2)) ] || reply_error operation_failed 'invalid write option guards'
+  while [ "$guard_count" -gt 0 ]; do
+    guard_option=$1; guard_value=$2; shift 2
+    tmux show-options -q -t "$guard_sid" | awk -v option="$guard_option" '$0 == option || index($0, option " ") == 1 {{ found=1 }} END {{ exit !found }}' || reply_error stale_session 'required option is absent'
+    guard_actual="$(tmux show-options -qv -t "$guard_sid" "$guard_option" 2>/dev/null || :)"
+    [ "$guard_actual" = "$guard_value" ] || reply_error stale_session 'required option changed'
+    guard_count=$((guard_count - 1))
+  done
+}}
+rollback() {{
+  rollback_generation=$1; rollback_sid=$2; rollback_created=$3; rollback_token=$4
+  emit_records=0 generation || return 0
+  [ "$current_generation" = "$rollback_generation" ] || return 0
+  descriptor "$rollback_sid" >/dev/null 2>&1 || return 0
+  [ "$descriptor_created" = "$rollback_created" ] || return 0
+  marker="$(tmux show-options -qv -t "$rollback_sid" @rofi_tmux_plus_operation 2>/dev/null || :)"
+  [ "$marker" = "$rollback_token" ] && tmux kill-session -t "$rollback_sid" 2>/dev/null || :
+}}
+case "$action" in
+  open)
+    [ "$#" -ge 5 ] || reply_error operation_failed 'invalid open request'
+    [ "$4" = 0 ] || [ "$4" = 1 ] || reply_error operation_failed 'invalid open request'
+    open_generation=$1; open_sid=$2; open_created=$3; open_expected_present=$4; open_expected=$5
+    open_required_count=0
+    if [ "$#" -gt 5 ]; then
+      open_required_count=$6
+      case "$open_required_count" in ''|*[!0-9]*) reply_error operation_failed 'invalid open request' ;; esac
+      [ "$#" -eq $((6 + open_required_count * 2)) ] || reply_error operation_failed 'invalid open request'
+      shift 6
+    else
+      shift 5
+    fi
+    [ "$open_expected_present" = 0 ] && open_expected=''
+    validate "$open_generation" "$open_sid" "$open_created" "$open_expected"
+    while [ "$open_required_count" -gt 0 ]; do
+      open_option=$1; open_value=$2; shift 2
+      tmux show-options -q -t "$open_sid" | awk -v option="$open_option" '$0 == option || index($0, option " ") == 1 {{ found=1 }} END {{ exit !found }}' || reply_error stale_session 'the selected tmux session no longer satisfies required options; refresh and try again'
+      open_actual="$(tmux show-options -qv -t "$open_sid" "$open_option" 2>/dev/null || :)"
+      [ "$open_actual" = "$open_value" ] || reply_error stale_session 'the selected tmux session no longer satisfies required options; refresh and try again'
+      open_required_count=$((open_required_count - 1))
+    done
+    emit_records=1
+    generation || reply_error operation_failed 'tmux could not read the server identity'
+    [ "$current_generation" = "$open_generation" ] || reply_error stale_session 'the selected tmux server changed; refresh and try again'
+    descriptor "$open_sid" || reply_error session_not_found 'the selected tmux session no longer exists'
+    [ "$descriptor_created" = "$open_created" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+    [ "$open_expected_present" = 0 ] || [ "$descriptor_name" = "$open_expected" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+    printf 'R\tOPEN\n'
+    ;;
+  viewers)
+    [ "$#" -ge 5 ] || reply_error operation_failed 'invalid viewers request'
+    [ "$4" = 0 ] || [ "$4" = 1 ] || reply_error operation_failed 'invalid viewers request'
+    viewer_generation=$1; viewer_sid=$2; viewer_created=$3; viewer_expected_present=$4; viewer_expected=$5
+    viewer_required_count=0
+    if [ "$#" -gt 5 ]; then
+      viewer_required_count=$6
+      case "$viewer_required_count" in ''|*[!0-9]*) reply_error operation_failed 'invalid viewers request' ;; esac
+      [ "$#" -eq $((6 + viewer_required_count * 2)) ] || reply_error operation_failed 'invalid viewers request'
+      shift 6
+    else
+      shift 5
+    fi
+    [ "$viewer_expected_present" = 0 ] && viewer_expected=''
+    validate "$viewer_generation" "$viewer_sid" "$viewer_created" "$viewer_expected"
+    while [ "$viewer_required_count" -gt 0 ]; do
+      viewer_option=$1; viewer_value=$2; shift 2
+      tmux show-options -q -t "$viewer_sid" | awk -v option="$viewer_option" '$0 == option || index($0, option " ") == 1 {{ found=1 }} END {{ exit !found }}' || reply_error stale_session 'the selected tmux session no longer satisfies required options; refresh and try again'
+      viewer_actual="$(tmux show-options -qv -t "$viewer_sid" "$viewer_option" 2>/dev/null || :)"
+      [ "$viewer_actual" = "$viewer_value" ] || reply_error stale_session 'the selected tmux session no longer satisfies required options; refresh and try again'
+      viewer_required_count=$((viewer_required_count - 1))
+    done
+    viewer_override="$(tmux show-options -q -t "$viewer_sid" 2>/dev/null | awk '$1 == "destroy-unattached" {{ $1=""; sub(/^ /, ""); print; found=1; exit }}')"
+    if [ -n "$viewer_override" ]; then
+      viewer_destroy=$viewer_override
+    else
+      viewer_destroy="$(tmux show-options -gqv destroy-unattached 2>/dev/null || :)"
+    fi
+    case "$viewer_destroy" in off|on) ;; *) viewer_destroy=unknown ;; esac
+    emit_records=1
+    generation || reply_error operation_failed 'tmux could not read the server identity'
+    [ "$current_generation" = "$viewer_generation" ] || reply_error stale_session 'the selected tmux server changed; refresh and try again'
+    descriptor "$viewer_sid" || reply_error session_not_found 'the selected tmux session no longer exists'
+    [ "$descriptor_created" = "$viewer_created" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+    [ "$viewer_expected_present" = 0 ] || [ "$descriptor_name" = "$viewer_expected" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+    printf 'R\tVIEWERS\t%s\n' "$viewer_destroy"
+    ;;
+  rename)
+    [ "$#" -ge 5 ] || reply_error operation_failed 'invalid rename request'
+    write_generation=$1; write_sid=$2; write_created=$3; write_expected=$4; write_name=$5; shift 5
+    validate "$write_generation" "$write_sid" "$write_created" "$write_expected"
+    required_write_options "$write_sid" "$@"
+    if tmux has-session -t "=$write_name" 2>/dev/null; then reply_error session_exists 'a tmux session with that exact name already exists'; fi
+    validate "$write_generation" "$write_sid" "$write_created" "$write_expected"
+    required_write_options "$write_sid" "$@"
+    tmux rename-session -t "$write_sid" "$write_name" >/dev/null 2>&1 || reply_error operation_failed 'tmux could not rename the session'
+    emit_records=1
+    generation || reply_error operation_failed 'tmux could not read the server identity'
+    [ "$current_generation" = "$write_generation" ] || reply_error stale_session 'the selected tmux server changed; refresh and try again'
+    descriptor "$write_sid" || reply_error operation_failed 'tmux could not read the renamed session'
+    [ "$descriptor_created" = "$write_created" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+    [ "$descriptor_name" = "$write_name" ] || reply_error operation_failed 'tmux did not retain the new session name'
+    printf 'R\tRENAME\n'
+    ;;
+  kill)
+    [ "$#" -ge 4 ] || reply_error operation_failed 'invalid kill request'
+    write_generation=$1; write_sid=$2; write_created=$3; write_expected=$4; shift 4
+    validate "$write_generation" "$write_sid" "$write_created" "$write_expected"
+    required_write_options "$write_sid" "$@"
+    observed=$descriptor_clients
+    validate "$write_generation" "$write_sid" "$write_created" "$write_expected"
+    required_write_options "$write_sid" "$@"
+    emit_records=1
+    generation || reply_error operation_failed 'tmux could not read the server identity'
+    [ "$current_generation" = "$write_generation" ] || reply_error stale_session 'the selected tmux server changed; refresh and try again'
+    descriptor "$write_sid" || reply_error session_not_found 'the selected tmux session no longer exists'
+    [ "$descriptor_created" = "$write_created" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+    [ "$descriptor_name" = "$write_expected" ] || reply_error stale_session 'the selected tmux session changed; refresh and try again'
+    tmux kill-session -t "$write_sid" >/dev/null 2>&1 || reply_error operation_failed 'tmux could not kill the session'
+    printf 'R\tKILL\t%s\n' "$observed"
+    ;;
+  create)
+    [ "$#" -ge 7 ] || reply_error operation_failed 'invalid create request'
+    name=$1; cwd=$2; cwd_provided=$3; token=$4; defer=$5; timeout=$6; option_count=$7; shift 7
+    [ "$cwd_provided" = 0 ] || [ "$cwd_provided" = 1 ] || reply_error operation_failed 'invalid create request'
+    [ "$cwd_provided" = 1 ] || cwd="${{HOME:-/}}"
+    [ -d "$cwd" ] || reply_error invalid_cwd 'cwd must name an existing directory'
+    if tmux has-session -t "=$name" 2>/dev/null; then reply_error session_exists 'a tmux session with that exact name already exists'; fi
+    [ "$option_count" -ge 0 ] 2>/dev/null || reply_error operation_failed 'invalid create request'
+    remaining=$option_count
+    option_pairs=''
+    while [ "$remaining" -gt 0 ]; do
+      [ "$#" -ge 2 ] || reply_error operation_failed 'invalid create request'
+      option_pairs="${{option_pairs}}$1	$2
+"
+      shift 2
+      remaining=$((remaining - 1))
+    done
+    [ "$#" -ge 1 ] || set -- __ROFI_TMUX_PLUS_DEFAULT_SHELL__
+    result="$(tmux new-session -d -P -F '#{{session_id}} #{{session_created}}' -s "$name" -c "$cwd" /bin/sh -c {shlex.quote(_HOLDER)} rofi-tmux-plus-holder "$token" "$timeout" "$defer" "$@" 2>&1)" || {{
+      case "$result" in *duplicate*|*exists*) reply_error session_exists 'a tmux session with that exact name already exists' ;; *) reply_error operation_failed 'tmux could not create the session' ;; esac
+    }}
+    set -- $result
+    [ "$#" -eq 2 ] || reply_error operation_failed 'tmux did not return the new session identity'
+    new_sid=$1; new_created=$2
+    generation || reply_error operation_failed 'tmux did not return a server identity'
+    new_generation=$current_generation
+    armed=1
+    waited=0
+    while [ "$waited" -lt 40 ]; do
+      marker="$(tmux show-options -qv -t "$new_sid" @rofi_tmux_plus_operation 2>/dev/null || :)"
+      [ "$marker" = "$token" ] && break
+      sleep 0.05; waited=$((waited + 1))
+    done
+    [ "$marker" = "$token" ] || {{ rollback "$new_generation" "$new_sid" "$new_created" "$token"; reply_error operation_failed 'holding wrapper did not install its operation token'; }}
+    while IFS="$(printf '\t')" read -r option value; do
+      [ -n "$option" ] || continue
+      tmux set-option -q -t "$new_sid" "$option" "$value" >/dev/null 2>&1 || {{ rollback "$new_generation" "$new_sid" "$new_created" "$token"; reply_error operation_failed 'tmux could not set requested session metadata'; }}
+    done <<EOF
+$option_pairs
+EOF
+    [ "$defer" != 1 ] || tmux set-option -q -t "$new_sid" @rofi_tmux_plus_pending "$token" >/dev/null 2>&1 || {{ rollback "$new_generation" "$new_sid" "$new_created" "$token"; reply_error operation_failed 'tmux could not set pending state'; }}
+    descriptor "$new_sid" || {{ rollback "$new_generation" "$new_sid" "$new_created" "$token"; reply_error operation_failed 'tmux could not describe the new session'; }}
+    [ "$descriptor_created" = "$new_created" ] || {{ rollback "$new_generation" "$new_sid" "$new_created" "$token"; reply_error operation_failed 'the new tmux session changed'; }}
+    [ "$descriptor_name" = "$name" ] || {{ rollback "$new_generation" "$new_sid" "$new_created" "$token"; reply_error operation_failed 'tmux did not retain the new session name'; }}
+    tmux set-option -q -t "$new_sid" @rofi_tmux_plus_release "$token" >/dev/null 2>&1 || {{ rollback "$new_generation" "$new_sid" "$new_created" "$token"; reply_error operation_failed 'tmux could not release the new session'; }}
+    armed=0
+    tmux set-option -qu -t "$new_sid" @rofi_tmux_plus_operation >/dev/null 2>&1 || :
+    # The release commits creation.  Never turn a fast-exiting, successfully
+    # released session into an ambiguous error by rereading tmux here: the
+    # complete generation and descriptor above are the authoritative result.
+    emit_generation_record
+    emit_descriptor_record
+    printf 'R\tCREATE\n'
+    ;;
+  *) reply_error operation_failed 'unknown lifecycle action' ;;
+esac"""
+
+
+def _marker_wrapper() -> str:
+    return r'''printf '\036ROFI_PLUS_REACHED_V1:%s\037\n' "$1" >&2
+shift
+exec "$@"'''
+
+
+def build_remote_lifecycle_argv(
+    route: str, policy: MeshPolicy, *, nonce: str, action: str, values: Sequence[str]
+) -> list[str]:
+    """Build the only remote command shape used by lifecycle actions."""
+    if len(nonce) < 32 or any(char not in "0123456789abcdef" for char in nonce):
+        raise ValueError("invalid reached-host nonce")
+    if action not in {"open", "viewers", "create", "rename", "kill"}:
+        raise ValueError("invalid lifecycle action")
+    domain = ["sh", "-c", _REMOTE_PROGRAM, "rofi-tmux-plus-remote", action, *values]
+    remote = " ".join(
+        shlex.quote(value)
+        for value in ("sh", "-c", _marker_wrapper(), "rofi-plus-reached", nonce, *domain)
+    )
+    return [
+        policy.executable,
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        f"ConnectTimeout={policy.connect_timeout_seconds}",
+        "-o",
+        f"ConnectionAttempts={policy.connection_attempts}",
+        route,
+        remote,
+    ]
+
+
+@dataclass(frozen=True, slots=True)
+class RemoteAction:
+    kind: str
+    session: Session | None
+    observed_clients: int | None
+    route: str
+    native_hostname: str | None
+    destroy_unattached: str | None = None
+
+
+def _parse_action(output: str, *, host_id: str, route: str) -> RemoteAction:
+    records = output.splitlines()
+    errors = [line for line in records if line.startswith("X\t")]
+    if errors:
+        # A domain error may use its declared code only when it is the exact
+        # two-record response produced by the fixed remote program. Otherwise
+        # an attacker or a broken shell could smuggle a stable-looking error
+        # alongside malformed inventory data.
+        if len(records) != 2 or len(errors) != 1 or not records[0].startswith("H\t"):
+            raise ContractError("operation_failed", "remote lifecycle framing is invalid", host_id)
+        header = records[0].split("\t")
+        if len(header) != 2:
+            raise ContractError("operation_failed", "remote lifecycle framing is invalid", host_id)
+        _decode_field(header[1])
+        parts = errors[0].split("\t")
+        if len(parts) != 3:
+            raise ContractError("operation_failed", "remote lifecycle framing is invalid", host_id)
+        code = _decode_field(parts[1])
+        message = clean_message(_decode_field(parts[2]))
+        if code not in _ERROR_CODES:
+            code = "operation_failed"
+        raise ContractError(code, message or "remote tmux lifecycle failed", host_id)
+    action_records = [line for line in records if line.startswith("R\t")]
+    if len(action_records) != 1:
+        raise ContractError(
+            "operation_failed", "remote lifecycle output omitted its result", host_id
+        )
+    result = action_records[0].split("\t")
+    if len(result) not in {2, 3} or result[1] not in {
+        "OPEN",
+        "VIEWERS",
+        "CREATE",
+        "RENAME",
+        "KILL",
+    }:
+        raise ContractError("operation_failed", "remote lifecycle framing is invalid", host_id)
+    observed: int | None = None
+    if result[1] == "KILL":
+        if len(result) != 3:
+            raise ContractError("operation_failed", "remote lifecycle framing is invalid", host_id)
+        observed = _number(result[2])
+    elif result[1] == "VIEWERS":
+        if len(result) != 3 or result[2] not in {"off", "on", "unknown"}:
+            raise ContractError("operation_failed", "remote lifecycle framing is invalid", host_id)
+    elif len(result) != 2:
+        raise ContractError("operation_failed", "remote lifecycle framing is invalid", host_id)
+    inventory_lines = [line for line in records if not line.startswith("R\t")]
+    parsed = parse_remote_inventory(
+        "\n".join(inventory_lines) + "\n",
+        host_id=host_id,
+        panes_requested=False,
+        option_names=(),
+    )
+    if parsed.status is not None or len(parsed.sessions) != 1:
+        raise ContractError(
+            "operation_failed", "remote lifecycle output omitted its session", host_id
+        )
+    destroy = result[2] if result[1] == "VIEWERS" else None
+    return RemoteAction(
+        result[1], parsed.sessions[0], observed, route, parsed.native_hostname, destroy
+    )
+
+
+class RemoteLifecycle:
+    def __init__(
+        self,
+        adapter: HostMeshAdapter,
+        config: Config,
+        *,
+        runner: Callable[..., subprocess.CompletedProcess[str] | BoundedCompleted] | None = None,
+        nonce_factory: Callable[[], str] = generate_nonce,
+        now_millis: Callable[[], int] = lambda: time.time_ns() // 1_000_000,
+        focus: Callable[[Session, str | None], bool] | None = None,
+        terminal_spawner: Callable[[Sequence[str]], None] | None = None,
+        niri_command: Sequence[str] = ("niri",),
+    ) -> None:
+        self._adapter = adapter
+        self._config = config
+        self._runner = runner
+        self._nonce_factory = nonce_factory
+        self._now_millis = now_millis
+        self._focus = focus
+        self._terminal_spawner = terminal_spawner
+        self._niri_command = tuple(niri_command)
+
+    def _run(
+        self, argv: Sequence[str], *, timeout: float
+    ) -> subprocess.CompletedProcess[str] | BoundedCompleted:
+        if self._runner is None:
+            return run_bounded(
+                argv,
+                timeout=timeout,
+                stdout_limit=_MAX_ACTION_OUTPUT,
+                stderr_limit=_MAX_ACTION_OUTPUT,
+            )
+        return self._runner(
+            argv,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            check=False,
+            timeout=timeout,
+        )
+
+    def _action(
+        self, host: MeshHost, policy: MeshPolicy, revision: str, action: str, values: Sequence[str]
+    ) -> RemoteAction:
+        deadline = time.monotonic() + _REMOTE_TIMEOUT_SECONDS
+        last_transport = "no configured route completed"
+        last_unclassified = "remote SSH command did not prove a reached host"
+        saw_unclassified = False
+        for route in host.routes:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            nonce = self._nonce_factory()
+            argv = build_remote_lifecycle_argv(
+                route.destination, policy, nonce=nonce, action=action, values=values
+            )
+            timed_out = False
+            overflow: frozenset[str] = frozenset()
+            previous_transport = mark("transport", "uncertain")
+            previous_native = native_started() if action in {"create", "rename", "kill"} else None
+            try:
+                completed = self._run(
+                    argv,
+                    timeout=min(
+                        remaining, policy.connect_timeout_seconds * policy.connection_attempts + 2
+                    ),
+                )
+                stdout, stderr, returncode = (
+                    completed.stdout or "",
+                    completed.stderr or "",
+                    completed.returncode,
+                )
+                timed_out = bool(getattr(completed, "timed_out", False))
+                overflow = frozenset(getattr(completed, "overflow_streams", frozenset()))
+            except subprocess.TimeoutExpired as error:
+                stdout = ""
+                stderr = (
+                    error.stderr.decode(errors="replace")
+                    if isinstance(error.stderr, bytes)
+                    else error.stderr or ""
+                )
+                returncode, timed_out = None, True
+            except ProcessLaunchError as error:
+                if previous_native is not None:
+                    mark("nativeEffect", previous_native)
+                if previous_transport is not None:
+                    mark("transport", previous_transport)
+                # Child creation failed: no remote command was dispatched.
+                raise ContractError(
+                    "operation_failed",
+                    f"could not execute SSH: {clean_message(error)}",
+                    host.host_id,
+                ) from error
+            except OSError as error:
+                # An error during pipe capture can occur after remote dispatch.
+                raise ContractError(
+                    "action_uncertain",
+                    "SSH command capture failed after possible dispatch",
+                    host.host_id,
+                ) from error
+            reached, residual = (
+                parse_reached_marker(stderr, nonce) if "stderr" not in overflow else (False, stderr)
+            )
+            observed = self._now_millis()
+            if reached:
+                problem = None
+                result = None
+                try:
+                    if overflow:
+                        raise ContractError(
+                            "operation_failed",
+                            "remote tmux output exceeded the consumer limit",
+                            host.host_id,
+                        )
+                    if returncode != 0:
+                        raise ContractError(
+                            "operation_failed", "remote tmux lifecycle command failed", host.host_id
+                        )
+                    result = _parse_action(stdout, host_id=host.host_id, route=route.destination)
+                    if result.kind != action.upper() or result.session is None:
+                        raise ContractError(
+                            "operation_failed",
+                            "remote lifecycle action framing is invalid",
+                            host.host_id,
+                        )
+                    self._bind_response(result, action, values, host.host_id)
+                except ContractError as error:
+                    problem = error
+                if problem is None:
+                    mark("transport", "confirmed")
+                    if action in {"create", "rename", "kill"}:
+                        native_confirmed(result.session.reference)
+                self._adapter.report_route(
+                    host_id=host.host_id,
+                    route=route.destination,
+                    status="reachable",
+                    mesh_revision=revision,
+                    observed_at=observed,
+                    timeout_seconds=max(0.001, deadline - time.monotonic()),
+                )
+                if problem is not None:
+                    raise problem
+                return result
+            if action in {"create", "rename", "kill"}:
+                # Lack of a terminal acknowledgement cannot prove the remote
+                # command did not execute. Never redispatch a write to a route.
+                raise ContractError(
+                    "action_uncertain",
+                    "remote write lacks a complete acknowledgement; inspect current native state before retry",
+                    host.host_id,
+                )
+            if _transport_failure(residual, timed_out=timed_out):
+                last_transport = clean_message(residual or "SSH transport failed")
+                self._adapter.report_route(
+                    host_id=host.host_id,
+                    route=route.destination,
+                    status="unreachable",
+                    mesh_revision=revision,
+                    observed_at=observed,
+                    timeout_seconds=max(0.001, deadline - time.monotonic()),
+                )
+            else:
+                saw_unclassified = True
+                last_unclassified = clean_message(residual or last_unclassified)
+        if not saw_unclassified:
+            raise ContractError("host_unreachable", last_transport, host.host_id)
+        raise ContractError("operation_failed", last_unclassified, host.host_id)
+
+    @staticmethod
+    def _bind_response(result, action, values, host_id):
+        session = result.session
+        reference = session.reference
+        if action == "create":
+            valid = bool(values) and session.name == values[0]
+        else:
+            valid = len(values) >= 3 and (
+                reference.server_generation,
+                reference.session_id,
+                str(reference.created_at),
+            ) == tuple(values[:3])
+            if action == "rename":
+                valid = valid and len(values) >= 5 and session.name == values[4]
+            elif action == "kill":
+                valid = valid and len(values) >= 4 and session.name == values[3]
+            elif len(values) >= 5 and values[3] == "1":
+                valid = valid and session.name == values[4]
+        if reference.host_id != host_id or not valid:
+            raise ContractError(
+                "operation_failed", "remote response changed the frozen action target", host_id
+            )
+
+    @staticmethod
+    def _validate_create(
+        name: str,
+        cwd: str | None,
+        options: Sequence[tuple[str, str]],
+        command: Sequence[str],
+        defer: bool,
+        timeout: int,
+    ) -> None:
+        _validate_name(name)
+        if cwd is not None:
+            require_clean_text(cwd, "cwd")
+        if any("\x00" in item or has_control(item) for item in command):
+            raise ContractError(
+                "invalid_input", "command arguments must not contain NUL or control characters"
+            )
+        if defer and not command:
+            raise ContractError("invalid_input", "--defer-until-attached requires a command")
+        if not 1 <= timeout <= 3600:
+            raise ContractError(
+                "invalid_input", "attach timeout must be an integer from 1 through 3600"
+            )
+        for option, value in options:
+            validate_user_option(option)
+            require_clean_text(value, f"value for {option}")
+
+    def open(
+        self,
+        host: MeshHost,
+        policy: MeshPolicy,
+        revision: str,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str | None,
+        required_options: Sequence[tuple[str, str]] = (),
+        verified_viewer: bool = False,
+        new_viewer: bool = False,
+    ) -> dict[str, object]:
+        _validate_reference_inputs(generation, session_id, created_at, expected_name)
+        required_options = validate_required_options(required_options)
+        if verified_viewer:
+            with local_mutation_lock(host.host_id):
+                result = self.viewers(
+                    host,
+                    policy,
+                    revision,
+                    generation,
+                    session_id,
+                    created_at,
+                    expected_name,
+                    required_options,
+                )
+                assert result.session is not None and result.destroy_unattached is not None
+                inspection = self._inspect_remote_viewer(result, policy)
+                if inspection.status == "unsupported":
+                    raise ContractError(
+                        "viewer_unsupported",
+                        inspection.reason or "Kitty viewer support is unavailable",
+                        host.host_id,
+                    )
+                if inspection.status == "verified":
+                    if len(inspection.viewers) != 1:
+                        mark("focus", "ambiguous")
+                        raise ContractError(
+                            "viewer_ambiguous",
+                            "multiple compatible viewers require explicit new-view intent",
+                            host.host_id,
+                        )
+                    viewer = inspection.viewers[0]
+                    if not focus_verified(
+                        viewer,
+                        revalidate=lambda: self._inspect_remote_viewer(
+                            self.viewers(
+                                host,
+                                policy,
+                                revision,
+                                generation,
+                                session_id,
+                                created_at,
+                                expected_name,
+                                required_options,
+                            ),
+                            policy,
+                        ),
+                        niri_command=self._niri_command,
+                    ):
+                        raise ContractError(
+                            "viewer_focus_failed",
+                            "verified Kitty viewer could not be focused",
+                            host.host_id,
+                        )
+                    return self._open_response(
+                        result.session,
+                        revision,
+                        focused=True,
+                        launched=False,
+                        viewer_id=viewer.viewer_id,
+                    )
+                if inspection.status != "none":
+                    code = (
+                        "viewer_ambiguous"
+                        if inspection.status == "ambiguous"
+                        else "viewer_unverified"
+                    )
+                    raise ContractError(
+                        code,
+                        inspection.reason or "matching Kitty viewer is not verified",
+                        host.host_id,
+                    )
+                launch_id = self._launch(
+                    result.route,
+                    policy,
+                    session_id,
+                    reference=result.session.reference.as_dict(),
+                )
+                deadline = time.monotonic() + 1.5
+                while time.monotonic() < deadline:
+                    current = self._inspect_remote_viewer(result, policy)
+                    if launch_id is not None and launch_id in current.pending_launch_ids:
+                        time.sleep(0.05)
+                        continue
+                    if current.status == "verified":
+                        viewer = next(
+                            (item for item in current.viewers if item.launch_id == launch_id), None
+                        )
+                        if viewer is not None:
+                            # Revalidate the remote reference and option guard
+                            # after registration before returning a reusable ID.
+                            final = self.viewers(
+                                host,
+                                policy,
+                                revision,
+                                generation,
+                                session_id,
+                                created_at,
+                                expected_name,
+                                required_options,
+                            )
+                            if (
+                                final.session is None
+                                or final.session.reference != result.session.reference
+                            ):
+                                raise ContractError(
+                                    "viewer_registration_ambiguous",
+                                    "launched Kitty viewer registration changed during validation",
+                                    host.host_id,
+                                )
+                            final_inspection = self._inspect_remote_viewer(final, policy)
+                            if final_inspection.status != "verified":
+                                raise ContractError(
+                                    "viewer_registration_ambiguous",
+                                    "launched Kitty viewer registration changed during validation",
+                                    host.host_id,
+                                )
+                            final_viewer = next(
+                                (
+                                    row
+                                    for row in final_inspection.viewers
+                                    if row.viewer_id == viewer.viewer_id
+                                ),
+                                None,
+                            )
+                            if final_viewer is None:
+                                raise ContractError(
+                                    "viewer_registration_ambiguous",
+                                    "launched Kitty viewer identity changed during validation",
+                                    host.host_id,
+                                )
+                            return self._open_response(
+                                final.session,
+                                revision,
+                                focused=False,
+                                launched=True,
+                                viewer_id=final_viewer.viewer_id,
+                            )
+                        raise ContractError(
+                            "viewer_registration_ambiguous",
+                            "a different verified Kitty viewer appeared during registration",
+                            host.host_id,
+                        )
+                    elif current.status != "none":
+                        raise ContractError(
+                            "viewer_registration_ambiguous",
+                            current.reason or "launched Kitty viewer registration is ambiguous",
+                            host.host_id,
+                        )
+                    time.sleep(0.05)
+                raise ContractError(
+                    "viewer_registration_ambiguous",
+                    "launched Kitty viewer was not verified before the registration deadline",
+                    host.host_id,
+                )
+        values = [
+            generation,
+            session_id,
+            str(created_at),
+            "1" if expected_name is not None else "0",
+            expected_name or "",
+        ]
+        # Preserve the established no-precondition remote request exactly.
+        # The fixed remote program accepts that legacy five-value shape as an
+        # empty required-option set.
+        if required_options:
+            values.append(str(len(required_options)))
+            for name, value in required_options:
+                values.extend((name, value))
+        result = self._action(
+            host,
+            policy,
+            revision,
+            "open",
+            values,
+        )
+        assert result.session is not None
+        viewer_id: str | None = None
+        focused = False
+        if not new_viewer and kitty_configured(self._config):
+            inspection = inspect_viewers(
+                result.session,
+                self._config,
+                remote_route=result.route,
+                remote_executable=policy.executable,
+                remote_native_hostname=result.native_hostname,
+                destroy_unattached="off",
+                niri_command=self._niri_command,
+            )
+            if inspection.status == "verified":
+                if len(inspection.viewers) != 1:
+                    mark("focus", "ambiguous")
+                    raise ContractError(
+                        "viewer_ambiguous",
+                        "multiple compatible viewers require explicit new-view intent",
+                        host.host_id,
+                    )
+                viewer = inspection.viewers[0]
+                focused = focus_verified(
+                    viewer,
+                    revalidate=lambda: self._inspect_remote_viewer(
+                        self.viewers(
+                            host,
+                            policy,
+                            revision,
+                            generation,
+                            session_id,
+                            created_at,
+                            expected_name,
+                            required_options,
+                        ),
+                        policy,
+                    ),
+                    niri_command=self._niri_command,
+                )
+                if focused:
+                    viewer_id = viewer.viewer_id
+        if not focused and not new_viewer:
+            focused = (
+                bool(self._focus(result.session, result.native_hostname))
+                if self._focus
+                else focus_session_window(
+                    result.session.name,
+                    result.native_hostname,
+                    session=result.session,
+                    remote_route=result.route,
+                    remote_executable=policy.executable,
+                    niri_command=self._niri_command,
+                    validate_session=lambda: (
+                        self.viewers(
+                            host,
+                            policy,
+                            revision,
+                            generation,
+                            session_id,
+                            created_at,
+                            expected_name,
+                            required_options,
+                        ).session
+                    ),
+                )
+            )
+        launched = False
+        if not focused:
+            self._launch(
+                result.route,
+                policy,
+                result.session.reference.session_id,
+                reference=result.session.reference.as_dict(),
+            )
+            launched = True
+        return self._open_response(
+            result.session, revision, focused=focused, launched=launched, viewer_id=viewer_id
+        )
+
+    def viewers(
+        self,
+        host: MeshHost,
+        policy: MeshPolicy,
+        revision: str,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str | None = None,
+        required_options: Sequence[tuple[str, str]] = (),
+    ) -> RemoteAction:
+        _validate_reference_inputs(generation, session_id, created_at, expected_name)
+        required_options = validate_required_options(required_options)
+        values = [
+            generation,
+            session_id,
+            str(created_at),
+            "1" if expected_name is not None else "0",
+            expected_name or "",
+        ]
+        if required_options:
+            values.append(str(len(required_options)))
+            for name, value in required_options:
+                values.extend((name, value))
+        return self._action(host, policy, revision, "viewers", values)
+
+    def _inspect_remote_viewer(self, result: RemoteAction, policy: MeshPolicy) -> ViewerInspection:
+        assert result.session is not None
+        return inspect_viewers(
+            result.session,
+            self._config,
+            remote_route=result.route,
+            remote_executable=policy.executable,
+            remote_native_hostname=result.native_hostname,
+            destroy_unattached=result.destroy_unattached,
+            niri_command=self._niri_command,
+        )
+
+    @staticmethod
+    def _open_response(
+        session: Session,
+        revision: str,
+        *,
+        focused: bool,
+        launched: bool,
+        viewer_id: str | None = None,
+    ) -> dict[str, object]:
+        mark("focus", "confirmed" if focused else "not_requested")
+        if launched:
+            mark("terminalSpawn", "confirmed")
+            # A launch marker and local SSH argv do not prove current remote
+            # native client binding, even when the legacy handle is verified.
+            mark("attachment", "unverified")
+        result: dict[str, object] = {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": revision,
+            "session": session.as_dict(),
+            "focused": focused,
+            "terminalLaunched": launched,
+        }
+        if viewer_id is not None:
+            result["viewerId"] = viewer_id
+        return result
+
+    def _launch(
+        self,
+        route: str,
+        policy: MeshPolicy,
+        session_id: str,
+        *,
+        reference: dict[str, object] | None = None,
+    ) -> str | None:
+        # OpenSSH concatenates remote command argv into a shell command. Keep
+        # the validated session ID quoted inside one command string so ``$0``
+        # remains tmux's literal target rather than remote-shell expansion.
+        validate_session_id(session_id)
+        remote_command = " ".join(
+            shlex.quote(value)
+            for value in ("tmux", "-u", "-L", "default", "attach-session", "-t", session_id)
+        )
+        attach = [policy.executable, "-t", route, remote_command]
+        launch_id: str | None = None
+        env = None
+        if reference is not None and kitty_configured(self._config):
+            launch_id, env = launch_metadata(reference)
+        if self._terminal_spawner is not None:
+            mark("terminalSpawn", "uncertain")
+            self._terminal_spawner(attach)
+            mark("terminalSpawn", "confirmed")
+            mark("attachment", "unverified")
+            return launch_id
+        from .lifecycle import spawn_terminal_command
+
+        spawn_terminal_command(self._config, attach, env=env)
+        return launch_id
+
+    def create(
+        self,
+        host: MeshHost,
+        policy: MeshPolicy,
+        revision: str,
+        name: str,
+        cwd: str | None,
+        options: Sequence[tuple[str, str]],
+        command: Sequence[str],
+        defer: bool,
+        attach_timeout: int | None,
+        open_after: bool,
+    ) -> dict[str, object]:
+        timeout = self._config.attach_timeout_seconds if attach_timeout is None else attach_timeout
+        self._validate_create(name, cwd, options, command, defer, timeout)
+        token = secrets.token_urlsafe(24)
+        values = [
+            name,
+            cwd or "",
+            "1" if cwd is not None else "0",
+            token,
+            "1" if defer else "0",
+            str(timeout),
+            str(len(options)),
+        ]
+        for option, value in options:
+            values.extend((option, value))
+        values.extend(command)
+        with local_mutation_lock(host.host_id):
+            result = self._action(host, policy, revision, "create", values)
+        assert result.session is not None
+        response: dict[str, object] = {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": revision,
+            "session": result.session.as_dict(),
+        }
+        if open_after:
+            opened = self.open(
+                host,
+                policy,
+                revision,
+                result.session.reference.server_generation,
+                result.session.reference.session_id,
+                result.session.reference.created_at,
+                expected_name=name,
+            )
+            response.update(
+                {
+                    "focused": opened["focused"],
+                    "terminalLaunched": opened["terminalLaunched"],
+                }
+            )
+            if "viewerId" in opened:
+                response["viewerId"] = opened["viewerId"]
+        return response
+
+    def rename(
+        self,
+        host: MeshHost,
+        policy: MeshPolicy,
+        revision: str,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str,
+        name: str,
+        required_options: Sequence[tuple[str, str]] = (),
+    ) -> dict[str, object]:
+        _validate_reference_inputs(generation, session_id, created_at, expected_name)
+        _validate_name(name)
+        requirements = validate_required_options(required_options)
+        suffix = (
+            [str(len(requirements)), *(value for pair in requirements for value in pair)]
+            if requirements
+            else []
+        )
+        with local_mutation_lock(host.host_id):
+            result = self._action(
+                host,
+                policy,
+                revision,
+                "rename",
+                [generation, session_id, str(created_at), expected_name, name, *suffix],
+            )
+        assert result.session is not None
+        return {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": revision,
+            "session": result.session.as_dict(),
+        }
+
+    def kill(
+        self,
+        host: MeshHost,
+        policy: MeshPolicy,
+        revision: str,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str,
+        required_options: Sequence[tuple[str, str]] = (),
+    ) -> dict[str, object]:
+        _validate_reference_inputs(generation, session_id, created_at, expected_name)
+        requirements = validate_required_options(required_options)
+        suffix = (
+            [str(len(requirements)), *(value for pair in requirements for value in pair)]
+            if requirements
+            else []
+        )
+        with local_mutation_lock(host.host_id):
+            result = self._action(
+                host,
+                policy,
+                revision,
+                "kill",
+                [generation, session_id, str(created_at), expected_name, *suffix],
+            )
+        assert result.session is not None and result.observed_clients is not None
+        return {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": revision,
+            "reference": result.session.reference.as_dict(),
+            "observedClients": result.observed_clients,
+        }

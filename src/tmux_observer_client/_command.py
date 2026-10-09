@@ -8,12 +8,16 @@ import os
 import selectors
 import signal
 import subprocess
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from tmux_observer._clock import boottime_ms
 
 _CHUNK_SIZE = 16 * 1024
+
+
+class ProcessLaunchError(OSError):
+    """Popen failed before creating the command; later I/O errors differ."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,19 +41,24 @@ def run_bounded(
     timeout: float,
     stdout_limit: int,
     stderr_limit: int,
+    env: Mapping[str, str] | None = None,
 ) -> BoundedCompleted:
     """Capture bounded output, including when a descendant holds a pipe open."""
     if timeout <= 0 or stdout_limit < 1 or stderr_limit < 1:
         raise ValueError("bounded process limits must be positive")
     deadline = (boottime_ms() / 1000) + timeout
-    process = subprocess.Popen(
-        list(argv),
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=False,
-        start_new_session=True,
-    )
+    try:
+        process = subprocess.Popen(
+            list(argv),
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=False,
+            start_new_session=True,
+            env=env,
+        )
+    except OSError as error:
+        raise ProcessLaunchError(error.errno, "command process could not be created") from error
     assert process.stdout is not None
     assert process.stderr is not None
     buffers = {"stdout": bytearray(), "stderr": bytearray()}

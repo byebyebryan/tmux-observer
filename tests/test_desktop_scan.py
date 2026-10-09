@@ -343,6 +343,23 @@ class LocalViewerObservationTests(unittest.TestCase):
         )
         tmux.client_pids_by_session.assert_not_called()
 
+    def test_fixed_default_remote_launch_accepts_absolute_ssh_path(self):
+        session = _observation_session("beta", attached_clients=1)
+        target = self._target(session, local=False, route="beta")
+        argv = _remote_attach_argv("ssh", "beta", "$7", fixed_default=True)
+        result, *_ = self._observe(
+            [_kitty_window(101, 10, "fixture: task @ beta-native")],
+            {
+                10: _proc(10, 1, 100, 0, ("kitty",)),
+                20: _proc(20, 10, 200, 41, ("/usr/bin/ssh", *argv[1:])),
+            },
+            (target,),
+            metadata={10: self._marked(session)},
+            children={10: b"20"},
+        )
+        self.assertEqual(result.observations[session.reference].confidence, "confirmed")
+        self.assertTrue(result.observations[session.reference].qualified)
+
     def test_manual_remote_shell_with_unique_owner_title_is_only_matched(self) -> None:
         session = _observation_session("beta", attached_clients=1)
         other = _observation_session("beta", session_id="$8", name="other", attached_clients=1)

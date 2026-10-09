@@ -1,0 +1,302 @@
+#!/usr/bin/env python3
+"""Installed B3 native action proof with owned servers and no graphical input."""
+
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import uuid
+import zipfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def command(argv, *, env=None, timeout=5, check=True):
+    return subprocess.run(
+        argv, env=env, timeout=timeout, capture_output=True, text=True, check=check
+    )
+
+
+def worker(output, installed_root):
+    sys.path.insert(0, str(installed_root))
+    from tmux_observer_actions.host import local_host
+    from tmux_observer_actions.public import ActionClient, ActionConfig
+    from tmux_observer_actions.tmux import TmuxClient
+    from tmux_observer_client._process_evidence import _proc
+
+    record = {
+        "state": "running",
+        "cases": [],
+        "cleanup": False,
+        "endpoint": os.uname().nodename,
+        "scope": "installed action SDK; owned default/alternate servers; no GUI or observation services",
+    }
+    for name in (
+        "tmux_observer_actions.public",
+        "tmux_observer_actions.tmux",
+        "tmux_observer_actions.lifecycle_service",
+    ):
+        if not Path(sys.modules[name].__file__).resolve().is_relative_to(installed_root.resolve()):
+            raise AssertionError("checkout action implementation imported")
+    record["installedImportOriginsVerified"] = True
+    record["observationServicesImported"] = any(
+        name in sys.modules
+        for name in ("tmux_observer.owner", "tmux_observer_client.fleet", "tmux_observer.collector")
+    )
+    assert not record["observationServicesImported"]
+    original = dict(os.environ)
+    original.pop("TMUX", None)
+    original.pop("TMUX_PANE", None)
+    ordinary = [
+        "tmux",
+        "-u",
+        "-L",
+        "default",
+        "list-sessions",
+        "-F",
+        "#{session_id}\t#{session_created}",
+    ]
+    before = command(ordinary, env=original, check=False)
+    baseline = set(before.stdout.splitlines()) if before.returncode == 0 else set()
+    temporary = tempfile.TemporaryDirectory(prefix="observer-native-actions-")
+    root = Path(temporary.name)
+    fixture = {
+        **original,
+        "TMUX_TMPDIR": str(root),
+        "XDG_RUNTIME_DIR": str(root),
+        "SHELL": "/bin/sh",
+    }
+    token = uuid.uuid4().hex[:12]
+    host = local_host().host_id
+    servers = []
+
+    class MissingMesh:
+        @staticmethod
+        def load():
+            return None
+
+    def request(operation, reference=None, expected=None, parameters=None, options=None):
+        return {
+            "protocol": "tmux-observer.action.v1",
+            "schemaVersion": 1,
+            "requestId": uuid.uuid4().hex,
+            "operation": operation,
+            "hostId": host,
+            "meshRevision": None,
+            "sessionRef": reference,
+            "guards": {"expectedName": expected, "requiredOptions": options or {}},
+            "parameters": parameters or {},
+        }
+
+    def create(name, *, open_after=False, defer=False, timeout=None):
+        return sdk.execute(
+            request(
+                "create",
+                parameters={
+                    "name": name,
+                    "cwd": "/tmp",
+                    "options": {"@owned": token},
+                    "command": ["sleep", "90"],
+                    "deferUntilAttached": defer,
+                    "attachTimeout": timeout,
+                    "open": open_after,
+                },
+            )
+        )
+
+    def passed(name):
+        record["cases"].append(name)
+
+    try:
+        os.environ.clear()
+        os.environ.update(fixture)
+        os.environ.pop("NIRI_SOCKET", None)
+        os.environ.pop("WAYLAND_DISPLAY", None)
+        native = TmuxClient()
+        sdk = ActionClient(
+            ActionConfig(terminal=("/does-not-exist-owned-terminal",)), mesh_adapter=MissingMesh()
+        )
+        # Prime only the owned servers, so ordinary user tmux config is not read.
+        for socket in ("default", "alternate"):
+            command(
+                [
+                    "tmux",
+                    "-u",
+                    "-L",
+                    socket,
+                    "-f",
+                    "/dev/null",
+                    "new-session",
+                    "-d",
+                    "-s",
+                    "owned-anchor-" + token,
+                    "sleep",
+                    "90",
+                ],
+                env=fixture,
+            )
+        alternate = TmuxClient(("tmux", "-u", "-L", "alternate"))
+        for server in (native, alternate):
+            identity = _proc(int(server.format(None, "#{pid}")))
+            assert identity is not None
+            servers.append(identity)
+        generation = alternate.server_generation()
+        os.environ["TMUX"] = generation.split(":", 3)[-1] + ",1,0"
+        os.environ["TMUX_PANE"] = "%0"
+        name = "owned-create-" + token
+        created = create(name)
+        assert created["ok"] and created["outcome"]["nativeEffect"] == "confirmed"
+        reference = created["sessionRef"]
+        assert reference["serverGeneration"].endswith("/default") and alternate.session_ids() == [
+            "$0"
+        ]
+        record["nativeCreatedReference"] = reference
+        passed("fixed_default_create_ignores_ambient_alternate_server_without_service")
+        renamed_name = "owned-renamed-" + token
+        refused = sdk.execute(
+            request("rename", reference, name, {"name": renamed_name}, {"@owned": "wrong"})
+        )
+        assert not refused["ok"] and refused["outcome"]["nativeEffect"] == "none"
+        passed("required_option_mismatch_refuses_rename_before_native_write")
+        renamed = sdk.execute(
+            request("rename", reference, name, {"name": renamed_name}, {"@owned": token})
+        )
+        assert renamed["ok"] and renamed["sessionRef"] == reference
+        stale = sdk.execute(request("kill", reference, name))
+        assert not stale["ok"] and stale["outcome"]["nativeEffect"] == "none"
+        killed = sdk.execute(request("kill", reference, renamed_name, options={"@owned": token}))
+        assert killed["ok"] and killed["sessionRef"] == reference and native.session_ids() == ["$0"]
+        passed("rename_and_kill_validate_frozen_full_reference_name_and_options")
+        stale_reference = {**reference, "createdAt": reference["createdAt"] + 1}
+        refused = sdk.execute(request("kill", stale_reference, renamed_name))
+        assert not refused["ok"] and refused["outcome"]["nativeEffect"] == "none"
+        passed("deleted_or_changed_reference_cannot_authorize_another_native_target")
+        # Remove systemd-run from only this worker's PATH to exercise a real
+        # pre-spawn missing-terminal failure without opening a desktop window.
+        binaries = root / "bin"
+        binaries.mkdir()
+        for binary in ("tmux", "sleep", "date", "grep"):
+            executable = shutil.which(binary)
+            assert executable
+            (binaries / binary).symlink_to(executable)
+        os.environ["PATH"] = str(binaries)
+        failed_open = create("owned-open-failure-" + token, open_after=True)
+        assert not failed_open["ok"] and failed_open["outcome"]["nativeEffect"] == "confirmed"
+        assert (
+            failed_open["outcome"]["terminalSpawn"] == "failed"
+            and not failed_open["automaticRetry"]
+        )
+        assert failed_open["sessionRef"]["sessionId"] in native.session_ids()
+        passed("committed_create_survives_real_terminal_spawn_failure")
+        deferred = create("owned-deferred-" + token, defer=True, timeout=1)
+        assert deferred["ok"] and deferred["legacyResult"]["session"]["pending"]
+        end = time.monotonic() + 4
+        while (
+            deferred["sessionRef"]["sessionId"] in native.session_ids() and time.monotonic() < end
+        ):
+            time.sleep(0.05)
+        assert deferred["sessionRef"]["sessionId"] not in native.session_ids()
+        assert failed_open["sessionRef"]["sessionId"] in native.session_ids()
+        passed("deferred_holder_timeout_removes_only_its_owned_pending_session")
+        after = command(ordinary, env=original, check=False)
+        assert baseline <= set(after.stdout.splitlines())
+        record["ordinaryDefaultReferencesPreserved"] = len(baseline)
+        passed("ordinary_default_references_preserved")
+        record["limits"] = [
+            "Injected missing Mesh, no native remote route acceptance",
+            "No Kitty/Niri/Rofi acceptance; verified focus/close is a separate Starship gate",
+            "No installed or managed selection implied",
+        ]
+        record["state"] = "passed"
+    except (AssertionError, OSError, ValueError, subprocess.SubprocessError) as error:
+        record.update(state="failed", failure=type(error).__name__, failureMessage=str(error)[:480])
+    finally:
+        os.environ.clear()
+        os.environ.update(original)
+        for socket in ("default", "alternate"):
+            command(["tmux", "-u", "-L", socket, "kill-server"], env=fixture, check=False)
+        end = time.monotonic() + 3
+        while any(_proc(server.pid) == server for server in servers) and time.monotonic() < end:
+            time.sleep(0.02)
+        record["cleanup"] = all(_proc(server.pid) != server for server in servers)
+        temporary.cleanup()
+        record["ownedTemporaryRootRemoved"] = not root.exists()
+        Path(output).write_text(json.dumps(record, indent=2) + "\n")
+    return 0 if record["state"] == "passed" and record["cleanup"] else 1
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--artifact", type=Path)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--installed-root", type=Path, help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    if args.worker:
+        if args.artifact is not None or args.installed_root is None:
+            parser.error("worker requires one installed root and no artifact")
+        return worker(args.output, args.installed_root)
+    from artifact_input import stage_wheel
+
+    record = {"state": "preparing", "cases": [], "cleanup": False}
+    with tempfile.TemporaryDirectory(prefix="observer-actions-install-") as temporary:
+        stage = Path(temporary)
+        wheel = stage_wheel(stage / "wheel", record, repo=ROOT, descriptor=args.artifact)
+        target = stage / "python"
+        command(
+            ["uv", "pip", "install", "--no-deps", "--target", str(target), str(wheel)], timeout=30
+        )
+        with zipfile.ZipFile(wheel) as archive:
+            members = [
+                name
+                for name in archive.namelist()
+                if name.startswith(
+                    ("tmux_observer/", "tmux_observer_client/", "tmux_observer_actions/")
+                )
+            ]
+            assert members and all(
+                (target / name).read_bytes() == archive.read(name) for name in members
+            )
+        record["installedPackageMembersVerified"] = len(members)
+        report = stage / "native.json"
+        completed = command(
+            [
+                sys.executable,
+                "-I",
+                str(Path(__file__).resolve()),
+                "--worker",
+                "--installed-root",
+                str(target),
+                "--output",
+                str(report),
+            ],
+            timeout=45,
+            check=False,
+        )
+        if report.is_file():
+            record.update(json.loads(report.read_text()))
+        else:
+            record.update(
+                state="failed",
+                failure="worker_report_missing",
+                workerDiagnostic=completed.stderr[-2048:],
+            )
+        record["installedWorkerExit"] = completed.returncode
+        record["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    args.output.write_text(json.dumps(record, indent=2) + "\n")
+    print(
+        json.dumps(
+            {"state": record["state"], "cases": len(record["cases"]), "cleanup": record["cleanup"]}
+        )
+    )
+    return 0 if record["state"] == "passed" and record["cleanup"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

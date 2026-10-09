@@ -1,0 +1,724 @@
+# Adapted from rofi-tmux-plus 0.7.0a2; Copyright (c) 2026 Bryan; MIT.
+"""Local lifecycle operations with stable-reference and rollback safeguards."""
+
+from __future__ import annotations
+
+import fcntl
+import os
+import secrets
+import subprocess
+import time
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
+from pathlib import Path
+
+from ._progress import mark, native_confirmed
+from .config import Config, has_control, require_clean_text
+from .desktop_action import focus_session_window, focus_verified
+from .errors import ContractError, NoServer, clean_message
+from .host import LocalHost, resolve_local_host
+from .model import Session, SessionReference
+from .terminal import spawn_terminal_command
+from .tmux import TmuxClient, validate_required_options, validate_session_id, validate_user_option
+from .viewer_service import (
+    ViewerInspection,
+    inspect_viewers,
+    kitty_configured,
+    launch_metadata,
+)
+
+_OPERATION_OPTION = "@rofi_tmux_plus_operation"
+_PENDING_OPTION = "@rofi_tmux_plus_pending"
+_RELEASE_OPTION = "@rofi_tmux_plus_release"
+_OPERATION_TOKEN_FAILURE = "holding wrapper did not install its operation token"
+
+
+def now_millis() -> int:
+    return time.time_ns() // 1_000_000
+
+
+def _runtime_directory() -> Path:
+    base = Path(os.environ.get("XDG_RUNTIME_DIR", f"/tmp/rofi-tmux-plus-{os.getuid()}"))
+    return base / "rofi-tmux-plus" / "locks"
+
+
+@contextmanager
+def local_mutation_lock(host_id: str) -> Iterator[None]:
+    """Serialize only this tool's mutations; tmux remains the final authority."""
+    directory = _runtime_directory()
+    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    try:
+        os.chmod(directory, 0o700)
+    except OSError:
+        pass
+    path = directory / f"{host_id}.lock"
+    with path.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+
+
+def _is_clean(value: str) -> bool:
+    return "\x00" not in value and not has_control(value)
+
+
+def _validate_name(value: str) -> str:
+    if not _is_clean(value):
+        raise ContractError(
+            "invalid_input", "session name must not contain NUL or control characters"
+        )
+    return value
+
+
+def _validate_value(value: str, field: str) -> str:
+    return require_clean_text(value, field)
+
+
+def _validate_reference_inputs(
+    generation: str,
+    session_id: str,
+    created_at: int,
+    expected_name: str | None,
+) -> None:
+    if not generation or not _is_clean(generation):
+        raise ContractError("invalid_input", "server generation must be nonempty and control-free")
+    validate_session_id(session_id)
+    if created_at < 0:
+        raise ContractError("invalid_input", "created-at must be nonnegative")
+    if expected_name is not None and not _is_clean(expected_name):
+        raise ContractError(
+            "invalid_input", "expected name must not contain NUL or control characters"
+        )
+
+
+def _validate_required_options(
+    session: Session, options: Sequence[tuple[str, str]], tmux: TmuxClient
+) -> None:
+    """Require exact current option values after stable-reference validation."""
+    for name, expected_value in validate_required_options(options):
+        if tmux.option(session.reference.session_id, name) != expected_value:
+            raise ContractError(
+                "stale_session",
+                "the selected tmux session no longer satisfies required options; refresh and try again",
+                session.reference.host_id,
+            )
+
+
+def _wrapper_command(token: str, command: Sequence[str], *, defer: bool, timeout: int) -> list[str]:
+    """Return argv for the private holding wrapper, never a user shell string."""
+    if defer:
+        body = "\n".join(  # noqa: FLY002 - preserve inherited fixed holder bytes
+            (
+                "set -eu",
+                'target="$(tmux display-message -p -t "$TMUX_PANE" "#{session_id}")"',
+                'if ! tmux set-option -q -t "$target" @rofi_tmux_plus_operation "$1"; then tmux kill-session -t "$target" 2>/dev/null || :; exit 1; fi',
+                'setup_started="$(date +%s)"',
+                'while [ "$(tmux show-options -qv -t "$target" @rofi_tmux_plus_release 2>/dev/null || :)" != "$1" ]; do',
+                '  now="$(date +%s)"',
+                '  if [ $((now - setup_started)) -ge "$2" ]; then',
+                '    marker="$(tmux show-options -qv -t "$target" @rofi_tmux_plus_operation 2>/dev/null || :)"',
+                '    if [ "$marker" = "$1" ]; then tmux kill-session -t "$target" 2>/dev/null || :; fi',
+                "    exit 0",
+                "  fi",
+                "  sleep 0.05",
+                "done",
+                'tmux set-option -qu -t "$target" @rofi_tmux_plus_release 2>/dev/null || :',
+                'started="$(date +%s)"',
+                'while ! tmux list-clients -t "$target" 2>/dev/null | grep -q .; do',
+                '  now="$(date +%s)"',
+                '  if [ $((now - started)) -ge "$2" ]; then',
+                '    pending="$(tmux show-options -qv -t "$target" @rofi_tmux_plus_pending 2>/dev/null || :)"',
+                '    if [ "$pending" = "$1" ]; then tmux kill-session -t "$target" 2>/dev/null || :; fi',
+                "    exit 0",
+                "  fi",
+                "  sleep 0.10",
+                "done",
+                'tmux set-option -qu -t "$target" @rofi_tmux_plus_pending 2>/dev/null || :',
+                "shift 2",
+                'exec "$@"',
+            )
+        )
+        return ["/bin/sh", "-c", body, "rofi-tmux-plus-wrapper", token, str(timeout), *command]
+    body = "\n".join(  # noqa: FLY002 - preserve inherited fixed holder bytes
+        (
+            "set -eu",
+            'target="$(tmux display-message -p -t "$TMUX_PANE" "#{session_id}")"',
+            'if ! tmux set-option -q -t "$target" @rofi_tmux_plus_operation "$1"; then tmux kill-session -t "$target" 2>/dev/null || :; exit 1; fi',
+            'setup_started="$(date +%s)"',
+            'while [ "$(tmux show-options -qv -t "$target" @rofi_tmux_plus_release 2>/dev/null || :)" != "$1" ]; do',
+            '  now="$(date +%s)"',
+            '  if [ $((now - setup_started)) -ge "$2" ]; then',
+            '    marker="$(tmux show-options -qv -t "$target" @rofi_tmux_plus_operation 2>/dev/null || :)"',
+            '    if [ "$marker" = "$1" ]; then tmux kill-session -t "$target" 2>/dev/null || :; fi',
+            "    exit 0",
+            "  fi",
+            "  sleep 0.05",
+            "done",
+            'tmux set-option -qu -t "$target" @rofi_tmux_plus_release 2>/dev/null || :',
+            "shift 2",
+            'if [ "$1" = "__ROFI_TMUX_PLUS_DEFAULT_SHELL__" ]; then',
+            '  exec "${SHELL:-/bin/sh}"',
+            "fi",
+            'exec "$@"',
+        )
+    )
+    payload = list(command) if command else ["__ROFI_TMUX_PLUS_DEFAULT_SHELL__"]
+    return ["/bin/sh", "-c", body, "rofi-tmux-plus-wrapper", token, str(timeout), *payload]
+
+
+class LocalLifecycle:
+    def __init__(
+        self,
+        tmux: TmuxClient,
+        config: Config,
+        *,
+        host: LocalHost | None = None,
+        niri_command: Sequence[str] = ("niri",),
+        terminal_spawner: object | None = None,
+    ) -> None:
+        self.tmux = tmux
+        self.config = config
+        self.host = host
+        self._niri_command = tuple(niri_command)
+        self._terminal_spawner = terminal_spawner
+
+    def resolve(self, host_id: str | None, mesh_revision: str | None) -> LocalHost:
+        if mesh_revision is not None:
+            raise ContractError(
+                "stale_mesh", "the current local-only host mesh has no revision", host_id
+            )
+        return resolve_local_host(host_id, self.host)
+
+    def validate_reference(
+        self,
+        host_id: str,
+        mesh_revision: str | None,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str | None = None,
+        required_options: Sequence[tuple[str, str]] = (),
+    ) -> Session:
+        _validate_reference_inputs(generation, session_id, created_at, expected_name)
+        host = self.resolve(host_id, mesh_revision)
+        session = self.tmux.find(SessionReference(host.host_id, generation, session_id, created_at))
+        if expected_name is not None and session.name != expected_name:
+            raise ContractError(
+                "stale_session",
+                "the selected tmux session changed; refresh and try again",
+                host.host_id,
+            )
+        _validate_required_options(session, required_options, self.tmux)
+        return session
+
+    def open(
+        self,
+        host_id: str,
+        mesh_revision: str | None,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str | None = None,
+        required_options: Sequence[tuple[str, str]] = (),
+        verified_viewer: bool = False,
+        new_viewer: bool = False,
+    ) -> dict[str, object]:
+        session = self.validate_reference(
+            host_id,
+            mesh_revision,
+            generation,
+            session_id,
+            created_at,
+            expected_name,
+            required_options,
+        )
+        if new_viewer:
+            try:
+                self._spawn_terminal(session)
+            except (OSError, subprocess.SubprocessError) as error:
+                raise ContractError(
+                    "launch_failed", f"could not launch terminal: {clean_message(error)}", host_id
+                ) from error
+            return self._open_response(session, focused=False, terminal_launched=True)
+        if verified_viewer:
+            with local_mutation_lock(session.reference.host_id):
+                session = self.validate_reference(
+                    host_id,
+                    mesh_revision,
+                    generation,
+                    session_id,
+                    created_at,
+                    expected_name,
+                    required_options,
+                )
+                inspection = (
+                    inspect_viewers(
+                        session,
+                        self.config,
+                        local_tmux=self.tmux,
+                        destroy_unattached=self._destroy_unattached(session.reference.session_id),
+                        niri_command=self._niri_command,
+                    )
+                    if kitty_configured(self.config)
+                    else None
+                )
+                return self._open_verified(session, inspection, expected_name, required_options)
+        inspection: ViewerInspection | None = None
+        if kitty_configured(self.config):
+            inspection = inspect_viewers(
+                session,
+                self.config,
+                local_tmux=self.tmux,
+                destroy_unattached=self._destroy_unattached(session.reference.session_id),
+                niri_command=self._niri_command,
+            )
+        if inspection is not None and inspection.status == "verified":
+            if len(inspection.viewers) != 1:
+                mark("focus", "ambiguous")
+                raise ContractError(
+                    "viewer_ambiguous",
+                    "multiple compatible viewers require explicit new-view intent",
+                    host_id,
+                )
+            viewer = inspection.viewers[0]
+            if focus_verified(
+                viewer,
+                revalidate=lambda: inspect_viewers(
+                    self.validate_reference(
+                        host_id,
+                        mesh_revision,
+                        generation,
+                        session_id,
+                        created_at,
+                        expected_name,
+                        required_options,
+                    ),
+                    self.config,
+                    local_tmux=self.tmux,
+                    destroy_unattached=self._destroy_unattached(session_id),
+                    niri_command=self._niri_command,
+                ),
+                niri_command=self._niri_command,
+            ):
+                return self._open_response(
+                    session, focused=True, terminal_launched=False, viewer_id=viewer.viewer_id
+                )
+        if self._focus_matching_window(session, expected_name, required_options):
+            return self._open_response(session, focused=True, terminal_launched=False)
+        try:
+            self._spawn_terminal(session)
+        except (OSError, subprocess.SubprocessError) as error:
+            raise ContractError(
+                "launch_failed", f"could not launch terminal: {clean_message(error)}", host_id
+            ) from error
+        return self._open_response(session, focused=False, terminal_launched=True)
+
+    @staticmethod
+    def _open_response(
+        session: Session,
+        *,
+        focused: bool,
+        terminal_launched: bool,
+        viewer_id: str | None = None,
+    ) -> dict[str, object]:
+        mark("focus", "confirmed" if focused else "not_requested")
+        if terminal_launched:
+            mark("terminalSpawn", "confirmed")
+            mark("attachment", "confirmed" if viewer_id else "unverified")
+        result: dict[str, object] = {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": None,
+            "session": session.as_dict(),
+            "focused": focused,
+            "terminalLaunched": terminal_launched,
+        }
+        if viewer_id is not None:
+            result["viewerId"] = viewer_id
+        return result
+
+    def _focus_matching_window(
+        self, session: Session, expected_name=None, required_options=()
+    ) -> bool:
+        host = resolve_local_host(session.reference.host_id, self.host)
+        return focus_session_window(
+            session.name,
+            host.native_hostname,
+            session=session,
+            local_tmux=self.tmux,
+            validate_session=lambda: self.validate_reference(
+                session.reference.host_id,
+                None,
+                session.reference.server_generation,
+                session.reference.session_id,
+                session.reference.created_at,
+                expected_name,
+                required_options,
+            ),
+            niri_command=self._niri_command,
+        )
+
+    def _destroy_unattached(self, session_id: str) -> str | None:
+        from .viewer_service import effective_destroy_unattached
+
+        try:
+            return effective_destroy_unattached(self.tmux, session_id)
+        except ContractError:
+            return None
+
+    def _open_verified(
+        self,
+        session: Session,
+        inspection: ViewerInspection | None,
+        expected_name: str | None,
+        required_options: Sequence[tuple[str, str]],
+    ) -> dict[str, object]:
+        if inspection is None or inspection.status == "unsupported":
+            reason = (
+                inspection.reason
+                if inspection is not None
+                else "Kitty viewer support is unavailable"
+            )
+            raise ContractError("viewer_unsupported", reason, session.reference.host_id)
+        if inspection.status == "verified":
+            if len(inspection.viewers) != 1:
+                mark("focus", "ambiguous")
+                raise ContractError(
+                    "viewer_ambiguous",
+                    "multiple compatible viewers require explicit new-view intent",
+                    session.reference.host_id,
+                )
+            viewer = inspection.viewers[0]
+            if not focus_verified(
+                viewer,
+                revalidate=lambda: inspect_viewers(
+                    self.validate_reference(
+                        session.reference.host_id,
+                        None,
+                        session.reference.server_generation,
+                        session.reference.session_id,
+                        session.reference.created_at,
+                        expected_name,
+                        required_options,
+                    ),
+                    self.config,
+                    local_tmux=self.tmux,
+                    destroy_unattached=self._destroy_unattached(session.reference.session_id),
+                    niri_command=self._niri_command,
+                ),
+                niri_command=self._niri_command,
+            ):
+                raise ContractError(
+                    "viewer_focus_failed", "verified Kitty viewer could not be focused"
+                )
+            return self._open_response(
+                session, focused=True, terminal_launched=False, viewer_id=viewer.viewer_id
+            )
+        if inspection.status != "none":
+            code = "viewer_ambiguous" if inspection.status == "ambiguous" else "viewer_unverified"
+            raise ContractError(code, inspection.reason or "matching Kitty viewer is not verified")
+        try:
+            launch_id = self._spawn_terminal(session)
+        except (OSError, subprocess.SubprocessError) as error:
+            raise ContractError(
+                "launch_failed",
+                f"could not launch terminal: {clean_message(error)}",
+                session.reference.host_id,
+            ) from error
+        deadline = time.monotonic() + 1.5
+        while time.monotonic() < deadline:
+            current_session = self.tmux.find(session.reference)
+            if current_session.reference != session.reference:
+                raise ContractError(
+                    "stale_session", "the selected tmux session changed during open"
+                )
+            if expected_name is not None and current_session.name != expected_name:
+                raise ContractError(
+                    "stale_session", "the selected tmux session changed during open"
+                )
+            _validate_required_options(current_session, required_options, self.tmux)
+            current = inspect_viewers(
+                current_session,
+                self.config,
+                local_tmux=self.tmux,
+                destroy_unattached=self._destroy_unattached(session.reference.session_id),
+                niri_command=self._niri_command,
+            )
+            if launch_id is not None and launch_id in current.pending_launch_ids:
+                time.sleep(0.05)
+                continue
+            if current.status == "verified":
+                viewer = next(
+                    (item for item in current.viewers if item.launch_id == launch_id), None
+                )
+                if viewer is not None:
+                    return self._open_response(
+                        session,
+                        focused=False,
+                        terminal_launched=True,
+                        viewer_id=viewer.viewer_id,
+                    )
+                raise ContractError(
+                    "viewer_registration_ambiguous",
+                    "a different verified Kitty viewer appeared during registration",
+                )
+            elif current.status not in {"none"}:
+                raise ContractError(
+                    "viewer_registration_ambiguous",
+                    current.reason or "launched Kitty viewer registration is ambiguous",
+                )
+            time.sleep(0.05)
+        raise ContractError(
+            "viewer_registration_ambiguous",
+            "launched Kitty viewer was not verified before the registration deadline",
+        )
+
+    def _spawn_terminal(self, session: Session | str) -> str | None:
+        session_id = session if isinstance(session, str) else session.reference.session_id
+        launch_id: str | None = None
+        env = None
+        if isinstance(session, Session) and kitty_configured(self.config):
+            launch_id, env = launch_metadata(session.reference.as_dict())
+        if self._terminal_spawner is not None:
+            mark("terminalSpawn", "uncertain")
+            self._terminal_spawner(session_id)
+            mark("terminalSpawn", "confirmed")
+            mark("attachment", "unverified")
+            return launch_id
+        spawn_terminal_command(
+            self.config,
+            [*self.tmux.attach_argv, "attach-session", "-t", session_id],
+            env=env,
+        )
+        return launch_id
+
+    def create(
+        self,
+        host_id: str,
+        mesh_revision: str | None,
+        name: str,
+        cwd: str | None,
+        options: Sequence[tuple[str, str]],
+        command: Sequence[str],
+        defer_until_attached: bool,
+        attach_timeout: int | None,
+        open_after: bool,
+    ) -> dict[str, object]:
+        host = self.resolve(host_id, mesh_revision)
+        _validate_name(name)
+        if any(not _is_clean(item) for item in command):
+            raise ContractError(
+                "invalid_input",
+                "command arguments must not contain NUL or control characters",
+                host.host_id,
+            )
+        if defer_until_attached and not command:
+            raise ContractError(
+                "invalid_input", "--defer-until-attached requires a command", host.host_id
+            )
+        for option, value in options:
+            validate_user_option(option)
+            _validate_value(value, f"value for {option}")
+        timeout = self.config.attach_timeout_seconds if attach_timeout is None else attach_timeout
+        if not 1 <= timeout <= 3600:
+            raise ContractError(
+                "invalid_input",
+                "attach timeout must be an integer from 1 through 3600",
+                host.host_id,
+            )
+        selected_cwd = str(Path.home()) if cwd is None else cwd
+        _validate_value(selected_cwd, "cwd")
+        if not os.path.isdir(selected_cwd):
+            raise ContractError("invalid_cwd", "cwd must name an existing directory", host.host_id)
+        token = secrets.token_urlsafe(24)
+        reference: SessionReference | None = None
+        armed = False
+        with local_mutation_lock(host.host_id):
+            if self.tmux.has_name(name):
+                raise ContractError(
+                    "session_exists",
+                    "a tmux session with that exact name already exists",
+                    host.host_id,
+                )
+            try:
+                session_id, created_at = self.tmux.create_detached(
+                    name,
+                    selected_cwd,
+                    _wrapper_command(token, command, defer=defer_until_attached, timeout=timeout),
+                )
+            except ContractError as error:
+                if error.code == "session_exists":
+                    raise ContractError(
+                        "session_exists",
+                        "a tmux session with that exact name already exists",
+                        host.host_id,
+                    ) from error
+                raise
+            try:
+                try:
+                    generation = self.tmux.server_generation()
+                except NoServer as error:
+                    # The holding wrapper can fail and remove the just-created
+                    # session before tmux returns control from create-detached.
+                    # Normalize that ordering race at the lifecycle boundary;
+                    # there is no stable reference to clean up in this case.
+                    raise ContractError(
+                        "operation_failed", _OPERATION_TOKEN_FAILURE, host.host_id
+                    ) from error
+                reference = SessionReference(host.host_id, generation, session_id, created_at)
+                armed = True
+                self._wait_for_operation_token(reference, token)
+                for option, value in options:
+                    self.tmux.set_option(session_id, option, value)
+                if defer_until_attached:
+                    self.tmux.set_option(session_id, _PENDING_OPTION, token)
+                session = self.tmux.find(reference)
+                self.tmux.set_option(session_id, _RELEASE_OPTION, token)
+                # The wrapper may execute as soon as this succeeds.  From
+                # here forward cleanup must never kill the session, even if
+                # clearing bookkeeping reports an unexpected error.
+                armed = False
+                native_confirmed(session.reference)
+                try:
+                    self.tmux.unset_option(session_id, _OPERATION_OPTION)
+                except ContractError:
+                    # Release already committed a successful session. A
+                    # bookkeeping cleanup failure cannot turn it into an
+                    # ambiguous lifecycle result or justify killing it.
+                    pass
+            except ContractError:
+                self._rollback(reference, token, armed)
+                raise
+        response: dict[str, object] = {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": None,
+            "session": session.as_dict(),
+        }
+        if open_after:
+            opened = self.open(
+                host.host_id,
+                None,
+                session.reference.server_generation,
+                session.reference.session_id,
+                session.reference.created_at,
+            )
+            response["focused"] = opened["focused"]
+            response["terminalLaunched"] = opened["terminalLaunched"]
+            if "viewerId" in opened:
+                response["viewerId"] = opened["viewerId"]
+        return response
+
+    def _wait_for_operation_token(self, reference: SessionReference, token: str) -> None:
+        deadline = time.monotonic() + 2.0
+        while time.monotonic() < deadline:
+            try:
+                if self.tmux.option(reference.session_id, _OPERATION_OPTION) == token:
+                    return
+            except ContractError:
+                break
+            time.sleep(0.025)
+        raise ContractError(
+            "operation_failed",
+            _OPERATION_TOKEN_FAILURE,
+            reference.host_id,
+        )
+
+    def _rollback(self, reference: SessionReference | None, token: str, armed: bool) -> None:
+        if not armed or reference is None:
+            return
+        try:
+            current = self.tmux.find(reference)
+            marker = self.tmux.option(reference.session_id, _OPERATION_OPTION)
+            if current.reference == reference and marker == token:
+                self.tmux.kill(reference.session_id)
+        except ContractError:
+            return
+
+    def rename(
+        self,
+        host_id: str,
+        mesh_revision: str | None,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str,
+        name: str,
+        required_options: Sequence[tuple[str, str]] = (),
+    ) -> dict[str, object]:
+        _validate_name(name)
+        host = self.resolve(host_id, mesh_revision)
+        with local_mutation_lock(host.host_id):
+            self.validate_reference(
+                host.host_id,
+                None,
+                generation,
+                session_id,
+                created_at,
+                expected_name,
+                required_options,
+            )
+            if self.tmux.has_name(name, except_session_id=session_id):
+                raise ContractError(
+                    "session_exists",
+                    "a tmux session with that exact name already exists",
+                    host.host_id,
+                )
+            self.validate_reference(
+                host.host_id,
+                None,
+                generation,
+                session_id,
+                created_at,
+                expected_name,
+                required_options,
+            )
+            self.tmux.rename(session_id, name)
+            changed = self.validate_reference(
+                host.host_id, None, generation, session_id, created_at, name, required_options
+            )
+            native_confirmed(changed.reference)
+        return {"schemaVersion": 1, "ok": True, "meshRevision": None, "session": changed.as_dict()}
+
+    def kill(
+        self,
+        host_id: str,
+        mesh_revision: str | None,
+        generation: str,
+        session_id: str,
+        created_at: int,
+        expected_name: str,
+        required_options: Sequence[tuple[str, str]] = (),
+    ) -> dict[str, object]:
+        host = self.resolve(host_id, mesh_revision)
+        with local_mutation_lock(host.host_id):
+            session = self.validate_reference(
+                host.host_id,
+                None,
+                generation,
+                session_id,
+                created_at,
+                expected_name,
+                required_options,
+            )
+            observed_clients = session.attached_clients
+            self.validate_reference(
+                host.host_id,
+                None,
+                generation,
+                session_id,
+                created_at,
+                expected_name,
+                required_options,
+            )
+            self.tmux.kill(session_id)
+            native_confirmed(session.reference)
+        return {
+            "schemaVersion": 1,
+            "ok": True,
+            "meshRevision": None,
+            "reference": session.reference.as_dict(),
+            "observedClients": observed_clients,
+        }

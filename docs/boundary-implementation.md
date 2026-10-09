@@ -12,7 +12,7 @@ operations tuple.
 | B0 contracts | Committed/pushed; CI passed | `bf5f838`; three new bundles, independent corpus, split pure domains and blocked-import checks |
 | B1 native associations | Source and both-host frozen native passed; final resource gate pending | Optional same-owner cached endpoint; shared opening bracket, independent receipt and explicit Plus annotation profile |
 | B2 desktop | Source and frozen Starship native passed; final resource gate pending | 219 tests; separate Niri reads, process evidence and pure matcher; prepared profile input and explicit C3/legacy projections |
-| B3 actions | Pending | Extract write package, exact native guards, uncertainty/cleanup and independent native proof |
+| B3 actions | Source passed; frozen native gates pending | UI-neutral SDK and legacy facade, native guards, separate effect tracking and no uncertain write retry; 285 tests |
 | B4 frontend | Pending | Narrow clients, compatibility corpus/deltas, remembered/frozen/expiry behavior, Starship GUI |
 | B5 selection | Pending | Exact candidate artifacts, normal/capacity profiling, published/scoped managed selection and rollback |
 
@@ -119,3 +119,34 @@ were stopped, owned roots removed and ordinary sessions/focus preserved. The
 source gate passed 219 tests, independent contract corpora and compile/Ruff checks.
 This proves the installed desktop adapter; Rofi adoption, two-host resources and
 managed selection remain later gates. Snap had no graphical probes.
+
+B3 extracts the six explicit lifecycle operations into `tmux_observer_actions`.
+`ActionClient.execute` accepts the frozen C5 request and returns its independently
+validated result. `LifecycleService` retains the old method/response facade for
+the later CLI migration. Neither needs Rofi, an owner, a fleet reader or a native
+inventory collector. The native executor selects the default server explicitly
+and ignores ambient `TMUX`/`TMUX_PANE`; its exact-reference lookup does not consult
+a capped prepared roster. Remote programs use the same fixed default selection.
+
+Native commit, terminal spawn, attachment, focus, viewer close and transport have
+separate outcomes. A failed terminal launch after create retains the committed
+reference and session. Once a remote write is dispatched, a missing or malformed
+acknowledgement returns uncertainty and never selects another route. A complete
+native acknowledgement stays confirmed even if later Mesh reporting fails.
+Remote terminal/launch-marker evidence does not confirm current remote native
+attachment. Legacy verified handles retain their existing guarded close contract;
+they do not strengthen C3 remote association claims.
+
+Ordinary focus now requires one fresh compatible window, current process/window
+incarnations and repeated native guards. Duplicate candidates fail explicitly;
+the C5 `new` viewer policy bypasses reuse. Existing verified close checks, pidfd
+pinning and session-survival checks are retained. Python installations without
+pidfd bindings report unsupported close capability; synthetic source checks on
+Python 3.13 do not establish native close acceptance. The installed Starship
+graphical action gate uses its system Python with the required bindings.
+
+The source gate passes 285 tests and both independent contract corpora. A
+preliminary checkout-built installed headless probe passed seven owned native
+cases, preserved eight ordinary references and removed its private servers. It
+is development evidence only. Frozen both-host native actions, actual Starship
+focus/close, frontend parity, resources and selection remain separate gates.
