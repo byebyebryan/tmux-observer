@@ -19,6 +19,7 @@ MAX_NODES = 100_000
 MAX_INT = 2**63 - 1
 _CONTROL_CHARACTERS = re.compile(r"[\x00-\x1f\x7f]")
 _ATOM = re.compile(r'[^"{}\[\],:\s]+')
+_PLAIN_TYPES = (dict, list, str, int, float, bool, type(None))
 
 
 class WireError(ValueError):
@@ -84,15 +85,19 @@ def _preflight(text: str) -> None:
             raise WireError("JSON structure exceeds the wire bound")
 
 
-def validate_tree(value: object) -> None:
+def validate_tree(value: object) -> bool:
+    """Validate bounds/content and report whether every value is a plain JSON type."""
     pending = [(value, 0)]
     nodes = 0
     seen_strings = set()
+    plain = True
     while pending:
         item, depth = pending.pop()
         nodes += 1
         if nodes > MAX_NODES or depth > MAX_DEPTH:
             raise WireError("JSON structure exceeds the wire bound")
+        if type(item) not in _PLAIN_TYPES:
+            plain = False
         if isinstance(item, str):
             # Strings are immutable. Repeated field names and metadata need one
             # content check per document, while every occurrence still counts
@@ -128,6 +133,7 @@ def validate_tree(value: object) -> None:
                 raise WireError("non-finite number")
         else:
             raise WireError("unsupported JSON value")
+    return plain
 
 
 def decode_document(raw: bytes, *, limit: int = DOCUMENT_LIMIT) -> object:
@@ -159,6 +165,18 @@ def decode_document(raw: bytes, *, limit: int = DOCUMENT_LIMIT) -> object:
 
 def encode_document(value: object, *, limit: int = DOCUMENT_LIMIT) -> bytes:
     validate_tree(value)
+    return _encode_after_validation(value, limit=limit, plain=True)
+
+
+def _encode_after_validation(value: object, *, limit: int, plain: bool) -> bytes:
+    """Encode after a pure validator's tree pass; never a public bypass flag.
+
+    Pure schema checks do not mutate plain JSON trees. Exotic Python subclasses
+    retain a second content/structure check before encoding as they did before.
+    Size, finite-number, strict Unicode and serialization checks always run.
+    """
+    if not plain:
+        validate_tree(value)
     try:
         raw = json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
         result = raw.encode("utf-8", "strict") + b"\n"

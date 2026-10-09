@@ -43,6 +43,35 @@ def change(value, path, replacement):
 
 
 class ContractTests(unittest.TestCase):
+    def test_validation_rechecks_exotic_mutating_python_containers(self):
+        class ChangingDict(dict):
+            def __getitem__(self, key):
+                if key == "schemaVersion":
+                    self["extension"] = "unclean\n"
+                return super().__getitem__(key)
+
+        for bundle, name, validator in (
+            ("observation-v1", "complete", public.validate_observation),
+            ("service-v1", "ready", public.validate_service_frame),
+            ("fleet-v1", "local", public.validate_fleet_view),
+            ("fleet-v1", "frame", public.validate_fleet_frame),
+        ):
+            with self.subTest(bundle=bundle, name=name), self.assertRaises(ValueError):
+                validator(ChangingDict(fixture(bundle, name)))
+
+    def test_checked_encoding_keeps_document_byte_and_wire_content_limits(self):
+        for bundle, name, validator in (
+            ("observation-v1", "complete", public.validate_observation),
+            ("service-v1", "ready", public.validate_service_frame),
+            ("fleet-v1", "local", public.validate_fleet_view),
+            ("fleet-v1", "frame", public.validate_fleet_frame),
+        ):
+            for extra in (["x" * 16384] * 66, "unclean\n", "\ud800", float("nan")):
+                value = fixture(bundle, name)
+                value["extension"] = extra
+                with self.subTest(bundle=bundle, name=name), self.assertRaises(ValueError):
+                    validator(value)
+
     def accept(self, kind, value):
         raw = bytes_of(value)
         limit = public.FRAME_LIMIT if kind in ("service", "fleet-frame") else public.DOCUMENT_LIMIT

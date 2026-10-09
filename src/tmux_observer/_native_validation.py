@@ -15,7 +15,7 @@ from ._validation_common import (
     obj,
     string,
 )
-from ._wire import DOCUMENT_LIMIT, encode_document, validate_tree
+from ._wire import DOCUMENT_LIMIT, _encode_after_validation, validate_tree
 
 OBSERVATION_PROTOCOL = "tmux-observer.observation.v1"
 
@@ -99,7 +99,7 @@ def session(value: object) -> dict:
 
 
 def validate_observation(value: object) -> dict:
-    validate_tree(value)
+    plain = validate_tree(value)
     value = obj(
         value,
         "protocol",
@@ -149,5 +149,5 @@ def validate_observation(value: object) -> dict:
             pane_ids.add(pane["paneId"])
     if len(pane_ids) > 512:
         raise ValidationError("owner pane capacity exceeded")
-    encode_document(value, limit=DOCUMENT_LIMIT)
+    _encode_after_validation(value, limit=DOCUMENT_LIMIT, plain=plain)
     return value

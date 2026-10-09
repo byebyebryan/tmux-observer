@@ -262,3 +262,30 @@ while still counting every occurrence toward depth/node limits and rejecting
 unclean, oversized or invalid Unicode values. Sampling cadence, network proof,
 query deadlines and all resource targets remain unchanged; installed acceptance
 must measure this new candidate separately.
+
+The [second actual-session probe](evidence/2026-10-08-boundary-b4/normal-prepared-failed-cpu.json)
+used frozen `bde0f68` and again preserved ordinary sessions/hooks and query
+deadlines. Snap still failed at 7.2507% combined CPU; Starship passed at 3.5720%.
+Fleet/associated-bridge sampled RSS stayed within 96 MiB on both hosts. This
+candidate remains unselected; the apparent code savings did not establish a
+passing resource result.
+
+A focused owned diagnostic found the scheduler and projection independently
+invalidating the same input hash. Separate dependency stamps now let the
+projection reuse a key already computed for the latest inputs, while an actual
+dependency change or lease boundary still recomputes it. Pure contract validators
+retain their initial complete wire pass and every semantic check. For a tree of
+plain JSON types, bounded serialization reuses that content/structure validation;
+Python subclasses retain the second pass. Serialized byte limits, finite numbers
+and strict Unicode checks always run. Tests cover mutating subclasses, byte and
+content bounds, dependency changes, expiry and returned-tree mutation.
+
+The default optional Niri adapter now uses one fixed passive `"Windows"` socket
+request per read, with same-UID peer checking, a complete-record byte cap and one
+absolute BOOTTIME deadline including parsing. It checks both opening and closing
+window captures as before. Malformed/late/foreign replies remain unavailable;
+there is no second-transport retry. Explicit injected command adapters retain
+their bounded CLI path. This follows Niri's
+[documented IPC protocol](https://github.com/YaLTeR/niri/blob/main/niri-ipc/src/lib.rs)
+and was compared passively against the actual Snap CLI window identities; owned
+framing tests and separate frozen/native/resource acceptance remain required.

@@ -24,7 +24,7 @@ from ._validation_common import (
 from ._validation_common import (
     closed_error as error,
 )
-from ._wire import ENVELOPE_LIMIT, encode_document, validate_tree
+from ._wire import ENVELOPE_LIMIT, _encode_after_validation, encode_document, validate_tree
 
 ATTACHMENTS_PROTOCOL = "tmux-observer.attachments.v1"
 ATTACHMENT_DELIVERY_PROTOCOL = "tmux-observer.attachments-delivery.v1"
@@ -34,7 +34,7 @@ PID_NAMESPACE = r"pid:[0-9]+"
 
 
 def validate_attachments(value):
-    validate_tree(value)
+    plain = validate_tree(value)
     value = exact(
         value,
         "protocol",
@@ -83,12 +83,12 @@ def validate_attachments(value):
         if pid in pids:
             raise ValidationError("duplicate native client")
         pids.add(pid)
-    encode_document(value, limit=ATTACHMENTS_LIMIT)
+    _encode_after_validation(value, limit=ATTACHMENTS_LIMIT, plain=plain)
     return value
 
 
 def validate_attachment_delivery(value):
-    validate_tree(value)
+    plain = validate_tree(value)
     value = exact(
         value,
         "protocol",
@@ -140,24 +140,24 @@ def validate_attachment_delivery(value):
         raise ValidationError("failed association source lacks diagnostic")
     overhead = {**value, "snapshot": None}
     encode_document(overhead, limit=ENVELOPE_LIMIT)
-    encode_document(value, limit=ATTACHMENTS_LIMIT + ENVELOPE_LIMIT)
+    _encode_after_validation(value, limit=ATTACHMENTS_LIMIT + ENVELOPE_LIMIT, plain=plain)
     return value
 
 
 def validate_attachment_request(value):
-    validate_tree(value)
+    plain = validate_tree(value)
     value = exact(value, "protocol", "schemaVersion", "operation", "requestId", "expectedHost")
     version(value, ATTACHMENT_DELIVERY_PROTOCOL)
     if value["operation"] != "snapshot":
         raise ValidationError("local association endpoint supports cached snapshot only")
     string(value["requestId"], TOKEN, maximum=64)
     string(value["expectedHost"], HOST)
-    encode_document(value, limit=ENVELOPE_LIMIT)
+    _encode_after_validation(value, limit=ENVELOPE_LIMIT, plain=plain)
     return value
 
 
 def validate_attachment_error(value):
-    validate_tree(value)
+    plain = validate_tree(value)
     keys = ["protocol", "schemaVersion", "kind", "error"]
     if isinstance(value, dict) and "requestId" in value:
         keys.append("requestId")
@@ -166,7 +166,7 @@ def validate_attachment_error(value):
     version(value, ATTACHMENT_DELIVERY_PROTOCOL)
     if value["kind"] != "operation_error" or error(value["error"]) is None:
         raise ValidationError("invalid local attachment operation error")
-    encode_document(value, limit=ENVELOPE_LIMIT)
+    _encode_after_validation(value, limit=ENVELOPE_LIMIT, plain=plain)
     return value
 
 

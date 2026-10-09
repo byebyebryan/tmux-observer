@@ -119,6 +119,7 @@ class FleetPublisher:
         self.publish_needed = False
         self.input_key_dirty = True
         self.cached_input_key = None
+        self.cached_input_dependencies = None
         self.prepared_view = None
         self.prepared_dependencies = None
         self.input_expiry = None
@@ -183,9 +184,34 @@ class FleetPublisher:
         self.projection_dirty = True
         self.input_key_dirty = True
 
+    def input_dependencies(self):
+        return (
+            tuple(self.state.mesh.items()),
+            id(self.state.descriptions),
+            id(self.state.attachments),
+            tuple(
+                (
+                    host,
+                    owner.epoch,
+                    id(owner.confirmed),
+                    owner.expiry,
+                    owner.transport,
+                    getattr(owner, "selected_route", None),
+                )
+                for host, owner in self.state.owners.items()
+            ),
+        )
+
     def current_input_key(self, now):
-        if self.input_key_dirty or self.input_expiry is not None and now >= self.input_expiry:
+        dependencies = self.input_dependencies()
+        if (
+            self.input_key_dirty
+            or dependencies != self.cached_input_dependencies
+            or self.input_expiry is not None
+            and now >= self.input_expiry
+        ):
             self.cached_input_key = self.state.input_key(now)
+            self.cached_input_dependencies = dependencies
             self.input_key_dirty = False
             self.input_expiry = min(
                 (owner.expiry for owner in self.state.owners.values() if owner.expiry > now),
@@ -219,7 +245,10 @@ class FleetPublisher:
             ),
         )
         if dependencies != self.prepared_dependencies:
-            self.mark_changed()
+            # The scheduler may already have hashed the newest inputs. Its
+            # independent dependency check avoids computing that same hash
+            # again solely to rebuild the projection.
+            self.projection_dirty = True
         if not self.projection_dirty and (
             self.projection_expiry is None or now < self.projection_expiry
         ):

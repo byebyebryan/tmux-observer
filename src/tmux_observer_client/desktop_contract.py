@@ -20,7 +20,11 @@ from tmux_observer._validation_common import (
 from tmux_observer._validation_common import (
     closed_error as error,
 )
-from tmux_observer._wire import DOCUMENT_LIMIT, encode_document, validate_tree
+from tmux_observer._wire import (
+    DOCUMENT_LIMIT,
+    _encode_after_validation,
+    validate_tree,
+)
 
 DESKTOP_PROTOCOL = "tmux-observer.desktop.v1"
 EVIDENCE = (
@@ -33,7 +37,7 @@ EVIDENCE = (
 
 
 def validate_desktop(value):
-    validate_tree(value)
+    plain = validate_tree(value)
     value = exact(
         value,
         "protocol",
@@ -161,7 +165,7 @@ def validate_desktop(value):
                 raise ValidationError("launch/title evidence cannot confirm current binding")
         elif confidence is not None or evidence != ("absence" if present == "none" else "unknown"):
             raise ValidationError("invalid non-open evidence")
-    encode_document(value, limit=DOCUMENT_LIMIT)
+    _encode_after_validation(value, limit=DOCUMENT_LIMIT, plain=plain)
     return value
 
 

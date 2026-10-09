@@ -166,3 +166,17 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(
             frame["snapshot"]["hosts"][0]["sessions"][0]["localViewer"]["state"], "unknown"
         )
+
+    def test_new_owner_hashed_by_scheduler_is_not_hashed_again_by_projection(self):
+        self.frame(200)
+        owner = self.fleet.state.owners[self.host]
+        value = copy.deepcopy(self.owner_frame)
+        value.update(kind="heartbeat", sequence=1, requestId=None, encodedAt=220)
+        value["receipt"]["remainingMs"] = value["receipt"]["expiresAt"] - 220
+        matched = owner.receive(value, 220)
+        self.fleet.owner_frame(SimpleNamespace(state=owner), value, matched, 220)
+        self.fleet.state.input_key = Mock(wraps=self.fleet.state.input_key)
+        self.fleet.current_input_key(220)
+        frame = self.frame(221)
+        self.assertEqual(self.fleet.state.input_key.call_count, 1)
+        self.assertEqual(frame["snapshot"]["hosts"][0]["owner"]["encodedAt"], 220)

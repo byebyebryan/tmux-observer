@@ -18,7 +18,13 @@ from ._validation_common import (
     obj,
     string,
 )
-from ._wire import DOCUMENT_LIMIT, ENVELOPE_LIMIT, encode_document, validate_tree
+from ._wire import (
+    DOCUMENT_LIMIT,
+    ENVELOPE_LIMIT,
+    _encode_after_validation,
+    encode_document,
+    validate_tree,
+)
 
 SERVICE_PROTOCOL = "tmux-observer.service.v1"
 
@@ -148,7 +154,7 @@ def ticket(value: object) -> dict:
 
 
 def validate_service_frame(value: object) -> dict:
-    validate_tree(value)
+    plain = validate_tree(value)
     value = obj(
         value,
         "protocol",
@@ -218,7 +224,7 @@ def validate_service_frame(value: object) -> dict:
     overhead = dict(value)
     overhead["snapshot"] = None
     encode_document(overhead, limit=ENVELOPE_LIMIT)
-    encode_document(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT)
+    _encode_after_validation(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, plain=plain)
     return value
 
 

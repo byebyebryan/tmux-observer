@@ -20,7 +20,13 @@ from tmux_observer._validation_common import (
     obj,
     string,
 )
-from tmux_observer._wire import DOCUMENT_LIMIT, ENVELOPE_LIMIT, encode_document, validate_tree
+from tmux_observer._wire import (
+    DOCUMENT_LIMIT,
+    ENVELOPE_LIMIT,
+    _encode_after_validation,
+    encode_document,
+    validate_tree,
+)
 
 FLEET_PROTOCOL = "tmux-observer.fleet.v1"
 
@@ -39,7 +45,7 @@ def viewer(value: object) -> dict:
 
 
 def validate_fleet_view(value: object) -> dict:
-    validate_tree(value)
+    plain = validate_tree(value)
     value = obj(
         value,
         "protocol",
@@ -224,12 +230,12 @@ def validate_fleet_view(value: object) -> dict:
         ticket(value["ticket"])
         if value["ticket"]["publisherId"] != value["readerId"]:
             raise ValidationError("fleet ticket incarnation mismatch")
-    encode_document(value, limit=DOCUMENT_LIMIT)
+    _encode_after_validation(value, limit=DOCUMENT_LIMIT, plain=plain)
     return value
 
 
 def validate_fleet_frame(value: object) -> dict:
-    validate_tree(value)
+    plain = validate_tree(value)
     value = obj(
         value,
         "protocol",
@@ -285,5 +291,5 @@ def validate_fleet_frame(value: object) -> dict:
     overhead = dict(value)
     overhead["snapshot"] = None
     encode_document(overhead, limit=ENVELOPE_LIMIT)
-    encode_document(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT)
+    _encode_after_validation(value, limit=DOCUMENT_LIMIT + ENVELOPE_LIMIT, plain=plain)
     return value

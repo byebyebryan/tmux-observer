@@ -1,0 +1,1829 @@
+{
+  "state": "failed_resource_target",
+  "gate": "B5-normal-resources",
+  "scope": "installed two-host owners passively observing ordinary default servers with enabled local associations, real SSH and actual Niri/process matching; private preferences/units/IPC only; no native mutation or GUI input",
+  "cases": [
+    "both_installed_native_profiles_and_passive_desktop_readers_ready",
+    "hundred_warm_queries_per_endpoint_meet_deadlines",
+    "owned_fleet_teardown_preserves_native_sessions_geometry_and_hooks"
+  ],
+  "endpoints": {
+    "snap": {
+      "wheelSha256": "e0dd3c36e324864116741ad9637c6b886fff7bb904b11eed368a3328efeabc86",
+      "templateSha256": {
+        "tmux-observer-owner@.service": "812fc7c76a7bce28c9b99b6b5d79fd8a909e0ab334c4a45d9e7890b69c65b7b0",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+      "nativeReference": {
+        "hostId": "snap",
+        "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+        "sessionReferences": [
+          {
+            "sessionId": "$50",
+            "createdAt": 1791479177
+          },
+          {
+            "sessionId": "$41",
+            "createdAt": 1791252708
+          },
+          {
+            "sessionId": "$40",
+            "createdAt": 1791243553
+          },
+          {
+            "sessionId": "$37",
+            "createdAt": 1791223249
+          },
+          {
+            "sessionId": "$49",
+            "createdAt": 1791477581
+          },
+          {
+            "sessionId": "$51",
+            "createdAt": 1791489973
+          },
+          {
+            "sessionId": "$39",
+            "createdAt": 1791238809
+          },
+          {
+            "sessionId": "$45",
+            "createdAt": 1791331856
+          }
+        ]
+      },
+      "clock": {
+        "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "80H1VV3",
+      "uid": 1000,
+      "readyAssociationCounts": {
+        "state": "ready",
+        "generation": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+        "sessions": 8,
+        "clients": 14
+      },
+      "warmSamples": {
+        "rpcMs": [
+          10.54156,
+          8.46111,
+          5.885265,
+          4.675725,
+          3.721145,
+          3.063976,
+          2.744148,
+          2.867906,
+          2.807926,
+          2.734953,
+          2.890679,
+          2.796273,
+          2.827494,
+          2.850329,
+          2.843589,
+          2.709255,
+          3.016528,
+          2.816686,
+          2.807063,
+          2.878251,
+          2.895098,
+          2.945611,
+          2.941018,
+          3.056946,
+          3.335238,
+          3.079236,
+          2.993325,
+          4.150673,
+          3.136444,
+          2.923847,
+          3.217405,
+          3.12422,
+          3.185605,
+          3.191233,
+          2.973299,
+          3.925986,
+          3.072445,
+          2.973536,
+          3.055279,
+          2.907802,
+          2.982769,
+          2.941906,
+          3.012872,
+          2.993813,
+          3.022398,
+          2.997009,
+          3.179582,
+          3.151688,
+          2.977708,
+          3.080474,
+          3.020961,
+          3.067456,
+          3.221789,
+          2.991837,
+          3.244826,
+          3.27517,
+          3.82266,
+          3.373135,
+          2.998576,
+          3.028837,
+          3.072559,
+          3.076981,
+          3.039597,
+          3.132787,
+          2.992563,
+          3.217358,
+          3.045972,
+          3.204082,
+          3.060861,
+          3.091101,
+          3.086755,
+          3.104202,
+          3.002263,
+          3.00507,
+          2.992438,
+          3.160463,
+          3.112301,
+          3.306711,
+          7.540552,
+          3.260122,
+          3.177817,
+          3.034597,
+          3.123391,
+          3.076286,
+          3.12811,
+          3.141603,
+          3.081194,
+          7.434526,
+          3.153482,
+          3.106635,
+          3.026157,
+          3.073171,
+          3.037697,
+          2.98599,
+          3.096549,
+          3.064935,
+          3.205311,
+          3.144026,
+          3.228779,
+          3.132045
+        ],
+        "cliMs": [
+          41.86249,
+          41.368478,
+          44.053672,
+          48.568938,
+          38.582259,
+          39.691738,
+          38.368178,
+          38.94356,
+          37.595241,
+          42.480077,
+          40.495139,
+          42.506319,
+          36.829711,
+          36.788733,
+          39.685753,
+          35.365887,
+          43.229705,
+          40.814348,
+          41.618657,
+          38.718221,
+          36.867558,
+          36.658329,
+          38.116411,
+          35.603728,
+          35.841716,
+          39.710507,
+          37.304617,
+          35.936718,
+          39.844064,
+          42.182662,
+          43.265179,
+          35.954117,
+          44.969254,
+          35.663645,
+          38.006278,
+          35.633698,
+          35.259835,
+          36.422808,
+          38.708621,
+          39.639521,
+          35.286009,
+          36.535452,
+          40.519263,
+          36.594823,
+          38.410577,
+          36.043681,
+          37.994173,
+          38.85853,
+          35.459016,
+          36.525935,
+          42.759643,
+          39.89148,
+          37.201161,
+          40.481202,
+          36.944834,
+          40.488265,
+          35.512556,
+          34.795571,
+          36.152635,
+          42.403476,
+          37.090242,
+          38.545849,
+          36.195279,
+          42.501301,
+          34.816236,
+          34.942246,
+          40.604362,
+          40.464271,
+          34.488377,
+          36.306435,
+          35.360621,
+          36.414497,
+          39.826389,
+          38.366417,
+          35.333738,
+          38.01172,
+          41.933617,
+          37.625285,
+          38.098969,
+          34.138096,
+          35.174842,
+          38.984306,
+          38.752104,
+          34.439393,
+          47.670217,
+          36.349986,
+          34.990353,
+          36.507959,
+          35.243628,
+          37.277368,
+          36.090123,
+          35.847026,
+          35.285579,
+          39.001772,
+          35.671623,
+          39.669718,
+          34.949597,
+          35.729014,
+          34.488202,
+          38.667402
+        ],
+        "frame": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "504a2783-e78e-47e8-a466-7e2c5b16a42f",
+          "clock": {
+            "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "encodedAt": 549281401,
+          "sequence": 0,
+          "viewRevision": 10,
+          "snapshot": {
+            "protocol": "tmux-observer.fleet.v1",
+            "schemaVersion": 1,
+            "readerId": "504a2783-e78e-47e8-a466-7e2c5b16a42f",
+            "clock": {
+              "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+              "timeNamespace": "time:4026531834"
+            },
+            "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+            "encodedAt": 549281401,
+            "viewRevision": 10,
+            "mesh": {
+              "state": "ready",
+              "revision": "sha256:decab8fc6d7070b36736392e15feb5900732ce251f8b473fe08341139a6a995c",
+              "localHostId": "snap"
+            },
+            "desktop": {
+              "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+              "epoch": 1,
+              "state": "ready",
+              "startedAt": 549280671,
+              "acceptedAt": 549280722,
+              "expiresAt": 549290671,
+              "inputHash": "sha256:c07eee7265f0ff9ed2dfb30c76d507a5c921604f3ceeff5ee24eb112e9cbec8f",
+              "error": null
+            },
+            "hosts": [
+              {
+                "hostId": "snap",
+                "display": "snap",
+                "local": true,
+                "owner": {
+                  "source": {
+                    "hostId": "snap",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "80H1VV3"
+                  },
+                  "clock": {
+                    "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "53656270-b1c0-436f-a985-039dd467c986",
+                  "encodedAt": 549280558,
+                  "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 549280508,
+                    "finishedAt": 549280518,
+                    "observedAt": 1791509406083,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 2,
+                    "accepted": 2,
+                    "acceptedAttempt": 2,
+                    "startedAt": 549280508,
+                    "acceptedAt": 549280558,
+                    "expiresAt": 549290508,
+                    "lastAttemptAt": 549280508,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 9950,
+                    "inFlight": false
+                  },
+                  "transport": "local",
+                  "localExpiry": 549290508,
+                  "proof": null,
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$50",
+                    "createdAt": 1791479177,
+                    "name": "2026-recap-dedup",
+                    "activityAt": 1791508934,
+                    "lastAttachedAt": 1791504060,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$41",
+                    "createdAt": 1791252708,
+                    "name": "agent-observer",
+                    "activityAt": 1791508930,
+                    "lastAttachedAt": 1791504040,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/agent-observer",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/agent-observer",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$40",
+                    "createdAt": 1791243553,
+                    "name": "caos-models",
+                    "activityAt": 1791508934,
+                    "lastAttachedAt": 1791504064,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$37",
+                    "createdAt": 1791223249,
+                    "name": "embeddings-bf",
+                    "activityAt": 1791508933,
+                    "lastAttachedAt": 1791504067,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$49",
+                    "createdAt": 1791477581,
+                    "name": "mcp",
+                    "activityAt": 1791477581,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "snap-mcp",
+                    "currentPath": "/home/bryan",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$51",
+                    "createdAt": 1791489973,
+                    "name": "pr-review",
+                    "activityAt": 1791508933,
+                    "lastAttachedAt": 1791504052,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$39",
+                    "createdAt": 1791238809,
+                    "name": "spare-gpus",
+                    "activityAt": 1791508933,
+                    "lastAttachedAt": 1791504071,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/caos",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$45",
+                    "createdAt": 1791331856,
+                    "name": "tmux-plus",
+                    "activityAt": 1791508922,
+                    "lastAttachedAt": 1791504032,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/rofi-tmux-plus",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  }
+                ]
+              },
+              {
+                "hostId": "starship",
+                "display": "starship",
+                "local": false,
+                "owner": {
+                  "source": {
+                    "hostId": "starship",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "starship"
+                  },
+                  "clock": {
+                    "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "8a0c7c33-5e1e-43bf-b3f4-59e271cad408",
+                  "encodedAt": 549694104,
+                  "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 549694026,
+                    "finishedAt": 549694034,
+                    "observedAt": 1791509406836,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 2,
+                    "accepted": 2,
+                    "acceptedAttempt": 2,
+                    "startedAt": 549694026,
+                    "acceptedAt": 549694076,
+                    "expiresAt": 549704026,
+                    "lastAttemptAt": 549694026,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 9922,
+                    "inFlight": false
+                  },
+                  "transport": "ready",
+                  "localExpiry": 549291150,
+                  "proof": {
+                    "requestId": "f64cbce945e34b06979d4cf79afc8e37",
+                    "sentAt": 549281328,
+                    "receivedAt": 549281360,
+                    "remainingMs": 9922,
+                    "marginMs": 100
+                  },
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$39",
+                    "createdAt": 1791393220,
+                    "name": "cubey",
+                    "activityAt": 1791508932,
+                    "lastAttachedAt": 1791418748,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/cubey",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "matched"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$51",
+                    "createdAt": 1791491690,
+                    "name": "cubey-reports",
+                    "activityAt": 1791491690,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/cubey",
+                    "currentWindow": "rtk",
+                    "currentPath": "/home/bryan/code/cubey",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$47",
+                    "createdAt": 1791429111,
+                    "name": "devlog",
+                    "activityAt": 1791506477,
+                    "lastAttachedAt": 1791429111,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/devlog",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/devlog",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$50",
+                    "createdAt": 1791478740,
+                    "name": "esp32-349",
+                    "activityAt": 1791508930,
+                    "lastAttachedAt": 1791504043,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/esp32-349",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "matched"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$38",
+                    "createdAt": 1791393055,
+                    "name": "pd-lab",
+                    "activityAt": 1791508922,
+                    "lastAttachedAt": 1791418751,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/powered-descent-lab",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "matched"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$16",
+                    "createdAt": 1790980842,
+                    "name": "pdlab-reports",
+                    "activityAt": 1791217377,
+                    "lastAttachedAt": 1791217367,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/powered-descent-lab",
+                    "currentWindow": "tmux",
+                    "currentPath": "/home/bryan/code/powered-descent-lab",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$46",
+                    "createdAt": 1791428739,
+                    "name": "raster90",
+                    "activityAt": 1791506479,
+                    "lastAttachedAt": 1791428739,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/raster90",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/raster90",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$52",
+                    "createdAt": 1791503972,
+                    "name": "remote-chrome-snap",
+                    "activityAt": 1791503972,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "chrome",
+                    "currentPath": "/home/bryan",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  }
+                ]
+              }
+            ],
+            "ticket": null,
+            "error": null
+          },
+          "requestId": "99acfe43b6c840888129a77590f5e762",
+          "error": null,
+          "ticket": null,
+          "kind": "view"
+        }
+      }
+    },
+    "starship": {
+      "wheelSha256": "e0dd3c36e324864116741ad9637c6b886fff7bb904b11eed368a3328efeabc86",
+      "templateSha256": {
+        "tmux-observer-owner@.service": "812fc7c76a7bce28c9b99b6b5d79fd8a909e0ab334c4a45d9e7890b69c65b7b0",
+        "tmux-observer-fleet@.service": "c50e80f5a0da20474d3a8ee65e3088f4c5a0764f278f28737ac248913e8f52b0"
+      },
+      "actualMeshRevision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+      "nativeVersion": "tmux 3.7c",
+      "contextId": "13debc1a8b7b99705fb17616ae09a886",
+      "nativeReference": {
+        "hostId": "starship",
+        "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+        "sessionReferences": [
+          {
+            "sessionId": "$39",
+            "createdAt": 1791393220
+          },
+          {
+            "sessionId": "$51",
+            "createdAt": 1791491690
+          },
+          {
+            "sessionId": "$47",
+            "createdAt": 1791429111
+          },
+          {
+            "sessionId": "$50",
+            "createdAt": 1791478740
+          },
+          {
+            "sessionId": "$38",
+            "createdAt": 1791393055
+          },
+          {
+            "sessionId": "$16",
+            "createdAt": 1790980842
+          },
+          {
+            "sessionId": "$46",
+            "createdAt": 1791428739
+          },
+          {
+            "sessionId": "$52",
+            "createdAt": 1791503972
+          }
+        ]
+      },
+      "clock": {
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      },
+      "nativeHostname": "starship",
+      "uid": 1000,
+      "readyAssociationCounts": {
+        "state": "ready",
+        "generation": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+        "sessions": 8,
+        "clients": 6
+      },
+      "warmSamples": {
+        "rpcMs": [
+          3.006064,
+          2.657042,
+          2.669232,
+          2.697132,
+          2.682713,
+          2.686032,
+          2.684012,
+          2.681402,
+          2.672653,
+          2.680762,
+          2.666332,
+          2.977463,
+          2.708993,
+          2.692562,
+          2.671872,
+          2.673422,
+          2.703293,
+          2.691912,
+          2.696172,
+          2.700353,
+          2.730342,
+          2.694742,
+          2.719933,
+          7.194492,
+          3.084384,
+          2.624512,
+          2.560612,
+          2.531902,
+          2.538011,
+          3.083264,
+          2.564452,
+          2.666992,
+          2.981744,
+          2.654652,
+          3.284855,
+          3.105304,
+          3.028664,
+          2.730102,
+          2.644052,
+          3.062954,
+          7.134923,
+          2.567421,
+          2.546692,
+          2.565711,
+          2.688863,
+          2.738442,
+          2.724923,
+          2.677872,
+          2.687792,
+          2.706893,
+          2.664312,
+          2.704802,
+          2.707532,
+          2.666052,
+          2.681052,
+          2.660472,
+          2.689362,
+          2.824493,
+          2.586252,
+          2.597681,
+          2.514241,
+          2.894953,
+          2.562142,
+          2.506031,
+          2.894833,
+          2.494592,
+          2.479211,
+          2.474301,
+          2.474612,
+          3.187094,
+          2.687042,
+          2.820863,
+          2.534592,
+          2.957773,
+          2.935413,
+          2.666222,
+          2.978463,
+          2.649822,
+          2.612762,
+          2.936574,
+          2.570091,
+          2.511102,
+          2.603432,
+          2.632561,
+          2.621302,
+          2.529121,
+          2.523382,
+          2.939723,
+          2.528851,
+          2.528021,
+          2.508091,
+          2.555632,
+          2.504491,
+          2.481892,
+          2.650552,
+          2.712892,
+          2.514542,
+          3.344625,
+          2.549181,
+          2.488582
+        ],
+        "cliMs": [
+          32.367407,
+          33.06059,
+          31.992755,
+          32.297567,
+          31.040401,
+          31.739914,
+          31.401133,
+          36.034783,
+          32.484718,
+          34.255616,
+          33.18659,
+          32.194327,
+          30.534268,
+          33.208761,
+          31.800965,
+          31.155201,
+          31.592364,
+          31.652043,
+          32.243197,
+          32.259196,
+          31.361833,
+          32.890569,
+          31.108802,
+          34.907368,
+          31.467383,
+          33.811054,
+          33.06239,
+          32.164356,
+          32.803639,
+          33.08494,
+          33.681753,
+          32.364567,
+          33.726853,
+          33.743784,
+          33.15497,
+          32.96737,
+          36.538376,
+          37.891962,
+          33.289781,
+          34.042375,
+          34.212035,
+          32.084946,
+          33.293181,
+          34.265196,
+          32.509027,
+          34.070255,
+          34.807618,
+          33.567853,
+          35.016409,
+          33.448752,
+          32.202726,
+          34.404746,
+          32.679449,
+          32.335517,
+          33.856143,
+          34.127215,
+          39.54013,
+          33.183491,
+          33.429522,
+          34.160065,
+          37.41472,
+          31.902355,
+          36.438055,
+          32.316257,
+          32.554188,
+          33.407042,
+          33.794933,
+          32.191166,
+          31.302462,
+          35.700383,
+          32.654798,
+          33.500532,
+          35.595542,
+          34.739377,
+          33.947305,
+          35.21893,
+          34.751777,
+          33.864644,
+          34.519277,
+          32.891449,
+          34.765308,
+          33.886204,
+          34.134525,
+          38.960067,
+          34.087515,
+          32.223037,
+          34.009884,
+          33.384651,
+          34.944549,
+          33.111731,
+          34.268345,
+          33.444422,
+          33.603133,
+          32.460217,
+          34.892439,
+          34.040614,
+          37.911113,
+          36.340275,
+          38.193303,
+          35.030999
+        ],
+        "frame": {
+          "protocol": "tmux-observer.fleet.v1",
+          "schemaVersion": 1,
+          "readerId": "a8597b9f-94de-47b2-9836-f8e0ad3c8ec2",
+          "clock": {
+            "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+            "timeNamespace": "time:4026531834"
+          },
+          "contextId": "13debc1a8b7b99705fb17616ae09a886",
+          "encodedAt": 549698274,
+          "sequence": 0,
+          "viewRevision": 9,
+          "snapshot": {
+            "protocol": "tmux-observer.fleet.v1",
+            "schemaVersion": 1,
+            "readerId": "a8597b9f-94de-47b2-9836-f8e0ad3c8ec2",
+            "clock": {
+              "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+              "timeNamespace": "time:4026531834"
+            },
+            "contextId": "13debc1a8b7b99705fb17616ae09a886",
+            "encodedAt": 549698274,
+            "viewRevision": 9,
+            "mesh": {
+              "state": "ready",
+              "revision": "sha256:ef64c3acc214c797c3630b9b16b94dd6828e5637762358f29b8042147d187653",
+              "localHostId": "starship"
+            },
+            "desktop": {
+              "contextId": "13debc1a8b7b99705fb17616ae09a886",
+              "epoch": 1,
+              "state": "ready",
+              "startedAt": 549697258,
+              "acceptedAt": 549697308,
+              "expiresAt": 549707258,
+              "inputHash": "sha256:524936b0929d1891a54e6f1036f0cd420e3dc3fee876e0fc3399afea468ac6bc",
+              "error": null
+            },
+            "hosts": [
+              {
+                "hostId": "starship",
+                "display": "starship",
+                "local": true,
+                "owner": {
+                  "source": {
+                    "hostId": "starship",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "starship"
+                  },
+                  "clock": {
+                    "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "8a0c7c33-5e1e-43bf-b3f4-59e271cad408",
+                  "encodedAt": 549698108,
+                  "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 549698058,
+                    "finishedAt": 549698067,
+                    "observedAt": 1791509410868,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 4,
+                    "accepted": 4,
+                    "acceptedAttempt": 4,
+                    "startedAt": 549698058,
+                    "acceptedAt": 549698108,
+                    "expiresAt": 549708058,
+                    "lastAttemptAt": 549698058,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 9950,
+                    "inFlight": false
+                  },
+                  "transport": "local",
+                  "localExpiry": 549708058,
+                  "proof": null,
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$39",
+                    "createdAt": 1791393220,
+                    "name": "cubey",
+                    "activityAt": 1791508932,
+                    "lastAttachedAt": 1791418748,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/cubey",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$51",
+                    "createdAt": 1791491690,
+                    "name": "cubey-reports",
+                    "activityAt": 1791491690,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/cubey",
+                    "currentWindow": "rtk",
+                    "currentPath": "/home/bryan/code/cubey",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$47",
+                    "createdAt": 1791429111,
+                    "name": "devlog",
+                    "activityAt": 1791506477,
+                    "lastAttachedAt": 1791429111,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/devlog",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/devlog",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$50",
+                    "createdAt": 1791478740,
+                    "name": "esp32-349",
+                    "activityAt": 1791508930,
+                    "lastAttachedAt": 1791504043,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/esp32-349",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$38",
+                    "createdAt": 1791393055,
+                    "name": "pd-lab",
+                    "activityAt": 1791508922,
+                    "lastAttachedAt": 1791418751,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/powered-descent-lab",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$16",
+                    "createdAt": 1790980842,
+                    "name": "pdlab-reports",
+                    "activityAt": 1791217377,
+                    "lastAttachedAt": 1791217367,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/powered-descent-lab",
+                    "currentWindow": "tmux",
+                    "currentPath": "/home/bryan/code/powered-descent-lab",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$46",
+                    "createdAt": 1791428739,
+                    "name": "raster90",
+                    "activityAt": 1791506479,
+                    "lastAttachedAt": 1791428739,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/raster90",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/raster90",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "starship",
+                    "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+                    "sessionId": "$52",
+                    "createdAt": 1791503972,
+                    "name": "remote-chrome-snap",
+                    "activityAt": 1791503972,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "chrome",
+                    "currentPath": "/home/bryan",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  }
+                ]
+              },
+              {
+                "hostId": "snap",
+                "display": "snap",
+                "local": false,
+                "owner": {
+                  "source": {
+                    "hostId": "snap",
+                    "uid": 1000,
+                    "server": "default",
+                    "nativeHostname": "80H1VV3"
+                  },
+                  "clock": {
+                    "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+                    "timeNamespace": "time:4026531834"
+                  },
+                  "publisherId": "53656270-b1c0-436f-a985-039dd467c986",
+                  "encodedAt": 549284764,
+                  "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                  "sample": {
+                    "startedAt": 549284591,
+                    "finishedAt": 549284601,
+                    "observedAt": 1791509410166,
+                    "coverage": "complete",
+                    "error": null
+                  },
+                  "receipt": {
+                    "state": "ready",
+                    "attempted": 4,
+                    "accepted": 4,
+                    "acceptedAttempt": 4,
+                    "startedAt": 549284591,
+                    "acceptedAt": 549284642,
+                    "expiresAt": 549294591,
+                    "lastAttemptAt": 549284591,
+                    "lastAttemptResult": "complete",
+                    "leaseMs": 10000,
+                    "remainingMs": 9827,
+                    "inFlight": false
+                  },
+                  "transport": "ready",
+                  "localExpiry": 549707195,
+                  "proof": {
+                    "requestId": "9046ed9f22a54e25ad77790fda008d74",
+                    "sentAt": 549697468,
+                    "receivedAt": 549697570,
+                    "remainingMs": 9827,
+                    "marginMs": 100
+                  },
+                  "error": null
+                },
+                "sessions": [
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$50",
+                    "createdAt": 1791479177,
+                    "name": "2026-recap-dedup",
+                    "activityAt": 1791508934,
+                    "lastAttachedAt": 1791504060,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$41",
+                    "createdAt": 1791252708,
+                    "name": "agent-observer",
+                    "activityAt": 1791508930,
+                    "lastAttachedAt": 1791504040,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/agent-observer",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/agent-observer",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$40",
+                    "createdAt": 1791243553,
+                    "name": "caos-models",
+                    "activityAt": 1791508934,
+                    "lastAttachedAt": 1791504064,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$37",
+                    "createdAt": 1791223249,
+                    "name": "embeddings-bf",
+                    "activityAt": 1791508933,
+                    "lastAttachedAt": 1791504067,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$49",
+                    "createdAt": 1791477581,
+                    "name": "mcp",
+                    "activityAt": 1791477581,
+                    "lastAttachedAt": null,
+                    "attachedClients": 0,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "snap-mcp",
+                    "currentPath": "/home/bryan",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "none"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$51",
+                    "createdAt": 1791489973,
+                    "name": "pr-review",
+                    "activityAt": 1791508933,
+                    "lastAttachedAt": 1791504052,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$39",
+                    "createdAt": 1791238809,
+                    "name": "spare-gpus",
+                    "activityAt": 1791508933,
+                    "lastAttachedAt": 1791504071,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan/code/caos",
+                    "currentWindow": "claude",
+                    "currentPath": "/home/bryan/code/caos",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  },
+                  {
+                    "hostId": "snap",
+                    "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+                    "sessionId": "$45",
+                    "createdAt": 1791331856,
+                    "name": "tmux-plus",
+                    "activityAt": 1791508922,
+                    "lastAttachedAt": 1791504032,
+                    "attachedClients": 2,
+                    "pending": false,
+                    "windowCount": 1,
+                    "sessionPath": "/home/bryan",
+                    "currentWindow": "codex",
+                    "currentPath": "/home/bryan/code/rofi-tmux-plus",
+                    "localViewer": {
+                      "reason": null,
+                      "state": "open",
+                      "confidence": "confirmed"
+                    }
+                  }
+                ]
+              }
+            ],
+            "ticket": null,
+            "error": null
+          },
+          "requestId": "75fb4cadf37f45598059e82dbe010c74",
+          "error": null,
+          "ticket": null,
+          "kind": "view"
+        }
+      }
+    }
+  },
+  "cleanup": true,
+  "harnessCommit": "bde0f68480f289a5a62867fff37c62c9033e275a",
+  "harnessTreeDirty": false,
+  "sourceCommit": "bde0f68480f289a5a62867fff37c62c9033e275a",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "bde0f68480f289a5a62867fff37c62c9033e275a",
+      "epoch": 1791509342,
+      "tree": "a6399deb2b79d507622b23d6a39364a3f4dc9719"
+    },
+    "wheelSha256": "e0dd3c36e324864116741ad9637c6b886fff7bb904b11eed368a3328efeabc86",
+    "descriptorSha256": "b13104f8adb9f29780327d99b482a88c12365b639df4d04319661bbe4b53799c",
+    "sourceFilesMatchHarness": true
+  },
+  "backgroundProfiles": {
+    "snap": {
+      "state": "complete",
+      "durationMs": 600625,
+      "samples": [
+        {
+          "atMs": 549288952,
+          "services": {
+            "owner": {
+              "cpuUsec": 266635,
+              "rssBytes": 22597632,
+              "memoryCurrentBytes": 13025280,
+              "processes": 1
+            },
+            "fleet": {
+              "cpuUsec": 997891,
+              "rssBytes": 41553920,
+              "memoryCurrentBytes": 19075072,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "580585": {
+              "cpuUsec": 50000.0,
+              "rssBytes": 19718144,
+              "incarnation": "54927968",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 30,
+          "fleetCounters": {
+            "sshStarts": 2,
+            "ownerPayloadReceivedBytes": 52086,
+            "ownerControlSentBytes": 1020
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9374,
+            "connections": 2
+          }
+        },
+        {
+          "atMs": 549889577,
+          "services": {
+            "owner": {
+              "cpuUsec": 14316062,
+              "rssBytes": 23044096,
+              "memoryCurrentBytes": 11509760,
+              "processes": 1
+            },
+            "fleet": {
+              "cpuUsec": 29707298,
+              "rssBytes": 42741760,
+              "memoryCurrentBytes": 19750912,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "580585": {
+              "cpuUsec": 2580000.0,
+              "rssBytes": 19841024,
+              "incarnation": "54927968",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 1610,
+          "fleetCounters": {
+            "sshStarts": 2,
+            "ownerPayloadReceivedBytes": 3208778,
+            "ownerControlSentBytes": 61404
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9406,
+            "connections": 2
+          }
+        }
+      ],
+      "servicePeakProcesses": {
+        "owner": {
+          "rssBytes": 28090368,
+          "atMs": 549649146,
+          "processes": [
+            {
+              "pid": 580043,
+              "cpuUsec": 4260000.0,
+              "rssBytes": 23044096,
+              "incarnation": "54927841",
+              "name": "tmux-observer"
+            },
+            {
+              "pid": 598897,
+              "cpuUsec": 0.0,
+              "rssBytes": 5046272,
+              "incarnation": "54964914",
+              "name": "tmux: client"
+            }
+          ]
+        },
+        "fleet": {
+          "rssBytes": 64843776,
+          "atMs": 549684330,
+          "processes": [
+            {
+              "pid": 580045,
+              "cpuUsec": 15130000.0,
+              "rssBytes": 30945280,
+              "incarnation": "54927842",
+              "name": "python"
+            },
+            {
+              "pid": 580632,
+              "cpuUsec": 100000.0,
+              "rssBytes": 11657216,
+              "incarnation": "54928011",
+              "name": "ssh"
+            },
+            {
+              "pid": 600317,
+              "cpuUsec": 40000.0,
+              "rssBytes": 22241280,
+              "incarnation": "54968427",
+              "name": "python3"
+            }
+          ]
+        }
+      },
+      "serviceCpuPercent": {
+        "owner": 2.3391345681581686,
+        "fleet": 4.779922081165452
+      },
+      "bridgeCpuPercent": 0.4212278876170656,
+      "serviceMaxObservedRssBytes": {
+        "owner": 28090368,
+        "fleet": 64843776
+      },
+      "maxObservedBridgeRssBytes": 19841024,
+      "nativeCommands": 1580,
+      "meshCalls": {
+        "list": 40,
+        "report-route": 4
+      },
+      "fleetCounters": {
+        "sshStarts": 0,
+        "ownerPayloadReceivedBytes": 3156692,
+        "ownerControlSentBytes": 60384
+      },
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups"
+      ],
+      "archivedSamples": {
+        "measuredCount": 600,
+        "retained": "first and last; computed peaks cover every measured sample"
+      }
+    },
+    "starship": {
+      "state": "complete",
+      "durationMs": 600332,
+      "samples": [
+        {
+          "atMs": 549701716,
+          "services": {
+            "owner": {
+              "cpuUsec": 139944,
+              "rssBytes": 22650880,
+              "memoryCurrentBytes": 12070912,
+              "processes": 1
+            },
+            "fleet": {
+              "cpuUsec": 672352,
+              "rssBytes": 40726528,
+              "memoryCurrentBytes": 19849216,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "2156195": {
+              "cpuUsec": 30000.0,
+              "rssBytes": 19136512,
+              "incarnation": "54969314",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 25,
+          "fleetCounters": {
+            "sshStarts": 1,
+            "ownerPayloadReceivedBytes": 51242,
+            "ownerControlSentBytes": 1000
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9374,
+            "connections": 2
+          }
+        },
+        {
+          "atMs": 550302048,
+          "services": {
+            "owner": {
+              "cpuUsec": 5362099,
+              "rssBytes": 23269376,
+              "memoryCurrentBytes": 12800000,
+              "processes": 1
+            },
+            "fleet": {
+              "cpuUsec": 14365164,
+              "rssBytes": 42102784,
+              "memoryCurrentBytes": 20430848,
+              "processes": 2
+            }
+          },
+          "bridges": {
+            "2156195": {
+              "cpuUsec": 820000.0,
+              "rssBytes": 19222528,
+              "incarnation": "54969314",
+              "name": "tmux-observer"
+            }
+          },
+          "nativeCommands": 1505,
+          "fleetCounters": {
+            "sshStarts": 1,
+            "ownerPayloadReceivedBytes": 3164683,
+            "ownerControlSentBytes": 60400
+          },
+          "queues": {
+            "readers": 1,
+            "outputBytes": 0,
+            "retainedBytes": 9406,
+            "connections": 2
+          }
+        }
+      ],
+      "servicePeakProcesses": {
+        "owner": {
+          "rssBytes": 27910144,
+          "atMs": 550158575,
+          "processes": [
+            {
+              "pid": 2156146,
+              "cpuUsec": 1760000.0,
+              "rssBytes": 23224320,
+              "incarnation": "54969196",
+              "name": "tmux-observer"
+            },
+            {
+              "pid": 2172613,
+              "cpuUsec": 0.0,
+              "rssBytes": 4685824,
+              "incarnation": "55015857",
+              "name": "tmux"
+            }
+          ]
+        },
+        "fleet": {
+          "rssBytes": 61796352,
+          "atMs": 550217758,
+          "processes": [
+            {
+              "pid": 2156148,
+              "cpuUsec": 8070000.0,
+              "rssBytes": 30613504,
+              "incarnation": "54969196",
+              "name": "python"
+            },
+            {
+              "pid": 2156175,
+              "cpuUsec": 30000.0,
+              "rssBytes": 11431936,
+              "incarnation": "54969214",
+              "name": "ssh"
+            },
+            {
+              "pid": 2173768,
+              "cpuUsec": 10000.0,
+              "rssBytes": 19750912,
+              "incarnation": "55021773",
+              "name": "python3"
+            }
+          ]
+        }
+      },
+      "serviceCpuPercent": {
+        "owner": 0.8698778342650401,
+        "fleet": 2.2808732501349254
+      },
+      "bridgeCpuPercent": 0.1315938514022241,
+      "serviceMaxObservedRssBytes": {
+        "owner": 27910144,
+        "fleet": 61796352
+      },
+      "maxObservedBridgeRssBytes": 19222528,
+      "nativeCommands": 1480,
+      "meshCalls": {
+        "list": 40,
+        "report-route": 4
+      },
+      "fleetCounters": {
+        "sshStarts": 0,
+        "ownerPayloadReceivedBytes": 3113441,
+        "ownerControlSentBytes": 59400
+      },
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups"
+      ],
+      "archivedSamples": {
+        "measuredCount": 601,
+        "retained": "first and last; computed peaks cover every measured sample"
+      }
+    }
+  },
+  "normalResourceAssessment": {
+    "snap": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 84066304,
+      "ownerMaxObservedRssBytes": 28090368,
+      "combinedCpuPercent": 7.250650500725845,
+      "withinSelectedTargets": false
+    },
+    "starship": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 81637376,
+      "ownerMaxObservedRssBytes": 27910144,
+      "combinedCpuPercent": 3.571978972017031,
+      "withinSelectedTargets": true
+    }
+  },
+  "limits": [
+    "Sampled RSS can miss transient peaks",
+    "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
+    "Two physical hosts and private catalog/preferences; no managed selection"
+  ]
+}
