@@ -77,8 +77,18 @@ foreground input; Starship is in active use.
 
 | Checkpoint | Exit evidence | State |
 | --- | --- | --- |
-| CP0 | Reviewed design, full-path baseline and work attribution | In progress |
+| CP0 | Reviewed design, full-path baseline and work attribution | Complete |
 | CP1 | Structural/decoded admission savings with public/adverse regression gates | Pending |
 | CP2 | Outgoing/native/Mesh review and measured implementation or explicit disposition | Pending |
 | CP3 | Frozen producer, independent pinned consumer, native/resource/capacity/Snap UI | Pending |
 | CP4 | Published artifacts, scoped both-host deploy/recovery/rollback/actions and preserved source drift | Pending |
+
+The [first](evidence/2026-10-09-cpu-performance/owner-baseline-1.json) and
+[repeat](evidence/2026-10-09-cpu-performance/owner-baseline-2.json) frozen 0.4.0a1
+pipeline baselines use Python 3.14, 300 cycles, ten sessions, two decoded owner
+readers, one bridge validation and a ten-client local attachment delivery.
+CPU is 3.656/3.690 seconds, with 5,996 structural checks and identical wire digest
+`16797eca3470e08f6a25cba0a9ef7dd4b6145f792a6ca72c6772ad948900da04`.
+Structural checks have 1.610 seconds inclusive in the first run; inclusive
+function times overlap and must not be summed. This isolates pipeline work,
+excluding native subprocesses, real IPC, remote proof timing and desktop scans.

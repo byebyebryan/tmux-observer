@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""Fixed owner/delivery/bridge/reader pipeline; never runs native or network jobs."""
+
+import argparse
+import copy
+import cProfile
+import hashlib
+import importlib.metadata
+import json
+import os
+import pstats
+import subprocess
+import time
+from pathlib import Path
+
+from tmux_observer._attachment_state import AttachmentState
+from tmux_observer._owner_state import OwnerState
+from tmux_observer.attachments import validate_attachment_delivery, validate_attachments
+from tmux_observer.delivery import validate_service_frame
+from tmux_observer.native import FRAME_LIMIT, decode_document, encode_document, validate_observation
+from tmux_observer_client._owner_document import OwnerDocument
+from tmux_observer_client._remote_state import RemoteState
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def fixture(bundle, name):
+    return json.loads((ROOT / "contracts" / bundle / "fixtures" / (name + ".json")).read_text())
+
+
+def measure(cycles, sessions):
+    seed = fixture("service-v1", "ready")
+    source, clock = seed["source"], seed["clock"]
+    source["uid"] = os.getuid()
+    seed["snapshot"]["source"] = source
+    row = seed["snapshot"]["sessions"][0]
+    seed["snapshot"]["sessions"] = [
+        {**row, "sessionId": "$" + str(i), "name": "fixture-" + str(i)} for i in range(sessions)
+    ]
+    association = fixture("attachments-v1", "delivery-ready")["snapshot"]
+    association.update(source=source, clock=clock, serverGeneration=row["serverGeneration"])
+    association["sessions"] = [
+        {key: value[key] for key in ("hostId", "serverGeneration", "sessionId", "createdAt")}
+        for value in seed["snapshot"]["sessions"]
+    ]
+    association["clients"] = [
+        {"sessionRef": ref, "clientPid": 20000 + i, "processStartTicks": 30000 + i}
+        for i, ref in enumerate(association["sessions"])
+    ]
+    observations, associations = [], []
+    for cycle in range(cycles):
+        started = 1000 + cycle * 2000
+        observation = copy.deepcopy(seed["snapshot"])
+        observation["sample"].update(startedAt=started, finishedAt=started + 10)
+        if cycle >= cycles // 2:
+            observation["sessions"][0]["name"] = "renamed"
+        native = copy.deepcopy(association)
+        native["sample"].update(startedAt=started, finishedAt=started + 15)
+        observations.append(observation)
+        associations.append(native)
+    owner = OwnerState(source, clock, publisher_id=seed["publisherId"])
+    attached = AttachmentState(
+        source, clock, association["pidNamespace"], publisher_id=seed["publisherId"]
+    )
+    readers = [RemoteState(source["hostId"], local_clock=clock) for _ in range(2)]
+    for reader in readers:
+        reader.start("owned-watch", 1000)
+    digest = hashlib.sha256()
+    profile = cProfile.Profile()
+    cpu = time.process_time()
+    profile.enable()
+    for cycle, (observation, native) in enumerate(zip(observations, associations)):
+        started = observation["sample"]["startedAt"]
+        # The native collector checks its result before publisher admission.
+        validate_observation(observation)
+        token = owner.begin(started)
+        assert owner.finish(token, observation, started + 20)
+        validate_attachments(native)
+        token = attached.begin(started)
+        assert attached.finish(token, native, started + 20)
+        frame = owner.frame(
+            started + 30,
+            kind="resync" if cycle == 0 else "heartbeat",
+            sequence=cycle,
+            request_id="owned-watch" if cycle == 0 else None,
+        )
+        raw = encode_document(frame, limit=FRAME_LIMIT)
+        digest.update(raw)
+        # A bridge validates and forwards the unchanged original wire bytes.
+        validate_service_frame(decode_document(raw, limit=FRAME_LIMIT))
+        for reader in readers:
+            if hasattr(OwnerDocument, "from_wire"):
+                document = OwnerDocument.from_wire(raw)
+            else:
+                document = OwnerDocument(decode_document(raw, limit=FRAME_LIMIT))
+            reader.receive(document, started + 40)
+            assert reader.transport == "ready"
+            assert reader.confirmed["receipt"]["accepted"] == cycle + 1
+        native_frame = attached.frame(started + 30, request_id="owned-attachments")
+        native_raw = encode_document(native_frame, limit=FRAME_LIMIT)
+        digest.update(native_raw)
+        validate_attachment_delivery(decode_document(native_raw, limit=FRAME_LIMIT))
+    profile.disable()
+    cpu = time.process_time() - cpu
+    stats = pstats.Stats(profile)
+    hottest = sorted(stats.stats.items(), key=lambda item: item[1][2], reverse=True)[:30]
+    assert owner.revision == 2 and all(reader.fact_revision == 2 for reader in readers)
+    return {
+        "cpuSeconds": cpu,
+        "wireSha256": digest.hexdigest(),
+        "ownerRevision": owner.revision,
+        "readerFactRevisions": [reader.fact_revision for reader in readers],
+        "structuralChecks": sum(
+            value[1] for key, value in stats.stats.items() if key[2] == "validate_tree"
+        ),
+        "functions": [
+            {
+                "file": Path(key[0]).name,
+                "line": key[1],
+                "name": key[2],
+                "calls": value[1],
+                "selfSeconds": value[2],
+                "inclusiveSeconds": value[3],
+            }
+            for key, value in hottest
+        ],
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cycles", type=int, default=300)
+    parser.add_argument("--sessions", type=int, default=10)
+    parser.add_argument("--output", required=True, type=Path)
+    args = parser.parse_args()
+    assert args.cycles >= 3 and 1 <= args.sessions <= 256
+    result = {
+        "schemaVersion": 1,
+        "gate": "fixed-owner-document-pipeline",
+        "result": "passed",
+        "sourceCommit": subprocess.check_output(
+            ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
+        ).strip(),
+        "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "runtimeVersion": importlib.metadata.version("tmux-observer"),
+        "runtimeModules": {
+            name: hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest()
+            for name in (
+                "tmux_observer._wire",
+                "tmux_observer._owner_state",
+                "tmux_observer._delivery_validation",
+                "tmux_observer_client._owner_document",
+            )
+            for module in [__import__(name, fromlist=["_"])]
+        },
+        "workload": {
+            "cycles": args.cycles,
+            "sessionsPerOwner": args.sessions,
+            "cycleMs": 2000,
+            "decodedOwnerReaders": 2,
+            "bridges": 1,
+            "localAttachmentClients": args.sessions,
+            "materialRenames": 1,
+        },
+        "limits": [
+            "Fixed document pipeline, not native or whole-service CPU",
+            "Includes framing and checks; excludes native subprocesses, actual IPC and desktop work",
+            "Reader clocks are equal to isolate admission; actual remote proofs accepted separately",
+            "cProfile changes absolute timings; compare identical harness and interpreter",
+        ],
+        **measure(args.cycles, args.sessions),
+    }
+    args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    print(
+        json.dumps({key: result[key] for key in ("cpuSeconds", "structuralChecks", "wireSha256")})
+    )
+
+
+if __name__ == "__main__":
+    main()

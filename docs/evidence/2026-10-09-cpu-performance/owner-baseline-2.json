@@ -1,0 +1,279 @@
+{
+  "cpuSeconds": 3.6903025209999996,
+  "functions": [
+    {
+      "calls": 5996,
+      "file": "_wire.py",
+      "inclusiveSeconds": 1.616766417,
+      "line": 117,
+      "name": "validate_tree",
+      "selfSeconds": 0.9261374750000001
+    },
+    {
+      "calls": 1200,
+      "file": "_wire.py",
+      "inclusiveSeconds": 0.4354796,
+      "line": 57,
+      "name": "_preflight",
+      "selfSeconds": 0.26846421000000004
+    },
+    {
+      "calls": 160703,
+      "file": "~",
+      "inclusiveSeconds": 0.266705917,
+      "line": 0,
+      "name": "<method 'extend' of 'list' objects>",
+      "selfSeconds": 0.15740161700000002
+    },
+    {
+      "calls": 8396,
+      "file": "encoder.py",
+      "inclusiveSeconds": 0.154673939,
+      "line": 207,
+      "name": "iterencode",
+      "selfSeconds": 0.154673939
+    },
+    {
+      "calls": 139800,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.227525426,
+      "line": 21,
+      "name": "obj",
+      "selfSeconds": 0.14154186200000002
+    },
+    {
+      "calls": 1648409,
+      "file": "~",
+      "inclusiveSeconds": 0.133057676,
+      "line": 0,
+      "name": "<built-in method builtins.len>",
+      "selfSeconds": 0.13305655900000002
+    },
+    {
+      "calls": 278404,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.33648036200000003,
+      "line": 33,
+      "name": "string",
+      "selfSeconds": 0.12332569800000001
+    },
+    {
+      "calls": 610800,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.30954469700000004,
+      "line": 110,
+      "name": "deepcopy",
+      "selfSeconds": 0.123025876
+    },
+    {
+      "calls": 1304920,
+      "file": "~",
+      "inclusiveSeconds": 0.12281868000000001,
+      "line": 0,
+      "name": "<method 'pop' of 'list' objects>",
+      "selfSeconds": 0.12281868000000001
+    },
+    {
+      "calls": 39600,
+      "file": "copy.py",
+      "inclusiveSeconds": 0.30370456700000004,
+      "line": 198,
+      "name": "_deepcopy_dict",
+      "selfSeconds": 0.11923633400000001
+    },
+    {
+      "calls": 1105776,
+      "file": "_wire.py",
+      "inclusiveSeconds": 0.099584507,
+      "line": 158,
+      "name": "<genexpr>",
+      "selfSeconds": 0.099584507
+    },
+    {
+      "calls": 392240,
+      "file": "~",
+      "inclusiveSeconds": 0.083895336,
+      "line": 0,
+      "name": "<method 'search' of 're.Pattern' objects>",
+      "selfSeconds": 0.083895336
+    },
+    {
+      "calls": 847152,
+      "file": "~",
+      "inclusiveSeconds": 0.08257715800000001,
+      "line": 0,
+      "name": "<built-in method builtins.isinstance>",
+      "selfSeconds": 0.08257715800000001
+    },
+    {
+      "calls": 808200,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.074259881,
+      "line": 22,
+      "name": "<genexpr>",
+      "selfSeconds": 0.074259881
+    },
+    {
+      "calls": 60000,
+      "file": "_native_validation.py",
+      "inclusiveSeconds": 0.41479801600000005,
+      "line": 33,
+      "name": "reference",
+      "selfSeconds": 0.068304795
+    },
+    {
+      "calls": 400636,
+      "file": "~",
+      "inclusiveSeconds": 0.06275079800000001,
+      "line": 0,
+      "name": "<method 'encode' of 'str' objects>",
+      "selfSeconds": 0.06275079800000001
+    },
+    {
+      "calls": 315603,
+      "file": "~",
+      "inclusiveSeconds": 0.057502624,
+      "line": 0,
+      "name": "<built-in method _json.scanstring>",
+      "selfSeconds": 0.057502624
+    },
+    {
+      "calls": 446240,
+      "file": "~",
+      "inclusiveSeconds": 0.056811255000000005,
+      "line": 0,
+      "name": "<method 'add' of 'set' objects>",
+      "selfSeconds": 0.056811255000000005
+    },
+    {
+      "calls": 138604,
+      "file": "__init__.py",
+      "inclusiveSeconds": 0.164083845,
+      "line": 169,
+      "name": "fullmatch",
+      "selfSeconds": 0.055860299
+    },
+    {
+      "calls": 1200,
+      "file": "decoder.py",
+      "inclusiveSeconds": 0.11487847400000001,
+      "line": 351,
+      "name": "raw_decode",
+      "selfSeconds": 0.050573198
+    },
+    {
+      "calls": 138604,
+      "file": "__init__.py",
+      "inclusiveSeconds": 0.06937971200000001,
+      "line": 330,
+      "name": "_compile",
+      "selfSeconds": 0.048771359
+    },
+    {
+      "calls": 18000,
+      "file": "_native_validation.py",
+      "inclusiveSeconds": 0.297683545,
+      "line": 61,
+      "name": "session",
+      "selfSeconds": 0.045291631000000006
+    },
+    {
+      "calls": 138604,
+      "file": "~",
+      "inclusiveSeconds": 0.038843834,
+      "line": 0,
+      "name": "<method 'fullmatch' of 're.Pattern' objects>",
+      "selfSeconds": 0.038843834
+    },
+    {
+      "calls": 42600,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.100436803,
+      "line": 84,
+      "name": "exact",
+      "selfSeconds": 0.037915636
+    },
+    {
+      "calls": 1200,
+      "file": "attachments.py",
+      "inclusiveSeconds": 0.372985371,
+      "line": 41,
+      "name": "_attachments_after_tree",
+      "selfSeconds": 0.03719896
+    },
+    {
+      "calls": 70200,
+      "file": "_wire.py",
+      "inclusiveSeconds": 0.049895436,
+      "line": 37,
+      "name": "_integer",
+      "selfSeconds": 0.036827616
+    },
+    {
+      "calls": 160800,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.092681699,
+      "line": 41,
+      "name": "nullable",
+      "selfSeconds": 0.036553776
+    },
+    {
+      "calls": 172200,
+      "file": "_validation_common.py",
+      "inclusiveSeconds": 0.036487116,
+      "line": 27,
+      "name": "integer",
+      "selfSeconds": 0.036487116
+    },
+    {
+      "calls": 322784,
+      "file": "~",
+      "inclusiveSeconds": 0.035977445000000004,
+      "line": 0,
+      "name": "<method 'append' of 'list' objects>",
+      "selfSeconds": 0.035977445000000004
+    },
+    {
+      "calls": 1800,
+      "file": "_native_validation.py",
+      "inclusiveSeconds": 0.5556259100000001,
+      "line": 106,
+      "name": "_observation_after_tree",
+      "selfSeconds": 0.033396137
+    }
+  ],
+  "gate": "fixed-owner-document-pipeline",
+  "harnessSha256": "348e4028a82e520a921f80dbd6a84236abe610eae92cfb6b95fe09fcb2215772",
+  "limits": [
+    "Fixed document pipeline, not native or whole-service CPU",
+    "Includes framing and checks; excludes native subprocesses, actual IPC and desktop work",
+    "Reader clocks are equal to isolate admission; actual remote proofs accepted separately",
+    "cProfile changes absolute timings; compare identical harness and interpreter"
+  ],
+  "ownerRevision": 2,
+  "readerFactRevisions": [
+    2,
+    2
+  ],
+  "result": "passed",
+  "runtimeModules": {
+    "tmux_observer._delivery_validation": "a3d7e0fd5ac62578cd67351124e7f60998a05bb5622a907d76b562ccf8446c99",
+    "tmux_observer._owner_state": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+    "tmux_observer._wire": "e0c31ba96b158b2d95e6e39f43fc767fe915a9ed1aceb37ba96e59292164835e",
+    "tmux_observer_client._owner_document": "02cfcce5a628ddb2c708171f5d72a9dee7e22c6517c3262cdbda4dbcba424e22"
+  },
+  "runtimeVersion": "0.4.0a1",
+  "schemaVersion": 1,
+  "sourceCommit": "657cb6959b8387aca74f41d1246258bfff20642c",
+  "structuralChecks": 5996,
+  "wireSha256": "16797eca3470e08f6a25cba0a9ef7dd4b6145f792a6ca72c6772ad948900da04",
+  "workload": {
+    "bridges": 1,
+    "cycleMs": 2000,
+    "cycles": 300,
+    "decodedOwnerReaders": 2,
+    "localAttachmentClients": 10,
+    "materialRenames": 1,
+    "sessionsPerOwner": 10
+  }
+}
