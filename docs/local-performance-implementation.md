@@ -1,6 +1,6 @@
 # Attachment-driven local Kitty implementation
 
-2026-10-08. Active goal following the user-selected
+2026-10-08. Completed goal following the user-selected
 [local performance scope](local-performance-design.md). Commit reviewed
 checkpoints as work progresses. Ordinary sessions and SSH masters are preserved;
 foreground acceptance uses Snap while Starship remains in active use.
@@ -57,10 +57,10 @@ current target validation in the action package.
 | --- | --- | --- |
 | LP0 | Source review, bounded design, contract choice and ordinary-session constraints | Reviewed design |
 | LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Source accepted; passive Snap bootstrap diagnostic passed |
-| LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Source accepted; frozen/native acceptance pending |
+| LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Source and frozen/native accepted |
 | LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Source and frozen consumer accepted |
 | LP4 | Frozen artifacts, native open/close/switch/bootstrap acceptance, local and normal-fleet CPU/update measurements, Snap GUI | Accepted; see 0.3.0a1 release record |
-| LP5 | Publish accepted pair, scoped chezmoi selection/recovery and rollback checks on both hosts | Pending |
+| LP5 | Publish accepted pair, scoped chezmoi selection/recovery and rollback checks on both hosts | Accepted on Snap and Starship |
 
 Source, packaged, installed/native, measured and managed acceptance remain
 separate. Record exact artifacts and failed evidence without upgrading a passing
@@ -195,3 +195,28 @@ retained, not called a passing ten-minute gate. The corrected scheduler checks
 the immutable host descriptions; a regression exercises one hundred quiet
 ticks without projecting any native owner input. The full source gate passes
 356 tests before the next freeze. No publication or managed selection occurs.
+
+### LP5 publication and managed acceptance
+
+Producer review `2ddcce5` and consumer review `b3bd203` publish the exact accepted
+0.3.0a1 / 0.9.0a1 pair. Published downloads match frozen wheel/descriptor/bundle
+checksums. Review CI `37892716964` and consumer CI `37892723636` pass against the
+published producer. No accepted runtime payload or native pin is rebuilt.
+
+Chezmoi selection `167cf9b` passes independent
+[managed acceptance](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-local-performance-operations.md)
+on Snap and Starship: scoped render/dry-run/apply, all 172/265 installed members,
+manifest/fifteen controls, independent local binding/native readiness, restart
+recovery, actual paired rollback and reselection. Native/fresh/prepared full
+references and generations agree from both endpoints after fixtures finish;
+nine/ten ordinary references and all hook hashes survive. Installed guarded
+lifecycle actions cover both owners. Snap's managed picker passes 23 graphical
+cases and cleanup restores focus. Starship receives no foreground input.
+
+Managed warm-frame p95 is 100.40 ms and an owned Refresh notice clears in
+582.21 ms, 11.95 ms after observed service completion; callback timing limits
+remain explicit. Deliberate rollback requires guarded scoped forced reselection
+because chezmoi protects restored controls. A first Starship readiness attempt
+ran while Snap was stopped for rollback; it failed before issuing recovery and
+passed once the peer was reselected. These attempts remain separate from passing
+records. Always-on, relocation, remote-cost and resource-margin limits remain.
