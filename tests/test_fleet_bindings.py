@@ -5,6 +5,7 @@ import json
 import os
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from tests import test_fleet_state
@@ -13,6 +14,7 @@ from tmux_observer_client._desktop_types import LocalViewerObservation
 from tmux_observer_client._local_bindings import Resolution, RetainedBindings
 from tmux_observer_client.contract import validate_fleet_view
 from tmux_observer_client.desktop import DesktopResult, association_batch, scan_remote
+from tmux_observer_client.fleet import FleetPublisher
 
 
 class FleetBindingTests(unittest.TestCase):
@@ -75,6 +77,43 @@ class FleetBindingTests(unittest.TestCase):
         self.state.invalidate_desktop()
         self.assertIsNotNone(self.state.view(202)["hosts"][0]["localBindings"])
         self.discover.assert_called_once()
+
+    def test_projection_owns_every_mutable_source_and_binding_branch(self):
+        expected = self.state.view(201)
+        value = self.state.view(201)
+        value["clock"]["bootId"] = "changed"
+        value["mesh"]["state"] = "unavailable"
+        value["desktop"]["epoch"] = 99
+        host = value["hosts"][0]
+        host["owner"]["source"]["uid"] += 1
+        host["sessions"][0]["name"] = "changed"
+        host["localBindings"]["rows"][0]["association"]["reason"] = "changed"
+        self.assertEqual(expected, self.state.view(201))
+
+    def test_local_binding_inputs_do_not_project_remote_owner_history(self):
+        remote = {**self.state.descriptions[0], "hostId": "remote", "local": False}
+        self.state.descriptions.append(remote)
+        self.state.owners["remote"] = Mock()
+        self.state.owners["remote"].project.side_effect = AssertionError("remote projection")
+        self.assertEqual(self.key, self.state.binding_key(201))
+        self.state.owners["remote"].project.assert_not_called()
+
+    def test_remote_renewal_does_not_rebuild_local_binding_key(self):
+        publisher = SimpleNamespace(
+            binding_adapter=True,
+            state=self.state,
+            cached_binding_key=None,
+            cached_binding_dependencies=None,
+            binding_expiry=None,
+        )
+        self.state.binding_key = Mock(wraps=self.state.binding_key)
+        first = FleetPublisher.current_binding_key(publisher, 201)
+        self.state.owners["remote"] = Mock(sequence=100, expiry=3000)
+        self.assertEqual(first, FleetPublisher.current_binding_key(publisher, 202))
+        self.state.binding_key.assert_called_once()
+        self.state.owners[self.host_id].sequence += 1
+        FleetPublisher.current_binding_key(publisher, 203)
+        self.assertEqual(self.state.binding_key.call_count, 2)
 
     def test_wire_rejects_mixed_native_scope_counts_and_action_handles(self):
         baseline = self.state.view(201)

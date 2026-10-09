@@ -24,6 +24,10 @@ BINDINGS_PROTOCOL = "tmux-observer.bindings.v1"
 
 def validate_bindings(value):
     plain = validate_tree(value)
+    return _bindings_after_tree(value, plain=plain)
+
+
+def _bindings_after_tree(value, *, plain):
     exact(
         value,
         "protocol",
@@ -119,6 +123,20 @@ def validate_bindings(value):
 def validate_fleet_bindings(value, host, *, context_id, clock_value, now):
     """Bind the known Fleet v1 extension to its enclosing native source."""
     validate_bindings(value)
+    return _fleet_binding_scope(
+        value, host, context_id=context_id, clock_value=clock_value, now=now
+    )
+
+
+def _fleet_bindings_after_tree(value, host, *, context_id, clock_value, now):
+    """Private Fleet encoder path after its enclosing exact-JSON tree check."""
+    _bindings_after_tree(value, plain=True)
+    return _fleet_binding_scope(
+        value, host, context_id=context_id, clock_value=clock_value, now=now
+    )
+
+
+def _fleet_binding_scope(value, host, *, context_id, clock_value, now):
     owner = host["owner"]
     if (
         not host["local"]

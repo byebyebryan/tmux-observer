@@ -157,7 +157,21 @@ class FleetState:
         return input_hash(self.inputs(now), now=now)
 
     def local_input(self, now):
-        return next((host for host in self.inputs(now) if host["local"]), None)
+        description = next((item for item in self.descriptions if item["local"]), None)
+        if description is None:
+            return None
+        owner, rows = self.owners[description["hostId"]].project()
+        host = {
+            "hostId": description["hostId"],
+            "display": description["display"],
+            "local": True,
+            "owner": owner,
+            "sessions": rows,
+            "route": None,
+            "remoteExecutable": description["remoteExecutable"],
+            "localAttachments": self.attachments,
+        }
+        return host if owner_current({"mesh": self.mesh}, host, now=now) else None
 
     def binding_key(self, now):
         return binding_key(
@@ -321,15 +335,15 @@ class FleetState:
             "protocol": FLEET_PROTOCOL,
             "schemaVersion": 1,
             "readerId": self.reader_id,
-            "clock": self.clock,
+            "clock": copy.deepcopy(self.clock),
             "contextId": self.context_id,
             "encodedAt": now,
             "viewRevision": self.revision,
-            "mesh": self.mesh,
+            "mesh": copy.deepcopy(self.mesh),
             "desktop": desktop,
             "hosts": hosts,
-            "ticket": ticket,
-            "error": self.error,
+            "ticket": copy.deepcopy(ticket),
+            "error": copy.deepcopy(self.error),
         }
         try:
             validate_fleet_view(value)
@@ -345,7 +359,10 @@ class FleetState:
                 },
             }
             validate_fleet_view(value)
-        return copy.deepcopy(value)
+        # Hosts already own their projected owner/session trees; desktop,
+        # bindings and presence are independent copies too. Copy only the
+        # remaining shared fields above instead of copying all sessions twice.
+        return value
 
     def material(self, now, *, _view=None):
         view = self.view(now) if _view is None else _view

@@ -293,13 +293,28 @@ class FleetPublisher:
     def current_binding_key(self, now):
         if self.binding_adapter is None:
             return None
-        dependencies = self.input_dependencies(), self.state.binding_epoch
+        owner = self.state.owners.get(self.state.host_id)
+        dependencies = (
+            tuple(self.state.mesh.items()),
+            id(self.state.attachments),
+            self.state.binding_epoch,
+            None
+            if owner is None
+            else (
+                owner.epoch,
+                owner.sequence,
+                id(owner.confirmed),
+                owner.expiry,
+                owner.transport,
+                id(owner.error),
+            ),
+        )
         if dependencies != self.cached_binding_dependencies or (
             self.binding_expiry is not None and now >= self.binding_expiry
         ):
             self.cached_binding_key = self.state.binding_key(now)
             self.cached_binding_dependencies = dependencies
-            expiries = [owner.expiry for owner in self.state.owners.values() if owner.expiry > now]
+            expiries = [owner.expiry] if owner is not None and owner.expiry > now else []
             if self.state.attachments is not None:
                 expiry = self.state.attachments["receipt"]["expiresAt"]
                 if expiry is not None and expiry > now:

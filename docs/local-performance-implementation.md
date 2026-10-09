@@ -148,3 +148,39 @@ contract bundles and the pure retained-contract module. Formats 1/2 remain
 verifiable for rollback; neither can silently acquire retained payload. Existing
 six bundles remain immutable. The source gate passes 352 tests, including new
 descriptor coverage/compatibility checks. Frozen/native acceptance remains open.
+
+### LP4 first frozen candidate and resource review
+
+Runtime `b2d908e`, wheel `f542a0247f56dbebc374d18eff3ca2130d7375b470fce89b656a8ff263296f76`,
+rebuilds identically and passes eleven installed attachment cases, four simulated
+recovery cases and ten actual Snap local binding lifecycle cases. The latter
+includes bootstrap, session switch without rediscovery, Kitty close/new client,
+explicit terminal refresh, owner/reader replacement, compositor socket
+incarnation and passive native generation/hooks. Warm read p95 is 0.952 ms.
+Every owned fixture/unit is removed and ordinary sessions remain present.
+
+Its isolated two-session/one-client 120-second profile measures 2.554% combined
+CPU (owner 1.023%, fleet 1.531%) with zero periodic desktop jobs or rediscovery.
+The prior selected 0.2.0a1 wheel on the same fixture measures 3.025% (owner
+1.339%, fleet 1.686%) and 41 periodic desktop jobs. These are sequential working
+desktop measurements, not controlled causal attribution; native owner code is
+unchanged. The first timing assertion incorrectly included an independent schema
+check per query. A separate baseline attempt failed because its diagnostics
+assumed the new adapter attribute on the old artifact. Both failed records and
+their cleaned follow-ups remain separate.
+
+The ten-minute ordinary two-host profile fails the unchanged five-percent CPU
+gate on Snap: 5.679% combined, versus Starship 3.066%. Memory/query/preservation
+checks pass. During that profile both endpoints perform zero retained binding
+discoveries; remote C3 continues its 197/198 scheduled jobs. This is not accepted
+for publication or managed selection.
+
+A passive main-loop diagnostic identifies repeated tree validation and deep
+copies as substantial remaining cost. The next source checkpoint removes
+duplicate tree checks inside an already checked Fleet envelope, projects only
+the local owner for binding inputs, ignores remote renewals when caching local
+binding keys, and avoids a second copy of already owned projection branches.
+Public validators and outgoing reference/expiry semantics remain intact. Three
+new regressions cover mutable branch ownership, independent remote inputs and
+local dependency invalidation. The full source gate passes 355 tests. A new
+runtime freeze and repeated native/resource acceptance are required.
