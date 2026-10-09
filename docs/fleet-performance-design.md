@@ -54,7 +54,7 @@ larger contract is deferred in favor of the independently useful fleet pass.
 | FP1 | Checked input/accounting, unchanged Mesh, facts versus receipt work; adverse scope/expiry/capacity regressions | Complete; 367 tests and contract/style checks pass |
 | FP2 | Remote proof scheduling and remote viewer disposition; fixed-input before/after comparison | Complete; frozen native acceptance pending |
 | FP3 | Frozen producer native/recovery/resource/capacity acceptance; independent pinned consumer and Snap GUI | Complete within the declared always-on scope |
-| FP4 | Published paired artifacts; scoped both-host bytes/readiness/recovery/rollback and preserved source drift | Managed acceptance complete; source reconciliation being recorded |
+| FP4 | Published paired artifacts; scoped both-host bytes/readiness/recovery/rollback and preserved source drift | Complete |
 
 Use identical synthetic input streams for causal function-work comparisons;
 measure ordinary ten-minute native fleet separately. Report owner, fleet,
