@@ -53,7 +53,7 @@ larger contract is deferred in favor of the independently useful fleet pass.
 | FP0 | Design/source review; reproducible fixed-input baseline and function/counter attribution | Complete |
 | FP1 | Checked input/accounting, unchanged Mesh, facts versus receipt work; adverse scope/expiry/capacity regressions | Complete; 367 tests and contract/style checks pass |
 | FP2 | Remote proof scheduling and remote viewer disposition; fixed-input before/after comparison | Complete; frozen native acceptance pending |
-| FP3 | Frozen producer native/recovery/resource/capacity acceptance; independent pinned consumer and Snap GUI | Pending |
+| FP3 | Frozen producer native/recovery/resource/capacity acceptance; independent pinned consumer and Snap GUI | Complete within the declared always-on scope |
 | FP4 | Published paired artifacts; scoped both-host bytes/readiness/recovery/rollback and preserved source drift | Pending |
 
 Use identical synthetic input streams for causal function-work comparisons;
@@ -133,5 +133,19 @@ fifteen real SSH links and thirty-two readers; the conservative sampled
 fleet/SSH/associated-bridge peak is 500.44 MiB against 768 MiB. Its partial label
 preserves the synthetic-owner and two-physical-host limits. The current frozen
 consumer is 0.10.0a1, independently pinned to all 78 runtime modules; 293 tests
-and 23 Snap graphical cases pass. Ordinary ten-minute resources and managed
-promotion remain pending in FP3/FP4.
+and 23 Snap graphical cases pass. The [ordinary ten-minute profile](evidence/2026-10-09-fleet-performance/normal.json)
+passes: combined owner/fleet/associated-bridge CPU is 4.4701% Snap / 2.4262%
+Starship, under the unchanged 5% gate. Owner CPU is 1.8682% / 0.8013%; fleet
+and children 2.4703% / 1.3004%; associated bridge 0.1315% / 0.3245%.
+Fleet/children/associated-bridge sampled RSS is 81.39 / 79.71 MiB against 96;
+owners remain below 64 MiB. One-second samples can miss transient peaks.
+
+The actual profile has 205 / 198 matching proofs, zero new SSH connections,
+199 remote desktop jobs each and zero local binding rediscovery. Remote owner
+payloads are 3,345,213 / 2,957,202 bytes over at least 600 seconds each; these
+are application payloads, not encrypted wire traffic. Native cadence and
+query deadlines hold; ordinary references, generations and hooks survive.
+Fleet CPU is lower than the previous ordinary run's 3.1532% / 1.8755%, but
+working desktops/activity differ, so that comparison is not a causal savings
+estimate. The controlled fixed-input result above establishes the bookkeeping
+reduction. Managed promotion remains pending in FP4.
