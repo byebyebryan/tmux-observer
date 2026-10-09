@@ -263,20 +263,31 @@ def main():
             watchers = []
             try:
                 counters = []
+                first_reader = None
                 for _ in range(12):
                     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                     sock.settimeout(2)
                     sock.connect(str(endpoint))
                     sock.sendall(json.dumps(req("watch"), separators=(",", ":")).encode() + b"\n")
                     watchers.append(sock)
-                    counters.append(wire(sock, bytearray())["receipt"]["attempted"])
+                    value = wire(sock, bytearray())
+                    first_reader = value if first_reader is None else first_reader
+                    counters.append(value["receipt"]["attempted"])
                 durations = []
                 for _ in range(20):
                     started = time.monotonic_ns()
                     value = exchange(req("probe"))
                     durations.append((time.monotonic_ns() - started) / 1e6)
                     counters.append(value["receipt"]["attempted"])
-                assert len(set(counters)) == 1
+                # Sequential queries may cross the normal two-second boundary.
+                # Reads still cannot schedule extra attempts within that cadence.
+                from tmux_observer._owner_state import CADENCE_MS
+
+                scheduled = (
+                    value["encodedAt"] - first_reader["receipt"]["lastAttemptAt"]
+                ) // CADENCE_MS
+                assert counters == sorted(counters)
+                assert counters[-1] - counters[0] <= scheduled
                 assert (
                     native(
                         "list-sessions",
@@ -287,8 +298,10 @@ def main():
                 )
                 assert native("show-hooks") == hooks
                 passed(
-                    "12 watchers and 20 probes share one native attempt and preserve native lifetime facts",
+                    "12 watchers and 20 probes share scheduled native sampling and preserve native lifetime facts",
                     attempted=counters[0],
+                    finalAttempted=counters[-1],
+                    scheduledAdvanceBound=scheduled,
                     queryDurationsMs=durations,
                 )
                 ticket = exchange(

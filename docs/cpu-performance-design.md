@@ -146,3 +146,12 @@ identical configured replies and all 76 tests passing. At this cadence its whole
 service saving is small. Mesh has no public watch API; Observer imports no
 provider implementation or private files. The provider's immutable managed
 archive pin and installed checks remain separate rollout requirements.
+
+The first frozen owner run stopped after three cases at the harness's assumption
+that 32 sequential queries all see one native counter. Its
+[failure record](evidence/2026-10-09-cpu-performance/owner-first-timing-failure.json)
+preserves the missing-counter limitation. The harness now bounds counter advance
+by elapsed owner time divided by the unchanged two-second cadence, verifies
+monotonic counters and preserves native roster/lifetime checks. Queries that
+cross a scheduled boundary may see the next attempt; reads still schedule none.
+The same frozen wheel must pass the corrected gate before acceptance.

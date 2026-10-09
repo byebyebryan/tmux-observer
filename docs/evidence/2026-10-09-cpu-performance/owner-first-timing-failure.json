@@ -1,0 +1,15 @@
+{
+  "result": "failed",
+  "gate": "G2-owner",
+  "sourceCommit": "83d42e5ff21aa6c36577db73d4219a9ada547415",
+  "wheelSha256": "1ec6090c63703399d9bba1890591f1cf47913ba379dd03f27cd7e8fc77f273ee",
+  "completedCases": 3,
+  "failure": "AssertionError: len(set(counters)) == 1",
+  "location": "scripts/accept-native-owner:279",
+  "limits": [
+    "Reconstructed from captured command output; original harness wrote success records only",
+    "Counter values and durations were not persisted; exact timing cannot be reconstructed",
+    "Owned unit/server cleanup ran through the harness finally blocks"
+  ],
+  "disposition": "Replace cross-boundary equality with a bound derived from the first attempt time, final encoded time and unchanged native cadence; rerun the same wheel"
+}
