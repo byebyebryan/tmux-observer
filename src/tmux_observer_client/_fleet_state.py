@@ -349,7 +349,7 @@ class FleetState:
                 "protocol": FLEET_PROTOCOL,
                 "schemaVersion": 1,
                 "readerId": self.reader_id,
-                "clock": self.clock,
+                "clock": copy.deepcopy(self.clock),
                 "contextId": self.context_id,
                 "encodedAt": now,
                 "sequence": sequence,

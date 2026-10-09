@@ -427,3 +427,16 @@ The normal harness records preservation counts before/after teardown and uses
 an accurate reference/generation/hook case label. Fresh frozen gates are required.
 The complete source gate passes 326 tests. No resource pass or managed promotion
 is implied by this source checkpoint.
+
+A follow-up projection review found that the returned frame's header clock
+still aliased the reader's retained clock, although its snapshot was isolated.
+A regression first reproduces caller mutation changing internal context. The
+header now takes its own copy, as owner/attachment deliveries already do;
+subsequent frames and retained state stay unchanged. Wire outputs and authority
+rules are unchanged. The running `7acbbfe` resource record retains its exact
+artifact identity; promotion requires the corrected freeze and its source gate.
+The corrected source gate passes 327 tests. Private preselection captures on
+Snap and Starship verify the currently selected 69-member Core/210-member
+frontend pair and all 15 managed controls, with ordinary references preserved.
+Those captures prepare rollback; they do not prove a performed rollback or
+authorize promotion without the outstanding frozen gates.

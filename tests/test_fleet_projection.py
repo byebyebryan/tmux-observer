@@ -156,6 +156,13 @@ class ProjectionTests(unittest.TestCase):
             expired["snapshot"]["hosts"][0]["sessions"][0]["localViewer"]["state"], "unknown"
         )
 
+    def test_published_header_clock_cannot_change_retained_context(self):
+        original = copy.deepcopy(self.fleet.state.clock)
+        first = self.frame(200)
+        first["clock"]["bootId"] = "22222222-2222-4222-8222-222222222222"
+        self.assertEqual(self.fleet.state.clock, original)
+        self.assertEqual(self.frame(201)["clock"], original)
+
     def test_prepared_reads_reuse_input_hash_until_dependency_expiry(self):
         self.fleet.state.input_key = Mock(wraps=self.fleet.state.input_key)
         for now in range(200, 301):
