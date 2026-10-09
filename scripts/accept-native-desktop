@@ -110,6 +110,83 @@ def worker(root, operation):
     from tmux_observer_client.fleet import FleetPublisher
     from tmux_observer_client.mesh import HostMeshAdapter
 
+    if operation == "fleet":
+        # Transparent diagnostics for owned acceptance only: call/return values
+        # stay unchanged and no additional source reads are performed.
+        from tmux_observer_client import _desktop_scan, _process_evidence, desktop
+
+        original_windows = _desktop_scan._niri_windows
+        original_proc = _process_evidence._proc
+        original_observe = desktop.observe_local_viewers
+        diagnostics = {}
+
+        def windows(*args, **kwargs):
+            rows = original_windows(*args, **kwargs)
+            diagnostics.setdefault("windows", []).append(rows)
+            return rows
+
+        def proc(pid):
+            value = original_proc(pid)
+            previous = diagnostics.setdefault("processes", {}).get(pid)
+            if value is None:
+                diagnostics["unreadable"] = diagnostics.get("unreadable", 0) + 1
+            elif previous is not None and previous != value:
+                changes = diagnostics.setdefault("changedFields", set())
+                changes.update(
+                    key
+                    for key in ("ppid", "pgrp", "session", "tty_nr", "start", "argv", "uid")
+                    if getattr(previous, key) != getattr(value, key)
+                )
+            diagnostics["processes"][pid] = value
+            return value
+
+        def observe(*args, **kwargs):
+            diagnostics.clear()
+            batch = original_observe(*args, **kwargs)
+            if batch.observations and all(
+                row.reason == "process_unavailable" for row in batch.observations.values()
+            ):
+                captures = diagnostics.get("windows", [])
+
+                def identity(rows, *, titles=False):
+                    return sorted(
+                        json.dumps(
+                            [
+                                row.get("id"),
+                                row.get("pid"),
+                                row.get("app_id"),
+                                row.get("title") if titles else None,
+                            ],
+                            sort_keys=True,
+                        )
+                        for row in (rows or [])
+                        if isinstance(row, dict)
+                    )
+
+                print(
+                    json.dumps(
+                        {
+                            "ownedAcceptanceDiagnostic": True,
+                            "windowReads": len(captures),
+                            "windowReadFailures": captures.count(None),
+                            "windowIdentitiesChanged": len(captures) == 2
+                            and identity(captures[0]) != identity(captures[1]),
+                            "windowTitlesChanged": len(captures) == 2
+                            and identity(captures[0], titles=True)
+                            != identity(captures[1], titles=True),
+                            "unreadableProcesses": diagnostics.get("unreadable", 0),
+                            "changedProcessFields": sorted(diagnostics.get("changedFields", ())),
+                            "profileHasClients": bool(kwargs["local_tmux"].client_incarnations),
+                        }
+                    ),
+                    flush=True,
+                )
+            return batch
+
+        _desktop_scan._niri_windows = windows
+        _process_evidence._proc = proc
+        desktop.observe_local_viewers = observe
+
     # Explicit lookup injection isolates this local desktop test from ordinary
     # Mesh preferences. It proves no native Mesh absence or remote transport.
     publisher = FleetPublisher(

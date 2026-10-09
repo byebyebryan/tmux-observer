@@ -158,6 +158,47 @@ class LocalViewerObservationTests(unittest.TestCase):
         )
         self.assertEqual(result.observations[session.reference].state, "unknown")
 
+    def test_title_churn_without_binding_change_preserves_current_evidence(self):
+        session = _observation_session("beta", attached_clients=1)
+        processes = {
+            10: _proc(10, 1, 100, 0, ("kitty",)),
+            20: _proc(20, 10, 200, 41, ("ssh", "beta")),
+        }
+        browser = {"id": 102, "pid": 11, "app_id": "browser", "title": "before"}
+        batch, *_ = self._observe(
+            [_kitty_window(101, 10, "fixture: before @ beta-native"), browser],
+            processes,
+            (self._target(session, local=False, route="beta"),),
+            children={10: b"20"},
+            final_windows=[
+                _kitty_window(101, 10, "fixture: after @ beta-native"),
+                {**browser, "title": "after"},
+            ],
+        )
+        self.assertEqual(
+            batch.observations[session.reference].as_dict(),
+            {"state": "open", "confidence": "matched"},
+        )
+
+    def test_title_binding_change_and_final_duplicate_revoke_positive_evidence(self):
+        session = _observation_session("beta", attached_clients=1)
+        window = _kitty_window(101, 10, "fixture: task @ beta-native")
+        for final in (
+            [_kitty_window(101, 10, "other: task @ beta-native")],
+            [window, window],
+        ):
+            batch, *_ = self._observe(
+                [window],
+                {
+                    10: _proc(10, 1, 100, 0, ("kitty",)),
+                    20: _proc(20, 10, 200, 41, ("ssh", "beta")),
+                },
+                (self._target(session, local=False, route="beta"),),
+                children={10: b"20"},
+                final_windows=final,
+            )
+            self.assertEqual(batch.observations[session.reference].state, "unknown")
+
     def test_irrelevant_windows_start_no_process_scans(self):
         session = _observation_session()
         result, _, _, process_reads, _ = self._observe(

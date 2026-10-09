@@ -132,22 +132,29 @@ def observe_local_viewers(
     def identities(rows):
         return sorted(
             json.dumps(
-                [row.get("id"), row.get("pid"), row.get("app_id"), row.get("title")], sort_keys=True
+                [
+                    row.get("id"),
+                    row.get("pid"),
+                    row.get("app_id"),
+                    sorted(
+                        json.dumps(ref.as_dict(), sort_keys=True)
+                        for ref in title_targets(row.get("title"))
+                    ),
+                ],
+                sort_keys=True,
             )
             for row in rows
             if isinstance(row, dict) and type(row.get("id")) is int
         )
 
+    def duplicate_ids(rows):
+        ids = [row["id"] for row in rows if isinstance(row, dict) and type(row.get("id")) is int]
+        return len(ids) != len(set(ids))
+
     if (
         final_windows is None
-        or len(
-            {
-                row.get("id")
-                for row in windows
-                if isinstance(row, dict) and type(row.get("id")) is int
-            }
-        )
-        != len([row for row in windows if isinstance(row, dict) and type(row.get("id")) is int])
+        or duplicate_ids(windows)
+        or duplicate_ids(final_windows)
         or identities(windows) != identities(final_windows)
         or boottime_ms() / 1000 >= end
     ):

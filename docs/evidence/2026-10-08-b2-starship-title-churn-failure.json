@@ -1,0 +1,100 @@
+{
+  "gate": "T12-native-local-desktop-partial",
+  "sourceCommit": "0ef46c3922f1a52e0f8d22b546f245b10fc71f89",
+  "sourceTreeDirty": false,
+  "endpoint": "starship",
+  "nativeVersion": "tmux 3.7c",
+  "kittyVersion": "kitty 0.49.2 created by Kovid Goyal",
+  "nativeIdentity": {
+    "uid": 1000,
+    "hostname": "starship",
+    "clock": {
+      "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+      "timeNamespace": "time:4026531834"
+    }
+  },
+  "scope": "one installed wheel; private default tmux server, owner/fleets and read-only compositor proxy; owned Kitty viewer",
+  "cases": [
+    {
+      "name": "installed_current_empty_viewer_observations_match_native_owner_and_compositor",
+      "result": "passed"
+    },
+    {
+      "name": "actual_owned_kitty_window_and_native_client_join_prove_confirmed_open",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Injected missing Mesh lookup; no remote owner/manual SSH or native Mesh acceptance",
+    "Owned proxy relays actual read-only Niri Windows responses; ordinary compositor socket is unchanged",
+    "Native desktop evidence does not establish Rofi rendering, physical display or managed rollout",
+    "Starship native graphical acceptance and declared-capacity/resource profiles remain separate"
+  ],
+  "harnessCommit": "0ef46c3922f1a52e0f8d22b546f245b10fc71f89",
+  "harnessTreeDirty": true,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "0ef46c3922f1a52e0f8d22b546f245b10fc71f89",
+      "epoch": 1791503484,
+      "tree": "a12d70f6fe594e2dfda73d8d7bea13a4571528a8"
+    },
+    "wheelSha256": "5aa3d329b6b7aace537eb63aed3220200f2db1f996577cf6e3700d16ab02116a",
+    "descriptorSha256": "2a4c900b903a3cd9268d54bcc750cadcdadc9a112775bce790f88587c790573e",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "5aa3d329b6b7aace537eb63aed3220200f2db1f996577cf6e3700d16ab02116a",
+  "contextId": "85fd57bb0944c975ec7a83afdb1ae386",
+  "nativeBaseline": {
+    "generation": "tmux-v1:1791503731:1944276:/tmp/tmux-observer-desktop-3nuvw2sq/tmux-1000/default",
+    "sessions": {
+      "$0": {
+        "sessionId": "$0",
+        "createdAt": 1791503731,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-1c6914ee8e2d-first"
+      },
+      "$1": {
+        "sessionId": "$1",
+        "createdAt": 1791503731,
+        "attachedClients": 0,
+        "windowCount": 1,
+        "name": "owned-1c6914ee8e2d-second"
+      }
+    },
+    "hooks": {
+      "$0": "",
+      "$1": ""
+    }
+  },
+  "nativeViewerJoin": {
+    "windowId": 182,
+    "windowPid": 1944428,
+    "clientPid": 1944479,
+    "reference": {
+      "hostId": "fixture-desktop",
+      "serverGeneration": "tmux-v1:1791503731:1944276:/tmp/tmux-observer-desktop-3nuvw2sq/tmux-1000/default",
+      "sessionId": "$0",
+      "createdAt": 1791503731
+    }
+  },
+  "result": "failed",
+  "failure": "RuntimeError",
+  "failureMessage": "owned native desktop condition did not become true: {'desktop': {'contextId': '85fd57bb0944c975ec7a83afdb1ae386', 'epoch': 1, 'state': 'ready', 'startedAt': 544039630, 'acceptedAt': 544039681, 'expiresAt': 544049630, 'inputHash': 'sha256:2c79ebabab0c4d3fde71ca6a7c1ff18e7954ccc259401f0a3268f24d1987af3c', 'error': None}, 'viewers': {'$0': {'reason': 'process_unavailable', 'state': 'unknown'}, '$1': {'reason': 'process_unavailable', 'state': 'unknown'}}}",
+  "ownedFixtureRoot": "/tmp/tmux-observer-desktop-3nuvw2sq",
+  "ownedWorkerDiagnostics": [
+    {
+      "pid": 1944291,
+      "exit": null,
+      "log": ""
+    },
+    {
+      "pid": 1944292,
+      "exit": null,
+      "log": "{\"ownedAcceptanceDiagnostic\": true, \"windowReads\": 2, \"windowReadFailures\": 0, \"windowIdentitiesChanged\": false, \"windowTitlesChanged\": true, \"unreadableProcesses\": 0, \"changedProcessFields\": [], \"profileHasClients\": false}\n{\"ownedAcceptanceDiagnostic\": true, \"windowReads\": 2, \"windowReadFailures\": 0, \"windowIdentitiesChanged\": false, \"windowTitlesChanged\": true, \"unreadableProcesses\": 0, \"changedProcessFields\": [], \"profileHasClients\": false}\n{\"ownedAcceptanceDiagnostic\": true, \"windowReads\": 2, \"windowReadFailures\": 0, \"windowIdentitiesChanged\": false, \"windowTitlesChanged\": true, \"unreadableProcesses\": 0, \"changedProcessFields\": [], \"profileHasClients\": true}\n{\"ownedAcceptanceDiagnostic\": true, \"windowReads\": 2, \"windowReadFailures\": 0, \"windowIdentitiesChanged\": false, \"windowTitlesChanged\": true, \"unreadableProcesses\": 0, \"changedProcessFields\": [], \"profileHasClients\": true}\n{\"ownedAcceptanceDiagnostic\": true, \"windowReads\": 2, \"windowReadFailures\": 0, \"windowIdentitiesChanged\": false, \"windowTitlesChanged\": true, \"unreadableProcesses\": 0, \"changedProcessFields\": [], \"profileHasClients\": true}\n{\"ownedAcceptanceDiagnostic\": true, \"windowReads\": 2, \"windowReadFailures\": 0, \"windowIdentitiesChanged\": false, \"windowTitlesChanged\": true, \"unreadableProcesses\": 0, \"changedProcessFields\": [], \"profileHasClients\": true}\n"
+    }
+  ],
+  "ownedCleanupCompleted": true,
+  "ownedTemporaryRootRemoved": true
+}

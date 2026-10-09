@@ -96,3 +96,16 @@ on failure. Its dependency checker was staged separately in an owned directory
 when Starship's configured registry refused dev dependencies; candidate wheel
 bytes and isolated worker imports remain independently checked. No fixture
 viewer was opened in this failed run; ordinary services and sessions survived.
+
+The repaired wheel passed empty/current native evidence, actual Kitty joins,
+client switch, rename and owner restart, but context replacement did not recover.
+A [diagnostic repeat](evidence/2026-10-08-b2-starship-title-churn-failure.json)
+isolated unrelated window title churn: window identities and process evidence
+remained stable while titles changed between the two compositor reads. Rechecking
+the complete title string revoked every row. B2 now brackets the set of session
+references a title qualifies, so ordinary command/activity title updates preserve
+evidence while changed session bindings and duplicate window IDs revoke it.
+The diagnostic harness only wraps existing reads, publishes no raw titles/argv,
+and records its dirty harness state separately from the frozen wheel.
+Source regressions cover binding-stable churn, changed bindings and duplicate
+IDs in the closing compositor capture. The failed wheel is not accepted.
