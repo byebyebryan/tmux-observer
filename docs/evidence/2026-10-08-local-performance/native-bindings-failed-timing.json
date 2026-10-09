@@ -1,0 +1,39 @@
+{
+  "gate": "LP4-native-local-bindings",
+  "state": "failed",
+  "cases": [
+    {
+      "name": "bootstrap_existing_client_qualified_and_zero_client_none",
+      "resolvedAt": 564338734
+    }
+  ],
+  "scope": "installed frozen wheel, private default tmux server and units, actual Snap Kitty/Niri; explicit missing Mesh injection; no Starship foreground input",
+  "limits": [
+    "Local CPU uses an isolated two-session fixture, not ordinary two-host workload",
+    "No relocation, physical suspend, capacity or managed acceptance"
+  ],
+  "cleanup": true,
+  "harnessCommit": "4d5b291906782d0438e82d62656d329a6a8cbb75",
+  "harnessTreeDirty": false,
+  "sourceCommit": "b2d908e95276e0bfe6cbe5e5748bb239b6e55c8c",
+  "sourceTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "b2d908e95276e0bfe6cbe5e5748bb239b6e55c8c",
+      "epoch": 1791524281,
+      "tree": "ef2f5e24f50f65304ebe229abd4e9915e01bbaf6"
+    },
+    "wheelSha256": "f542a0247f56dbebc374d18eff3ca2130d7375b470fce89b656a8ff263296f76",
+    "descriptorSha256": "7bd48a5600f335d0e127e256ca2aed6d3877c2edd4b4bf24d4e0c84fd5dd3769",
+    "sourceFilesMatchHarness": true
+  },
+  "wheelSha256": "f542a0247f56dbebc374d18eff3ca2130d7375b470fce89b656a8ff263296f76",
+  "failure": "AssertionError",
+  "message": "",
+  "logs": {
+    "fleet.log": "",
+    "owner.log": "",
+    "kitty-a636a0d5c56648bfb8c2139b083647aa.log": "[0.216] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.216] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.216] Application escape mode is not supported, the extended keyboard protocol should be used instead\n"
+  }
+}

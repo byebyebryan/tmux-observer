@@ -58,8 +58,8 @@ current target validation in the action package.
 | LP0 | Source review, bounded design, contract choice and ordinary-session constraints | Reviewed design |
 | LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Source accepted; passive Snap bootstrap diagnostic passed |
 | LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Source accepted; frozen/native acceptance pending |
-| LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Source accepted; new pin/artifact pending |
-| LP4 | Frozen artifacts, native open/close/switch/bootstrap acceptance, local and normal-fleet CPU/update measurements, Snap GUI | Pending |
+| LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Source and frozen consumer accepted |
+| LP4 | Frozen artifacts, native open/close/switch/bootstrap acceptance, local and normal-fleet CPU/update measurements, Snap GUI | Accepted; see 0.3.0a1 release record |
 | LP5 | Publish accepted pair, scoped chezmoi selection/recovery and rollback checks on both hosts | Pending |
 
 Source, packaged, installed/native, measured and managed acceptance remain

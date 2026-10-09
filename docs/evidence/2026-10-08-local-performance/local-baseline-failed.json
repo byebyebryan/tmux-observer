@@ -1,0 +1,25 @@
+{
+  "gate": "LP4-native-local-bindings",
+  "state": "failed",
+  "cases": [],
+  "scope": "installed frozen wheel, private default tmux server and units, actual Snap Kitty/Niri; explicit missing Mesh injection; no Starship foreground input",
+  "limits": [
+    "Local CPU uses an isolated two-session fixture, not ordinary two-host workload",
+    "No relocation, physical suspend, capacity or managed acceptance"
+  ],
+  "cleanup": true,
+  "baselineOnly": true,
+  "sourceCommit": "d10ba29e506365a91c90e094deb28c128523edc2",
+  "artifactInput": {
+    "state": "previous selected baseline; installed-only profile, no checkout injection",
+    "descriptorSha256": "641e03e20269c607df6bee4dd838e84d9649f8a2d2a28810de9995ef2df83739"
+  },
+  "wheelSha256": "aab6540a8de50830c502619f30a564964e3d09a48694dce48132fb194d461345",
+  "failure": "RuntimeError",
+  "message": "owned binding condition timed out: [Errno 2] No such file or directory",
+  "logs": {
+    "fleet.log": "Traceback (most recent call last):\n  File \"/tmp/tmux-local-bindings-mo36cukx/accept-native-bindings\", line 580, in <module>\n    main()\n    ~~~~^^\n  File \"/tmp/tmux-local-bindings-mo36cukx/accept-native-bindings\", line 573, in main\n    worker(args.worker)\n    ~~~~~~^^^^^^^^^^^^^\n  File \"/tmp/tmux-local-bindings-mo36cukx/accept-native-bindings\", line 70, in worker\n    publisher.run()\n    ~~~~~~~~~~~~~^^\n  File \"/tmp/tmux-local-bindings-mo36cukx/venv/lib/python3.14/site-packages/tmux_observer_client/fleet.py\", line 663, in run\n    self.publish_tickets(now)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^\n  File \"/tmp/tmux-local-bindings-mo36cukx/accept-native-bindings\", line 56, in metrics\n    adapter = publisher.binding_adapter\n              ^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'FleetPublisher' object has no attribute 'binding_adapter'\n",
+    "owner.log": "",
+    "kitty-50ca621d9f26485c99df8e5023dada54.log": "[0.202] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.202] Application escape mode is not supported, the extended keyboard protocol should be used instead\n[0.202] Application escape mode is not supported, the extended keyboard protocol should be used instead\n"
+  }
+}
