@@ -88,6 +88,14 @@ def serve_fleet(root, host_id):
     )
     signal.signal(signal.SIGTERM, lambda *_: publisher.stop())
     signal.signal(signal.SIGINT, lambda *_: publisher.stop())
+    original_desktop = publisher.desktop_work
+    counters["desktopJobs"] = 0
+
+    def counted_desktop(*args, **kwargs):
+        counters["desktopJobs"] += 1
+        return original_desktop(*args, **kwargs)
+
+    publisher.desktop_work = counted_desktop
     original = publisher.publish_tickets
     next_metrics = 0
     high_water = {"readers": 0, "outputBytes": 0, "retainedBytes": 0, "connections": 0}
@@ -96,6 +104,9 @@ def serve_fleet(root, host_id):
         nonlocal next_metrics
         original(now)
         if now >= next_metrics:
+            adapter = publisher.binding_adapter
+            counters["bindingDiscoveryJobs"] = adapter.discovery_jobs if adapter else 0
+            counters["bindingDiscoveryClients"] = adapter.discovery_clients if adapter else 0
             current = {
                 "readers": len(publisher.hub.peers),
                 "outputBytes": sum(peer.bytes_held() for peer in publisher.hub.peers),

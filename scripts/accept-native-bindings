@@ -1,0 +1,530 @@
+#!/usr/bin/env python3
+"""Frozen local bindings: owned Snap Kitty lifecycle and isolated CPU profile."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.machinery
+import importlib.util
+import json
+import os
+import shutil
+import signal
+import socket
+import subprocess
+import time
+import uuid
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+ROOT = Path(__file__).resolve().parent.parent
+HOST = "fixture-bindings"
+
+
+def load(path, name):
+    loader = importlib.machinery.SourceFileLoader(name, str(path))
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader(name, loader))
+    loader.exec_module(module)
+    return module
+
+
+def worker(root):
+    from tmux_observer_client.fleet import FleetPublisher
+    from tmux_observer_client.mesh import HostMeshAdapter
+
+    publisher = FleetPublisher(
+        HOST,
+        path=root / "fleet.sock",
+        owner_path=root / "owner.sock",
+        mesh=HostMeshAdapter(which=lambda _: None),
+    )
+    original = publisher.publish_tickets
+    next_metrics = 0
+    desktop_jobs = 0
+    original_desktop = publisher.desktop_work
+
+    def desktop_work(*args, **kwargs):
+        nonlocal desktop_jobs
+        desktop_jobs += 1
+        return original_desktop(*args, **kwargs)
+
+    def metrics(now):
+        nonlocal next_metrics
+        original(now)
+        if now >= next_metrics:
+            adapter = publisher.binding_adapter
+            value = {
+                "discoveryJobs": adapter.discovery_jobs,
+                "discoveryClients": adapter.discovery_clients,
+                "desktopJobs": desktop_jobs,
+            }
+            temporary = root / "metrics.tmp"
+            temporary.write_text(json.dumps(value))
+            temporary.replace(root / "metrics.json")
+            next_metrics = now + 100
+
+    publisher.desktop_work = desktop_work
+    publisher.publish_tickets = metrics
+    signal.signal(signal.SIGTERM, lambda *_: publisher.stop())
+    publisher.run()
+
+
+def coordinate(artifact, output, seconds):
+    assert seconds >= 120
+    helper = load(ROOT / "scripts/accept-native-desktop", "bindings_native_helper")
+    reader = load(ROOT / "scripts/read-boundary-contract", "bindings_independent_reader")
+    command = helper.command
+    env = dict(os.environ)
+    manager = command(["systemctl", "--user", "show-environment"]).stdout.decode()
+    allowed = ("NIRI_SOCKET", "DISPLAY", "WAYLAND_DISPLAY", "XDG_RUNTIME_DIR")
+    for line in manager.splitlines():
+        key, separator, value = line.partition("=")
+        if separator and key in allowed:
+            env[key] = value
+    machines = {"80H1VV3", "snap"}
+    assert command(["hostname"]).stdout.decode().strip() in machines, "foreground scope is Snap"
+    assert env.get("NIRI_SOCKET") and shutil.which("kitty")
+    original_windows = json.loads(command(["niri", "msg", "--json", "windows"], env=env).stdout)
+    assert not any(row.get("app_id") == "dms" and row.get("is_focused") for row in original_windows)
+    focused = next((row["id"] for row in original_windows if row.get("is_focused")), None)
+    baseline = command(
+        ["tmux", "list-sessions", "-F", "#{session_id}|#{session_created}"], ok=False
+    ).stdout
+    evidence = {
+        "gate": "LP4-native-local-bindings",
+        "state": "running",
+        "cases": [],
+        "scope": "installed frozen wheel, private default tmux server and units, actual Snap Kitty/Niri; explicit missing Mesh injection; no Starship foreground input",
+        "limits": [
+            "Local CPU uses an isolated two-session fixture, not ordinary two-host workload",
+            "No relocation, physical suspend, capacity or managed acceptance",
+        ],
+        "cleanup": False,
+    }
+    with TemporaryDirectory(prefix="tmux-local-bindings-") as temporary:
+        root = Path(temporary)
+        root.chmod(0o700)
+        selected = dict(env, TMUX_TMPDIR=str(root), NIRI_SOCKET=str(root / "desktop.sock"))
+        for key in (
+            "TMUX",
+            "TMUX_PANE",
+            "PYTHONPATH",
+            "PYTHONHOME",
+            "KITTY_PID",
+            "KITTY_WINDOW_ID",
+            "KITTY_LISTEN_ON",
+        ):
+            selected.pop(key, None)
+        for key in ("XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_STATE_HOME"):
+            directory = root / key.lower()
+            directory.mkdir(mode=0o700)
+            selected[key] = str(directory)
+        selected["PYTHONNOUSERSITE"] = "1"
+        processes, units, proxies = [], [], []
+        native_prefix = ["tmux", "-u", "-f", "/dev/null", "-L", "default"]
+
+        def native(*args):
+            return command([*native_prefix, *args], env=selected).stdout.decode().strip()
+
+        def until(predicate, timeout=12):
+            deadline = time.monotonic() + timeout
+            last = None
+            while time.monotonic() < deadline:
+                try:
+                    value = predicate()
+                    if value:
+                        return value
+                except (OSError, ValueError, KeyError, TypeError) as error:
+                    last = str(error)
+                time.sleep(0.03)
+            raise RuntimeError("owned binding condition timed out: " + str(last))
+
+        def spawn_viewer(target):
+            log = (root / ("kitty-" + uuid.uuid4().hex + ".log")).open("wb")
+            try:
+                process = subprocess.Popen(
+                    [
+                        "kitty",
+                        "--config",
+                        "NONE",
+                        "--override",
+                        "shell_integration=disabled",
+                        "--title",
+                        "owned-local-bindings",
+                        "tmux",
+                        "-u",
+                        "-L",
+                        "default",
+                        "attach-session",
+                        "-t",
+                        target,
+                    ],
+                    env=selected,
+                    stdout=log,
+                    stderr=log,
+                )
+            finally:
+                log.close()
+            processes.append(process)
+            return process
+
+        def start_unit(role, argv):
+            unit = "tmux-observer-local-" + role + "-" + root.name + ".service"
+            if unit not in units:
+                import shlex
+
+                path = root / unit
+                path.write_text(
+                    "[Unit]\nDescription=Owned local binding acceptance\n[Service]\n"
+                    + "ExecStart="
+                    + shlex.join(argv)
+                    + "\nEnvironmentFile="
+                    + str(root / "environment")
+                    + "\nUnsetEnvironment=TMUX TMUX_PANE PYTHONPATH PYTHONHOME\n"
+                    + "StandardOutput=file:"
+                    + str(root / (role + ".log"))
+                    + "\nStandardError=inherit\nKillMode=control-group\nTimeoutStopSec=5\n"
+                )
+                command(["systemd-analyze", "--user", "verify", str(path)])
+                command(["systemctl", "--user", "link", "--runtime", str(path)])
+                units.append(unit)
+            command(["systemctl", "--user", "start", unit])
+            return unit
+
+        def stop_unit(unit):
+            command(["systemctl", "--user", "stop", unit])
+
+        def frame(**arguments):
+            request = {
+                "protocol": "tmux-observer.fleet.v1",
+                "schemaVersion": 1,
+                "operation": "snapshot",
+                "requestId": uuid.uuid4().hex,
+                "expectedHost": HOST,
+                "contextId": context,
+                **arguments,
+            }
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                client.settimeout(2)
+                client.connect(str(root / "fleet.sock"))
+                client.sendall(json.dumps(request).encode() + b"\n")
+                value = json.loads(helper.record(client))
+            if value.get("error"):
+                raise ValueError(value["error"])
+            return value
+
+        def bindings():
+            value = frame()
+            batch = value["snapshot"]["hosts"][0].get("localBindings")
+            if batch is None:
+                return None
+            reader.verify("bindings", batch)
+            return batch
+
+        def match(sid, state):
+            batch = bindings()
+            if batch is None or batch["receipt"]["state"] != "ready":
+                return None
+            return next(
+                (
+                    row["association"]
+                    for row in batch["rows"]
+                    if row["sessionRef"]["sessionId"] == sid
+                    and row["association"]["state"] == state
+                ),
+                None,
+            )
+
+        def metrics():
+            return json.loads((root / "metrics.json").read_text())
+
+        def passed(name, **values):
+            evidence["cases"].append({"name": name, **values})
+            print(name, flush=True)
+
+        try:
+            from artifact_input import stage_wheel
+
+            wheel = stage_wheel(root / "wheel", evidence, repo=ROOT, descriptor=artifact)
+            evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
+            venv = root / "venv"
+            command(["uv", "venv", "--python", "/usr/bin/python3", str(venv)])
+            python = str(venv / "bin/python")
+            command(["uv", "pip", "install", "--python", python, "--no-deps", str(wheel)])
+            shutil.copy2(Path(__file__), root / "accept-native-bindings")
+            keep = (
+                "PATH",
+                "TMUX_TMPDIR",
+                "XDG_CONFIG_HOME",
+                "XDG_CACHE_HOME",
+                "XDG_STATE_HOME",
+                *allowed,
+                "PYTHONNOUSERSITE",
+            )
+            (root / "environment").write_text(
+                "\n".join(key + "=" + json.dumps(selected[key]) for key in keep if key in selected)
+                + "\n"
+            )
+            native("new-session", "-d", "-s", "owned-first", "sleep 3600")
+            native("new-session", "-d", "-s", "owned-second", "sleep 3600")
+            first, second = native("list-sessions", "-F", "#{session_id}").splitlines()
+            hooks = native("show-hooks")
+            generation = native("display-message", "-p", "#{start_time}|#{pid}|#{socket_path}")
+            viewer = spawn_viewer(first)
+            until(lambda: native("list-clients", "-F", "#{session_id}") == first)
+            proxies.append(helper.WindowsProxy(root / "desktop.sock", env["NIRI_SOCKET"]))
+            context = (
+                command(
+                    [
+                        python,
+                        "-I",
+                        "-c",
+                        "from tmux_observer_client.public import desktop_context_id;print(desktop_context_id())",
+                    ],
+                    env=selected,
+                )
+                .stdout.decode()
+                .strip()
+            )
+            owner_args = [
+                str(venv / "bin/tmux-observer"),
+                "owner",
+                "--local-attachments",
+                "--host-id",
+                HOST,
+                "--socket",
+                str(root / "owner.sock"),
+            ]
+            fleet_args = [python, "-I", str(root / "accept-native-bindings"), "--worker", str(root)]
+            owner = start_unit("owner", owner_args)
+            fleet = start_unit("fleet", fleet_args)
+            opened = until(lambda: match(first, "open"))
+            until(lambda: match(second, "none"))
+            assert (
+                frame()["snapshot"]["hosts"][0]["sessions"][0]["localViewer"]["state"] == "unknown"
+            )
+            passed(
+                "bootstrap_existing_client_qualified_and_zero_client_none",
+                resolvedAt=opened["resolvedAt"],
+            )
+            initial_metrics = until(lambda: metrics() if metrics()["discoveryJobs"] else None)
+            timings = []
+            for _ in range(100):
+                started = time.monotonic_ns()
+                assert bindings()["receipt"]["state"] == "ready"
+                timings.append((time.monotonic_ns() - started) / 1e6)
+            assert sorted(timings)[94] <= 50
+            passed("hundred_warm_reads_passive", p95Ms=sorted(timings)[94])
+
+            def cpu_sample():
+                values = {}
+                for role, unit in (("owner", owner), ("fleet", fleet)):
+                    group = (
+                        command(
+                            [
+                                "systemctl",
+                                "--user",
+                                "show",
+                                "--value",
+                                "--property=ControlGroup",
+                                unit,
+                            ]
+                        )
+                        .stdout.decode()
+                        .strip()
+                    )
+                    assert group.startswith("/user.slice/") and unit in group
+                    directory = Path("/sys/fs/cgroup") / group.lstrip("/")
+                    stats = dict(
+                        line.split() for line in (directory / "cpu.stat").read_text().splitlines()
+                    )
+                    rss = 0
+                    for pid in (directory / "cgroup.procs").read_text().split():
+                        try:
+                            status = Path(f"/proc/{pid}/status").read_text().splitlines()
+                            rss += next(
+                                (
+                                    int(line.split()[1]) * 1024
+                                    for line in status
+                                    if line.startswith("VmRSS:")
+                                ),
+                                0,
+                            )
+                        except FileNotFoundError:
+                            pass
+                    values[role] = {"cpuUsec": int(stats["usage_usec"]), "rssBytes": rss}
+                return values
+
+            initial_cpu = cpu_sample()
+            peaks = {role: value["rssBytes"] for role, value in initial_cpu.items()}
+            started = time.monotonic()
+            while time.monotonic() - started < seconds:
+                assert match(first, "open")["resolvedAt"] == opened["resolvedAt"]
+                assert metrics() == initial_metrics
+                values = cpu_sample()
+                for role, peak in peaks.items():
+                    peaks[role] = max(peak, values[role]["rssBytes"])
+                time.sleep(1)
+            final_cpu = cpu_sample()
+            duration = time.monotonic() - started
+            cpu = {
+                role: (final_cpu[role]["cpuUsec"] - initial_cpu[role]["cpuUsec"])
+                / (duration * 1e6)
+                * 100
+                for role in peaks
+            }
+            assert initial_metrics["desktopJobs"] == 0
+            passed(
+                "stable_clients_zero_rediscovery_and_periodic_desktop_jobs",
+                seconds=duration,
+                counters=initial_metrics,
+            )
+            evidence["localResourceProfile"] = {
+                "seconds": duration,
+                "serviceCpuPercent": cpu,
+                "combinedCpuPercent": sum(cpu.values()),
+                "serviceMaxObservedRssBytes": peaks,
+                "accounting": "service cgroup CPU includes all short-lived native subprocesses; RSS sampled once per second",
+            }
+            assert (
+                sum(cpu.values()) <= 5
+                and peaks["owner"] <= 64 * 1024**2
+                and peaks["fleet"] <= 96 * 1024**2
+            )
+            client_name = native("list-clients", "-F", "#{client_name}")
+            native("switch-client", "-c", client_name, "-t", second)
+            switched = until(lambda: match(second, "open"))
+            until(lambda: match(first, "none"))
+            assert switched["resolvedAt"] == opened["resolvedAt"]
+            assert metrics()["discoveryJobs"] == initial_metrics["discoveryJobs"]
+            passed("session_switch_reuses_binding_with_current_full_reference")
+            viewer.terminate()
+            viewer.wait(timeout=5)
+            until(lambda: match(second, "none"))
+            passed("kitty_close_revokes_binding_from_native_detach")
+            viewer = spawn_viewer(first)
+            reopened = until(lambda: match(first, "open"))
+            assert reopened["resolvedAt"] > opened["resolvedAt"]
+            passed("new_kitty_client_rediscovers")
+            value = frame()
+            admitted = frame(
+                operation="refresh",
+                publisherId=value["readerId"],
+                sources=[{"hostId": HOST, "source": "desktop"}],
+            )
+            ticket = admitted["ticket"]
+            terminal = until(
+                lambda: (
+                    result
+                    if (
+                        result := frame(
+                            operation="refresh_status",
+                            publisherId=value["readerId"],
+                            ticketId=ticket["id"],
+                        )
+                    )["ticket"]["state"]
+                    in {"complete", "failed", "deadline", "stale_scope"}
+                    else None
+                )
+            )
+            assert terminal["ticket"]["state"] == "complete", terminal["ticket"]
+            refreshed = until(
+                lambda: (
+                    row
+                    if (row := match(first, "open")) and row["resolvedAt"] > reopened["resolvedAt"]
+                    else None
+                )
+            )
+            passed(
+                "explicit_refresh_rediscovery_and_terminal_ticket",
+                resolvedAt=refreshed["resolvedAt"],
+            )
+            publisher = bindings()["publisherId"]
+            stop_unit(owner)
+            until(lambda: bindings() is None or bindings()["receipt"]["state"] != "ready")
+            start_unit("owner", owner_args)
+            until(
+                lambda: (
+                    bindings()
+                    if bindings()
+                    and bindings()["publisherId"] != publisher
+                    and match(first, "open")
+                    else None
+                )
+            )
+            passed("owner_replacement_requires_new_binding_scope")
+            stop_unit(fleet)
+            start_unit("fleet", fleet_args)
+            until(lambda: match(first, "open"))
+            passed("reader_restart_bootstraps_existing_client")
+            epoch = bindings()["epoch"]
+            proxies[-1].close()
+            proxies.append(helper.WindowsProxy(root / "desktop.sock", env["NIRI_SOCKET"]))
+            until(
+                lambda: (
+                    bindings()
+                    if bindings() and bindings()["epoch"] > epoch and match(first, "open")
+                    else None
+                )
+            )
+            passed("compositor_socket_incarnation_invalidates_retained_scope")
+            assert native("show-hooks") == hooks
+            assert (
+                native("display-message", "-p", "#{start_time}|#{pid}|#{socket_path}") == generation
+            )
+            passed("owned_native_generation_and_hooks_preserved")
+            evidence["state"] = "passed"
+        except Exception as error:
+            evidence.update(state="failed", failure=type(error).__name__, message=str(error)[:2048])
+            raise
+        finally:
+            for unit in reversed(units):
+                command(["systemctl", "--user", "stop", unit], ok=False)
+                command(["systemctl", "--user", "disable", "--runtime", unit], ok=False)
+                command(["systemctl", "--user", "reset-failed", unit], ok=False)
+            command(["systemctl", "--user", "daemon-reload"])
+            for process in reversed(processes):
+                if process.poll() is None:
+                    process.terminate()
+                    process.wait(timeout=5)
+            for proxy in reversed(proxies):
+                proxy.close()
+            command([*native_prefix, "kill-server"], env=selected, ok=False)
+            if focused is not None:
+                command(
+                    ["niri", "msg", "action", "focus-window", "--id", str(focused)],
+                    env=env,
+                    ok=False,
+                )
+            current = command(
+                ["tmux", "list-sessions", "-F", "#{session_id}|#{session_created}"], ok=False
+            ).stdout
+            assert set(baseline.splitlines()) <= set(current.splitlines()), (
+                "ordinary sessions changed"
+            )
+            evidence["cleanup"] = True
+            evidence["logs"] = {
+                path.name: path.read_text(errors="replace")[-4000:] for path in root.glob("*.log")
+            }
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_text(json.dumps(evidence, indent=2) + "\n")
+    print(json.dumps({"state": evidence["state"], "cleanup": evidence["cleanup"]}), flush=True)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--worker", type=Path)
+    parser.add_argument("--artifact", type=Path)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--seconds", type=int, default=120)
+    args = parser.parse_args()
+    if args.worker:
+        worker(args.worker)
+    else:
+        assert args.artifact and args.output
+        coordinate(args.artifact, args.output, args.seconds)
+
+
+if __name__ == "__main__":
+    main()

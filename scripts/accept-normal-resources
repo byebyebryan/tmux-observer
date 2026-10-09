@@ -148,6 +148,10 @@ def coordinate(artifact, output):
                     and associations["clients"] > 0
                     and any(
                         row["localViewer"].get("state") == "open"
+                        or any(
+                            binding["association"]["state"] == "open"
+                            for binding in (source.get("localBindings") or {}).get("rows", [])
+                        )
                         for source in view["hosts"]
                         for row in source["sessions"]
                     )
