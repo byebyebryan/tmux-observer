@@ -1,0 +1,205 @@
+#!/usr/bin/env python3
+"""Generate only the retained-binding bundle, independently of product code."""
+
+import copy
+import importlib.machinery
+import importlib.util
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+loader = importlib.machinery.SourceFileLoader(
+    "boundary_shapes", str(ROOT / "scripts/update-boundary-contracts")
+)
+spec = importlib.util.spec_from_loader(loader.name, loader)
+shape = importlib.util.module_from_spec(spec)
+loader.exec_module(shape)
+
+
+def main():
+    bundle = "bindings-v1"
+    native = json.loads((shape.ROOT / "observation-v1/fixtures/complete.json").read_text())
+    owner = json.loads((shape.ROOT / "service-v1/fixtures/ready.json").read_text())
+    reference = {
+        key: native["sessions"][0][key]
+        for key in ("hostId", "serverGeneration", "sessionId", "createdAt")
+    }
+    ref_shape = shape.obj(
+        {
+            "hostId": shape.HOST,
+            "serverGeneration": shape.NONEMPTY,
+            "sessionId": {**shape.TEXT, "pattern": r"^\$[0-9]+$"},
+            "createdAt": shape.INT,
+        }
+    )
+    receipt = shape.obj(
+        {
+            "state": shape.choices("ready", "unavailable", "unsupported", "expired"),
+            **{
+                key: shape.nullable(shape.INT)
+                for key in (
+                    "preparedAt",
+                    "associationStartedAt",
+                    "ownerExpiresAt",
+                    "associationExpiresAt",
+                    "expiresAt",
+                )
+            },
+            "error": shape.nullable(
+                shape.obj({"code": shape.TOKEN, "message": {**shape.TEXT, "maxLength": 4096}})
+            ),
+        }
+    )
+    schema = shape.obj(
+        {
+            "protocol": {"const": "tmux-observer.bindings.v1"},
+            "schemaVersion": {"type": "integer", "const": 1},
+            "clock": shape.obj(
+                {
+                    "bootId": shape.UUID,
+                    "timeNamespace": {
+                        **shape.TEXT,
+                        "pattern": r"^time:[0-9]+$",
+                        "maxLength": 64,
+                    },
+                }
+            ),
+            "contextId": shape.CONTEXT,
+            "epoch": shape.INT,
+            "encodedAt": shape.INT,
+            "hostId": shape.HOST,
+            "publisherId": shape.UUID,
+            "serverGeneration": shape.nullable(shape.NONEMPTY),
+            "receipt": receipt,
+            "rows": shape.array(
+                shape.obj(
+                    {
+                        "sessionRef": ref_shape,
+                        "attachedClients": shape.nullable(shape.INT),
+                        "association": shape.obj(
+                            {
+                                "state": shape.choices("open", "none", "unknown"),
+                                "resolvedAt": shape.nullable(shape.INT),
+                                "reason": shape.TOKEN,
+                            }
+                        ),
+                    }
+                ),
+                256,
+            ),
+        }
+    )
+    shape.write(bundle, "schema.json", shape.schema(bundle, "schema.json", schema))
+    valid = {
+        "protocol": "tmux-observer.bindings.v1",
+        "schemaVersion": 1,
+        "clock": native["clock"],
+        "contextId": "0" * 32,
+        "epoch": 1,
+        "encodedAt": 20130,
+        "hostId": reference["hostId"],
+        "publisherId": owner["publisherId"],
+        "serverGeneration": reference["serverGeneration"],
+        "receipt": {
+            "state": "ready",
+            "preparedAt": 20125,
+            "associationStartedAt": 20100,
+            "ownerExpiresAt": 30100,
+            "associationExpiresAt": 30100,
+            "expiresAt": 30100,
+            "error": None,
+        },
+        "rows": [
+            {
+                "sessionRef": reference,
+                "attachedClients": 1,
+                "association": {
+                    "state": "open",
+                    "resolvedAt": 125,
+                    "reason": "retained_native_association",
+                },
+            }
+        ],
+    }
+    cases = []
+
+    def case(name, value, accept=True):
+        shape.write(bundle, "fixtures/" + name + ".json", value)
+        cases.append(
+            {"file": name + ".json", "kind": "bindings", "schema": "schema.json", "accept": accept}
+        )
+
+    case("retained-open", valid)
+    detached = copy.deepcopy(valid)
+    detached["rows"][0].update(
+        attachedClients=0,
+        association={
+            "state": "none",
+            "resolvedAt": None,
+            "reason": "no_native_clients",
+        },
+    )
+    case("no-clients", detached)
+    uncertain = copy.deepcopy(valid)
+    uncertain["rows"][0]["association"] = {
+        "state": "unknown",
+        "resolvedAt": None,
+        "reason": "ambiguous_match",
+    }
+    case("ambiguous", uncertain)
+    unavailable = copy.deepcopy(uncertain)
+    unavailable["receipt"].update(
+        state="unavailable",
+        error={"code": "attachment_unverified", "message": "no current native profile"},
+    )
+    case("unavailable", unavailable)
+    for name, mutation in (
+        (
+            "invalid-future-discovery",
+            lambda v: v["rows"][0]["association"].update(resolvedAt=20126),
+        ),
+        ("invalid-expired-native", lambda v: v["receipt"].update(expiresAt=20130)),
+        ("invalid-extended-native", lambda v: v["receipt"].update(associationExpiresAt=30101)),
+        (
+            "invalid-positive-failure",
+            lambda v: v["receipt"].update(
+                state="unavailable", error={"code": "failed", "message": "native unavailable"}
+            ),
+        ),
+        ("invalid-detached-positive", lambda v: v["rows"][0].update(attachedClients=0)),
+        (
+            "invalid-absence-with-clients",
+            lambda v: v["rows"][0]["association"].update(
+                state="none", resolvedAt=None, reason="no_native_clients"
+            ),
+        ),
+        ("invalid-action-handle", lambda v: v["rows"][0].update(windowId=123)),
+        ("invalid-duplicate-reference", lambda v: v["rows"].append(copy.deepcopy(v["rows"][0]))),
+    ):
+        bad = copy.deepcopy(valid)
+        mutation(bad)
+        case(name, bad, False)
+    shape.write(bundle, "fixtures/index.json", {"cases": cases})
+    import hashlib
+
+    shape.write(
+        bundle,
+        "contract.json",
+        {
+            "schemaVersion": 1,
+            "name": bundle,
+            "protocol": "tmux-observer.bindings.v1",
+            "wire": {"documentBytes": 1048576, "maxDepth": 32, "maxNodes": 100000},
+            "extensions": "closed; no action handles or raw process/window evidence",
+            "dependencies": {
+                name: hashlib.sha256((shape.ROOT / name / "SHA256SUMS").read_bytes()).hexdigest()
+                for name in ("observation-v1", "attachments-v1", "fleet-v1")
+            },
+            "runtimeAcceptance": "separate from schema and source acceptance",
+        },
+    )
+    print(bundle, shape.checksum(bundle), f"{len(cases)} independent cases")
+
+
+if __name__ == "__main__":
+    main()

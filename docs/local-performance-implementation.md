@@ -56,7 +56,7 @@ current target validation in the action package.
 | Checkpoint | Work and acceptance | State |
 | --- | --- | --- |
 | LP0 | Source review, bounded design, contract choice and ordinary-session constraints | Reviewed design |
-| LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Pending |
+| LP1 | Pure bindings contract, independent fixtures/reader, immutable old bundles; bounded new-client discovery/cache | Contract accepted at source; discovery/cache pending |
 | LP2 | Prepared fleet integration, receipt-only renewal without discovery, independent remote schedule, explicit refresh/recovery | Pending |
 | LP3 | Tmux Plus consumes qualified retained bindings with local expiry/watch guards; native/action authority unchanged | Pending |
 | LP4 | Frozen artifacts, native open/close/switch/bootstrap acceptance, local and normal-fleet CPU/update measurements, Snap GUI | Pending |
@@ -66,3 +66,13 @@ Source, packaged, installed/native, measured and managed acceptance remain
 separate. Record exact artifacts and failed evidence without upgrading a passing
 source test into runtime acceptance. Physical suspend is outside this always-on
 pass.
+
+### LP1 contract checkpoint
+
+`bindings-v1` has twelve independent valid/invalid fixtures and a reader that
+imports no product implementation. The existing six contract bundles are
+unchanged. Pure validation accepts old discovery times with current independent
+native receipts, and rejects expired/extended dependencies, detached positives,
+unsupported absence, duplicate identities and action handles. The source gate
+passes 329 tests, all contract readers, compile, Ruff and whitespace checks.
+This accepts no native discovery, consumer projection, artifact or deployment.

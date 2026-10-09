@@ -20,6 +20,7 @@ SCHEMAS = {
     "attachment-request": "attachments-v1/request.schema.json",
     "attachment-delivery": "attachments-v1/delivery.schema.json",
     "desktop": "desktop-v1/schema.json",
+    "bindings": "bindings-v1/schema.json",
     "action-request": "action-v1/request.schema.json",
     "action-result": "action-v1/schema.json",
 }
@@ -270,6 +271,67 @@ def action_result(value):
         require(value["legacyResult"] is None, "failure projection")
 
 
+def bindings(value):
+    receipt = value["receipt"]
+    now = value["encodedAt"]
+    if receipt["state"] == "ready":
+        require(
+            all(
+                receipt[key] is not None
+                for key in (
+                    "preparedAt",
+                    "associationStartedAt",
+                    "ownerExpiresAt",
+                    "associationExpiresAt",
+                    "expiresAt",
+                )
+            ),
+            "ready binding receipts",
+        )
+        require(receipt["error"] is None, "ready binding failure")
+        require(
+            receipt["associationStartedAt"]
+            <= receipt["preparedAt"]
+            <= now
+            < receipt["expiresAt"]
+            <= min(receipt["ownerExpiresAt"], receipt["associationExpiresAt"])
+            and receipt["associationExpiresAt"] <= receipt["associationStartedAt"] + 10000,
+            "native binding interval",
+        )
+    else:
+        require(receipt["error"] is not None, "unavailable binding diagnostic")
+    seen, ids = set(), set()
+    for row in value["rows"]:
+        ref = identity(row["sessionRef"])
+        require(ref[:2] == (value["hostId"], value["serverGeneration"]), "local binding scope")
+        require(ref not in seen and ref[2] not in ids, "unique binding identity")
+        seen.add(ref)
+        ids.add(ref[2])
+        observed = row["association"]
+        if observed["state"] != "unknown":
+            require(receipt["state"] == "ready", "binding dependency unavailable")
+        if observed["state"] == "open":
+            require(
+                row["attachedClients"] is not None and row["attachedClients"] > 0,
+                "retained native clients",
+            )
+            require(
+                observed["resolvedAt"] is not None
+                and observed["resolvedAt"] <= receipt["preparedAt"],
+                "original binding discovery",
+            )
+            require(observed["reason"] == "retained_native_association", "qualified binding basis")
+        elif observed["state"] == "none":
+            require(
+                row["attachedClients"] == 0
+                and observed["resolvedAt"] is None
+                and observed["reason"] == "no_native_clients",
+                "zero-client binding case",
+            )
+        else:
+            require(observed["resolvedAt"] is None, "unresolved binding has discovery")
+
+
 def verify(kind, value):
     base.schema_check(kind, value)
     validators = {
@@ -278,6 +340,7 @@ def verify(kind, value):
         "attachment-request": lambda value: None,
         "attachment-delivery": delivery,
         "desktop": desktop,
+        "bindings": bindings,
         "action-request": action_request,
         "action-result": action_result,
     }

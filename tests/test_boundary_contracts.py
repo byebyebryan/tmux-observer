@@ -16,6 +16,7 @@ from tmux_observer.attachments import (
     validate_attachments,
 )
 from tmux_observer_actions.contract import validate_action_request, validate_action_result
+from tmux_observer_client.bindings_contract import validate_bindings
 from tmux_observer_client.desktop_contract import legacy_viewer, validate_desktop
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +32,7 @@ VALIDATORS = {
     "attachment-request": validate_attachment_request,
     "attachment-delivery": validate_attachment_delivery,
     "desktop": validate_desktop,
+    "bindings": validate_bindings,
     "action-request": validate_action_request,
     "action-result": validate_action_result,
 }
@@ -54,7 +56,7 @@ class BoundaryContracts(unittest.TestCase):
             reader.verify(kind, value)
 
     def test_independent_valid_and_invalid_corpus(self):
-        for bundle in ("attachments-v1", "desktop-v1", "action-v1"):
+        for bundle in ("attachments-v1", "desktop-v1", "action-v1", "bindings-v1"):
             for case in fixture(bundle, "index")["cases"]:
                 with self.subTest(bundle=bundle, case=case["file"]):
                     method = self.accept if case["accept"] else self.reject
@@ -134,6 +136,26 @@ class BoundaryContracts(unittest.TestCase):
         self.assertEqual(
             legacy_viewer(presence, legacy_launch_confirmation=True)["confidence"], "confirmed"
         )
+
+    def test_retained_discovery_is_independent_of_native_renewal(self):
+        value = fixture("bindings-v1", "retained-open")
+        self.assertLess(value["rows"][0]["association"]["resolvedAt"], value["encodedAt"] - 10000)
+        self.accept("bindings", value)
+        for path, replacement in (
+            (("schemaVersion",), True),
+            (("rows", 0, "association", "resolvedAt"), 20126),
+            (("rows", 0, "association", "reason"), "current_native_association"),
+            (("receipt", "ownerExpiresAt"), 20130),
+            (("receipt", "associationExpiresAt"), 20130),
+            (("rows", 0, "sessionRef", "hostId"), "other"),
+        ):
+            invalid = copy.deepcopy(value)
+            child = invalid
+            for key in path[:-1]:
+                child = child[key]
+            child[path[-1]] = replacement
+            with self.subTest(path=path):
+                self.reject("bindings", invalid)
 
     def test_create_needs_no_reference_and_mutation_keeps_guards(self):
         value = fixture("action-v1", "request-create")

@@ -15,7 +15,7 @@ spec = importlib.util.spec_from_loader(loader.name, loader)
 reader = importlib.util.module_from_spec(spec)
 loader.exec_module(reader)
 count = 0
-for bundle in ("attachments-v1", "desktop-v1", "action-v1"):
+for bundle in ("attachments-v1", "desktop-v1", "action-v1", "bindings-v1"):
     directory = ROOT / "contracts" / bundle
     entries = {}
     for line in (directory / "SHA256SUMS").read_text().splitlines():
@@ -44,4 +44,4 @@ for bundle in ("attachments-v1", "desktop-v1", "action-v1"):
             accepted = False
         assert accepted == case["accept"], case
         count += 1
-print(f"Verified 3 new boundary bundles and {count} independent valid/invalid cases")
+print(f"Verified 4 boundary bundles and {count} independent valid/invalid cases")

@@ -1,0 +1,76 @@
+{
+  "cases": [
+    {
+      "file": "retained-open.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "no-clients.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "ambiguous.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "unavailable.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": true
+    },
+    {
+      "file": "invalid-future-discovery.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-expired-native.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-extended-native.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-positive-failure.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-detached-positive.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-absence-with-clients.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-action-handle.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    },
+    {
+      "file": "invalid-duplicate-reference.json",
+      "kind": "bindings",
+      "schema": "schema.json",
+      "accept": false
+    }
+  ]
+}

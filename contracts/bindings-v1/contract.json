@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "name": "bindings-v1",
+  "protocol": "tmux-observer.bindings.v1",
+  "wire": {
+    "documentBytes": 1048576,
+    "maxDepth": 32,
+    "maxNodes": 100000
+  },
+  "extensions": "closed; no action handles or raw process/window evidence",
+  "dependencies": {
+    "observation-v1": "f1764941eecae315ca7bb13aa9b0c67c3dc8c8a5cba96d8ea48bbb6aa506cc9c",
+    "attachments-v1": "3635fbf3ecdb545cc8154bde0d13ae1cd12c628c881566ca53e031122cd5eb33",
+    "fleet-v1": "ad030c7853104734727792f37c7dba42da139b076319db2ba408b8214adbbb8e"
+  },
+  "runtimeAcceptance": "separate from schema and source acceptance"
+}
