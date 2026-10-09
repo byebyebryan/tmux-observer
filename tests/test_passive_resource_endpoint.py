@@ -44,6 +44,45 @@ class PassiveEndpointTests(unittest.TestCase):
         self.assertEqual(passive.env["TMUX_TMPDIR"], "/tmp/explicit-native")
         self.assertEqual(fixture.env["TMUX_TMPDIR"], str(self.root / "native"))
 
+    def test_ordinary_additions_and_name_sort_changes_preserve_full_baseline_references(self):
+        endpoint = self.module.Endpoint(self.root, "snap", native_fixture=False)
+        endpoint.baseline = "$1|11\n$2|22"
+        endpoint.hooks = ""
+        endpoint.passive_generation = "generation"
+        with (
+            patch.object(endpoint, "native", return_value=""),
+            patch.object(
+                endpoint, "independent_native", return_value={"serverGeneration": "generation"}
+            ),
+            patch.object(endpoint, "roster", return_value="$3|33\n$2|22\n$1|11"),
+        ):
+            self.assertEqual(
+                endpoint.dispatch({"operation": "passivity"}),
+                {
+                    "preserved": True,
+                    "baselineSessions": 2,
+                    "currentSessions": 3,
+                    "addedReferences": 1,
+                },
+            )
+
+    def test_ordinary_loss_reuse_and_duplicate_references_remain_failed_preservation(self):
+        endpoint = self.module.Endpoint(self.root, "snap", native_fixture=False)
+        endpoint.baseline = "$1|11\n$2|22"
+        endpoint.hooks = ""
+        endpoint.passive_generation = "generation"
+        for roster in ("$1|11", "$1|11\n$2|23", "$1|11\n$2|22\n$2|22"):
+            with (
+                self.subTest(roster=roster),
+                patch.object(endpoint, "native", return_value=""),
+                patch.object(
+                    endpoint, "independent_native", return_value={"serverGeneration": "generation"}
+                ),
+                patch.object(endpoint, "roster", return_value=roster),
+                self.assertRaises(AssertionError),
+            ):
+                endpoint.dispatch({"operation": "passivity"})
+
 
 if __name__ == "__main__":
     unittest.main()

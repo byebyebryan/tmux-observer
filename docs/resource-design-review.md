@@ -140,3 +140,15 @@ Recommendation: review the first direction for this standard-library Python
 delivery. The second remains valid if its lower CPU ceiling is a product
 requirement. Functional/native/graphical acceptance and paired rollback are
 independent of this pending resource decision.
+
+The user asked for the CPU cause rather than selecting a higher ceiling.
+Five percent therefore remains required. The subsequent
+[system-Python profile](evidence/2026-10-08-boundary-b5/normal-system-python-failed.json)
+uses Python 3.14.7 and frozen runtime `ae8df6e` on both hosts. It measures
+5.2673%/2.8990% combined CPU and 81.57/81.63 MiB fleet/associated-bridge RSS.
+Warm query deadlines pass. Its final exact-roster assertion rejects two
+ordinary sessions added on Starship during active use; all original references
+remain present in a later independent read. Preserve this failed run and
+remeasure with the corrected addition-tolerant preservation harness. These
+results improve on the earlier UV-interpreter candidate, but changes in runtime
+and active workload prevent assigning the full difference to code changes.

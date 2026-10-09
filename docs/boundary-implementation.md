@@ -354,3 +354,26 @@ identity. Earlier fixtures used UV's selected interpreter. That runtime differen
 must be disclosed rather than treated as evidence of the managed CPU cost.
 The next profile retains the five-percent gate, counts all associated children,
 and keeps the existing safety instrumentation, cadence, freshness and deadlines.
+
+The [system-Python ten-minute run](evidence/2026-10-08-boundary-b5/normal-system-python-failed.json)
+uses frozen runtime `ae8df6e` and clean harness `f754637`, with Python 3.14.7
+on both endpoints. Snap measures 5.2673% combined CPU, still above five percent;
+Starship measures 2.8990%. Fleet/associated-bridge peaks are 81.57/81.63 MiB,
+owner peaks are 23.71/24.78 MiB, and warm query deadlines pass. The final
+preservation assertion fails because Starship gained two ordinary sessions
+during active use. A subsequent independent native comparison finds all eight
+baseline references still present. The failed record and its cleanup outcome
+remain unchanged; neither CPU nor full-run preservation acceptance is claimed.
+
+The ordinary-server harness now permits additions and ordering changes while
+requiring every original session ID/creation-time pair, the original server
+generation and unchanged hooks. Lost/replaced or duplicate references still
+fail; owned fixture rosters still require exact equality. Two regressions cover
+these active-use cases. A fresh clean run is required after this harness repair.
+
+A [sixty-second passive deployed Snap diagnostic](evidence/2026-10-08-boundary-b5/managed-snap-cpu-diagnostic.json)
+measures 2.60% owner and 4.08% fleet CPU for the currently selected 0.1.0a1
+services. It excludes the associated remote bridge and is not ten-minute
+acceptance. It shows that the earlier private, unattached fixture cannot be
+used as a current ordinary-session baseline. No replacement CPU ceiling has
+been approved; the five-percent promotion gate remains.

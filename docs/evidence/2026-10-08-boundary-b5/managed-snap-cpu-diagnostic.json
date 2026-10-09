@@ -1,0 +1,12 @@
+{
+  "scope": "passive current managed 0.1.0a1 service groups; no query, restart or GUI input",
+  "limits": [
+    "Sixty-second diagnostic only; not ten-minute acceptance",
+    "Includes local service descendants but omits associated remote bridge CPU"
+  ],
+  "seconds": 60.00050480605569,
+  "cpuPercent": {
+    "tmux-observer-owner@snap.service": 2.603716427136338,
+    "tmux-observer-fleet@45803d3a0aa1c400d7602f29eecd73a2.service": 4.080532335376112
+  }
+}

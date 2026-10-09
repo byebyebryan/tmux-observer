@@ -732,10 +732,24 @@ class Endpoint:
             self.config.write_text("\n".join(lines) + "\n")
             return {"selectedRoute": selected, "changedAt": boottime_ms()}
         if op == "passivity":
-            assert self.roster() == self.baseline and self.native("show-hooks") == self.hooks
+            before = self.baseline.splitlines()
+            after = self.roster().splitlines()
+            if self.native_fixture:
+                assert sorted(after) == sorted(before), "owned native roster changed"
+            else:
+                assert len(set(after)) == len(after), (
+                    "ordinary native roster has duplicate references"
+                )
+                assert set(before) <= set(after), "ordinary native reference was lost or replaced"
+            assert self.native("show-hooks") == self.hooks, "native hooks changed"
             if not self.native_fixture:
                 assert self.independent_native()["serverGeneration"] == self.passive_generation
-            return {"preserved": True}
+            return {
+                "preserved": True,
+                "baselineSessions": len(before),
+                "currentSessions": len(after),
+                "addedReferences": len(set(after) - set(before)),
+            }
         if op == "profile_start":
             assert self.profile_process is None
             error_log = self.root / "profile-error"
