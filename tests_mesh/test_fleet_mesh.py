@@ -172,6 +172,51 @@ class MeshFleetTests(unittest.TestCase):
             self.assertTrue(host["sessions"])
             self.assertEqual(host["sessions"][0]["localViewer"]["state"], "unknown")
 
+    def test_seventeenth_owner_reports_capacity_retains_history_and_recovers(self):
+        with tempfile.TemporaryDirectory(prefix="tmux-mesh-capacity-") as temporary:
+            fleet, _owner, _collector, _scanner, authority = self.start(Path(temporary))
+            original = copy.deepcopy(authority.payload)
+            authority.payload["hosts"].extend(
+                {
+                    "id": f"fixture-{index:02d}",
+                    "display": f"Fixture {index}",
+                    "local": False,
+                    "aliases": [],
+                    "routes": [
+                        {
+                            "destination": f"fixture-{index:02d}",
+                            "configuredIndex": 0,
+                            "lastReachableAt": None,
+                            "lastUnreachableAt": None,
+                        }
+                    ],
+                }
+                for index in range(16)
+            )
+            authority.payload["meshRevision"] = "sha256:" + "b" * 64
+
+            def capacity():
+                frame = self.read(fleet)
+                return frame if frame["snapshot"]["mesh"]["state"] == "capacity" else None
+
+            frame = self.wait(capacity, budget=9)
+            self.assertEqual(frame["snapshot"]["error"]["code"], "capacity")
+            self.assertEqual(len(frame["snapshot"]["hosts"]), 1)
+            self.assertTrue(frame["snapshot"]["hosts"][0]["sessions"])
+            self.assertEqual(frame["snapshot"]["hosts"][0]["owner"]["localExpiry"], 0)
+            authority.payload = original
+
+            def recovered():
+                frame = self.read(fleet)
+                return (
+                    frame
+                    if frame["snapshot"]["mesh"]["state"] == "ready"
+                    and frame["snapshot"]["hosts"][0]["owner"]["localExpiry"] > boottime_ms()
+                    else None
+                )
+
+            self.wait(recovered, budget=9)
+
 
 if __name__ == "__main__":
     unittest.main()

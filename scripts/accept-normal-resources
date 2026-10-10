@@ -75,7 +75,7 @@ def worker(root, host):
         endpoint.close()
 
 
-def coordinate(artifact, output):
+def coordinate(artifact, output, *, transport="legacy", mesh_inputs=None):
     helper = load(ROOT / "scripts/accept-native-fleet", "normal_native_coordinator")
     root = Path("/tmp/to-fleet-" + uuid.uuid4().hex)
     root.mkdir(mode=0o700)
@@ -89,6 +89,7 @@ def coordinate(artifact, output):
         "cases": [],
         "endpoints": {},
         "cleanup": False,
+        "transport": transport,
     }
     try:
         from artifact_input import stage_wheel
@@ -96,7 +97,12 @@ def coordinate(artifact, output):
         wheel = stage_wheel(root / "wheel", record, repo=ROOT, descriptor=artifact)
         wheel.rename(root / wheel.name)
         wheel = root / wheel.name
-        for name in ("accept-native-fleet", "accept-normal-resources"):
+        (root / "transport-kind").write_text(transport + "\n")
+        if transport == "mesh":
+            from mesh_acceptance import stage_mesh
+
+            stage_mesh(root / "mesh-wheels", mesh_inputs, record)
+        for name in ("accept-native-fleet", "accept-normal-resources", "mesh_acceptance.py"):
             shutil.copy2(ROOT / "scripts" / name, root / name)
         helper.command([*ssh, "mkdir -m 700 -- " + shlex.quote(str(root))])
         remote_created = True
@@ -107,9 +113,15 @@ def coordinate(artifact, output):
                 str(wheel),
                 str(root / "accept-native-fleet"),
                 str(root / "accept-normal-resources"),
+                str(root / "mesh_acceptance.py"),
+                str(root / "transport-kind"),
                 "starship:" + str(root) + "/",
             ]
         )
+        if transport == "mesh":
+            helper.command(
+                ["scp", "-q", "-r", str(root / "mesh-wheels"), "starship:" + str(root) + "/"]
+            )
         for host in ("snap", "starship"):
             argv = [
                 sys.executable,
@@ -127,11 +139,34 @@ def coordinate(artifact, output):
         assert all(value["wheelSha256"] == expected for value in record["endpoints"].values())
         end = time.monotonic() + 25
         ready = set()
+        record["readiness"] = {}
         while len(ready) < 2 and time.monotonic() < end:
             for host, control in controls.items():
-                frame = control.call("snapshot")["frame"]
-                view = frame["snapshot"]
-                associations = control.call("associations")
+                try:
+                    frame = control.call("snapshot")["frame"]
+                    view = frame["snapshot"]
+                    associations = control.call("associations")
+                except RuntimeError as error:
+                    if "owner publisher is unavailable" not in str(error):
+                        raise
+                    continue
+                record["readiness"][host] = {
+                    "mesh": view["mesh"] if view else None,
+                    "desktop": view["desktop"]["state"] if view else None,
+                    "owners": [
+                        {
+                            "hostId": row["hostId"],
+                            "transport": row["owner"]["transport"],
+                            "receipt": row["owner"]["receipt"],
+                            "localExpiry": row["owner"]["localExpiry"],
+                            "sessions": len(row["sessions"]),
+                        }
+                        for row in view["hosts"]
+                    ]
+                    if view
+                    else [],
+                    "associations": associations,
+                }
                 if (
                     view
                     and view["desktop"]["state"] == "ready"
@@ -265,13 +300,19 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--worker", type=Path)
     parser.add_argument("--host-id", choices=("snap", "starship"))
+    parser.add_argument("--transport", choices=("legacy", "mesh"), default="legacy")
+    parser.add_argument("--mesh-wheels", type=Path)
     args = parser.parse_args()
     if args.worker:
         worker(args.worker, args.host_id)
         return 0
     if args.artifact is None or args.output is None:
         parser.error("coordinator requires a frozen artifact and output")
-    return coordinate(args.artifact, args.output)
+    if (args.transport == "mesh") != (args.mesh_wheels is not None):
+        parser.error("Mesh transport requires --mesh-wheels; legacy does not use it")
+    return coordinate(
+        args.artifact, args.output, transport=args.transport, mesh_inputs=args.mesh_wheels
+    )
 
 
 if __name__ == "__main__":

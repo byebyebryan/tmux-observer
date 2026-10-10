@@ -21,6 +21,12 @@ from tmux_observer.mesh import TmuxMeshAdapter
 QUEUE_LIMIT = 16 * 1048576
 
 
+class CatalogCapacityError(ValueError):
+    def __init__(self, catalog):
+        self.catalog = catalog
+        super().__init__("prepared fleet supports at most 16 owners")
+
+
 class CapturedAuthority:
     """Keep the exact initial catalog used by Mesh's configured reader."""
 
@@ -32,6 +38,8 @@ class CapturedAuthority:
         catalog = await self.authority.load()
         if self.catalog is None:
             self.catalog = catalog
+        if len(catalog.hosts) > 16:
+            raise CatalogCapacityError(catalog)
         return catalog
 
     async def report_route(self, **kwargs):
@@ -120,6 +128,11 @@ class MeshWorker:
                     self.task = asyncio.create_task(self.watch(path))
                     try:
                         await self.task
+                    except CatalogCapacityError as error:
+                        if error.catalog.local_host == self.host_id:
+                            self.put(("capacity", error.catalog.revision))
+                        else:
+                            self.put(("error", "scope_mismatch"))
                     except asyncio.CancelledError:
                         if self.stopping.is_set():
                             return

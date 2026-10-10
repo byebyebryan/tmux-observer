@@ -87,6 +87,15 @@ def serve_fleet(root, host_id):
             counters["ownerControlSentBytes"] += len(encode_document(request, limit=16384))
             counters["remoteProbeRequests"] += request["operation"] == "probe"
 
+    transport = (
+        (root / "transport-kind").read_text().strip()
+        if (root / "transport-kind").exists()
+        else "legacy"
+    )
+    if transport == "mesh":
+        from tmux_observer_client.mesh_fleet import MeshFleetPublisher
+
+        FleetPublisher = MeshFleetPublisher
     publisher = FleetPublisher(
         host_id,
         path=root / "fleet.sock",
@@ -112,6 +121,11 @@ def serve_fleet(root, host_id):
         nonlocal next_metrics
         original(now)
         if now >= next_metrics:
+            if transport == "mesh":
+                starts = root / "mesh-ssh-starts"
+                counters["sshStarts"] = (
+                    len(starts.read_text().splitlines()) if starts.exists() else 0
+                )
             adapter = publisher.binding_adapter
             counters["bindingDiscoveryJobs"] = adapter.discovery_jobs if adapter else 0
             counters["bindingDiscoveryClients"] = adapter.discovery_clients if adapter else 0
@@ -386,13 +400,44 @@ class Endpoint:
             + (["--python", self.python_executable] if self.python_executable is not None else [])
         )
         command(["uv", "pip", "install", "--python", self.python, "--no-deps", str(wheel)])
+        transport = (
+            (self.root / "transport-kind").read_text().strip()
+            if (self.root / "transport-kind").exists()
+            else "legacy"
+        )
+        if transport == "mesh":
+            from mesh_acceptance import mesh_wheels
+
+            command(
+                [
+                    "uv",
+                    "pip",
+                    "install",
+                    "--python",
+                    self.python,
+                    "--no-deps",
+                    *map(str, mesh_wheels(self.root / "mesh-wheels")),
+                ]
+            )
         actual = json.loads(command(["rofi-ssh-plus", "mesh", "list", "--json"]).stdout)
         assert actual["localHostId"] == self.host_id and len(actual["hosts"]) == 2
         self.actual_catalog = actual
         # Copy the public catalog to isolated provider preferences, never read its files.
         config = self.root / "config/rofi-ssh-plus"
         config.mkdir(mode=0o700, parents=True)
-        policy = actual["sshPolicy"]
+        policy = dict(actual["sshPolicy"])
+        if transport == "mesh":
+            from mesh_acceptance import private_mesh_routes
+
+            policy["executable"] = str(
+                private_mesh_routes(
+                    self.root,
+                    self.python,
+                    socket=self.root / "owner.sock",
+                    host=self.host_id,
+                    executable=policy["executable"],
+                )
+            )
         local = next(host for host in actual["hosts"] if host["local"])
         quote = json.dumps
         lines = [
@@ -421,7 +466,7 @@ class Endpoint:
         self.config.chmod(0o600)
         (self.root / "native").mkdir(mode=0o700)
         binary = self.root / "bin"
-        binary.mkdir(mode=0o700)
+        binary.mkdir(mode=0o700, exist_ok=True)
         write(
             binary / "tmux",
             "#!/bin/sh\n"
@@ -517,7 +562,11 @@ class Endpoint:
                 "EnvironmentFile=" + str(environment),
             )
             .replace(
-                "ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer-client fleet --host-id ${TMUX_OBSERVER_HOST_ID} --context-id %i",
+                next(
+                    line
+                    for line in fleet_template.read_text().splitlines()
+                    if line.startswith("ExecStart=")
+                ),
                 "ExecStart="
                 + self.python
                 + " "

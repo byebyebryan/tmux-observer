@@ -35,6 +35,11 @@ class MeshFleetPublisher(FleetPublisher):
             raise IPCError("mesh_unavailable", "owned Mesh reader stopped")
         for event in self.worker.take():
             now = boottime_ms()
+            if event[0] == "capacity":
+                self.catalog_failure(now, "capacity", "prepared fleet supports at most 16 owners")
+                self.state.mesh.update(state="capacity", revision=event[1])
+                self.mesh_reader = None
+                continue
             if event[0] == "error":
                 self.catalog_failure(now, event[1], "Mesh cached-state reader is unavailable")
                 self.mesh_reader = None

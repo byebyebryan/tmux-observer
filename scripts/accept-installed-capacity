@@ -313,7 +313,12 @@ def worker(root, role, host):
                         if index == 0
                         else (
                             MeshRoute(
-                                settings.get("sshHost", f"fixture-route-{index:02d}"), 0, None, None
+                                f"fixture-route-{index:02d}"
+                                if settings.get("meshTransport")
+                                else settings.get("sshHost", f"fixture-route-{index:02d}"),
+                                0,
+                                None,
+                                None,
                             ),
                         ),
                     )
@@ -334,13 +339,66 @@ def worker(root, role, host):
             def report_route(self, **_kwargs):
                 return True
 
-        publisher = FleetPublisher(
-            "fixture-00",
-            path=root / "fleet.sock",
-            owner_path=root / "fixture-00.sock",
-            mesh=FixtureMesh(),
-            remote_exec=shlex.quote(str(root / "bridge")),
-        )
+        settings = json.loads((root / "settings.json").read_text())
+        if settings.get("meshTransport"):
+            from mesh_plus.catalog import Catalog
+
+            from tmux_observer_client.mesh_fleet import MeshFleetPublisher
+
+            class FixtureAuthority:
+                async def load(self):
+                    snapshot = FixtureMesh().load()
+                    return Catalog(
+                        {
+                            "schemaVersion": 1,
+                            "generatedAt": 1,
+                            "meshRevision": snapshot.revision,
+                            "localHostId": "fixture-00",
+                            "sshPolicy": {
+                                "executable": str(root / "mesh-ssh"),
+                                "connectTimeoutSeconds": 1,
+                                "connectionAttempts": 1,
+                                "routeHealthTtlSeconds": 60,
+                            },
+                            "hosts": [
+                                {
+                                    "id": host.host_id,
+                                    "display": host.display,
+                                    "local": host.local,
+                                    "aliases": [],
+                                    "routes": [
+                                        {
+                                            "destination": route.destination,
+                                            "configuredIndex": route.configured_index,
+                                            "lastReachableAt": None,
+                                            "lastUnreachableAt": None,
+                                        }
+                                        for route in host.routes
+                                    ],
+                                }
+                                for host in snapshot.hosts
+                            ],
+                        }
+                    )
+
+                async def report_route(self, **_kwargs):
+                    return True
+
+            publisher = MeshFleetPublisher(
+                "fixture-00",
+                path=root / "fleet.sock",
+                owner_path=root / "fixture-00.sock",
+                authority=FixtureAuthority(),
+                remote_exec=shlex.quote(str(root / "bridge")),
+            )
+        else:
+            publisher = FleetPublisher(
+                "fixture-00",
+                path=root / "fleet.sock",
+                owner_path=root / "fixture-00.sock",
+                mesh=FixtureMesh(),
+                remote_exec=shlex.quote(str(root / "bridge")),
+            )
         original = publisher.publish_tickets
         next_metrics = 0
         high_water = {
@@ -444,7 +502,12 @@ def process_tree(pid):
         try:
             fields = (path / "stat").read_text().rpartition(") ")[2].split()
             rss = int((path / "statm").read_text().split()[1]) * os.sysconf("SC_PAGE_SIZE")
-            children = (path / f"task/{selected}/children").read_text().split()
+            children = []
+            for task in (path / "task").iterdir():
+                try:
+                    children.extend((task / "children").read_text().split())
+                except (FileNotFoundError, ProcessLookupError):
+                    continue
             processes.append(
                 {
                     "pid": selected,
@@ -459,7 +522,9 @@ def process_tree(pid):
     return processes
 
 
-def main(output, memory_target_mib, ssh_host=None, artifact=None):
+def main(
+    output, memory_target_mib, ssh_host=None, artifact=None, *, transport="legacy", mesh_inputs=None
+):
     source_commit = command(["git", "-C", str(ROOT), "rev-parse", "HEAD"]).decode().strip()
     dirty = bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).strip())
     evidence = {
@@ -467,6 +532,7 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
         "sourceCommit": source_commit,
         "sourceTreeDirty": dirty,
         "cases": [],
+        "transport": transport,
         "scope": "one installed wheel; synthetic 16-owner catalog/observations; real private IPC and 15 installed local stdio bridges",
         "limits": [
             "Fixture transport execs local bridges with SSH-shaped argv; no SSH process or network costs are measured",
@@ -517,8 +583,14 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
         from artifact_input import stage_wheel
 
         wheel = stage_wheel(root / "dist", evidence, repo=ROOT, descriptor=artifact, env=env)
+        dependencies = []
+        if transport == "mesh":
+            from mesh_acceptance import mesh_wheels, stage_mesh
+
+            stage_mesh(root / "mesh-wheels", mesh_inputs, evidence)
+            dependencies = list(map(str, mesh_wheels(root / "mesh-wheels")))
         evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
-        command(["uv", "venv", str(root / "venv")], env=env)
+        command(["uv", "venv", "--python", "/usr/bin/python3", str(root / "venv")], env=env)
         command(
             [
                 "uv",
@@ -528,6 +600,7 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
                 str(root / "venv/bin/python"),
                 "--no-deps",
                 str(wheel),
+                *dependencies,
             ],
             env=env,
         )
@@ -562,6 +635,46 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
         )
         (root / "bridge").chmod(0o700)
         settings = {"owners": 16, "padding": 8}
+        if transport == "mesh":
+            settings["meshTransport"] = True
+            # Each configured fixture route selects a fixed source config.
+            # No native server or ordinary Mesh source is involved.
+            for index in range(1, 16):
+                host = f"fixture-{index:02d}"
+                config = root / (host + ".toml")
+                config.write_text(
+                    "version = 1\nhost = "
+                    + json.dumps(host)
+                    + '\n[sources.tmux_default]\ndomain = "tmux"\nsocket = '
+                    + json.dumps(str(root / (host + ".sock")))
+                    + "\n"
+                )
+                config.chmod(0o600)
+                bridge = root / ("mesh-bridge-" + host)
+                bridge.write_text(
+                    "#!/bin/sh\nprintf '%s\\n' \"$$\" > "
+                    + shlex.quote(str(root / ("bridge-pid-" + host)))
+                    + "\nexec "
+                    + shlex.quote(str(root / "venv/bin/mesh-plus"))
+                    + ' "$@" --config '
+                    + shlex.quote(str(config))
+                    + "\n"
+                )
+                bridge.chmod(0o700)
+            shim = root / "mesh-ssh"
+            shim.write_text(
+                "#!"
+                + str(root / "venv/bin/python")
+                + "\nimport os,sys,shlex,re\nargs=sys.argv[1:]\nroute=args[-2]\nassert re.fullmatch('fixture-route-(?:0[1-9]|1[0-5])',route)\nhost='fixture-'+route[-2:]\nlast=shlex.split(args[-1])\nassert last[-5:][:2]==['mesh-plus','bridge']\nlast[-5]="
+                + repr(str(root / "mesh-bridge-"))
+                + "+host\nargs[-1]=shlex.join(last)\n"
+                + (
+                    "args[-2]=" + repr(ssh_host) + "\nos.execv('/usr/bin/ssh',['ssh',*args])\n"
+                    if ssh_host
+                    else "os.execv('/bin/sh',['sh','-c',args[-1]])\n"
+                )
+            )
+            shim.chmod(0o700)
         if ssh_host:
             settings["sshHost"] = ssh_host
         write_json(root / "settings.json", settings)
@@ -664,7 +777,36 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
                         ],
                         env=env,
                     )
-                command([*ssh, shlex.join(["uv", "venv", str(root / "venv")])], env=env)
+                command(
+                    [
+                        *ssh,
+                        shlex.join(
+                            ["uv", "venv", "--python", "/usr/bin/python3", str(root / "venv")]
+                        ),
+                    ],
+                    env=env,
+                )
+                if transport == "mesh":
+                    command(
+                        [
+                            "scp",
+                            "-q",
+                            "-r",
+                            str(root / "mesh-wheels"),
+                            ssh_host + ":" + str(root) + "/",
+                        ],
+                        env=env,
+                    )
+                    command(
+                        [
+                            "scp",
+                            "-q",
+                            *map(str, root.glob("fixture-*.toml")),
+                            *map(str, root.glob("mesh-bridge-fixture-*")),
+                            ssh_host + ":" + str(root) + "/",
+                        ],
+                        env=env,
+                    )
                 command(
                     [
                         *ssh,
@@ -677,6 +819,7 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
                                 str(root / "venv/bin/python"),
                                 "--no-deps",
                                 str(root / "dist" / wheel.name),
+                                *dependencies,
                             ]
                         ),
                     ],
@@ -794,7 +937,13 @@ def main(output, memory_target_mib, ssh_host=None, artifact=None):
             )
             if ssh_host:
                 local_tree = process_tree(fleet.pid)
-                remote_metrics = remote.call("metrics")
+                remote_metrics = wait(
+                    lambda: (
+                        metrics
+                        if len((metrics := remote.call("metrics"))["current"]["processes"]) == 15
+                        else None
+                    )
+                )
                 assert sum(row["name"] == "ssh" for row in local_tree) == 15
                 assert len(remote_metrics["current"]["processes"]) == 15
                 passed(
@@ -1120,6 +1269,8 @@ if __name__ == "__main__":
     parser.add_argument("--role", choices=("owner", "fleet", "context", "bundle"))
     parser.add_argument("--ssh-host", choices=("starship",))
     parser.add_argument("--host")
+    parser.add_argument("--transport", choices=("legacy", "mesh"), default="legacy")
+    parser.add_argument("--mesh-wheels", type=Path)
     args, remaining = parser.parse_known_args()
     if args.artifact and (args.root or args.role or args.host):
         parser.error("--artifact is a coordinator input")
@@ -1127,4 +1278,15 @@ if __name__ == "__main__":
         raise SystemExit(worker(args.root, args.role, args.host))
     if args.output is None or remaining:
         parser.error("provide --output or a complete private worker invocation")
-    raise SystemExit(main(args.output, args.memory_target_mib, args.ssh_host, args.artifact))
+    if (args.transport == "mesh") != (args.mesh_wheels is not None):
+        parser.error("Mesh transport requires --mesh-wheels; legacy does not use it")
+    raise SystemExit(
+        main(
+            args.output,
+            args.memory_target_mib,
+            args.ssh_host,
+            args.artifact,
+            transport=args.transport,
+            mesh_inputs=args.mesh_wheels,
+        )
+    )
