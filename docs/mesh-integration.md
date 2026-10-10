@@ -3,18 +3,17 @@
 Started 2026-10-09. The user authorized the migration goal loop after review of
 Mesh Plus's [handoff](https://github.com/byebyebryan/mesh-plus/blob/fd40916/docs/handoff.md)
 and frozen state boundary. This ledger owns the candidate implementation and
-acceptance. The final reviewed tuple is published and selected on Snap/Starship.
-The [accepted rollout record](evidence/2026-10-10-mesh-rollout/README.md) binds
-Mesh `74b9e54` / Observer `1931d73` / Plus `07c2619`, exact released bytes,
-headless/native/resource/capacity gates and managed recovery/paired rollback.
-
-The subsequent [catalog bound fix](evidence/2026-10-10-catalog-bound-fix/README.md)
-selects Mesh 0.1.0a7 / Observer 0.6.0a2 / Plus 0.12.0a2. It closes input growth
+acceptance. Current recorded selection, 2026-10-10, is Mesh **0.1.0a7** /
+Observer **0.6.0a2** / Plus **0.12.0a2** on Snap and Starship. The
+[catalog bound fix](evidence/2026-10-10-catalog-bound-fix/README.md) closes input growth
 and pathname replacement races, current-selection documentation and managed
 source publication. Its exact artifacts repeat independent source/package/native,
 600-second resources, capacity, installed headless and both-host managed
 recovery/rollback gates. SDK a6 stays installed for the tested preceding-tuple
-rollback. The earlier record above remains historical evidence.
+rollback. The [previous accepted rollout](evidence/2026-10-10-mesh-rollout/README.md)
+binds Mesh `74b9e54` / Observer `1931d73` / Plus `07c2619` and retains its own
+exact released bytes, gates and operational scope. For a concise component map,
+see [runtime architecture](runtime-architecture.md).
 
 ## Scope and decisions
 

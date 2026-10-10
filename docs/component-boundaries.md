@@ -1,5 +1,10 @@
 # Component boundaries and next extraction
 
+Historical boundary design, implemented through the separately accepted B0–B5
+delivery. [Current runtime architecture](runtime-architecture.md) adds the
+selected Mesh networking component and summarizes today's package/process map.
+The decisions below retain their original review and acceptance context.
+
 Reviewed: 2026-10-08. This records the design decisions for the next extraction.
 The subsequent [wire freeze](boundary-wire-v1.md) and
 [execution ledger](boundary-implementation.md) track implementation separately.

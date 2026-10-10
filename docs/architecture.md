@@ -1,5 +1,9 @@
 # Architecture
 
+For the selected Mesh-backed implementation, start with
+[current runtime architecture](runtime-architecture.md). This document preserves
+the original extraction design; its command names and source map are historical.
+
 Date: 2026-10-07. Status: original reviewed first-delivery design. Its problem
 statement and extraction map describe the pre-extraction Tmux Plus 0.6.0 baseline.
 Deliveries A–E subsequently passed their recorded acceptance; see

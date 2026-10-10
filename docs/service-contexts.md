@@ -1,7 +1,14 @@
-# Candidate service and desktop handoff
+# Service contexts and desktop handoff
 
-The owner publisher and fleet reader have separate lifetimes. The candidate
-`tmux-observer-owner@.service` uses the configured logical host ID. The candidate
+These implemented interfaces originated in the first-delivery candidate.
+Current selection and installed evidence are recorded in
+[implementation status](implementation-status.md) and
+[managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md).
+The generic fleet unit defaults to legacy transport; selected managed controls
+explicitly pass Mesh transport and source `tmux_default`.
+
+The owner publisher and fleet reader have separate lifetimes. The packaged
+`tmux-observer-owner@.service` uses the configured logical host ID. The packaged
 `tmux-observer-fleet@.service` uses a captured desktop context ID. Neither unit is
 installed or enabled by installing the Python package.
 
@@ -56,7 +63,7 @@ five-second stop budget, and bounded restart admission. Same-path compositor
 replacement invalidates desktop epochs inside the running fleet; owner leases
 remain independent. Other desktop contexts are separate instances.
 
-These are candidate source interfaces. Native environment parsing, installed
-unit bytes, two-host fleet acceptance and managed startup/teardown remain their
-own gates. Owner availability across SSH logout still requires endpoint-specific
-user-manager policy validation; this helper does not enable lingering.
+Native environment parsing, installed unit bytes, two-host fleet acceptance and
+managed startup/teardown have separate recorded gates. Owner availability across
+SSH logout still requires endpoint-specific user-manager policy validation;
+this helper does not enable lingering.
