@@ -75,7 +75,15 @@ def worker(root, host):
         endpoint.close()
 
 
-def coordinate(artifact, output, *, transport="legacy", mesh_inputs=None):
+def coordinate(
+    artifact,
+    output,
+    *,
+    transport="legacy",
+    mesh_inputs=None,
+    mesh_tuple=None,
+    diagnostic_seconds=None,
+):
     helper = load(ROOT / "scripts/accept-native-fleet", "normal_native_coordinator")
     root = Path("/tmp/to-fleet-" + uuid.uuid4().hex)
     root.mkdir(mode=0o700)
@@ -84,7 +92,8 @@ def coordinate(artifact, output, *, transport="legacy", mesh_inputs=None):
     remote_created = False
     record = {
         "state": "running",
-        "gate": "B5-normal-resources",
+        "gate": "B5-normal-resources" if diagnostic_seconds is None else "resource-diagnostic",
+        "diagnosticSeconds": diagnostic_seconds,
         "scope": "installed two-host owners passively observing ordinary default servers with enabled local associations, real SSH and actual Niri/process matching; private preferences/units/IPC only; no native mutation or GUI input",
         "cases": [],
         "endpoints": {},
@@ -101,7 +110,7 @@ def coordinate(artifact, output, *, transport="legacy", mesh_inputs=None):
         if transport == "mesh":
             from mesh_acceptance import stage_mesh
 
-            stage_mesh(root / "mesh-wheels", mesh_inputs, record)
+            stage_mesh(root / "mesh-wheels", mesh_inputs, record, tuple_path=mesh_tuple)
         for name in ("accept-native-fleet", "accept-normal-resources", "mesh_acceptance.py"):
             shutil.copy2(ROOT / "scripts" / name, root / name)
         helper.command([*ssh, "mkdir -m 700 -- " + shlex.quote(str(root))])
@@ -203,9 +212,14 @@ def coordinate(artifact, output, *, transport="legacy", mesh_inputs=None):
             record["endpoints"][host]["warmSamples"] = samples
         record["cases"].append("hundred_warm_queries_per_endpoint_meet_deadlines")
         for control in controls.values():
-            control.call("profile_start")
-        print("started ten-minute profile; no graphical input on either host", flush=True)
-        end = time.monotonic() + 720
+            control.call("profile_start", seconds=diagnostic_seconds or 600)
+        print(
+            "started "
+            + ("diagnostic" if diagnostic_seconds else "ten-minute")
+            + " profile; no graphical input on either host",
+            flush=True,
+        )
+        end = time.monotonic() + (diagnostic_seconds or 600) + 120
         profiles = {}
         while len(profiles) < 2:
             assert time.monotonic() < end, "owned resource profile deadline exceeded"
@@ -256,7 +270,12 @@ def coordinate(artifact, output, *, transport="legacy", mesh_inputs=None):
             if all(row["withinSelectedTargets"] for row in assessments.values())
             else "failed_resource_target"
         )
-        record["limits"] = [
+        if diagnostic_seconds is not None:
+            record["state"] = "diagnostic_complete"
+            record["limits"] = ["Short diagnostics cannot establish normal resource acceptance"]
+        else:
+            record["limits"] = []
+        record["limits"] += [
             "Sampled RSS can miss transient peaks",
             "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
             "Two physical hosts and private catalog/preferences; no managed selection",
@@ -291,7 +310,7 @@ def coordinate(artifact, output, *, transport="legacy", mesh_inputs=None):
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(record, indent=2) + "\n")
     print(json.dumps({"state": record["state"], "cleanup": record["cleanup"]}), flush=True)
-    return 0 if record["state"] == "passed" and record["cleanup"] else 1
+    return 0 if record["state"] in {"passed", "diagnostic_complete"} and record["cleanup"] else 1
 
 
 def main():
@@ -302,6 +321,14 @@ def main():
     parser.add_argument("--host-id", choices=("snap", "starship"))
     parser.add_argument("--transport", choices=("legacy", "mesh"), default="legacy")
     parser.add_argument("--mesh-wheels", type=Path)
+    parser.add_argument("--mesh-tuple", type=Path, help="explicit reviewed Mesh input tuple")
+    parser.add_argument(
+        "--diagnostic-seconds",
+        type=int,
+        choices=range(10, 600),
+        metavar="10..599",
+        help="short diagnostic only; never produces acceptance",
+    )
     args = parser.parse_args()
     if args.worker:
         worker(args.worker, args.host_id)
@@ -310,8 +337,15 @@ def main():
         parser.error("coordinator requires a frozen artifact and output")
     if (args.transport == "mesh") != (args.mesh_wheels is not None):
         parser.error("Mesh transport requires --mesh-wheels; legacy does not use it")
+    if args.mesh_tuple and args.transport != "mesh":
+        parser.error("--mesh-tuple requires Mesh transport")
     return coordinate(
-        args.artifact, args.output, transport=args.transport, mesh_inputs=args.mesh_wheels
+        args.artifact,
+        args.output,
+        transport=args.transport,
+        mesh_inputs=args.mesh_wheels,
+        mesh_tuple=args.mesh_tuple,
+        diagnostic_seconds=args.diagnostic_seconds,
     )
 
 

@@ -523,7 +523,14 @@ def process_tree(pid):
 
 
 def main(
-    output, memory_target_mib, ssh_host=None, artifact=None, *, transport="legacy", mesh_inputs=None
+    output,
+    memory_target_mib,
+    ssh_host=None,
+    artifact=None,
+    *,
+    transport="legacy",
+    mesh_inputs=None,
+    mesh_tuple=None,
 ):
     source_commit = command(["git", "-C", str(ROOT), "rev-parse", "HEAD"]).decode().strip()
     dirty = bool(command(["git", "-C", str(ROOT), "status", "--porcelain"]).strip())
@@ -587,7 +594,7 @@ def main(
         if transport == "mesh":
             from mesh_acceptance import mesh_wheels, stage_mesh
 
-            stage_mesh(root / "mesh-wheels", mesh_inputs, evidence)
+            stage_mesh(root / "mesh-wheels", mesh_inputs, evidence, tuple_path=mesh_tuple)
             dependencies = list(map(str, mesh_wheels(root / "mesh-wheels")))
         evidence["wheelSha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
         command(["uv", "venv", "--python", "/usr/bin/python3", str(root / "venv")], env=env)
@@ -1271,6 +1278,7 @@ if __name__ == "__main__":
     parser.add_argument("--host")
     parser.add_argument("--transport", choices=("legacy", "mesh"), default="legacy")
     parser.add_argument("--mesh-wheels", type=Path)
+    parser.add_argument("--mesh-tuple", type=Path, help="explicit reviewed Mesh input tuple")
     args, remaining = parser.parse_known_args()
     if args.artifact and (args.root or args.role or args.host):
         parser.error("--artifact is a coordinator input")
@@ -1280,6 +1288,8 @@ if __name__ == "__main__":
         parser.error("provide --output or a complete private worker invocation")
     if (args.transport == "mesh") != (args.mesh_wheels is not None):
         parser.error("Mesh transport requires --mesh-wheels; legacy does not use it")
+    if args.mesh_tuple and args.transport != "mesh":
+        parser.error("--mesh-tuple requires Mesh transport")
     raise SystemExit(
         main(
             args.output,
@@ -1288,5 +1298,6 @@ if __name__ == "__main__":
             args.artifact,
             transport=args.transport,
             mesh_inputs=args.mesh_wheels,
+            mesh_tuple=args.mesh_tuple,
         )
     )

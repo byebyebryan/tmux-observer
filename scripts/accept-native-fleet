@@ -205,7 +205,7 @@ def bridge_relay(root, arguments):
 
 
 def profile_native(root, seconds):
-    assert seconds >= 600
+    assert seconds >= 10
     tick = os.sysconf("SC_CLK_TCK")
     groups = {}
     peaks = {}
@@ -347,6 +347,24 @@ def profile_native(root, seconds):
         "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
         "Measurement control/profiler processes are outside the service cgroups",
     ]
+    transport = (
+        (root / "transport-kind").read_text().strip()
+        if (root / "transport-kind").exists()
+        else "legacy"
+    )
+    output["acceptanceDurationMet"] = seconds >= 600
+    if seconds < 600:
+        output["limits"].append("Short diagnostic only; no normal resource acceptance")
+    if transport == "mesh":
+        output["unmeasuredCounters"] = [
+            "ownerPayloadReceivedBytes",
+            "ownerControlSentBytes",
+            "remoteProbeRequests",
+            "matchingRemoteProofs",
+        ]
+        output["limits"].append(
+            "Legacy protocol counters do not instrument Mesh; their zeros are not measurements"
+        )
     # Repeated operation names are counters, not part of every retained sample.
     for item in samples:
         item.pop("meshCalls")
@@ -820,6 +838,8 @@ class Endpoint:
             }
         if op == "profile_start":
             assert self.profile_process is None
+            seconds = request.get("seconds", 600)
+            assert type(seconds) is int and 10 <= seconds <= 600
             error_log = self.root / "profile-error"
             with error_log.open("wb") as stream:
                 self.profile_process = subprocess.Popen(
@@ -829,7 +849,7 @@ class Endpoint:
                         "--profile",
                         str(self.root),
                         "--seconds",
-                        "600",
+                        str(seconds),
                     ],
                     stdout=subprocess.DEVNULL,
                     stderr=stream,

@@ -5,11 +5,13 @@ import json
 from pathlib import Path
 
 
-def stage_mesh(directory, source, evidence):
+def stage_mesh(directory, source, evidence, *, tuple_path=None):
     """Check every frozen dependency against the reviewed tuple before copying."""
-    tuple_path = (
-        Path(__file__).resolve().parents[1] / "docs/evidence/2026-10-09-mesh-integration/tuple.json"
-    )
+    if tuple_path is None:
+        tuple_path = (
+            Path(__file__).resolve().parents[1]
+            / "docs/evidence/2026-10-09-mesh-integration/tuple.json"
+        )
     selected = json.loads(tuple_path.read_text())
     expected = [
         {"file": selected["mesh"]["wheel"], "sha256": selected["mesh"]["wheelSha256"]},
@@ -22,6 +24,10 @@ def stage_mesh(directory, source, evidence):
         assert hashlib.sha256(raw).hexdigest() == row["sha256"], "Mesh input digest differs"
         (directory / row["file"]).write_bytes(raw)
     evidence["meshInputs"] = expected
+    evidence["meshTupleInput"] = {
+        "path": str(tuple_path),
+        "sha256": hashlib.sha256(tuple_path.read_bytes()).hexdigest(),
+    }
     (directory / "manifest.json").write_text(json.dumps(expected) + "\n")
 
 

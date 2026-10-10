@@ -28,7 +28,25 @@ evidence until separately selected.
   The legacy backend remains available for candidate comparison and rollback.
 - Native two-second sampling, ten-second leases, separate desktop/association
   clocks and original source deadlines remain fixed. Normal/capacity memory,
-  CPU, native passivity, graphical and installed gates remain independent.
+  CPU, native passivity and installed gates remain independent. The user accepted
+  headless picker frame/callback testing for this wiring migration; graphical
+  input and physical suspend remain optional separate evidence.
+
+### Wrap-up resource checkpoint
+
+The rebuilt Observer `d1fbf1e` / Tmux Plus `e74db6f` / Mesh a4 tuple passes
+installed native/SSH, headless picker and all eleven declared-capacity cases.
+Its ordinary two-host profile fails the unchanged five-percent CPU and 96 MiB
+fleet memory targets: Snap 9.09 percent / 116.26 MiB; Starship 4.53 percent /
+111.41 MiB. The owned services cleaned up and native references/hooks survived.
+No selected service or artifact was changed.
+
+Mesh a5 `90e2eaa` avoids importing the state SDK for authority CLI calls. It
+passes core and the installed 85-test native/SSH suite, including both domains.
+This compatible SDK remains a candidate until the Tmux resource gate is repeated.
+The optional integration accepts both reviewed a4/a5 SDKs, preserving the a4
+comparison input. Short resource diagnostics are explicitly labeled and cannot
+establish normal resource acceptance. Mesh byte/proof counters remain unmeasured.
 
 ## Checkpoints
 
