@@ -15,6 +15,48 @@ binds Mesh `74b9e54` / Observer `1931d73` / Plus `07c2619` and retains its own
 exact released bytes, gates and operational scope. For a concise component map,
 see [runtime architecture](runtime-architecture.md).
 
+## Current configuration
+
+Prepared Mesh browsing requires a compatible catalog authority, the selected
+Mesh SDK/runtime dependencies, native Tmux facades available to its bridge, and
+an already running owner on each participating host. The selected public Mesh
+and Observer client launchers expose SDK a7 from
+`~/.local/share/mesh-plus/0.1.0a7/python`; the original common a6 root stays
+available for the tested previous-tuple rollback. Exact roots, payloads and
+controls are recorded in
+[managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md).
+
+Merge the following source entry into the existing private
+`~/.config/mesh-plus/sources.toml` on each owner host. Preserve existing Agent
+sources and file mode 0600; this excerpt is not a whole-file replacement:
+
+```toml
+version = 1
+host = "snap" # use "starship" on the other endpoint
+[sources.tmux_default]
+domain = "tmux"
+socket = "/run/user/1000/tmux-observer/owner.sock"
+```
+
+Use the configured logical host and actual UID/runtime path. The source exports
+only that running owner's metadata. Installing packages or writing configuration
+does not start either the owner or fleet service.
+
+The prepared fleet selection is explicit:
+
+```ini
+[Service]
+Environment=TMUX_OBSERVER_TRANSPORT=mesh
+Environment=TMUX_OBSERVER_MESH_SOURCE=tmux_default
+```
+
+This is the selected managed override; the packaged unit and generic CLI default
+to legacy. Capture/start the current desktop context explicitly after the owner
+is ready; see [service contexts](service-contexts.md). Cached clients never
+perform that startup. Configuration failure revokes current state without direct
+fallback. Recovery or selection changes use the independently accepted scoped
+operations and exact artifacts rather than the historical migration recipe below.
+
 ## Scope and decisions
 
 - Mesh owns catalog authority and reusable cached state transport. Observer's
@@ -194,6 +236,12 @@ The reviewed source revision is published independently of artifact selection.
 Public CI also requires the exact Observer wheel consumed by Plus's existing gate.
 
 ## Candidate rollout
+
+Historical a6 / Observer 0.6.0a1 / Plus 0.12.0a1 migration recipe and acceptance.
+The preceding a7 catalog-fix selection has its own evidence and rollback inputs.
+Use [current configuration](#current-configuration) and the managed operations
+ledger for today's source/runtime controls. The sequence below retains the
+first Mesh rollout's prerequisites and previous 0.5.0a1 / 0.11.0a1 rollback.
 
 The package default remains `legacy`; Snap/Starship explicitly select `mesh`
 after the paired artifact and resource gates. The accepted managed selection is:
