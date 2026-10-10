@@ -1,0 +1,49 @@
+{
+  "state": "passed",
+  "sourceEntries": [
+    "agent",
+    "tmux_default"
+  ],
+  "observerVersion": "0.6.0a2",
+  "doctor": {
+    "agent": {
+      "format": "mesh-plus.diagnostics.v1",
+      "operation": "doctor",
+      "ok": true,
+      "versions": {
+        "mesh-plus": "0.1.0a7",
+        "jsonschema": "4.26.0",
+        "tmux-observer": "0.6.0a2",
+        "agent-observer": "0.5.0a12"
+      },
+      "checks": {
+        "observerPackagesOptional": true,
+        "sourceConfiguration": "accepted"
+      },
+      "limits": [
+        "Package availability only; no endpoint or deployment acceptance"
+      ]
+    },
+    "tmux_default": {
+      "format": "mesh-plus.diagnostics.v1",
+      "operation": "doctor",
+      "ok": true,
+      "versions": {
+        "mesh-plus": "0.1.0a7",
+        "jsonschema": "4.26.0",
+        "tmux-observer": "0.6.0a2",
+        "agent-observer": "0.5.0a12"
+      },
+      "checks": {
+        "observerPackagesOptional": true,
+        "sourceConfiguration": "accepted"
+      },
+      "limits": [
+        "Package availability only; no endpoint or deployment acceptance"
+      ]
+    }
+  },
+  "limits": [
+    "Private extracted package roots; no live selection or service restart"
+  ]
+}

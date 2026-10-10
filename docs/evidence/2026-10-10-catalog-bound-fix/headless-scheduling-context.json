@@ -1,0 +1,16 @@
+{
+  "kubectlProcesses": 3,
+  "load": [
+    "8.17",
+    "6.07",
+    "5.07"
+  ],
+  "topProcesses": [
+    "kubectl         66.4",
+    "python3         20.0",
+    "chrome          19.3",
+    "kubectl          6.0",
+    "kubectl          5.8",
+    "chrome           5.5"
+  ]
+}

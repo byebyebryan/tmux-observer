@@ -12,8 +12,8 @@ The design/backlog baseline is commit `a4fba75`.
 
 ## Current selection and next design
 
-Observer `0.6.0a1`, Tmux Plus `0.12.0a1` and Mesh `0.1.0a6` are released and
-selected on Snap and Starship. The [Mesh rollout record](evidence/2026-10-10-mesh-rollout/README.md)
+Observer `0.6.0a2`, Tmux Plus `0.12.0a2` and Mesh `0.1.0a7` are released and
+selected on Snap and Starship. The [catalog bound-fix record](evidence/2026-10-10-catalog-bound-fix/README.md)
 names the exact frozen inputs and independent package/native, headless,
 resource/capacity, installed recovery and paired rollback evidence. Graphical
 presentation and physical suspend are optional and unrun for this wiring change.
@@ -24,8 +24,8 @@ rather than the original a1 identities recorded below.
 The [component boundary design](component-boundaries.md) and
 [source review](component-boundaries-review.md) describe the accepted native
 association, desktop and action-client extraction. Their original checkpoints
-remain below. Observer `0.6.0a2` / Mesh `0.1.0a7` are a new source candidate for
-bounded catalog reads; acceptance and selection remain separate. Optional
+remain below. Observer `0.6.0a2` / Mesh `0.1.0a7` close bounded catalog reads with
+independent package/native and paired operational acceptance. Optional
 T17/native events and physical sleep/wake remain separate.
 
 ## Original first-delivery acceptance

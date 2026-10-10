@@ -1,0 +1,175 @@
+{
+  "artifactInput": {
+    "descriptorSha256": "868cb78359a2e22e11500c4235eccbb79322c621437e9acde9577b749c8e4441",
+    "source": {
+      "commit": "80c46925ec7c89dca7c86a944a256b47fd6e1430",
+      "epoch": 1791621221,
+      "tree": "cb2d31d660aaa4fb2d5679eacc143bfa8817ccc3"
+    },
+    "sourceFilesMatchHarness": true,
+    "state": "built_unaccepted",
+    "wheelSha256": "a6a58409e8eeb8e5ed982063bb13fc7683182361d953baee25c8cf562b4f8324"
+  },
+  "cases": [
+    "both_installed_native_profiles_and_passive_desktop_readers_ready",
+    "hundred_warm_queries_per_endpoint_meet_deadlines",
+    "owned_fleet_teardown_preserves_native_references_generation_and_hooks"
+  ],
+  "cleanup": true,
+  "fullReportSha256": "04ee61afae1043beee1a3bb429b705186047e572d19e1dbd2b24260b9e6dffd8",
+  "limits": [
+    "Sampled RSS can miss transient peaks",
+    "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
+    "Two physical hosts and private catalog/preferences; no managed selection"
+  ],
+  "measurement": {
+    "snap": {
+      "acceptanceDurationMet": true,
+      "bridgeCpuPercent": 0.37454243399313836,
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups",
+        "Legacy protocol counters do not instrument Mesh; their zeros are not measurements"
+      ],
+      "maxObservedBridgeRssBytes": 31780864,
+      "serviceCpuPercent": {
+        "fleet": 2.3434154607787487,
+        "owner": 1.1535830393868824
+      },
+      "serviceMaxObservedRssBytes": {
+        "fleet": 55488512,
+        "owner": 26222592
+      },
+      "unmeasuredCounters": [
+        "Mesh ownerPayloadReceivedBytes, ownerControlSentBytes, remoteProbeRequests, matchingRemoteProofs"
+      ]
+    },
+    "starship": {
+      "acceptanceDurationMet": true,
+      "bridgeCpuPercent": 0.17820235460270034,
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups",
+        "Legacy protocol counters do not instrument Mesh; their zeros are not measurements"
+      ],
+      "maxObservedBridgeRssBytes": 31993856,
+      "serviceCpuPercent": {
+        "fleet": 1.3176128878607556,
+        "owner": 0.7333303355367139
+      },
+      "serviceMaxObservedRssBytes": {
+        "fleet": 54337536,
+        "owner": 26038272
+      },
+      "unmeasuredCounters": [
+        "Mesh ownerPayloadReceivedBytes, ownerControlSentBytes, remoteProbeRequests, matchingRemoteProofs"
+      ]
+    }
+  },
+  "meshCountersMeasured": false,
+  "meshInputs": [
+    {
+      "file": "mesh_plus-0.1.0a7-py3-none-any.whl",
+      "sha256": "2bee4d9e77b18c6049a80e848c930ec65abaf60ec40a8341648da93a25a1fd81"
+    },
+    {
+      "bytes": 67548,
+      "file": "attrs-26.1.0-py3-none-any.whl",
+      "name": "attrs",
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+      "version": "26.1.0"
+    },
+    {
+      "bytes": 90630,
+      "file": "jsonschema-4.26.0-py3-none-any.whl",
+      "name": "jsonschema",
+      "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+      "version": "4.26.0"
+    },
+    {
+      "bytes": 18437,
+      "file": "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+      "name": "jsonschema-specifications",
+      "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+      "version": "2025.9.1"
+    },
+    {
+      "bytes": 26766,
+      "file": "referencing-0.37.0-py3-none-any.whl",
+      "name": "referencing",
+      "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+      "version": "0.37.0"
+    },
+    {
+      "bytes": 371623,
+      "file": "rpds_py-2026.9.1-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "rpds-py",
+      "sha256": "eac2f5dbafd585dfe31f86a23ebf0d3ba480a9d49ebc87947267b5608d4ea0cd",
+      "version": "2026.9.1"
+    }
+  ],
+  "normalResourceAssessment": {
+    "snap": {
+      "combinedCpuPercent": 3.6752008547683315,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 87482368,
+      "fleetTargetMiB": 96,
+      "ownerMaxObservedRssBytes": 26222592,
+      "ownerTargetMiB": 64,
+      "withinSelectedTargets": true
+    },
+    "starship": {
+      "combinedCpuPercent": 2.425485657390608,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 86118400,
+      "fleetTargetMiB": 96,
+      "ownerMaxObservedRssBytes": 26038272,
+      "ownerTargetMiB": 64,
+      "withinSelectedTargets": true
+    }
+  },
+  "preservation": {
+    "snap": {
+      "afterTeardown": {
+        "addedReferences": 0,
+        "baselineSessions": 7,
+        "currentSessions": 7,
+        "preserved": true
+      },
+      "beforeTeardown": {
+        "addedReferences": 0,
+        "baselineSessions": 7,
+        "currentSessions": 7,
+        "preserved": true
+      },
+      "teardown": {
+        "ownerActive": "active",
+        "stopMs": 59.78899099864066
+      }
+    },
+    "starship": {
+      "afterTeardown": {
+        "addedReferences": 0,
+        "baselineSessions": 10,
+        "currentSessions": 10,
+        "preserved": true
+      },
+      "beforeTeardown": {
+        "addedReferences": 0,
+        "baselineSessions": 10,
+        "currentSessions": 10,
+        "preserved": true
+      },
+      "teardown": {
+        "ownerActive": "active",
+        "stopMs": 44.16952305473387
+      }
+    }
+  },
+  "state": "passed",
+  "transport": "mesh"
+}

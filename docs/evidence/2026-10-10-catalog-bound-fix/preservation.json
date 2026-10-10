@@ -1,0 +1,75 @@
+{
+  "snap": {
+    "additionalAgentServicesObserved": {
+      "agent-observer-claude-cost-a15.service": "MainPID=4185494\nExecMainStartTimestampMonotonic=661520386608"
+    },
+    "additionalServiceObservation": {
+      "cause": "not assigned",
+      "fragment": "systemd transient unit",
+      "partOf": [],
+      "requires": [
+        "app.slice",
+        "basic.target"
+      ],
+      "startedOrStoppedByThisRollout": false,
+      "unit": "agent-observer-claude-cost-a15.service",
+      "wants": []
+    },
+    "agentPackageFiles": 4806,
+    "agentServices": {
+      "agent-observer.service": "MainPID=2367213\nExecMainStartTimestampMonotonic=654911173914",
+      "mesh-plus-agent.service": "MainPID=2181472\nExecMainStartTimestampMonotonic=641807726262"
+    },
+    "baselineSha256": "605506624f39ea9d8381114ad2cefc9d29a9853784cefed3b300b6b6be3c6713",
+    "checks": {
+      "agentFiles": true,
+      "claudeMode": true,
+      "selectedAgentServices": true,
+      "unrelatedFiles": true
+    },
+    "limits": [
+      "Exact selected Agent collector/bridge PIDs and timestamps are preserved; an additional Agent cost unit became active during this run and is reported separately without assigning a cause",
+      "Compared non-pyc installed Agent bytes, five unrelated target hashes and .claude mode; no graphical or physical suspend claim"
+    ],
+    "result": "passed",
+    "retainedSdk6Files": 41,
+    "retainedSdk6Preserved": true
+  },
+  "starship": {
+    "additionalAgentServicesObserved": {
+      "agent-observer-claude-cost-a15.service": "MainPID=1273010\nExecMainStartTimestampMonotonic=661933470116"
+    },
+    "additionalServiceObservation": {
+      "cause": "not assigned",
+      "fragment": "systemd transient unit",
+      "partOf": [],
+      "requires": [
+        "app.slice",
+        "basic.target"
+      ],
+      "startedOrStoppedByThisRollout": false,
+      "unit": "agent-observer-claude-cost-a15.service",
+      "wants": []
+    },
+    "agentPackageFiles": 2533,
+    "agentServices": {
+      "agent-observer.service": "MainPID=1005801\nExecMainStartTimestampMonotonic=655347182157",
+      "mesh-plus-agent.service": "MainPID=461500\nExecMainStartTimestampMonotonic=642227598260"
+    },
+    "baselineSha256": "3f5dfee179d0f2de866438b706d49a8f75ee31c18504809887b8b0d76c76f4f6",
+    "checks": {
+      "agentFiles": true,
+      "claudeMode": true,
+      "selectedAgentServices": true,
+      "unrelatedFiles": true
+    },
+    "foreignSourcePathsPreserved": 16,
+    "limits": [
+      "Exact selected Agent collector/bridge PIDs and timestamps are preserved; an additional Agent cost unit became active during this run and is reported separately without assigning a cause",
+      "Compared non-pyc installed Agent bytes, five unrelated target hashes and .claude mode; no graphical or physical suspend claim"
+    ],
+    "result": "passed",
+    "retainedSdk6Files": 41,
+    "retainedSdk6Preserved": true
+  }
+}

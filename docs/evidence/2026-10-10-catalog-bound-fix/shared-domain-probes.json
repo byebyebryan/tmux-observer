@@ -1,0 +1,686 @@
+{
+  "snap": {
+    "checks": [
+      {
+        "kind": "doctor",
+        "report": {
+          "checks": {
+            "observerPackagesOptional": true,
+            "sourceConfiguration": "accepted"
+          },
+          "format": "mesh-plus.diagnostics.v1",
+          "limits": [
+            "Package availability only; no endpoint or deployment acceptance"
+          ],
+          "ok": true,
+          "operation": "doctor",
+          "versions": {
+            "agent-observer": "0.5.0a12",
+            "jsonschema": "4.26.0",
+            "mesh-plus": "0.1.0a7",
+            "tmux-observer": "0.6.0a2"
+          }
+        },
+        "source": "agent"
+      },
+      {
+        "kind": "doctor",
+        "report": {
+          "checks": {
+            "observerPackagesOptional": true,
+            "sourceConfiguration": "accepted"
+          },
+          "format": "mesh-plus.diagnostics.v1",
+          "limits": [
+            "Package availability only; no endpoint or deployment acceptance"
+          ],
+          "ok": true,
+          "operation": "doctor",
+          "versions": {
+            "agent-observer": "0.5.0a12",
+            "jsonschema": "4.26.0",
+            "mesh-plus": "0.1.0a7",
+            "tmux-observer": "0.6.0a2"
+          }
+        },
+        "source": "tmux_default"
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": false,
+        "report": {
+          "elapsedMs": 200.354,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 153626,
+              "receivedFrames": 2,
+              "sentBytes": 608,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": false,
+        "report": {
+          "elapsedMs": 194.957,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 154035,
+              "receivedFrames": 3,
+              "sentBytes": 869,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": true,
+        "report": {
+          "elapsedMs": 911.519,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 414089,
+              "receivedFrames": 2,
+              "sentBytes": 620,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": true,
+        "report": {
+          "elapsedMs": 939.857,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 414497,
+              "receivedFrames": 3,
+              "sentBytes": 881,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": false,
+        "report": {
+          "elapsedMs": 21.33,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 4659,
+              "receivedFrames": 2,
+              "sentBytes": 614,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": false,
+        "report": {
+          "elapsedMs": 21.719,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 5067,
+              "receivedFrames": 3,
+              "sentBytes": 875,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": true,
+        "report": {
+          "elapsedMs": 437.935,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 5849,
+              "receivedFrames": 2,
+              "sentBytes": 626,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": true,
+        "report": {
+          "elapsedMs": 409.596,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 6257,
+              "receivedFrames": 3,
+              "sentBytes": 887,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      }
+    ],
+    "host": "snap",
+    "limits": [
+      "Cached-state transport and codec acceptance; no graphical input or physical suspend"
+    ],
+    "ownedBridgeReaped": true,
+    "result": "passed"
+  },
+  "starship": {
+    "checks": [
+      {
+        "kind": "doctor",
+        "report": {
+          "checks": {
+            "observerPackagesOptional": true,
+            "sourceConfiguration": "accepted"
+          },
+          "format": "mesh-plus.diagnostics.v1",
+          "limits": [
+            "Package availability only; no endpoint or deployment acceptance"
+          ],
+          "ok": true,
+          "operation": "doctor",
+          "versions": {
+            "agent-observer": "0.5.0a12",
+            "jsonschema": "4.26.0",
+            "mesh-plus": "0.1.0a7",
+            "tmux-observer": "0.6.0a2"
+          }
+        },
+        "source": "agent"
+      },
+      {
+        "kind": "doctor",
+        "report": {
+          "checks": {
+            "observerPackagesOptional": true,
+            "sourceConfiguration": "accepted"
+          },
+          "format": "mesh-plus.diagnostics.v1",
+          "limits": [
+            "Package availability only; no endpoint or deployment acceptance"
+          ],
+          "ok": true,
+          "operation": "doctor",
+          "versions": {
+            "agent-observer": "0.5.0a12",
+            "jsonschema": "4.26.0",
+            "mesh-plus": "0.1.0a7",
+            "tmux-observer": "0.6.0a2"
+          }
+        },
+        "source": "tmux_default"
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": false,
+        "report": {
+          "elapsedMs": 413.158,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 414091,
+              "receivedFrames": 2,
+              "sentBytes": 612,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": false,
+        "report": {
+          "elapsedMs": 321.788,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 414499,
+              "receivedFrames": 3,
+              "sentBytes": 873,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": true,
+        "report": {
+          "elapsedMs": 778.743,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 153623,
+              "receivedFrames": 2,
+              "sentBytes": 616,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "agent",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": true,
+        "report": {
+          "elapsedMs": 756.489,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 154032,
+              "receivedFrames": 3,
+              "sentBytes": 877,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": false,
+        "report": {
+          "elapsedMs": 12.256,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 5849,
+              "receivedFrames": 2,
+              "sentBytes": 618,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": false,
+        "report": {
+          "elapsedMs": 10.212,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 6257,
+              "receivedFrames": 3,
+              "sentBytes": 879,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "snapshot",
+        "remote": true,
+        "report": {
+          "elapsedMs": 445.982,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "snapshot",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 0,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 4658,
+              "receivedFrames": 2,
+              "sentBytes": 622,
+              "sentFrames": 2
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 0
+          }
+        }
+      },
+      {
+        "domain": "tmux",
+        "kind": "probe",
+        "mode": "subscribe",
+        "remote": true,
+        "report": {
+          "elapsedMs": 474.755,
+          "format": "mesh-plus.diagnostics.v1",
+          "mode": "subscribe",
+          "ok": true,
+          "operation": "probe",
+          "runtime": {
+            "activeHandles": 1,
+            "bufferedBytes": 0,
+            "bufferedControlBytes": 0,
+            "capabilities": [
+              "proof",
+              "snapshot",
+              "subscribe"
+            ],
+            "channel": {
+              "byteScope": "completed-json-lines",
+              "closed": false,
+              "receivedBytes": 5067,
+              "receivedFrames": 3,
+              "sentBytes": 883,
+              "sentFrames": 3
+            },
+            "closed": false,
+            "failed": false,
+            "pendingRequests": 0,
+            "retainedHandles": 1,
+            "subscriptions": 1
+          }
+        }
+      }
+    ],
+    "host": "starship",
+    "limits": [
+      "Cached-state transport and codec acceptance; no graphical input or physical suspend"
+    ],
+    "ownedBridgeReaped": true,
+    "result": "passed"
+  }
+}

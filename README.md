@@ -23,15 +23,14 @@ rollback acceptance also pass as independent gates in the
 
 ## Status
 
-Observer **0.6.0a1**, Tmux Plus **0.12.0a1** and Mesh **0.1.0a6** are released
-and selected on Snap and Starship. The [accepted rollout](docs/evidence/2026-10-10-mesh-rollout/README.md)
-records independent package/native, headless, resource, capacity and managed
-recovery/rollback gates. The [integration ledger](docs/mesh-integration.md)
-keeps the historical candidates and their limits.
-
-Source candidate **0.6.0a2** pins Mesh **0.1.0a7**, which closes the library
-catalog's file-check/read race. This candidate requires its own exact package
-and rollout acceptance before replacing the selection above.
+Observer **0.6.0a2**, Tmux Plus **0.12.0a2** and Mesh **0.1.0a7** are released
+and selected on Snap and Starship. The [accepted catalog bound fix](docs/evidence/2026-10-10-catalog-bound-fix/README.md)
+records exact package/native, headless, resource/capacity and installed
+recovery/rollback evidence. The library catalog now parses the same descriptor's
+bounded bytes, closing growth and pathname-replacement races. SDK a6 remains
+available for the independently tested previous-tuple rollback.
+The [integration ledger](docs/mesh-integration.md) retains earlier candidates,
+their acceptance limits and the previous rollout's evidence.
 
 Deliveries A–E accepted in their recorded scopes, 2026-10-08; see the
 [status record](docs/implementation-status.md). Pure contracts and the direct
@@ -87,12 +86,12 @@ bridge path. Cached snapshot/status/probe/watch and ticket lookup use the privat
 fleet endpoint; they never activate services or fall back to direct collection.
 Fresh inventory retains Tmux Session v1, while prepared operations return Fleet v1
 frames. Desktop absence or unsupported contexts leave viewer membership unknown
-without changing owner attachment facts. The candidate fleet unit and explicit
+without changing owner attachment facts. The packaged fleet unit and explicit
 desktop environment handoff are documented in [service contexts](docs/service-contexts.md) and [two-host acceptance](docs/native-fleet-acceptance.md).
 Installed/native acceptance and scoped managed rollout have passed separately;
 the exact managed tuple and recovery/rollback evidence are linked in the status record.
 
-The Mesh candidate retains that same prepared endpoint and Fleet v1 facade:
+The selected Mesh backend retains that same prepared endpoint and Fleet v1 facade:
 
 ```sh
 rtk proxy uv run --extra dev --extra mesh python scripts/check-mesh

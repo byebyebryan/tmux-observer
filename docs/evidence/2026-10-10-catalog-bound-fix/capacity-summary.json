@@ -1,0 +1,89 @@
+{
+  "cases": [
+    {
+      "name": "enabled_local_association_profile_is_current_without_mesh_export",
+      "result": "passed"
+    },
+    {
+      "frameBytes": 22788,
+      "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+      "result": "passed"
+    },
+    {
+      "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_two_watchers_share_sixteen_owner_connections",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_third_reader_receives_explicit_capacity_error",
+      "result": "passed"
+    },
+    {
+      "highWater": {
+        "connections": 16,
+        "outputBytes": 1456832,
+        "perPeerBytes": 45526,
+        "readers": 32,
+        "retainedBytes": 35472
+      },
+      "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+      "result": "passed"
+    },
+    {
+      "frameBytes": 918324,
+      "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners",
+      "result": "passed"
+    },
+    {
+      "highWater": {
+        "connections": 16,
+        "outputBytes": 30303892,
+        "perPeerBytes": 1836623,
+        "readers": 32,
+        "retainedBytes": 931056
+      },
+      "name": "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
+      "result": "passed",
+      "rpcMs": [
+        17.656582058407366,
+        17.374443938024342,
+        16.61278703249991,
+        15.52798692137003,
+        15.24550502654165,
+        30.046480940654874,
+        17.735689994879067,
+        15.428880113177001,
+        14.484598999843001,
+        24.89490096922964
+      ]
+    },
+    {
+      "name": "seventeenth_catalog_owner_fails_authority_without_truncated_success",
+      "result": "passed"
+    },
+    {
+      "elapsedMs": 84.577,
+      "name": "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+      "result": "passed"
+    }
+  ],
+  "fullReportSha256": "c2d451eb9cd24985af69e1f26c2dc6a25d27fcd46a1ef6b49ac4375a699d7cda",
+  "profile": {
+    "conservativeCombinedPeakBytes": 729808896,
+    "durationMs": 35766,
+    "memoryTarget": "passed",
+    "sampleCount": 202,
+    "sampleIntervalMs": 100,
+    "targetBytes": 805306368
+  },
+  "result": "passed_partial",
+  "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+  "wheelSha256": "a6a58409e8eeb8e5ed982063bb13fc7683182361d953baee25c8cf562b4f8324"
+}

@@ -1,0 +1,47 @@
+{
+  "result": "passed",
+  "assets": [
+    {
+      "repo": "mesh-plus",
+      "version": "0.1.0a7",
+      "file": "mesh_plus-0.1.0a7-py3-none-any.whl",
+      "sha256": "2bee4d9e77b18c6049a80e848c930ec65abaf60ec40a8341648da93a25a1fd81",
+      "url": "https://github.com/byebyebryan/mesh-plus/releases/download/v0.1.0a7/mesh_plus-0.1.0a7-py3-none-any.whl"
+    },
+    {
+      "repo": "tmux-observer",
+      "version": "0.6.0a2",
+      "file": "tmux_observer-0.6.0a2-py3-none-any.whl",
+      "sha256": "a6a58409e8eeb8e5ed982063bb13fc7683182361d953baee25c8cf562b4f8324",
+      "url": "https://github.com/byebyebryan/tmux-observer/releases/download/v0.6.0a2/tmux_observer-0.6.0a2-py3-none-any.whl"
+    },
+    {
+      "repo": "tmux-observer",
+      "version": "0.6.0a2",
+      "file": "candidate.json",
+      "sha256": "868cb78359a2e22e11500c4235eccbb79322c621437e9acde9577b749c8e4441",
+      "url": "https://github.com/byebyebryan/tmux-observer/releases/download/v0.6.0a2/candidate.json"
+    },
+    {
+      "repo": "rofi-tmux-plus",
+      "version": "0.12.0a2",
+      "file": "rofi_tmux_plus-0.12.0a2-py3-none-linux_x86_64.whl",
+      "sha256": "95ce35cd9e49506aac3ac830e514da9980c971208efa40ce46bdac170393d969",
+      "url": "https://github.com/byebyebryan/rofi-tmux-plus/releases/download/v0.12.0a2/rofi_tmux_plus-0.12.0a2-py3-none-linux_x86_64.whl"
+    },
+    {
+      "repo": "rofi-tmux-plus",
+      "version": "0.12.0a2",
+      "file": "rofi-tmux-plus-0.12.0a2-linux_x86_64.zip",
+      "sha256": "75c9a163aba91d39041f1cafe57545d64bb93d4a7be570fcddf4e07befb28329",
+      "url": "https://github.com/byebyebryan/rofi-tmux-plus/releases/download/v0.12.0a2/rofi-tmux-plus-0.12.0a2-linux_x86_64.zip"
+    },
+    {
+      "repo": "rofi-tmux-plus",
+      "version": "0.12.0a2",
+      "file": "candidate.json",
+      "sha256": "3f4ae4d2f02e0e615e57819d758865e0890c65b9c930a75e2dde194201d925dd",
+      "url": "https://github.com/byebyebryan/rofi-tmux-plus/releases/download/v0.12.0a2/candidate.json"
+    }
+  ]
+}

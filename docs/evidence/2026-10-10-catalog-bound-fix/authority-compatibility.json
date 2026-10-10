@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "checkedAtUtc": "2026-10-10T09:00:33.166364+00:00",
+  "sourceProject": "rofi-ssh-plus",
+  "sourceCommit": "e01f89cfdb7b068f6b2150b33a96dbce1b5c328f",
+  "sourceFile": "rofi_ssh_plus/_legacy_mesh.py",
+  "sourceSha256": "188570bdf706fcd758dae0b94be022645957313aaf7917d2b24fe65d856097b0",
+  "extractedFile": "src/mesh_plus/authority.py",
+  "testsRun": 82,
+  "failures": 0,
+  "errors": 0,
+  "backend": "mesh-plus",
+  "skipped": [],
+  "method": "Reviewed compatible parser extension; actual Mesh authority selected for SSH Plus regressions",
+  "authorityReview": {
+    "baselineAuthoritySha256": "188570bdf706fcd758dae0b94be022645957313aaf7917d2b24fe65d856097b0",
+    "candidateAuthoritySha256": "8ea029cf68987064c5dfad0e0dc31a354ef35d037dc65ff280a1510dfbaf2136",
+    "change": "Private captured-byte parser inputs; default process read/write paths retained",
+    "byteIdentical": false
+  },
+  "limits": [
+    "Canonical Mesh authority selected in SSH imports and subprocesses",
+    "Mesh process is separately tested in runtime suite",
+    "No operational authority selection, history migration or SSH facade deployment"
+  ],
+  "reviewHarnessSha256": "660519d710249ead4ed899a5c438db5db2ee7006a753461cab2561eb127f3b4b"
+}
