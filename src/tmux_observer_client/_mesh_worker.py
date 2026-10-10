@@ -48,13 +48,16 @@ class CapturedAuthority:
 
 class MeshWorker:
     def __init__(self, host_id, *, owner_path=None, source="tmux_default", authority=None):
-        if __version__ not in {"0.1.0a4", "0.1.0a5"}:
-            raise ValueError(
-                "Mesh backend requires a reviewed mesh-plus 0.1.0a4 or 0.1.0a5 candidate"
-            )
+        if __version__ not in {"0.1.0a4", "0.1.0a5", "0.1.0a6"}:
+            raise ValueError("Mesh backend requires a reviewed mesh-plus 0.1.0a4/a5/a6 candidate")
         self.host_id = host_id
         self.owner_path = owner_socket() if owner_path is None else owner_path
         self.source = source
+        self.owns_authority = authority is None
+        if authority is None and __version__ == "0.1.0a6":
+            from mesh_plus.library_authority import LibraryMeshAuthority
+
+            authority = LibraryMeshAuthority()
         self.authority = MeshAuthority() if authority is None else authority
         self.lock = threading.Lock()
         self.events = collections.deque()
@@ -179,3 +182,5 @@ class MeshWorker:
         self.thread.join(timeout=8)
         if self.thread.is_alive():
             raise RuntimeError("owned Mesh reader did not terminate")
+        if self.owns_authority and hasattr(self.authority, "close"):
+            self.authority.close()

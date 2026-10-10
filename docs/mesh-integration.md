@@ -48,6 +48,14 @@ The optional integration accepts both reviewed a4/a5 SDKs, preserving the a4
 comparison input. Short resource diagnostics are explicitly labeled and cannot
 establish normal resource acceptance. Mesh byte/proof counters remain unmeasured.
 
+Mesh a6 `fa1c332` adds an explicit same-package authority read path with one
+bounded read job, bounded regular source files and deadline-bound health locks.
+The selected fleet uses that path; route reports keep the existing process
+writer. Older a4/a5 comparison inputs remain supported. Canonical authority,
+native validity checks, two-second sampling and ten-second leases are unchanged.
+The 89-test producer gate passes. A short prototype meets both resource targets;
+the exact production tuple still requires its own ordinary two-host profile.
+
 ## Checkpoints
 
 | Gate | Result | State |
@@ -157,12 +165,11 @@ attempt/proof before completing its fleet ticket. CLI request correlation is an
 additive option; no public schema or Mesh lock changed.
 
 The regular stdlib source gate runs without the Mesh extra. Development pins
-that extra to Git revision `2cc12accb331db7ee65ab426da09576a907b291c`.
-The wheel declares optional `mesh-plus==0.1.0a4`; candidate/install workflows must
+that extra to Git revision `fa1c3328c595d61d6905edd64796b76863cf69a6`.
+The wheel declares optional `mesh-plus==0.1.0a6`; candidate/install workflows must
 supply that exact wheel and its declared dependencies separately.
-That revision was not available on public main during verification; the local
-immutable object seeded the development Git cache. Public CI and releases require
-its publication, plus the exact Observer wheel consumed by Plus's existing gate.
+The reviewed source revision is published independently of artifact selection.
+Public CI also requires the exact Observer wheel consumed by Plus's existing gate.
 
 ## Candidate rollout
 
