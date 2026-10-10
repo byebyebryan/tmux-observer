@@ -1,5 +1,6 @@
 """Explicit Mesh integration gate; uses real IPC with owned synthetic publishers."""
 
+import asyncio
 import copy
 import tempfile
 import threading
@@ -198,6 +199,57 @@ class MeshFleetTests(unittest.TestCase):
             source = frame["snapshot"]["hosts"][0]["owner"]["receipt"]
             self.assertGreaterEqual(source["startedAt"], ticket["requestedAt"])
             self.assertGreaterEqual(frame["snapshot"]["desktop"]["startedAt"], source["acceptedAt"])
+
+    def test_rotation_can_overlap_retiring_local_bridge_handler(self):
+        from mesh_plus.bridge import Bridge
+        from mesh_plus.reader import Reader
+
+        from tmux_observer_client import _mesh_worker
+
+        original_serve = Bridge.serve
+        original_reader = _mesh_worker.configured_reader
+        original_watch = Reader.watch
+        readers = []
+        metrics = []
+        original_put = _mesh_worker.MeshWorker.put
+
+        async def retiring_serve(bridge, channel):
+            try:
+                await original_serve(bridge, channel)
+            finally:
+                # Client socket closure precedes bounded publisher retirement.
+                await asyncio.sleep(0.1)
+
+        async def capture_reader(*args, **kwargs):
+            reader = await original_reader(*args, **kwargs)
+            readers.append(reader)
+            return reader
+
+        def fast_watch(reader, **kwargs):
+            return original_watch(reader, proof_interval=0.1, **kwargs)
+
+        def capture_metrics(worker, event):
+            if event[0] == "view" and readers:
+                # Inspect on the owning event-loop thread, not this test thread.
+                metrics.append(readers[0].inspect())
+            return original_put(worker, event)
+
+        with (
+            tempfile.TemporaryDirectory(prefix="tmux-mesh-retirement-") as temporary,
+            patch("mesh_plus.client.ROTATION_HANDLES", 4),
+            patch.object(Bridge, "serve", retiring_serve),
+            patch.object(_mesh_worker, "configured_reader", capture_reader),
+            patch.object(_mesh_worker.MeshWorker, "put", capture_metrics),
+            patch.object(Reader, "watch", fast_watch),
+        ):
+            fleet, _owner, _collector, _scanner, _authority = self.start(Path(temporary))
+            self.wait(lambda: metrics and metrics[-1]["rotations"] >= 3)
+            self.wait(
+                lambda: (
+                    self.read(fleet)["snapshot"]["hosts"][0]["owner"]["localExpiry"] > boottime_ms()
+                )
+            )
+            self.assertEqual(metrics[-1]["connectionFailures"], 0)
 
     def test_authority_loss_retains_metadata_with_no_current_viewer(self):
         with tempfile.TemporaryDirectory(prefix="tmux-mesh-catalog-") as temporary:
