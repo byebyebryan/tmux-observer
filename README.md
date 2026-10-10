@@ -23,10 +23,15 @@ rollback acceptance also pass as independent gates in the
 
 ## Status
 
-Source candidate **0.6.0a1** adds an explicitly selected Mesh cached-state
-backend. Its [integration ledger](docs/mesh-integration.md) records the pinned
-Mesh dependency, acceptance and rollout gates. Existing managed services still
-use the accepted legacy backend until a paired tuple is selected.
+Observer **0.6.0a1**, Tmux Plus **0.12.0a1** and Mesh **0.1.0a6** are released
+and selected on Snap and Starship. The [accepted rollout](docs/evidence/2026-10-10-mesh-rollout/README.md)
+records independent package/native, headless, resource, capacity and managed
+recovery/rollback gates. The [integration ledger](docs/mesh-integration.md)
+keeps the historical candidates and their limits.
+
+Source candidate **0.6.0a2** pins Mesh **0.1.0a7**, which closes the library
+catalog's file-check/read race. This candidate requires its own exact package
+and rollout acceptance before replacing the selection above.
 
 Deliveries A–E accepted in their recorded scopes, 2026-10-08; see the
 [status record](docs/implementation-status.md). Pure contracts and the direct

@@ -7,24 +7,26 @@ Snap graphical and both-host managed recovery/paired rollback gates. The
 [release record](tmux-observer-0.2.0a1.md) names its exact runtime freeze and limits.
 The first-delivery history below retains its original evidence and scope.
 
-Updated: 2026-10-08. Goal: Deliveries A–E, with reviewed commits as work progresses.
+Updated: 2026-10-10. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
 ## Current selection and next design
 
-Observer remains the accepted `0.1.0a1` artifact described below. Managed Tmux Plus
-is now `0.7.0a2`, whose [browse renewal repair](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/tmux-plus-0.7.0a2.md)
-has separate source and installed/headless evidence. Its new graphical gate is
-unrun; the original a1 Starship graphical acceptance retains its own scope.
+Observer `0.6.0a1`, Tmux Plus `0.12.0a1` and Mesh `0.1.0a6` are released and
+selected on Snap and Starship. The [Mesh rollout record](evidence/2026-10-10-mesh-rollout/README.md)
+names the exact frozen inputs and independent package/native, headless,
+resource/capacity, installed recovery and paired rollback evidence. Graphical
+presentation and physical suspend are optional and unrun for this wiring change.
 The exact current tuple and member/rollout evidence are owned by
 [managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md),
 rather than the original a1 identities recorded below.
 
 The [component boundary design](component-boundaries.md) and
-[source review](component-boundaries-review.md) refine the next native association,
-desktop and action-client extraction. B0–B5 are design/implementation gates,
-not additional completed deliveries. This documentation changes no runtime or
-contract. Optional T17/native events and physical sleep/wake remain separate.
+[source review](component-boundaries-review.md) describe the accepted native
+association, desktop and action-client extraction. Their original checkpoints
+remain below. Observer `0.6.0a2` / Mesh `0.1.0a7` are a new source candidate for
+bounded catalog reads; acceptance and selection remain separate. Optional
+T17/native events and physical sleep/wake remain separate.
 
 ## Original first-delivery acceptance
 
