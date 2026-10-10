@@ -11,22 +11,37 @@ from pathlib import Path
 from mesh_plus import __version__
 from mesh_plus.bridge import Bridge
 from mesh_plus.catalog import MeshAuthority
-from mesh_plus.client import Client
-from mesh_plus.reader import Endpoint, Reader
-from mesh_plus.remote import connect_catalog_host
-from mesh_plus.transport import IPCServer, connect_ipc
+from mesh_plus.configured_read import configured_reader
+from mesh_plus.transport import IPCServer
 from mesh_plus.view import ReadGuard
 
 from tmux_observer._ipc import owner_socket
-from tmux_observer.mesh import TmuxMeshAdapter, TmuxMeshCodec
+from tmux_observer.mesh import TmuxMeshAdapter
 
 QUEUE_LIMIT = 16 * 1048576
 
 
+class CapturedAuthority:
+    """Keep the exact initial catalog used by Mesh's configured reader."""
+
+    def __init__(self, authority):
+        self.authority = authority
+        self.catalog = None
+
+    async def load(self):
+        catalog = await self.authority.load()
+        if self.catalog is None:
+            self.catalog = catalog
+        return catalog
+
+    async def report_route(self, **kwargs):
+        return await self.authority.report_route(**kwargs)
+
+
 class MeshWorker:
     def __init__(self, host_id, *, owner_path=None, source="tmux_default", authority=None):
-        if __version__ != "0.1.0a2":
-            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a2 candidate")
+        if __version__ != "0.1.0a4":
+            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a4 candidate")
         self.host_id = host_id
         self.owner_path = owner_socket() if owner_path is None else owner_path
         self.source = source
@@ -62,51 +77,17 @@ class MeshWorker:
             return values
 
     async def watch(self, bridge_path):
-        catalog = await self.authority.load()
+        authority = CapturedAuthority(self.authority)
+        reader = await configured_reader(
+            "tmux",
+            source=self.source,
+            socket=bridge_path,
+            authority=authority,
+            report_routes=True,
+        )
+        catalog = authority.catalog
         if catalog.local_host != self.host_id:
             raise ValueError("Mesh catalog local host differs from configured Observer")
-        codec = TmuxMeshCodec(self.host_id, self.source)
-
-        async def local():
-            channel = await connect_ipc(bridge_path)
-            try:
-                return await Client.connect(
-                    channel,
-                    host=self.host_id,
-                    source=self.source,
-                    profile="tmux-observer.mesh-candidate.v1",
-                    codec=codec.validate,
-                    required=("snapshot", "proof", "subscribe"),
-                )
-            except BaseException:
-                await channel.close()
-                raise
-
-        async def revision():
-            return (await self.authority.load()).revision
-
-        endpoints = []
-        for host in catalog.hosts:
-            if host["local"]:
-                endpoint = Endpoint(host["id"], True, None, local)
-            else:
-
-                async def remote(selected=host):
-                    return await connect_catalog_host(
-                        catalog, selected, "tmux", self.source, authority=self.authority
-                    )
-
-                endpoint = Endpoint(
-                    host["id"], False, catalog.route_token(host["id"], host["routes"][0]), remote
-                )
-            endpoints.append(endpoint)
-        reader = Reader(
-            "tmux",
-            endpoints,
-            local_host=self.host_id,
-            catalog_revision=catalog.revision,
-            catalog_check=revision,
-        )
         request_id = uuid.uuid4().hex
         guard = ReadGuard("tmux", request_id, host_ids=[host["id"] for host in catalog.hosts])
         iterator = reader.watch(request_id=request_id)

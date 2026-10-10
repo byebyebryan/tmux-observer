@@ -43,12 +43,15 @@ evidence until separately selected.
 
 Starting source: Observer `128f7f8`, Tmux Plus `5105eae`, Mesh `fd40916`, SSH Plus
 `e01f89c`. Observer/Plus's accepted runtime is 0.5.0a1 / 0.11.0a1. Mesh source is
-the unreleased 0.1.0a2 candidate; deployed catalog authority remains 0.1.0a1.
+initially the unreleased 0.1.0a2 candidate; deployed catalog authority was 0.1.0a1.
 The installed authority does not include a public Mesh bridge launcher or prove
 delivery dependency availability. Those are candidate packaging/rollout inputs.
-Mesh's sibling checkout subsequently advanced to a3 diagnostics while this work
-ran. It was preserved. This candidate deliberately keeps the reviewed a2 commit
-in an isolated package environment; a3 requires an independently selected tuple.
+Mesh subsequently advanced through diagnostics to 0.1.0a4 at `2cc12ac` while a
+separate Agent Observer rollout selected it. That work was preserved. Review
+confirmed the frozen wire/schema bytes and Tmux admission behavior are unchanged.
+This candidate now pins that exact a4 revision and uses its shared
+`configured_reader` API. The earlier a2 artifact/probe results remain separate;
+producer/package/native/resource gates are repeated for the a4 tuple.
 
 ## Acceptance
 
@@ -104,8 +107,8 @@ attempt/proof before completing its fleet ticket. CLI request correlation is an
 additive option; no public schema or Mesh lock changed.
 
 The regular stdlib source gate runs without the Mesh extra. Development resolves
-that extra from immutable public Git revision `fd40916f2b0e5c9d2a3f8b51d0da02585894ddcb`.
-The wheel declares optional `mesh-plus==0.1.0a2`; candidate/install workflows must
+that extra from immutable public Git revision `2cc12accb331db7ee65ab426da09576a907b291c`.
+The wheel declares optional `mesh-plus==0.1.0a4`; candidate/install workflows must
 supply that exact wheel and its declared dependencies separately.
 
 ## Candidate rollout
@@ -114,14 +117,17 @@ The default remains `legacy`. Opt in only after the paired artifact and resource
 gates accept the selected tuple. The concrete managed changes will include:
 
 1. Select the exact Observer and pinned Tmux Plus wheels/bundles together.
-   Select the a2 Mesh wheel plus exact JSON Schema/runtime dependency wheels for
+   Select the a4 Mesh wheel plus exact JSON Schema/runtime dependency wheels for
    the endpoints' Python ABI. Hash all installed modules, schemas and dependency
    payloads. An authority-only a1 installation is insufficient.
-2. Add the public `~/.local/bin/mesh-plus` launcher. Observer's managed client
-   launcher must include the selected Mesh/dependency Python root; the existing
-   wrapper exposes only Observer. The pure owner/direct/action launchers keep
-   their independent entry paths.
-3. Manage a private `~/.config/mesh-plus/sources.toml` on each endpoint, mode 0600:
+2. Reconcile the existing public `~/.local/bin/mesh-plus` launcher from the
+   separate Agent rollout. Its environment must expose both selected Observer
+   pure native facades and the exact common Mesh/dependency roots. Observer's
+   managed client launcher must include those Mesh/dependency roots; its current
+   wrapper exposes only Observer. Validate both domains after reconciliation.
+   The pure owner/direct/action launchers keep their independent entry paths.
+3. Merge a Tmux source into the private `~/.config/mesh-plus/sources.toml` on each
+   endpoint, mode 0600, preserving existing Agent sources:
 
    ```toml
    version = 1
@@ -149,7 +155,9 @@ gates accept the selected tuple. The concrete managed changes will include:
    candidate tuple and restarting one reader at a time. Full tuple rollback
    selects the previously accepted Observer 0.5.0a1 / Plus 0.11.0a1 and restores
    their previous fleet unit; Mesh authority a1 is its separate rollback input.
-   Restore prior launcher/config bytes only after all new readers have stopped.
+   Restore only Tmux-owned launcher/config changes after all new Tmux readers
+   have stopped. Do not roll back a separately selected Agent Mesh environment
+   or remove its source entry; shared changes require both domains' verification.
 
 These instructions are a reviewable source plan, not an applied managed change.
 Ordinary two-host desktop resources, capacity, installed selection/recovery and
