@@ -24,7 +24,7 @@ def load(path, name):
     return module
 
 
-def worker(root, host):
+def worker(root, host, *, headless=False):
     helper = load(root / "accept-native-fleet", "normal_native_worker")
     endpoint = helper.Endpoint(
         root, host, native_fixture=False, python_executable="/usr/bin/python3"
@@ -36,7 +36,7 @@ def worker(root, host):
         key, separator, value = line.partition("=")
         if separator and key in ("NIRI_SOCKET", "DISPLAY", "WAYLAND_DISPLAY"):
             endpoint.env[key] = value
-    assert endpoint.env.get("NIRI_SOCKET"), (
+    assert headless or endpoint.env.get("NIRI_SOCKET"), (
         "passive desktop resource gate needs a captured endpoint"
     )
     try:
@@ -102,8 +102,13 @@ def coordinate(
         else "resource-diagnostic",
         "resourceScope": resource_scope,
         "viewerAcceptance": resource_scope == "native-viewers",
+        "desktopAcceptance": resource_scope != "headless-cached-delivery",
         "diagnosticSeconds": diagnostic_seconds,
-        "scope": "installed two-host owners passively observing ordinary default servers with enabled local associations, real SSH and actual Niri/process matching; private preferences/units/IPC only; no native mutation or GUI input",
+        "scope": (
+            "installed two-host owners passively observing ordinary default servers, real SSH and cached fleet delivery; private preferences/units/IPC only; desktop and viewer acceptance excluded"
+            if resource_scope == "headless-cached-delivery"
+            else "installed two-host owners passively observing ordinary default servers with enabled local associations, real SSH and actual Niri/process matching; private preferences/units/IPC only; no native mutation or GUI input"
+        ),
         "cases": [],
         "endpoints": {},
         "cleanup": False,
@@ -148,6 +153,8 @@ def coordinate(
                 str(root),
                 "--host-id",
                 host,
+                "--resource-scope",
+                resource_scope,
             ]
             if host == "starship":
                 argv = [*ssh, shlex.join(["python3", *argv[1:]])]
@@ -163,7 +170,11 @@ def coordinate(
                 try:
                     frame = control.call("snapshot")["frame"]
                     view = frame["snapshot"]
-                    associations = control.call("associations")
+                    associations = (
+                        {"state": "not_assessed", "sessions": None, "clients": None}
+                        if resource_scope == "headless-cached-delivery"
+                        else control.call("associations")
+                    )
                 except RuntimeError as error:
                     if "owner publisher is unavailable" not in str(error):
                         raise
@@ -187,7 +198,10 @@ def coordinate(
                 }
                 if (
                     view
-                    and view["desktop"]["state"] == "ready"
+                    and (
+                        resource_scope == "headless-cached-delivery"
+                        or view["desktop"]["state"] == "ready"
+                    )
                     and len(view["hosts"]) == 2
                     and all(
                         row["owner"]["receipt"]
@@ -195,11 +209,18 @@ def coordinate(
                         and row["owner"]["localExpiry"] > frame["encodedAt"]
                         for row in view["hosts"]
                     )
-                    and associations["state"] == "ready"
-                    and associations["sessions"]
-                    == len(record["endpoints"][host]["nativeReference"]["sessionReferences"])
                     and (
-                        resource_scope == "cached-delivery"
+                        resource_scope == "headless-cached-delivery"
+                        or (
+                            associations["state"] == "ready"
+                            and associations["sessions"]
+                            == len(
+                                record["endpoints"][host]["nativeReference"]["sessionReferences"]
+                            )
+                        )
+                    )
+                    and (
+                        resource_scope in {"cached-delivery", "headless-cached-delivery"}
                         or (
                             associations["clients"] > 0
                             and any(
@@ -220,7 +241,11 @@ def coordinate(
                     record["endpoints"][host]["readyAssociationCounts"] = associations
             time.sleep(0.1)
         assert len(ready) == 2, "installed native profile/desktop inputs did not become current"
-        record["cases"].append("both_installed_native_profiles_and_passive_desktop_readers_ready")
+        record["cases"].append(
+            "both_installed_native_profiles_and_cached_delivery_ready"
+            if resource_scope == "headless-cached-delivery"
+            else "both_installed_native_profiles_and_passive_desktop_readers_ready"
+        )
         for host, control in controls.items():
             samples = control.call("benchmark")
             assert sorted(samples["rpcMs"])[94] <= 50
@@ -296,6 +321,10 @@ def coordinate(
             "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
             "Two physical hosts and private catalog/preferences; no managed selection",
         ]
+        if resource_scope == "headless-cached-delivery":
+            record["limits"].append(
+                "Desktop readiness and positive viewer associations were not assessed"
+            )
     except Exception as error:  # noqa: BLE001 - persist owned acceptance failures
         record.update(
             state="failed", failure=type(error).__name__, failureMessage=str(error)[:1024]
@@ -338,7 +367,7 @@ def main():
     parser.add_argument("--transport", choices=("legacy", "mesh"), default="legacy")
     parser.add_argument(
         "--resource-scope",
-        choices=("native-viewers", "cached-delivery"),
+        choices=("native-viewers", "cached-delivery", "headless-cached-delivery"),
         default="native-viewers",
         help="cached-delivery has no positive viewer acceptance",
     )
@@ -353,7 +382,9 @@ def main():
     )
     args = parser.parse_args()
     if args.worker:
-        worker(args.worker, args.host_id)
+        worker(
+            args.worker, args.host_id, headless=args.resource_scope == "headless-cached-delivery"
+        )
         return 0
     if args.artifact is None or args.output is None:
         parser.error("coordinator requires a frozen artifact and output")

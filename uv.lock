@@ -41,7 +41,7 @@ wheels = [
 [[package]]
 name = "mesh-plus"
 version = "0.1.0a10"
-source = { git = "https://github.com/byebyebryan/mesh-plus.git?rev=504a176d9d9037634465ef1ab7a71988f317ca60#504a176d9d9037634465ef1ab7a71988f317ca60" }
+source = { git = "https://github.com/byebyebryan/mesh-plus.git?rev=3684fe083c0ab5af3c74aa27dff169e5764489f5#3684fe083c0ab5af3c74aa27dff169e5764489f5" }
 dependencies = [
     { name = "jsonschema" },
 ]
@@ -237,7 +237,7 @@ mesh = [
 [package.metadata]
 requires-dist = [
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.18,<5" },
-    { name = "mesh-plus", marker = "extra == 'mesh'", git = "https://github.com/byebyebryan/mesh-plus.git?rev=504a176d9d9037634465ef1ab7a71988f317ca60" },
+    { name = "mesh-plus", marker = "extra == 'mesh'", git = "https://github.com/byebyebryan/mesh-plus.git?rev=3684fe083c0ab5af3c74aa27dff169e5764489f5" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.16.6" },
 ]
 provides-extras = ["dev", "mesh"]
