@@ -1,30 +1,84 @@
 #!/usr/bin/env python3
 """Separate, mandatory acceptance for the optional Mesh candidate integration."""
 
+import argparse
+import hashlib
+import importlib
+import json
 import os
 import subprocess
 import sys
 from pathlib import Path
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument(
+    "--installed", action="store_true", help="use installed wheels, excluding source runtime"
+)
+parser.add_argument(
+    "--artifact", type=Path, help="required exact Observer descriptor in installed mode"
+)
+parser.add_argument("--report", type=Path)
+args = parser.parse_args()
+if args.installed != (args.artifact is not None):
+    parser.error("installed mode requires --artifact; source mode excludes it")
 root = Path(__file__).resolve().parent.parent
+paths = [str(root / "tests")]
+if not args.installed:
+    paths.insert(0, str(root / "src"))
+record = {
+    "mode": "installed" if args.installed else "source",
+    "state": "running",
+    "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+}
+if args.installed:
+    descriptor = json.loads(args.artifact.read_text())
+    actual = {}
+    for package in ("tmux_observer", "tmux_observer_client", "tmux_observer_actions"):
+        module = importlib.import_module(package)
+        location = Path(module.__file__).resolve().parent
+        if location == (root / "src" / package).resolve():
+            raise ValueError("installed acceptance imported source runtime")
+        for path in location.rglob("*.py"):
+            actual[package + "/" + path.relative_to(location).as_posix()] = hashlib.sha256(
+                path.read_bytes()
+            ).hexdigest()
+    expected = {
+        name: value["sha256"]
+        for name, value in descriptor["members"].items()
+        if name.startswith(("tmux_observer/", "tmux_observer_client/", "tmux_observer_actions/"))
+        and name.endswith(".py")
+    }
+    if actual != expected:
+        raise ValueError("installed runtime differs from exact Observer artifact")
+    record.update(
+        observerSource=descriptor["source"]["commit"],
+        observerWheel=descriptor["wheel"]["sha256"],
+        installedModules=len(actual),
+    )
 environment = dict(
     os.environ,
     PYTHONDONTWRITEBYTECODE="1",
-    PYTHONPATH=os.pathsep.join((str(root / "src"), str(root / "tests"))),
+    PYTHONPATH=os.pathsep.join(paths),
 )
-subprocess.run(
+result = subprocess.run(
     [sys.executable, "-m", "unittest", "discover", "-s", "tests_mesh", "-v"],
     cwd=root,
     env=environment,
-    check=True,
+    check=False,
 )
-subprocess.run(
-    [sys.executable, "-m", "ruff", "check", "tests_mesh", "scripts/check-mesh"],
-    cwd=root,
-    check=True,
-)
-subprocess.run(
-    [sys.executable, "-m", "ruff", "format", "--check", "tests_mesh", "scripts/check-mesh"],
-    cwd=root,
-    check=True,
-)
+status = result.returncode
+if not status:
+    for command in (
+        ("check", "tests_mesh", "scripts/check-mesh"),
+        ("format", "--check", "tests_mesh", "scripts/check-mesh"),
+    ):
+        status = subprocess.run(
+            [sys.executable, "-m", "ruff", *command], cwd=root, check=False
+        ).returncode
+        if status:
+            break
+record["state"] = "passed" if status == 0 else "failed"
+if args.report:
+    args.report.parent.mkdir(parents=True, exist_ok=True)
+    args.report.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+raise SystemExit(status)

@@ -99,7 +99,7 @@ class MeshFleetPublisher(FleetPublisher):
                     self.retained[owner.host_id] = owner.confirmed_size + owner.candidate_size
                     if sum(self.retained.values()) > POOL_LIMIT:
                         raise ValueError("Mesh retained native owner pool exceeded its bound")
-                    self.tickets.settle(owner.host_id, now)
+                    self.tickets.settle(owner.host_id, boottime_ms())
                 self.mark_changed()
             except (ContractError, IPCError, ValueError, KeyError, TypeError):
                 self.catalog_failure(now, "invalid_owner_stream", "Mesh native projection failed")

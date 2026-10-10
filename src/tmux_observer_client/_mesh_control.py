@@ -2,6 +2,7 @@
 
 import shlex
 
+from tmux_observer._clock import boottime_ms
 from tmux_observer._ipc import IPCError, exchange
 from tmux_observer._request_validation import validate_operation_error, validate_request
 from tmux_observer.delivery import SERVICE_PROTOCOL, validate_service_frame
@@ -30,6 +31,7 @@ class OwnerControl:
         self.path, self.host, self.route, self.policy = path, host, route, policy
         self.remote_exec, self.on_frame, self.on_error = remote_exec, on_frame, on_error
         self.future = self.request = None
+        self.sent_at = None
         self.closed = False
         self.binding = state.epoch, state.scope, state.selected_route
 
@@ -45,6 +47,7 @@ class OwnerControl:
         ):
             raise ContractError("operation_failed", "Observer control scope is closed or busy")
         self.request = request
+        self.sent_at = now
         self.future = self.executor.submit(self.exchange, request)
 
     def exchange(self, request):
@@ -89,6 +92,9 @@ class OwnerControl:
             return
         try:
             value = validate_service_frame(future.result())
+            now = boottime_ms()
+            if now >= self.sent_at + 2000:
+                raise IPCError("deadline", "Observer control reply exceeded its admission deadline")
             scope = self.state.scope
             if (
                 scope is None

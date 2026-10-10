@@ -83,9 +83,16 @@ class MeshProjectionTests(unittest.TestCase):
     def test_remote_proof_reencodes_only_the_header_in_the_source_clock(self):
         state = MeshOwnerState(self.host_id)
         host, rows = self.outcome(local=False)
+        source_clock = {
+            "bootId": "22222222-2222-4222-8222-222222222222",
+            "timeNamespace": "time:20",
+        }
+        host["owner"]["service"]["clock"] = source_clock
+        host["owner"]["metadata"]["clock"] = source_clock
         self.accept(state, host, rows, now=1050)
         projected = state.project_header()
         self.assertEqual(projected["encodedAt"], 150)
+        self.assertEqual(projected["clock"], source_clock)
         self.assertEqual(projected["receipt"]["remainingMs"], 9950)
         self.assertEqual(projected["proof"]["remainingMs"], 9950)
         self.assertEqual(state.confirmed["encodedAt"], 130)
