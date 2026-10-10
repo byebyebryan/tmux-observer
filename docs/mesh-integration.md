@@ -3,8 +3,10 @@
 Started 2026-10-09. The user authorized the migration goal loop after review of
 Mesh Plus's [handoff](https://github.com/byebyebryan/mesh-plus/blob/fd40916/docs/handoff.md)
 and frozen state boundary. This ledger owns the candidate implementation and
-acceptance. Published artifacts and managed selection retain their earlier
-evidence until separately selected.
+acceptance. The final reviewed tuple is published and selected on Snap/Starship.
+The [accepted rollout record](evidence/2026-10-10-mesh-rollout/README.md) binds
+Mesh `74b9e54` / Observer `1931d73` / Plus `07c2619`, exact released bytes,
+headless/native/resource/capacity gates and managed recovery/paired rollback.
 
 ## Scope and decisions
 
@@ -32,7 +34,7 @@ evidence until separately selected.
   headless picker frame/callback testing for this wiring migration; graphical
   input and physical suspend remain optional separate evidence.
 
-### Wrap-up resource checkpoint
+### Resource investigation history
 
 The rebuilt Observer `d1fbf1e` / Tmux Plus `e74db6f` / Mesh a4 tuple passes
 installed native/SSH, headless picker and all eleven declared-capacity cases.
@@ -48,19 +50,25 @@ The optional integration accepts both reviewed a4/a5 SDKs, preserving the a4
 comparison input. Short resource diagnostics are explicitly labeled and cannot
 establish normal resource acceptance. Mesh byte/proof counters remain unmeasured.
 
-Mesh a6 `74b9e54` adds an explicit same-package authority read path with one
+The final Mesh a6 `74b9e54` includes an explicit same-package authority read path with one
 bounded read job, bounded regular source files and deadline-bound health locks.
 The selected fleet uses that path; route reports keep the existing process
 writer. Older a4/a5 comparison inputs remain supported. Canonical authority,
 native validity checks, two-second sampling and ten-second leases are unchanged.
-The installed producer gate passes 91 tests. The first production ten-minute
+The installed producer gate passes 91 tests. The first a6 development ten-minute
 profile passes memory on both hosts and CPU on Starship, but Snap remains over
 the unchanged five-percent CPU target at 5.72 percent. Static schema success is
 now reused for identical full JSON bytes, with bounded digest bookkeeping. All
-native, proof, receipt and current-time expiry checks still run. Subsequent full runs still miss Snap CPU at 5.06 and 5.26 percent. The latest
+native, proof, receipt and current-time expiry checks still run. Subsequent full
+development runs still miss Snap CPU at 5.06 and 5.26 percent. The final
 producer avoids redundant JSON safety walks; Observer copies checked JSON
 without general object bookkeeping while retaining independent ownership.
-These changes require a new exact-tuple resource checkpoint before selection.
+The final 600-second exact-tuple checkpoint passes: Snap 3.956 percent CPU /
+83.363 MiB fleet-plus-associated-bridge RSS; Starship 2.369 percent / 82.331 MiB.
+The unchanged five-percent CPU, 96 MiB fleet and 64 MiB owner budgets pass.
+Headless timing passes at 124.256 ms p95; all eleven capacity cases pass within
+the declared two-physical-host / 16-synthetic-owner scope. Installed selection,
+serial recovery, old-pair rollback and reselection subsequently pass on both hosts.
 
 ## Checkpoints
 
@@ -70,22 +78,22 @@ These changes require a new exact-tuple resource checkpoint before selection.
 | M1 | Cached Tmux adapter, guarded Mesh-to-Fleet projection and independent fixtures | Source/native pass |
 | M2 | Shared fleet Mesh reader, catalog recovery and bounded refresh compatibility | Source/native pass |
 | M3 | Full source and isolated exact-package acceptance, public facade parity | Source/package/native pass |
-| M4 | Owned native/SSH, resource/capacity and applicable Snap graphical acceptance | Owned native/probe pass; ordinary/capacity/GUI pending |
-| M5 | Exact reviewable rollout, dependency/launcher/source configuration and rollback | Prepared; promotion pending |
+| M4 | Exact native/SSH, ordinary resources, declared capacity and headless picker | Complete in declared scope; graphical/physical suspend optional |
+| M5 | Published exact artifacts, shared managed selection, recovery and paired rollback | Complete on Snap/Starship |
 
 Starting source: Observer `128f7f8`, Tmux Plus `5105eae`, Mesh `fd40916`, SSH Plus
-`e01f89c`. Observer/Plus's accepted runtime is 0.5.0a1 / 0.11.0a1. Mesh source is
+`e01f89c`. Observer/Plus's accepted runtime was 0.5.0a1 / 0.11.0a1. Mesh source was
 initially the unreleased 0.1.0a2 candidate; deployed catalog authority was 0.1.0a1.
 The installed authority does not include a public Mesh bridge launcher or prove
 delivery dependency availability. Those are candidate packaging/rollout inputs.
 Mesh subsequently advanced through diagnostics to 0.1.0a4 at `2cc12ac` while a
 separate Agent Observer rollout selected it. That work was preserved. Review
 confirmed the frozen wire/schema bytes and Tmux admission behavior are unchanged.
-This candidate now pins that exact a4 revision and uses its shared
+That checkpoint pinned the exact a4 revision and used its shared
 `configured_reader` API. The earlier a2 artifact/probe results remain separate;
 producer/package/native/resource gates are repeated for the a4 tuple.
 
-## Recorded candidate
+## Original candidate history
 
 The [evidence record](evidence/2026-10-09-mesh-integration/README.md) binds the
 candidate wheels, source revisions, runtime dependency wheels and managed bundle.
@@ -107,15 +115,16 @@ before the fix and now returns `stale_scope` while current source facts remain
 independent. Previous artifact results retain their original scope and hashes.
 
 Snap is unattended with its screens off. DMS fade-to-DPMS layers hold exclusive
-input, so the owned graphical harness refused to type. The final a4 graphical
-gate is pending. Earlier a2 warm-frame probes missed the unchanged 150 ms target
+input, so the owned graphical harness refused to type. At that checkpoint the a4
+graphical gate was pending; the later user-approved headless gate supersedes
+that requirement. Earlier a2 warm-frame probes missed the unchanged 150 ms target
 on both Mesh (153.1 ms p95) and legacy (164.1 ms); they do not attribute the miss
 to Mesh or establish final-candidate timing. No graphical guard was weakened.
 
-The current shared Mesh launcher selects the separate Agent environment, which
-does not contain Tmux Observer. The rollout must add the selected Tmux pure
-facade and merge its source entry. Neither that shared environment nor the
-existing Tmux services was changed by this loop.
+Before rollout, the shared Mesh launcher selected the separate Agent environment,
+which did not contain Tmux Observer. The accepted rollout now exposes both native
+facades through the shared SDK a6 launcher and merges `tmux_default`. Agent's
+private reader/bridge environments and services remain independently selected.
 
 ## Acceptance
 
@@ -138,9 +147,9 @@ M4 records candidate-specific native evidence rather than reusing old results.
 Use disposable sessions, sockets, preferences and owned SSH endpoints. Native
 rosters, generations, client counts, hooks, options and ordinary session lifetime
 survive. Resource gates include all bridge/worker children and preserve existing
-5 percent CPU and 96/768 MiB fleet ceilings. Snap graphical input preserves
-ordinary focus. Physical suspend and Starship foreground acceptance remain
-outside this loop's acceptance scope.
+5 percent CPU and 96/768 MiB fleet ceilings. Actual installed picker frames and
+callbacks establish headless behavior. Graphical input and physical suspend are
+optional separate evidence outside this wiring migration's acceptance scope.
 
 M5 prepares exact artifacts and scoped managed controls only after candidate
 gates pass. Preserve unrelated source/live edits, private history and ordinary
@@ -179,20 +188,20 @@ Public CI also requires the exact Observer wheel consumed by Plus's existing gat
 
 ## Candidate rollout
 
-The default remains `legacy`. Opt in only after the paired artifact and resource
-gates accept the selected tuple. The concrete managed changes will include:
+The package default remains `legacy`; Snap/Starship explicitly select `mesh`
+after the paired artifact and resource gates. The accepted managed selection is:
 
 | Managed source | Required selection |
 | --- | --- |
 | `.chezmoiexternal.toml` | Exact Observer wheel, Plus native bundle and common Mesh/dependency hashes |
-| `dot_local/share/tmux-observer/bin/executable_tmux-observer-client` | Optional Mesh/dependency import roots for the selected ABI |
-| `dot_local/bin/symlink_mesh-plus.tmpl` and its selected environment | Both exact native pure facades; preserve Agent's selection |
+| `dot_local/share/tmux-observer/bin/executable_tmux-observer-client.tmpl` | Optional Mesh/dependency import roots for the selected ABI |
+| `dot_local/bin/executable_mesh-plus.tmpl` and its selected roots | Both exact native pure facades; preserve Agent's selection |
 | `dot_config/mesh-plus/private_sources.toml.tmpl` | Merge `tmux_default`; retain Agent entries and mode 0600 |
 | `dot_config/systemd/user/symlink_tmux-observer-owner@.service.tmpl` and fleet equivalent | Selected 0.6.0a1 wheel data paths |
 | Fleet `managed.conf` drop-in | Explicit transport/source selection after acceptance |
 
 1. Select the exact Observer and pinned Tmux Plus wheels/bundles together.
-   Select the a4 Mesh wheel plus exact JSON Schema/runtime dependency wheels for
+   Select the a6 Mesh wheel plus exact JSON Schema/runtime dependency wheels for
    the endpoints' Python ABI. Hash all installed modules, schemas and dependency
    payloads. An authority-only a1 installation is insufficient.
 2. Reconcile the existing public `~/.local/bin/mesh-plus` launcher from the
@@ -227,9 +236,11 @@ gates accept the selected tuple. The concrete managed changes will include:
    replacing the running producer, and require the new owner publication while
    preserving full native references/attachments. An old process cannot establish
    the new producer's live acceptance. Keep the fleet on legacy through that gate.
-   Discover each active context's exact fleet unit, then restart only that owned
-   fleet with the Mesh selection, one endpoint at a time. Prepared/fresh/native
-   identity, viewer freshness,
+   Restarting the owner also stops the requiring desktop service and retires its
+   fleet/context capture. Once owner publication is current, explicitly start
+   `tmux-observer-desktop.service` to recapture that context. Discover its active
+   fleet unit and restart that owned reader, one endpoint at a time.
+   Prepared/fresh/native identity, viewer freshness,
    explicit refresh, separate disposable actions, reconnect and exact installed
    bytes must pass before selecting the second endpoint.
 5. Exercise rollback by selecting `TMUX_OBSERVER_TRANSPORT=legacy` on the same
@@ -242,7 +253,8 @@ gates accept the selected tuple. The concrete managed changes will include:
    have stopped. Do not roll back a separately selected Agent Mesh environment
    or remove its source entry; shared changes require both domains' verification.
 
-These instructions are a reviewable source plan, not an applied managed change.
-Ordinary two-host desktop resources, capacity, installed selection/recovery and
-serial paired rollback retain separate promotion gates. Physical suspend and
-Starship foreground input remain excluded.
+These controls are applied on Snap/Starship. Independent ordinary resources,
+declared capacity, installed selection/recovery, shared dual-domain probes and
+serial paired rollback/reselection pass in the linked accepted record. The prior
+0.5.0a1 / 0.11.0a1 archives and shared control preimages remain private rollback
+inputs. Graphical input and physical suspend remain optional and unrun.

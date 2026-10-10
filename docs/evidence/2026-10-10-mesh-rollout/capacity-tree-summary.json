@@ -1,0 +1,320 @@
+{
+  "gate": "T12-installed-ssh-capacity-partial",
+  "sourceCommit": "1931d733c6fd22892024f79e98e0f7995c4a2cb3",
+  "transport": "mesh",
+  "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+  "limits": [
+    "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints",
+    "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+    "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+    "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included",
+    "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
+    "All sixteen owners enable local association scheduling and IPC with synthetic empty-client profiles; native client sampling cost is covered by the separate normal resource gate"
+  ],
+  "wheelSha256": "b904ae3f27916e001460ca62d6f15f64075a30020ef309af37867d625a31fda8",
+  "result": "passed_partial",
+  "cases": [
+    {
+      "name": "enabled_local_association_profile_is_current_without_mesh_export",
+      "result": "passed"
+    },
+    {
+      "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+      "result": "passed",
+      "frameBytes": 22788
+    },
+    {
+      "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_two_watchers_share_sixteen_owner_connections",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_third_reader_receives_explicit_capacity_error",
+      "result": "passed"
+    },
+    {
+      "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+      "result": "passed",
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 1456832,
+        "retainedBytes": 35568,
+        "connections": 16,
+        "perPeerBytes": 45526
+      }
+    },
+    {
+      "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+      "result": "passed",
+      "frameBytes": 862356
+    },
+    {
+      "name": "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners",
+      "result": "passed"
+    },
+    {
+      "name": "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
+      "result": "passed",
+      "rpcMs": [
+        46.309381956234574,
+        50.507165025919676,
+        18.59205891378224,
+        34.05830299016088,
+        47.8508030064404,
+        64.28789801429957,
+        25.844276999123394,
+        47.05521801952273,
+        109.24932197667658,
+        21.22460096143186
+      ],
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 29385568,
+        "retainedBytes": 931056,
+        "connections": 16,
+        "perPeerBytes": 1836625
+      }
+    },
+    {
+      "name": "seventeenth_catalog_owner_fails_authority_without_truncated_success",
+      "result": "passed"
+    },
+    {
+      "name": "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+      "result": "passed",
+      "elapsedMs": 135.014
+    }
+  ],
+  "nearCapRpcMs": [
+    46.309381956234574,
+    50.507165025919676,
+    18.59205891378224,
+    34.05830299016088,
+    47.8508030064404,
+    64.28789801429957,
+    25.844276999123394,
+    47.05521801952273,
+    109.24932197667658,
+    21.22460096143186
+  ],
+  "profile": {
+    "sampleIntervalMs": 100,
+    "sampleCount": 239,
+    "durationMs": 46119,
+    "fleetAndBridgePeak": {
+      "at": 656581038,
+      "rssBytes": 240414720,
+      "processes": [
+        {
+          "pid": 2839740,
+          "incarnation": "65655709",
+          "name": "python",
+          "rssBytes": 70483968
+        },
+        {
+          "pid": 2841890,
+          "incarnation": "65655887",
+          "name": "ssh",
+          "rssBytes": 11194368
+        },
+        {
+          "pid": 2841864,
+          "incarnation": "65655885",
+          "name": "ssh",
+          "rssBytes": 11296768
+        },
+        {
+          "pid": 2841798,
+          "incarnation": "65655876",
+          "name": "ssh",
+          "rssBytes": 11231232
+        },
+        {
+          "pid": 2841349,
+          "incarnation": "65655846",
+          "name": "ssh",
+          "rssBytes": 11280384
+        },
+        {
+          "pid": 2841265,
+          "incarnation": "65655839",
+          "name": "ssh",
+          "rssBytes": 11378688
+        },
+        {
+          "pid": 2841264,
+          "incarnation": "65655839",
+          "name": "ssh",
+          "rssBytes": 11620352
+        },
+        {
+          "pid": 2841203,
+          "incarnation": "65655834",
+          "name": "ssh",
+          "rssBytes": 11194368
+        },
+        {
+          "pid": 2840761,
+          "incarnation": "65655800",
+          "name": "ssh",
+          "rssBytes": 11288576
+        },
+        {
+          "pid": 2840636,
+          "incarnation": "65655792",
+          "name": "ssh",
+          "rssBytes": 11649024
+        },
+        {
+          "pid": 2840635,
+          "incarnation": "65655791",
+          "name": "ssh",
+          "rssBytes": 11300864
+        },
+        {
+          "pid": 2840630,
+          "incarnation": "65655790",
+          "name": "ssh",
+          "rssBytes": 11280384
+        },
+        {
+          "pid": 2840144,
+          "incarnation": "65655749",
+          "name": "ssh",
+          "rssBytes": 11304960
+        },
+        {
+          "pid": 2840099,
+          "incarnation": "65655744",
+          "name": "ssh",
+          "rssBytes": 11395072
+        },
+        {
+          "pid": 2840098,
+          "incarnation": "65655744",
+          "name": "ssh",
+          "rssBytes": 11206656
+        },
+        {
+          "pid": 2840096,
+          "incarnation": "65655744",
+          "name": "ssh",
+          "rssBytes": 11309056
+        }
+      ]
+    },
+    "targetBytes": 805306368,
+    "memoryTarget": "passed",
+    "associatedRemoteBridges": {
+      "sampleIntervalMs": 100,
+      "sampleCount": 459,
+      "peak": {
+        "atBootTimeMs": 657015344,
+        "rssBytes": 486989824,
+        "processes": [
+          {
+            "pid": 1078096,
+            "incarnation": "65697192",
+            "name": "mesh-plus",
+            "rssBytes": 32169984
+          },
+          {
+            "pid": 1078091,
+            "incarnation": "65697191",
+            "name": "mesh-plus",
+            "rssBytes": 32202752
+          },
+          {
+            "pid": 1078083,
+            "incarnation": "65697181",
+            "name": "mesh-plus",
+            "rssBytes": 32235520
+          },
+          {
+            "pid": 1078034,
+            "incarnation": "65697154",
+            "name": "mesh-plus",
+            "rssBytes": 32124928
+          },
+          {
+            "pid": 1078030,
+            "incarnation": "65697151",
+            "name": "mesh-plus",
+            "rssBytes": 32223232
+          },
+          {
+            "pid": 1078020,
+            "incarnation": "65697148",
+            "name": "mesh-plus",
+            "rssBytes": 32243712
+          },
+          {
+            "pid": 1078013,
+            "incarnation": "65697141",
+            "name": "mesh-plus",
+            "rssBytes": 32092160
+          },
+          {
+            "pid": 1078002,
+            "incarnation": "65697106",
+            "name": "mesh-plus",
+            "rssBytes": 32186368
+          },
+          {
+            "pid": 1078000,
+            "incarnation": "65697103",
+            "name": "mesh-plus",
+            "rssBytes": 32116736
+          },
+          {
+            "pid": 1077999,
+            "incarnation": "65697103",
+            "name": "mesh-plus",
+            "rssBytes": 32137216
+          },
+          {
+            "pid": 1077995,
+            "incarnation": "65697099",
+            "name": "mesh-plus",
+            "rssBytes": 32124928
+          },
+          {
+            "pid": 1077956,
+            "incarnation": "65697059",
+            "name": "mesh-plus",
+            "rssBytes": 32145408
+          },
+          {
+            "pid": 1077954,
+            "incarnation": "65697056",
+            "name": "mesh-plus",
+            "rssBytes": 32108544
+          },
+          {
+            "pid": 1077952,
+            "incarnation": "65697051",
+            "name": "mesh-plus",
+            "rssBytes": 34025472
+          },
+          {
+            "pid": 1077951,
+            "incarnation": "65697051",
+            "name": "mesh-plus",
+            "rssBytes": 34852864
+          }
+        ]
+      },
+      "current": {
+        "atBootTimeMs": 657015948,
+        "rssBytes": 0,
+        "processes": []
+      },
+      "ownersAlive": 15
+    },
+    "conservativeCombinedPeakBytes": 727404544
+  },
+  "fullReportSha256": "74a422d8d9d87718d95c5ef7d29c3bcc427789063dfc4a49857df19e7645d566"
+}

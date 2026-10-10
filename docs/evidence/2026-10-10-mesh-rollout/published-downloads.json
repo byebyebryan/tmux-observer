@@ -1,0 +1,17 @@
+{
+  "state": "passed",
+  "downloads": [
+    {
+      "file": "mesh_plus-0.1.0a6-py3-none-any.whl",
+      "sha256": "d5989b80b84bca8f6bb14062e8f75a133978666336dd27c833338a50c8748b3f"
+    },
+    {
+      "file": "tmux_observer-0.6.0a1-py3-none-any.whl",
+      "sha256": "b904ae3f27916e001460ca62d6f15f64075a30020ef309af37867d625a31fda8"
+    },
+    {
+      "file": "rofi-tmux-plus-0.12.0a1-linux_x86_64.zip",
+      "sha256": "515bea9e6b07d5665e9363e6b32445dfb7162586baddb892c35cf6d8948f21a8"
+    }
+  ]
+}

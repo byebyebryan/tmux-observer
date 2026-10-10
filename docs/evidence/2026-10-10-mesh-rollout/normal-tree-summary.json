@@ -1,0 +1,301 @@
+{
+  "state": "passed",
+  "cases": [
+    "both_installed_native_profiles_and_passive_desktop_readers_ready",
+    "hundred_warm_queries_per_endpoint_meet_deadlines",
+    "owned_fleet_teardown_preserves_native_references_generation_and_hooks"
+  ],
+  "transport": "mesh",
+  "cleanup": true,
+  "sourceCommit": "1931d733c6fd22892024f79e98e0f7995c4a2cb3",
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "1931d733c6fd22892024f79e98e0f7995c4a2cb3",
+      "epoch": 1791615758,
+      "tree": "21504137e3e95f64f538e82f3795574d9c71900f"
+    },
+    "wheelSha256": "b904ae3f27916e001460ca62d6f15f64075a30020ef309af37867d625a31fda8",
+    "descriptorSha256": "59109edf68eac5704645386c292f0ab31e8ba70a6e3b59a0ff528e96fa85850c",
+    "sourceFilesMatchHarness": true
+  },
+  "meshInputs": [
+    {
+      "file": "mesh_plus-0.1.0a6-py3-none-any.whl",
+      "sha256": "d5989b80b84bca8f6bb14062e8f75a133978666336dd27c833338a50c8748b3f"
+    },
+    {
+      "bytes": 67548,
+      "file": "attrs-26.1.0-py3-none-any.whl",
+      "name": "attrs",
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+      "version": "26.1.0"
+    },
+    {
+      "bytes": 90630,
+      "file": "jsonschema-4.26.0-py3-none-any.whl",
+      "name": "jsonschema",
+      "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+      "version": "4.26.0"
+    },
+    {
+      "bytes": 18437,
+      "file": "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+      "name": "jsonschema-specifications",
+      "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+      "version": "2025.9.1"
+    },
+    {
+      "bytes": 26766,
+      "file": "referencing-0.37.0-py3-none-any.whl",
+      "name": "referencing",
+      "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+      "version": "0.37.0"
+    },
+    {
+      "bytes": 371623,
+      "file": "rpds_py-2026.9.1-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "rpds-py",
+      "sha256": "eac2f5dbafd585dfe31f86a23ebf0d3ba480a9d49ebc87947267b5608d4ea0cd",
+      "version": "2026.9.1"
+    }
+  ],
+  "normalResourceAssessment": {
+    "snap": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 87412736,
+      "ownerMaxObservedRssBytes": 22396928,
+      "combinedCpuPercent": 3.955921301932811,
+      "withinSelectedTargets": true
+    },
+    "starship": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 86331392,
+      "ownerMaxObservedRssBytes": 25161728,
+      "combinedCpuPercent": 2.3694501390321947,
+      "withinSelectedTargets": true
+    }
+  },
+  "preservation": {
+    "snap": {
+      "beforeTeardown": {
+        "preserved": true,
+        "baselineSessions": 7,
+        "currentSessions": 7,
+        "addedReferences": 0
+      },
+      "teardown": {
+        "stopMs": 90.25682602077723,
+        "ownerActive": "active"
+      },
+      "afterTeardown": {
+        "preserved": true,
+        "baselineSessions": 7,
+        "currentSessions": 7,
+        "addedReferences": 0
+      }
+    },
+    "starship": {
+      "beforeTeardown": {
+        "preserved": true,
+        "baselineSessions": 10,
+        "currentSessions": 10,
+        "addedReferences": 0
+      },
+      "teardown": {
+        "stopMs": 35.68104899022728,
+        "ownerActive": "active"
+      },
+      "afterTeardown": {
+        "preserved": true,
+        "baselineSessions": 10,
+        "currentSessions": 10,
+        "addedReferences": 0
+      }
+    }
+  },
+  "limits": [
+    "Sampled RSS can miss transient peaks",
+    "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
+    "Two physical hosts and private catalog/preferences; no managed selection"
+  ],
+  "endpoints": {
+    "snap": {
+      "wheelSha256": "b904ae3f27916e001460ca62d6f15f64075a30020ef309af37867d625a31fda8",
+      "pythonRuntime": {
+        "version": "3.14.7 (main, Aug 10 2026, 07:46:56) [GCC 16.1.1 20260728]",
+        "executable": "/tmp/to-fleet-afbc405ff43b4e55a9635679d073960e/venv/bin/python"
+      },
+      "nativeVersion": "tmux 3.8",
+      "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+      "nativeReference": {
+        "hostId": "snap",
+        "serverGeneration": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+        "sessionReferences": [
+          {
+            "sessionId": "$41",
+            "createdAt": 1791252708
+          },
+          {
+            "sessionId": "$40",
+            "createdAt": 1791243553
+          },
+          {
+            "sessionId": "$37",
+            "createdAt": 1791223249
+          },
+          {
+            "sessionId": "$63",
+            "createdAt": 1791563371
+          },
+          {
+            "sessionId": "$64",
+            "createdAt": 1791575790
+          },
+          {
+            "sessionId": "$65",
+            "createdAt": 1791581200
+          },
+          {
+            "sessionId": "$45",
+            "createdAt": 1791331856
+          }
+        ]
+      },
+      "clock": {
+        "bootId": "5d60b1d7-389f-45dd-8ba5-c1a50185e848",
+        "timeNamespace": "time:4026531834"
+      },
+      "readyAssociationCounts": {
+        "state": "ready",
+        "generation": "tmux-v1:1790960394:10120:/tmp/tmux-1000/default",
+        "sessions": 7,
+        "clients": 10
+      }
+    },
+    "starship": {
+      "wheelSha256": "b904ae3f27916e001460ca62d6f15f64075a30020ef309af37867d625a31fda8",
+      "pythonRuntime": {
+        "version": "3.14.7 (main, Aug 10 2026, 07:46:56) [GCC 16.1.1 20260728]",
+        "executable": "/tmp/to-fleet-afbc405ff43b4e55a9635679d073960e/venv/bin/python"
+      },
+      "nativeVersion": "tmux 3.8",
+      "contextId": "13debc1a8b7b99705fb17616ae09a886",
+      "nativeReference": {
+        "hostId": "starship",
+        "serverGeneration": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+        "sessionReferences": [
+          {
+            "sessionId": "$39",
+            "createdAt": 1791393220
+          },
+          {
+            "sessionId": "$51",
+            "createdAt": 1791491690
+          },
+          {
+            "sessionId": "$47",
+            "createdAt": 1791429111
+          },
+          {
+            "sessionId": "$50",
+            "createdAt": 1791478740
+          },
+          {
+            "sessionId": "$38",
+            "createdAt": 1791393055
+          },
+          {
+            "sessionId": "$55",
+            "createdAt": 1791514225
+          },
+          {
+            "sessionId": "$67",
+            "createdAt": 1791615217
+          },
+          {
+            "sessionId": "$46",
+            "createdAt": 1791428739
+          },
+          {
+            "sessionId": "$66",
+            "createdAt": 1791590472
+          },
+          {
+            "sessionId": "$53",
+            "createdAt": 1791513583
+          }
+        ]
+      },
+      "clock": {
+        "bootId": "d211a380-0e46-4552-838e-ad29c7b90120",
+        "timeNamespace": "time:4026531834"
+      },
+      "readyAssociationCounts": {
+        "state": "ready",
+        "generation": "tmux-v1:1790960111:7656:/tmp/tmux-1000/default",
+        "sessions": 10,
+        "clients": 5
+      }
+    }
+  },
+  "measurement": {
+    "snap": {
+      "serviceCpuPercent": {
+        "owner": 1.2426580607793565,
+        "fleet": 2.5267259070384416
+      },
+      "bridgeCpuPercent": 0.3528458180280912,
+      "serviceMaxObservedRssBytes": {
+        "owner": 22396928,
+        "fleet": 55349248
+      },
+      "maxObservedBridgeRssBytes": 31866880,
+      "acceptanceDurationMet": true,
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups",
+        "Legacy protocol counters do not instrument Mesh; their zeros are not measurements"
+      ],
+      "unmeasuredCounters": [
+        "ownerPayloadReceivedBytes",
+        "ownerControlSentBytes",
+        "remoteProbeRequests",
+        "matchingRemoteProofs"
+      ]
+    },
+    "starship": {
+      "serviceCpuPercent": {
+        "owner": 0.7284790878324361,
+        "fleet": 1.2881252331716675
+      },
+      "bridgeCpuPercent": 0.1865373341150136,
+      "serviceMaxObservedRssBytes": {
+        "owner": 25161728,
+        "fleet": 54464512
+      },
+      "maxObservedBridgeRssBytes": 32063488,
+      "acceptanceDurationMet": true,
+      "limits": [
+        "RSS sampled once per second; transient peaks can be missed",
+        "Normal profile uses installed plain bridges; fault relays are removed before measurement",
+        "SSH byte counters are owner protocol payload and controls, not encrypted wire overhead",
+        "Measurement control/profiler processes are outside the service cgroups",
+        "Legacy protocol counters do not instrument Mesh; their zeros are not measurements"
+      ],
+      "unmeasuredCounters": [
+        "ownerPayloadReceivedBytes",
+        "ownerControlSentBytes",
+        "remoteProbeRequests",
+        "matchingRemoteProofs"
+      ]
+    }
+  },
+  "fullReportSha256": "f9288364b939178ebe30f74a840821bc3896dfdb7ad8b984ee33460f445ee0c4"
+}

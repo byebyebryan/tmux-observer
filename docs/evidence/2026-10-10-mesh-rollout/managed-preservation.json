@@ -1,0 +1,36 @@
+{
+  "snap": {
+    "result": "passed",
+    "agentPackageFiles": 4806,
+    "checks": {
+      "agentFiles": true,
+      "agentServices": true,
+      "unrelatedFiles": true,
+      "claudeMode": true
+    },
+    "agentServices": {
+      "agent-observer.service": "MainPID=2367213\nExecMainStartTimestampMonotonic=654911173914",
+      "mesh-plus-agent.service": "MainPID=2181472\nExecMainStartTimestampMonotonic=641807726262"
+    },
+    "limits": [
+      "Relative to baseline captured immediately before this rollout; earlier independent Agent collector promotion is outside these actions"
+    ]
+  },
+  "starship": {
+    "result": "passed",
+    "agentPackageFiles": 2533,
+    "checks": {
+      "agentFiles": true,
+      "agentServices": true,
+      "unrelatedFiles": true,
+      "claudeMode": true
+    },
+    "agentServices": {
+      "agent-observer.service": "MainPID=1005801\nExecMainStartTimestampMonotonic=655347182157",
+      "mesh-plus-agent.service": "MainPID=461500\nExecMainStartTimestampMonotonic=642227598260"
+    },
+    "limits": [
+      "Relative to baseline captured immediately before this rollout; earlier independent Agent collector promotion is outside these actions"
+    ]
+  }
+}

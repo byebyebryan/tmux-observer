@@ -1,0 +1,28 @@
+{
+  "mesh": {
+    "source": "74b9e54c1fc433aaeb5db29683faf65f6b61016a",
+    "version": "0.1.0a6",
+    "wheel": "mesh_plus-0.1.0a6-py3-none-any.whl",
+    "wheelSha256": "d5989b80b84bca8f6bb14062e8f75a133978666336dd27c833338a50c8748b3f"
+  },
+  "observer": {
+    "source": "1931d733c6fd22892024f79e98e0f7995c4a2cb3",
+    "wheel": {
+      "bytes": 254916,
+      "file": "tmux_observer-0.6.0a1-py3-none-any.whl",
+      "sha256": "b904ae3f27916e001460ca62d6f15f64075a30020ef309af37867d625a31fda8"
+    }
+  },
+  "plus": {
+    "source": "07c261986f9480b78d7a92a068be940ecf2cad33",
+    "wheel": {
+      "bytes": 81162,
+      "file": "rofi_tmux_plus-0.12.0a1-py3-none-linux_x86_64.whl",
+      "sha256": "30cbcfd90ce58db73c4d8a5b1f5153dcf9e22fdbb6d33df54f3e369db6eda4f5"
+    },
+    "bundle": {
+      "file": "rofi-tmux-plus-0.12.0a1-linux_x86_64.zip",
+      "sha256": "515bea9e6b07d5665e9363e6b32445dfb7162586baddb892c35cf6d8948f21a8"
+    }
+  }
+}
