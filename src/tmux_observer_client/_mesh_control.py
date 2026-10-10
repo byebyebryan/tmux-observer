@@ -95,6 +95,8 @@ class OwnerControl:
             now = boottime_ms()
             if now >= self.sent_at + 2000:
                 raise IPCError("deadline", "Observer control reply exceeded its admission deadline")
+            if self.binding != (self.state.epoch, self.state.scope, self.state.selected_route):
+                raise IPCError("stale_scope", "Observer control delivery association changed")
             scope = self.state.scope
             if (
                 scope is None
