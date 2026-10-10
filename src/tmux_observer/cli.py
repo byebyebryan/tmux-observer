@@ -51,8 +51,8 @@ def main(argv: list[str] | None = None) -> int:
             command.add_argument("--publisher-id", required=operation == "refresh_status")
         if operation == "refresh_status":
             command.add_argument("--ticket-id", required=True)
-        if operation in ("watch", "bridge"):
-            command.add_argument("--request-id", help="bounded initial watch nonce")
+        if operation in ("watch", "bridge", "refresh", "refresh_status"):
+            command.add_argument("--request-id", help="bounded watch or control correlation ID")
     args = parser.parse_args(argv)
     if args.command is None:
         parser.print_help()
@@ -99,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
                 "protocol": ATTACHMENT_DELIVERY_PROTOCOL if local_profile else SERVICE_PROTOCOL,
                 "schemaVersion": 1,
                 "operation": "snapshot" if local_profile else args.command,
-                "requestId": uuid.uuid4().hex,
+                "requestId": getattr(args, "request_id", None) or uuid.uuid4().hex,
                 "expectedHost": args.expected_host,
             }
             if args.command == "refresh":

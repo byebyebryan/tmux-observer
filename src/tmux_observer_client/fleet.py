@@ -822,6 +822,14 @@ class FleetPublisher:
                 if peer.watch and not peer.closing:
                     self.hub.frame(peer, now, kind="refresh_result", ticket=value)
 
+    def catalog_tick(self, executor, now):
+        if self.catalog_future is not None and self.catalog_future.done():
+            self.catalog_result(self.catalog_future.result(), now)
+            self.catalog_future = None
+        if self.catalog_future is None and now >= self.next_mesh:
+            self.catalog_future = executor.submit(self.load_catalog)
+            self.next_mesh = now + 15000
+
     def run(self):
         self.hub = SocketHub(
             self.path,
@@ -845,12 +853,7 @@ class FleetPublisher:
                     self.state.invalidate_bindings()
                     self.tickets.invalidate(now, desktop_only=True)
                 previous = now
-                if self.catalog_future is not None and self.catalog_future.done():
-                    self.catalog_result(self.catalog_future.result(), now)
-                    self.catalog_future = None
-                if self.catalog_future is None and now >= self.next_mesh:
-                    self.catalog_future = mesh_executor.submit(self.load_catalog)
-                    self.next_mesh = now + 15000
+                self.catalog_tick(mesh_executor, now)
                 self.connection_tick(now)
                 now = boottime_ms()
                 if self.capacity:

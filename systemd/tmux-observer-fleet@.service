@@ -6,8 +6,9 @@ StartLimitBurst=5
 [Service]
 Type=exec
 Environment=NIRI_SOCKET= DISPLAY= WAYLAND_DISPLAY= SSH_AUTH_SOCK= TMUX_TMPDIR=
+Environment=TMUX_OBSERVER_TRANSPORT=legacy TMUX_OBSERVER_MESH_SOURCE=tmux_default
 EnvironmentFile=%t/tmux-observer-client/context-%i.env
-ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer-client fleet --host-id ${TMUX_OBSERVER_HOST_ID} --context-id %i
+ExecStart=%h/.local/share/tmux-observer/bin/tmux-observer-client fleet --host-id ${TMUX_OBSERVER_HOST_ID} --context-id %i --transport ${TMUX_OBSERVER_TRANSPORT} --mesh-source ${TMUX_OBSERVER_MESH_SOURCE}
 UnsetEnvironment=TMUX TMUX_PANE
 Restart=on-failure
 RestartSec=2

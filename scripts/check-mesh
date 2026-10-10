@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""Separate, mandatory acceptance for the optional Mesh candidate integration."""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path(__file__).resolve().parent.parent
+environment = dict(
+    os.environ,
+    PYTHONDONTWRITEBYTECODE="1",
+    PYTHONPATH=os.pathsep.join((str(root / "src"), str(root / "tests"))),
+)
+subprocess.run(
+    [sys.executable, "-m", "unittest", "discover", "-s", "tests_mesh", "-v"],
+    cwd=root,
+    env=environment,
+    check=True,
+)
+subprocess.run(
+    [sys.executable, "-m", "ruff", "check", "tests_mesh", "scripts/check-mesh"],
+    cwd=root,
+    check=True,
+)
+subprocess.run(
+    [sys.executable, "-m", "ruff", "format", "--check", "tests_mesh", "scripts/check-mesh"],
+    cwd=root,
+    check=True,
+)

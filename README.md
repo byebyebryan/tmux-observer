@@ -23,6 +23,11 @@ rollback acceptance also pass as independent gates in the
 
 ## Status
 
+Source candidate **0.6.0a1** adds an explicitly selected Mesh cached-state
+backend. Its [integration ledger](docs/mesh-integration.md) records the pinned
+Mesh dependency, acceptance and rollout gates. Existing managed services still
+use the accepted legacy backend until a paired tuple is selected.
+
 Deliveries A–E accepted in their recorded scopes, 2026-10-08; see the
 [status record](docs/implementation-status.md). Pure contracts and the direct
 collector and owner service passed isolated native/artifact acceptance.
@@ -81,6 +86,21 @@ without changing owner attachment facts. The candidate fleet unit and explicit
 desktop environment handoff are documented in [service contexts](docs/service-contexts.md) and [two-host acceptance](docs/native-fleet-acceptance.md).
 Installed/native acceptance and scoped managed rollout have passed separately;
 the exact managed tuple and recovery/rollback evidence are linked in the status record.
+
+The Mesh candidate retains that same prepared endpoint and Fleet v1 facade:
+
+```sh
+rtk proxy uv run --extra dev --extra mesh python scripts/check-mesh
+rtk proxy uv run --extra mesh tmux-observer-client fleet --host-id snap --transport mesh
+```
+
+Mesh Plus must expose its public `mesh-plus` authority and bridge command, with
+the configured `tmux_default` source pointing to the already running owner.
+Cached reads never start either service. Explicit refresh uses a bounded
+Observer control request; fresh inventory and actions keep their independent
+validation. Missing or incompatible Mesh delivery fails explicitly. See the
+[candidate rollout](docs/mesh-integration.md#candidate-rollout) for source
+configuration, exact package selection and rollback.
 
 The extraction baseline is released `rofi-tmux-plus 0.6.0`, source
 `407ae58ba422ba88fed7da2f9d845ff274830f0e`. Its public Tmux Session v1 and

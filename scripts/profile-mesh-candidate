@@ -1,0 +1,260 @@
+#!/usr/bin/env python3
+"""Owned native/SSH resource probe; separate from ordinary desktop acceptance."""
+
+import argparse
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+
+def worker(root):
+    import signal
+
+    from mesh_plus.catalog import Catalog
+
+    from tmux_observer_client.mesh_fleet import MeshFleetPublisher
+
+    class Authority:
+        async def load(self):
+            return Catalog(json.loads((root / "catalog.json").read_text()))
+
+        async def report_route(self, **_kwargs):
+            return True
+
+    publisher = MeshFleetPublisher(
+        "fixture-local",
+        path=root / "local/fleet.sock",
+        owner_path=root / "local/owner.sock",
+        authority=Authority(),
+        scanner=False,
+        remote_exec=str(root / "bin/tmux-observer"),
+    )
+    signal.signal(signal.SIGTERM, lambda *_: publisher.stop())
+    signal.signal(signal.SIGINT, lambda *_: publisher.stop())
+    publisher.run()
+
+
+def process(pid):
+    try:
+        fields = Path(f"/proc/{pid}/stat").read_text().rpartition(") ")[2].split()
+        status = Path(f"/proc/{pid}/status").read_text().splitlines()
+        rss = next(int(line.split()[1]) * 1024 for line in status if line.startswith("VmRSS:"))
+        return {
+            "cpu": (int(fields[11]) + int(fields[12])) / os.sysconf("SC_CLK_TCK"),
+            "reapedCpu": (int(fields[13]) + int(fields[14])) / os.sysconf("SC_CLK_TCK"),
+            "rss": rss,
+            "birth": fields[19],
+        }
+    except (FileNotFoundError, ProcessLookupError, StopIteration):
+        return None
+
+
+def tree(pid):
+    pending, found = [pid], {}
+    while pending:
+        pid = pending.pop()
+        value = process(pid)
+        if value is None or pid in found:
+            continue
+        found[pid] = value
+        try:
+            for task in Path(f"/proc/{pid}/task").iterdir():
+                pending.extend(int(child) for child in (task / "children").read_text().split())
+        except (FileNotFoundError, ProcessLookupError):
+            pass
+        if len(found) + len(pending) > 64:
+            raise ValueError("owned process tree exceeded its bound")
+    return found
+
+
+def coordinate(seconds, output):
+    from native_fixture import NativeFixture
+    from test_fleet_mesh import Authority
+
+    from tmux_observer import __version__
+    from tmux_observer._clock import boottime_ms
+    from tmux_observer._ipc import IPCError
+    from tmux_observer_client.public import desktop_context_id, read_cached
+
+    fixture = NativeFixture()
+    fleet = None
+    record = {
+        "format": "tmux-observer.mesh-resource-probe.v1",
+        "state": "running",
+        "observerVersion": __version__,
+        "seconds": seconds,
+        "cleanup": False,
+        "limits": [
+            "owned localhost SSH and nine disposable sessions per host",
+            "desktop disabled; fixed fixture catalog excludes authority CLI cost",
+            "sampled RSS can miss peaks; SSH server excluded like the established logical-reader budget",
+            "not ordinary two-host resource, capacity, graphical, installed or deployment acceptance",
+        ],
+    }
+    try:
+        native_reference = {}
+        owners = {}
+        for role in ("local", "remote"):
+            for index in range(9):
+                fixture.native(role, "new-session", "-d", "-s", f"mesh-owned-{index}", "sleep 1800")
+            native_reference[role] = fixture.native(
+                role, "list-sessions", "-F", "#{session_id}|#{session_created}|#{session_attached}"
+            )
+            owners[role], _ = fixture.start_owner(role)
+        fixture.start_ssh()
+        authority = Authority()
+        authority.payload["sshPolicy"]["executable"] = str(fixture.bin / "ssh")
+        authority.payload["hosts"].append(
+            {
+                "id": "fixture-remote",
+                "display": "remote",
+                "local": False,
+                "aliases": [],
+                "routes": [
+                    {
+                        "destination": "fixture-remote",
+                        "configuredIndex": 0,
+                        "lastReachableAt": None,
+                        "lastUnreachableAt": None,
+                    }
+                ],
+            }
+        )
+        (fixture.root / "catalog.json").write_text(json.dumps(authority.payload))
+        fleet = subprocess.Popen(
+            [sys.executable, str(Path(__file__).resolve()), "--worker", str(fixture.root)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
+        fixture.processes.append(fleet)
+
+        def read():
+            return read_cached(
+                desktop_context_id(),
+                path=fixture.local / "fleet.sock",
+                expected_host="fixture-local",
+            )
+
+        end = time.monotonic() + 10
+        while time.monotonic() < end:
+            try:
+                frame = read()
+                if len(frame["snapshot"]["hosts"]) == 2 and all(
+                    host["owner"]["localExpiry"] > boottime_ms()
+                    for host in frame["snapshot"]["hosts"]
+                ):
+                    break
+            except (IPCError, OSError, ValueError):
+                pass
+            time.sleep(0.05)
+        else:
+            raise ValueError("owned Mesh resource fleet did not become ready")
+        samples = []
+        for _ in range(100):
+            started = time.perf_counter_ns()
+            read()
+            samples.append((time.perf_counter_ns() - started) / 1e6)
+        record["warmRpcMs"] = {
+            "p95": sorted(samples)[94],
+            "max": max(samples),
+            "count": len(samples),
+        }
+        if record["warmRpcMs"]["p95"] > 50:
+            raise ValueError("warm RPC exceeded 50 ms p95")
+        baseline, maximum, last = {}, {"fleetAndBridgeRss": 0, "ownerRss": 0, "processes": 0}, {}
+        started = time.monotonic()
+        reaped_before = {pid: process(pid)["reapedCpu"] for pid in (fleet.pid, owners["local"].pid)}
+        next_notice = started + 30
+        while time.monotonic() < started + seconds:
+            records = tree(fleet.pid)
+            # Mesh bridge stdout/owner socket are remote resources, outside the
+            # local SSH client tree. Bind them to this private fixture's config.
+            for node in Path("/proc").iterdir():
+                if node.name.isdigit():
+                    try:
+                        argv = (node / "cmdline").read_bytes()
+                        if (
+                            b"mesh_plus.cli" in argv
+                            and str(fixture.root / "sources.toml").encode() in argv
+                        ):
+                            records.update(tree(int(node.name)))
+                    except (FileNotFoundError, ProcessLookupError):
+                        pass
+            owner_tree = tree(owners["local"].pid)
+            owner = owner_tree.get(owners["local"].pid)
+            if owner is None or fleet.poll() is not None:
+                raise ValueError("owned resource process exited")
+            maximum["fleetAndBridgeRss"] = max(
+                maximum["fleetAndBridgeRss"], sum(row["rss"] for row in records.values())
+            )
+            maximum["ownerRss"] = max(
+                maximum["ownerRss"], sum(row["rss"] for row in owner_tree.values())
+            )
+            maximum["processes"] = max(maximum["processes"], len(records))
+            records.update(owner_tree)
+            for pid, row in records.items():
+                key = pid, row["birth"]
+                baseline.setdefault(key, row["cpu"])
+                last[key] = row["cpu"]
+            if time.monotonic() >= next_notice:
+                print("owned Mesh resource probe still running", flush=True)
+                next_notice += 30
+            time.sleep(0.2)
+        elapsed = time.monotonic() - started
+        reaped = sum(process(pid)["reapedCpu"] - value for pid, value in reaped_before.items())
+        cpu = (sum(value - baseline[key] for key, value in last.items()) + reaped) / elapsed * 100
+        record["cpuScope"] = (
+            "observed owned self CPU plus fleet/local-owner reaped CPU; may conservatively count a sampled reaped child twice"
+        )
+        record.update(elapsedSeconds=elapsed, combinedCpuPercent=cpu, maximum=maximum)
+        for role in ("local", "remote"):
+            if (
+                fixture.native(
+                    role,
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}|#{session_created}|#{session_attached}",
+                )
+                != native_reference[role]
+            ):
+                raise ValueError("owned native references or attachment counts changed")
+        record["withinProbeTargets"] = (
+            maximum["fleetAndBridgeRss"] <= 96 * 1024**2
+            and maximum["ownerRss"] <= 64 * 1024**2
+            and cpu <= 5
+        )
+        record["state"] = "passed_probe" if record["withinProbeTargets"] else "failed_probe_target"
+    except Exception as error:  # noqa: BLE001 - persist owned acceptance failure before cleanup
+        record.update(state="failed", failure=type(error).__name__, message=str(error)[:1024])
+    finally:
+        fixture.close()
+        record["cleanup"] = True
+        record["harnessSha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+    print(json.dumps({"state": record["state"], "output": str(output)}), flush=True)
+    return 0 if record["state"] == "passed_probe" else 1
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--worker", type=Path)
+    parser.add_argument("--seconds", type=int, default=600)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    if args.worker:
+        worker(args.worker)
+        return 0
+    if not 10 <= args.seconds <= 1800 or args.output is None:
+        parser.error("resource probe requires --output and 10..1800 seconds")
+    root = Path(__file__).resolve().parent.parent
+    sys.path[:0] = [str(root / "tests"), str(root / "tests_mesh")]
+    return coordinate(args.seconds, args.output)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

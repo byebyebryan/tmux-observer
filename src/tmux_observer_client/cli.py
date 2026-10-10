@@ -65,6 +65,17 @@ def main(argv=None):
     fleet.add_argument("--host-id", required=True, help="fixed configured local owner ID")
     fleet.add_argument("--context-id")
     fleet.add_argument("--socket", type=Path)
+    fleet.add_argument(
+        "--transport",
+        choices=("legacy", "mesh"),
+        default="legacy",
+        help="explicit cached-state backend; Mesh requires the mesh extra",
+    )
+    fleet.add_argument(
+        "--mesh-source",
+        default="tmux_default",
+        help="fixed Mesh source selector configured on each owner host",
+    )
     snapshot = commands.add_parser("snapshot")
     snapshot.add_argument("--access", choices=("direct", "cached"), required=True)
     snapshot.add_argument("--host", action="append", default=[])
@@ -104,9 +115,22 @@ def main(argv=None):
             return 0
         context = args.context_id or desktop_context_id()
         if args.command == "fleet":
-            from .fleet import FleetPublisher
+            if args.transport == "mesh":
+                try:
+                    from .mesh_fleet import MeshFleetPublisher as FleetPublisher
+                except ImportError as error:
+                    raise ValueError(
+                        "Mesh backend requires the optional mesh dependencies"
+                    ) from error
+                options = {"source": args.mesh_source}
+            else:
+                from .fleet import FleetPublisher
 
-            publisher = FleetPublisher(args.host_id, context_id=context, path=args.socket)
+                options = {}
+
+            publisher = FleetPublisher(
+                args.host_id, context_id=context, path=args.socket, **options
+            )
 
             def stop(_signum, _frame):
                 publisher.stop()

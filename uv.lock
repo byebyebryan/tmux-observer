@@ -39,6 +39,14 @@ wheels = [
 ]
 
 [[package]]
+name = "mesh-plus"
+version = "0.1.0a2"
+source = { git = "https://github.com/byebyebryan/mesh-plus.git?rev=fd40916f2b0e5c9d2a3f8b51d0da02585894ddcb#fd40916f2b0e5c9d2a3f8b51d0da02585894ddcb" }
+dependencies = [
+    { name = "jsonschema" },
+]
+
+[[package]]
 name = "referencing"
 version = "0.37.0"
 source = { registry = "https://registry.snapchat.com/python/virtual/" }
@@ -214,7 +222,7 @@ wheels = [
 
 [[package]]
 name = "tmux-observer"
-version = "0.5.0a1"
+version = "0.6.0a1"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -222,13 +230,17 @@ dev = [
     { name = "jsonschema" },
     { name = "ruff" },
 ]
+mesh = [
+    { name = "mesh-plus" },
+]
 
 [package.metadata]
 requires-dist = [
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.18,<5" },
+    { name = "mesh-plus", marker = "extra == 'mesh'", git = "https://github.com/byebyebryan/mesh-plus.git?rev=fd40916f2b0e5c9d2a3f8b51d0da02585894ddcb" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.16.6" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["dev", "mesh"]
 
 [[package]]
 name = "typing-extensions"

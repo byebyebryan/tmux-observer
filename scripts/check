@@ -19,6 +19,10 @@ python3 -m unittest discover -s tests -v
 python3 -m compileall -q src
 ruff check scripts/measure-owner-pipeline
 ruff format --check scripts/measure-owner-pipeline
+ruff check tests_mesh scripts/check-mesh
+ruff format --check tests_mesh scripts/check-mesh
+ruff check scripts/profile-mesh-candidate
+ruff format --check scripts/profile-mesh-candidate
 ruff check src tests scripts/read-contract scripts/check-contracts scripts/update-contracts scripts/accept-native-collector scripts/accept-native-associations scripts/accept-native-bindings scripts/accept-native-actions scripts/accept-native-actions-desktop scripts/accept-native-owner scripts/accept-native-context scripts/accept-native-fleet scripts/accept-normal-resources scripts/accept-native-direct scripts/accept-native-desktop scripts/accept-native-remote-desktop scripts/accept-native-suspend scripts/accept-simulated-recovery scripts/accept-installed-capacity scripts/probe-rofi-interaction scripts/candidate-artifact scripts/artifact_input.py scripts/update-boundary-contracts scripts/update-bindings-contract scripts/read-boundary-contract scripts/check-boundary-contracts scripts/measure-fleet-work scripts/measure-remote-proofs
 ruff format --check src tests scripts/read-contract scripts/check-contracts scripts/update-contracts scripts/accept-native-collector scripts/accept-native-associations scripts/accept-native-bindings scripts/accept-native-actions scripts/accept-native-actions-desktop scripts/accept-native-owner scripts/accept-native-context scripts/accept-native-fleet scripts/accept-normal-resources scripts/accept-native-direct scripts/accept-native-desktop scripts/accept-native-remote-desktop scripts/accept-native-suspend scripts/accept-simulated-recovery scripts/accept-installed-capacity scripts/probe-rofi-interaction scripts/candidate-artifact scripts/artifact_input.py scripts/update-boundary-contracts scripts/update-bindings-contract scripts/read-boundary-contract scripts/check-boundary-contracts scripts/measure-fleet-work scripts/measure-remote-proofs
 git diff --check
