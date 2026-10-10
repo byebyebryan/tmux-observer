@@ -145,6 +145,22 @@ class FleetTicketTests(unittest.TestCase):
         )
         self.assertTrue(all(self.value(p, 1301)["state"] == "complete" for p in parents))
 
+    def test_ready_replacement_epoch_cannot_settle_an_acknowledged_old_ticket(self):
+        parent = self.admit()
+        self.tickets.tick(self.connections, 150)
+        self.proof(8, sent=140)
+        self.reply(state="complete", row_state="complete", attempt=8)
+        self.assertEqual(self.value(parent)["state"], "running")
+        # A Mesh replacement can deliver fresh facts before connection cleanup
+        # runs. Even the same publisher/native attempt cannot cross its epoch.
+        self.owner.epoch += 1
+        self.proof(8, sent=220, received=230)
+        self.tickets.settle("fixture", 240)
+        value = self.value(parent, 241)
+        self.assertEqual(value["state"], "stale_scope")
+        self.assertEqual(value["sources"][0]["error"]["code"], "stale_scope")
+        self.assertFalse(self.tickets.children)
+
     def test_scope_and_control_errors_end_only_affected_outcomes(self):
         parent = self.admit(scopes=[OWNER, DESKTOP])
         self.tickets.tick(self.connections, 150)

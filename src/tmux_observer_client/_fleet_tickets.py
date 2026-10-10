@@ -278,6 +278,22 @@ class FleetTickets:
         child = self.children.get(host)
         if child is None or child.ticket is None:
             return
+        owner = self.state.owners.get(host)
+        if (
+            owner is None
+            or owner.transport != "ready"
+            or owner.scope is None
+            or owner.epoch != child.epoch
+            or owner.scope[0] != child.publisher
+        ):
+            self.fail_host(
+                host,
+                now,
+                code="stale_scope",
+                state="stale_scope",
+                message="owner subscription scope changed before settlement",
+            )
+            return
         row = child.ticket["sources"][0]
         if row["state"] in ("failed", "stale_scope", "deadline"):
             self.update(
@@ -292,7 +308,6 @@ class FleetTickets:
         elif row["state"] != "complete":
             self.update(child.parents, host, now, state="running", attempt=row["attempt"])
         else:
-            owner = self.state.owners[host]
             frame = owner.confirmed
             proof = owner.proof
             if (
