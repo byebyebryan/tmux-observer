@@ -48,17 +48,19 @@ The optional integration accepts both reviewed a4/a5 SDKs, preserving the a4
 comparison input. Short resource diagnostics are explicitly labeled and cannot
 establish normal resource acceptance. Mesh byte/proof counters remain unmeasured.
 
-Mesh a6 `6e6a141` adds an explicit same-package authority read path with one
+Mesh a6 `74b9e54` adds an explicit same-package authority read path with one
 bounded read job, bounded regular source files and deadline-bound health locks.
 The selected fleet uses that path; route reports keep the existing process
 writer. Older a4/a5 comparison inputs remain supported. Canonical authority,
 native validity checks, two-second sampling and ten-second leases are unchanged.
-The installed producer gate passes 90 tests. The first production ten-minute
+The installed producer gate passes 91 tests. The first production ten-minute
 profile passes memory on both hosts and CPU on Starship, but Snap remains over
 the unchanged five-percent CPU target at 5.72 percent. Static schema success is
 now reused for identical full JSON bytes, with bounded digest bookkeeping. All
-native, proof, receipt and current-time expiry checks still run. This producer
-change requires a new exact-tuple resource checkpoint before selection.
+native, proof, receipt and current-time expiry checks still run. Subsequent full runs still miss Snap CPU at 5.06 and 5.26 percent. The latest
+producer avoids redundant JSON safety walks; Observer copies checked JSON
+without general object bookkeeping while retaining independent ownership.
+These changes require a new exact-tuple resource checkpoint before selection.
 
 ## Checkpoints
 
@@ -169,7 +171,7 @@ attempt/proof before completing its fleet ticket. CLI request correlation is an
 additive option; no public schema or Mesh lock changed.
 
 The regular stdlib source gate runs without the Mesh extra. Development pins
-that extra to Git revision `6e6a141ed21363ad605bf1bfac56eddb00cdc987`.
+that extra to Git revision `74b9e54c1fc433aaeb5db29683faf65f6b61016a`.
 The wheel declares optional `mesh-plus==0.1.0a6`; candidate/install workflows must
 supply that exact wheel and its declared dependencies separately.
 The reviewed source revision is published independently of artifact selection.

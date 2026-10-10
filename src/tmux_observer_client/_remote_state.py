@@ -9,7 +9,7 @@ import uuid
 from tmux_observer.delivery import SERVICE_PROTOCOL, remote_expiry
 
 from ._errors import ContractError
-from ._owner_document import OwnerDocument
+from ._owner_document import OwnerDocument, _copy_json
 
 
 def _facts(value, *, desktop=False):
@@ -250,9 +250,9 @@ class RemoteState:
             "proof": self.proof,
             "error": self.error,
         }
-        return copy.deepcopy(owner)
+        return _copy_json(owner)
 
     def project(self):
         frame = self.confirmed or self.candidate
         snapshot = frame["snapshot"] if frame is not None else None
-        return self.project_header(), copy.deepcopy(snapshot["sessions"] if snapshot else [])
+        return self.project_header(), _copy_json(snapshot["sessions"] if snapshot else [])

@@ -8,6 +8,24 @@ from tmux_observer._delivery_validation import (
     _decode_service_input,
 )
 
+_JSON_ATOMS = (str, int, float, bool, type(None))
+
+
+def _copy_json(value):
+    """Copy bounded, acyclic checked JSON without deepcopy's object bookkeeping."""
+    kind = type(value)
+    if kind is dict:
+        return {
+            key if type(key) is str else _copy_json(key): _copy_json(child)
+            for key, child in value.items()
+        }
+    if kind is list:
+        return [_copy_json(child) for child in value]
+    if kind in _JSON_ATOMS:
+        return value
+    # Preserve the old ownership behavior for supported Python subclasses.
+    return copy.deepcopy(value)
+
 
 class OwnerDocument:
     __slots__ = ("full_size", "header_size", "value")
@@ -32,8 +50,8 @@ class OwnerDocument:
         return result
 
     def header(self):
-        return copy.deepcopy({**self.value, "snapshot": None})
+        return _copy_json({**self.value, "snapshot": None})
 
     def retained(self):
         # The decoder/caller may still own its input; only owned copies survive.
-        return copy.deepcopy(self.value)
+        return _copy_json(self.value)

@@ -48,6 +48,25 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(self.remote.expiry, expiry)
         self.assertEqual(self.remote.proof["receivedAt"], 250)
 
+    def test_retained_and_projected_nested_records_have_independent_ownership(self):
+        self.handshake()
+        incoming = self.confirm()
+        retained = copy.deepcopy(self.remote.confirmed)
+        incoming["snapshot"]["source"]["hostId"] = "foreign"
+        incoming["receipt"]["accepted"] += 1
+        self.assertEqual(self.remote.confirmed, retained)
+        header, rows = self.remote.project()
+        header["source"]["hostId"] = "foreign"
+        header["clock"]["bootId"] = "foreign"
+        header["receipt"]["accepted"] += 1
+        header["proof"]["remainingMs"] = 0
+        rows[0]["sessionId"] = "$changed"
+        rows[0]["name"] = "changed"
+        self.assertEqual(self.remote.confirmed, retained)
+        fresh_header, fresh_rows = self.remote.project()
+        self.assertNotEqual(header, fresh_header)
+        self.assertNotEqual(rows, fresh_rows)
+
     def test_wrong_nonce_does_not_adopt_candidate_or_renew_receipt(self):
         self.handshake()
         self.confirm()
