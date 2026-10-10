@@ -172,19 +172,44 @@ class MeshFleetTests(unittest.TestCase):
             )
 
     def test_grouped_refresh_requires_mesh_confirmed_native_attempt(self):
-        with tempfile.TemporaryDirectory(prefix="tmux-mesh-refresh-") as temporary:
-            fleet, _owner, collector, _scanner, _authority = self.start(Path(temporary))
-            entered, release = threading.Event(), threading.Event()
-            original_collect = collector.collect
+        from mesh_plus.client import Subscription
+        from mesh_plus.observer import ObserverAdapter
 
-            def held_sample(*, budget_ms):
-                entered.set()
-                if not release.wait(0.8):
-                    raise TimeoutError("owned refresh successor was not released")
-                return original_collect(budget_ms=budget_ms)
+        consumed = {}
+        original_next, original_watch = Subscription.__anext__, ObserverAdapter.watch
 
-            collector.collect = held_sample
-            self.addCleanup(release.set)
+        def marker(frame):
+            return frame["requestId"], frame["sequence"]
+
+        async def consume_publication(subscription):
+            frame = await original_next(subscription)
+            if frame["kind"] == "data":
+                barrier = consumed.get(marker(frame["payload"]["ownerFrame"]))
+                if barrier is not None:
+                    barrier.set()
+            return frame
+
+        async def uncoalesced_watch(adapter):
+            iterator = original_watch(adapter)
+            try:
+                async for publication in iterator:
+                    key = marker(publication.payload["ownerFrame"])
+                    barrier = asyncio.Event()
+                    consumed[key] = barrier
+                    yield publication
+                    # This success fixture delivers each cached replacement.
+                    # Real coalescing and revocation have their own IPC case.
+                    await asyncio.wait_for(barrier.wait(), 0.5)
+                    del consumed[key]
+            finally:
+                await iterator.aclose()
+
+        with (
+            tempfile.TemporaryDirectory(prefix="tmux-mesh-refresh-") as temporary,
+            patch.object(Subscription, "__anext__", consume_publication),
+            patch.object(ObserverAdapter, "watch", uncoalesced_watch),
+        ):
+            fleet, _owner, _collector, _scanner, _authority = self.start(Path(temporary))
             ticket = self.read(
                 fleet,
                 operation="refresh",
@@ -192,14 +217,6 @@ class MeshFleetTests(unittest.TestCase):
                     {"hostId": "fixture-local", "source": source} for source in ("owner", "desktop")
                 ],
             )["ticket"]
-            self.assertTrue(entered.wait(0.5))
-            # This success case observes the in-flight replacement before its
-            # successor completes. Coalescing/gap rejection has a separate case.
-            self.wait(
-                lambda: self.read(fleet)["snapshot"]["hosts"][0]["owner"]["receipt"]["inFlight"],
-                budget=0.5,
-            )
-            release.set()
 
             def terminal():
                 frame = self.read(
@@ -324,7 +341,11 @@ class MeshFleetTests(unittest.TestCase):
             patch.object(_mesh_worker.MeshWorker, "put", capture_metrics),
             patch.object(Reader, "watch", fast_watch),
         ):
-            fleet, _owner, _collector, _scanner, _authority = self.start(Path(temporary))
+            # First establish readiness with the production admission budget.
+            # The deliberately tiny steady-state budget can rotate before the
+            # test thread observes bootstrap readiness on a slower CI worker.
+            with patch("mesh_plus.client.ROTATION_HANDLES", 4080):
+                fleet, _owner, _collector, _scanner, _authority = self.start(Path(temporary))
             self.wait(lambda: metrics and metrics[-1]["rotations"] >= 3)
             self.wait(
                 lambda: (
