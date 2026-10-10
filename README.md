@@ -1,5 +1,10 @@
 # Tmux Observer
 
+Source candidate 0.6.0a5 selects the reviewed Mesh a10 runtime checkpoint. It
+includes stale control-binding rejection and bounded private bridge retirement
+headroom. The released/deployed a4 tuple remains selected until the new exact
+artifacts pass installed, resource and paired rollback gates.
+
 Coordinated transport selection, 2026-10-10: Mesh 0.1.0a9, Tmux Observer
 0.6.0a4 and Tmux Plus 0.12.0a4 are deployed on Snap and Starship. Agent's
 a13 reader and a12 bridge use new private a9 environments; its a15 collector

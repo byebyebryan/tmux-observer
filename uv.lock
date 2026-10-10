@@ -40,8 +40,8 @@ wheels = [
 
 [[package]]
 name = "mesh-plus"
-version = "0.1.0a9"
-source = { git = "https://github.com/byebyebryan/mesh-plus.git?rev=3b6754312000d1c39a3ab407986130b9c621f0d4#3b6754312000d1c39a3ab407986130b9c621f0d4" }
+version = "0.1.0a10"
+source = { git = "https://github.com/byebyebryan/mesh-plus.git?rev=504a176d9d9037634465ef1ab7a71988f317ca60#504a176d9d9037634465ef1ab7a71988f317ca60" }
 dependencies = [
     { name = "jsonschema" },
 ]
@@ -222,7 +222,7 @@ wheels = [
 
 [[package]]
 name = "tmux-observer"
-version = "0.6.0a4"
+version = "0.6.0a5"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -237,7 +237,7 @@ mesh = [
 [package.metadata]
 requires-dist = [
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.18,<5" },
-    { name = "mesh-plus", marker = "extra == 'mesh'", git = "https://github.com/byebyebryan/mesh-plus.git?rev=3b6754312000d1c39a3ab407986130b9c621f0d4" },
+    { name = "mesh-plus", marker = "extra == 'mesh'", git = "https://github.com/byebyebryan/mesh-plus.git?rev=504a176d9d9037634465ef1ab7a71988f317ca60" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.16.6" },
 ]
 provides-extras = ["dev", "mesh"]
