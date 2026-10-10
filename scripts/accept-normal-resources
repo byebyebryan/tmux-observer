@@ -83,6 +83,7 @@ def coordinate(
     mesh_inputs=None,
     mesh_tuple=None,
     diagnostic_seconds=None,
+    resource_scope="native-viewers",
 ):
     helper = load(ROOT / "scripts/accept-native-fleet", "normal_native_coordinator")
     root = Path("/tmp/to-fleet-" + uuid.uuid4().hex)
@@ -92,7 +93,15 @@ def coordinate(
     remote_created = False
     record = {
         "state": "running",
-        "gate": "B5-normal-resources" if diagnostic_seconds is None else "resource-diagnostic",
+        "gate": (
+            "B5-normal-resources"
+            if resource_scope == "native-viewers"
+            else "cached-delivery-resources"
+        )
+        if diagnostic_seconds is None
+        else "resource-diagnostic",
+        "resourceScope": resource_scope,
+        "viewerAcceptance": resource_scope == "native-viewers",
         "diagnosticSeconds": diagnostic_seconds,
         "scope": "installed two-host owners passively observing ordinary default servers with enabled local associations, real SSH and actual Niri/process matching; private preferences/units/IPC only; no native mutation or GUI input",
         "cases": [],
@@ -189,15 +198,22 @@ def coordinate(
                     and associations["state"] == "ready"
                     and associations["sessions"]
                     == len(record["endpoints"][host]["nativeReference"]["sessionReferences"])
-                    and associations["clients"] > 0
-                    and any(
-                        row["localViewer"].get("state") == "open"
-                        or any(
-                            binding["association"]["state"] == "open"
-                            for binding in (source.get("localBindings") or {}).get("rows", [])
+                    and (
+                        resource_scope == "cached-delivery"
+                        or (
+                            associations["clients"] > 0
+                            and any(
+                                row["localViewer"].get("state") == "open"
+                                or any(
+                                    binding["association"]["state"] == "open"
+                                    for binding in (source.get("localBindings") or {}).get(
+                                        "rows", []
+                                    )
+                                )
+                                for source in view["hosts"]
+                                for row in source["sessions"]
+                            )
                         )
-                        for source in view["hosts"]
-                        for row in source["sessions"]
                     )
                 ):
                     ready.add(host)
@@ -320,6 +336,12 @@ def main():
     parser.add_argument("--worker", type=Path)
     parser.add_argument("--host-id", choices=("snap", "starship"))
     parser.add_argument("--transport", choices=("legacy", "mesh"), default="legacy")
+    parser.add_argument(
+        "--resource-scope",
+        choices=("native-viewers", "cached-delivery"),
+        default="native-viewers",
+        help="cached-delivery has no positive viewer acceptance",
+    )
     parser.add_argument("--mesh-wheels", type=Path)
     parser.add_argument("--mesh-tuple", type=Path, help="explicit reviewed Mesh input tuple")
     parser.add_argument(
@@ -346,6 +368,7 @@ def main():
         mesh_inputs=args.mesh_wheels,
         mesh_tuple=args.mesh_tuple,
         diagnostic_seconds=args.diagnostic_seconds,
+        resource_scope=args.resource_scope,
     )
 
 
