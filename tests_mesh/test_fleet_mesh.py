@@ -15,6 +15,7 @@ from test_fleet import Scanner
 
 from tmux_observer._clock import boottime_ms
 from tmux_observer._ipc import IPCError
+from tmux_observer._tickets import TERMINAL
 from tmux_observer_client.contract import validate_fleet_frame
 from tmux_observer_client.mesh_fleet import MeshFleetPublisher
 from tmux_observer_client.public import read_cached
@@ -172,7 +173,91 @@ class MeshFleetTests(unittest.TestCase):
 
     def test_grouped_refresh_requires_mesh_confirmed_native_attempt(self):
         with tempfile.TemporaryDirectory(prefix="tmux-mesh-refresh-") as temporary:
-            fleet, _owner, _collector, _scanner, _authority = self.start(Path(temporary))
+            fleet, _owner, collector, _scanner, _authority = self.start(Path(temporary))
+            entered, release = threading.Event(), threading.Event()
+            original_collect = collector.collect
+
+            def held_sample(*, budget_ms):
+                entered.set()
+                if not release.wait(0.8):
+                    raise TimeoutError("owned refresh successor was not released")
+                return original_collect(budget_ms=budget_ms)
+
+            collector.collect = held_sample
+            self.addCleanup(release.set)
+            ticket = self.read(
+                fleet,
+                operation="refresh",
+                sources=[
+                    {"hostId": "fixture-local", "source": source} for source in ("owner", "desktop")
+                ],
+            )["ticket"]
+            self.assertTrue(entered.wait(0.5))
+            # This success case observes the in-flight replacement before its
+            # successor completes. Coalescing/gap rejection has a separate case.
+            self.wait(
+                lambda: self.read(fleet)["snapshot"]["hosts"][0]["owner"]["receipt"]["inFlight"],
+                budget=0.5,
+            )
+            release.set()
+
+            def terminal():
+                frame = self.read(
+                    fleet,
+                    operation="refresh_status",
+                    publisher_id=ticket["publisherId"],
+                    ticket_id=ticket["id"],
+                )
+                return frame if frame["ticket"]["state"] in TERMINAL else None
+
+            frame = self.wait(terminal)
+            self.assertEqual(frame["ticket"]["state"], "complete", frame["ticket"])
+            source = frame["snapshot"]["hosts"][0]["owner"]["receipt"]
+            self.assertGreaterEqual(source["startedAt"], ticket["requestedAt"])
+            self.assertGreaterEqual(frame["snapshot"]["desktop"]["startedAt"], source["acceptedAt"])
+
+    def test_grouped_refresh_gap_is_a_terminal_scope_revocation(self):
+        from mesh_plus.bridge import _Connection
+
+        armed = threading.Event()
+        original_emit = _Connection.emit
+
+        async def gap_before_replacement(bridge, kind, **fields):
+            if (
+                kind == "data"
+                and armed.is_set()
+                and fields["payload"]["ownerFrame"]["receipt"]["inFlight"]
+            ):
+                armed.clear()
+                key = fields["subscriptionId"]
+                await original_emit(
+                    bridge,
+                    "control",
+                    subscriptionId=key,
+                    streamSequence=bridge.guard.handles[key]["stream"] + 1,
+                    control="gap",
+                    payload={"gapKind": "delivery", "reason": "state_coalesced"},
+                )
+                fields["streamSequence"] = bridge.guard.handles[key]["stream"] + 1
+                fields["deliveryKind"] = "resync"
+            return await original_emit(bridge, kind, **fields)
+
+        with (
+            tempfile.TemporaryDirectory(prefix="tmux-mesh-refresh-gap-") as temporary,
+            patch.object(_Connection, "emit", gap_before_replacement),
+        ):
+            fleet, _owner, collector, _scanner, _authority = self.start(Path(temporary))
+            release = threading.Event()
+            original_collect = collector.collect
+
+            def held_sample(*, budget_ms):
+                if not release.wait(0.8):
+                    raise TimeoutError("owned gap fixture successor was not released")
+                return original_collect(budget_ms=budget_ms)
+
+            collector.collect = held_sample
+            self.addCleanup(release.set)
+            armed.set()
             ticket = self.read(
                 fleet,
                 operation="refresh",
@@ -188,17 +273,14 @@ class MeshFleetTests(unittest.TestCase):
                     publisher_id=ticket["publisherId"],
                     ticket_id=ticket["id"],
                 )
-                return (
-                    frame
-                    if frame["ticket"]["state"] in ("complete", "failed", "deadline")
-                    else None
-                )
+                return frame if frame["ticket"]["state"] in TERMINAL else None
 
             frame = self.wait(terminal)
-            self.assertEqual(frame["ticket"]["state"], "complete", frame["ticket"])
-            source = frame["snapshot"]["hosts"][0]["owner"]["receipt"]
-            self.assertGreaterEqual(source["startedAt"], ticket["requestedAt"])
-            self.assertGreaterEqual(frame["snapshot"]["desktop"]["startedAt"], source["acceptedAt"])
+            release.set()
+            self.assertFalse(armed.is_set(), "the owned delivery gap must have been emitted")
+            self.assertIn(frame["ticket"]["state"], {"failed", "stale_scope"})
+            owner = next(row for row in frame["ticket"]["sources"] if row["source"] == "owner")
+            self.assertEqual(owner["error"]["code"], "stale_scope")
 
     def test_rotation_can_overlap_retiring_local_bridge_handler(self):
         from mesh_plus.bridge import Bridge
