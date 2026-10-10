@@ -1,0 +1,36 @@
+{
+  "candidateTuple": {
+    "bindingEvidence": "Final private environment installed these wheels before probe startup and retained their exact Observer/Mesh/dependency payloads through completion",
+    "installedParity": "installed-tuple-parity.json",
+    "meshSource": "2cc12accb331db7ee65ab426da09576a907b291c",
+    "meshWheelSha256": "55a8ef018e0bab994ce3dd2106552a69fdcb5a397ed607cd9cab92afb51659dd",
+    "observerSource": "9e5a8752b6f4715969ab4fd669951cbdf6a87219",
+    "observerWheelSha256": "faccbe94e35b464403744211032c579a6bcbce09aa83adc6396279dd85cb06fe"
+  },
+  "cleanup": true,
+  "combinedCpuPercent": 3.7488619673945776,
+  "cpuScope": "observed owned self CPU plus fleet/local-owner reaped CPU; may conservatively count a sampled reaped child twice",
+  "elapsedSeconds": 600.1821404920192,
+  "format": "tmux-observer.mesh-resource-probe.v1",
+  "harnessSha256": "3334a7f19d8361b79c5f544b801bdc9e153b3bc973bd64b6bc82cfd8d9e346d1",
+  "limits": [
+    "owned localhost SSH and nine disposable sessions per host",
+    "desktop disabled; fixed fixture catalog excludes authority CLI cost",
+    "sampled RSS can miss peaks; SSH server excluded like the established logical-reader budget",
+    "not ordinary two-host resource, capacity, graphical, installed or deployment acceptance"
+  ],
+  "maximum": {
+    "fleetAndBridgeRss": 82391040,
+    "ownerRss": 25747456,
+    "processes": 3
+  },
+  "observerVersion": "0.6.0a1",
+  "seconds": 600,
+  "state": "passed_probe",
+  "warmRpcMs": {
+    "count": 100,
+    "max": 12.215944,
+    "p95": 6.982409
+  },
+  "withinProbeTargets": true
+}

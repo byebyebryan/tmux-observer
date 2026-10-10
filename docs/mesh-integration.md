@@ -37,9 +37,9 @@ evidence until separately selected.
 | M0 | Reviewed scope, exact starting tuple and migration boundaries | Complete |
 | M1 | Cached Tmux adapter, guarded Mesh-to-Fleet projection and independent fixtures | Source/native pass |
 | M2 | Shared fleet Mesh reader, catalog recovery and bounded refresh compatibility | Source/native pass |
-| M3 | Full source and isolated exact-package acceptance, public facade parity | Source pass; package pending |
-| M4 | Owned native/SSH, resource/capacity and applicable Snap graphical acceptance | Owned native pass; remaining gates pending |
-| M5 | Exact reviewable rollout, dependency/launcher/source configuration and rollback | Pending |
+| M3 | Full source and isolated exact-package acceptance, public facade parity | Source/package/native pass |
+| M4 | Owned native/SSH, resource/capacity and applicable Snap graphical acceptance | Owned native/probe pass; ordinary/capacity/GUI pending |
+| M5 | Exact reviewable rollout, dependency/launcher/source configuration and rollback | Prepared; promotion pending |
 
 Starting source: Observer `128f7f8`, Tmux Plus `5105eae`, Mesh `fd40916`, SSH Plus
 `e01f89c`. Observer/Plus's accepted runtime is 0.5.0a1 / 0.11.0a1. Mesh source is
@@ -52,6 +52,38 @@ confirmed the frozen wire/schema bytes and Tmux admission behavior are unchanged
 This candidate now pins that exact a4 revision and uses its shared
 `configured_reader` API. The earlier a2 artifact/probe results remain separate;
 producer/package/native/resource gates are repeated for the a4 tuple.
+
+## Recorded candidate
+
+The [evidence record](evidence/2026-10-09-mesh-integration/README.md) binds the
+candidate wheels, source revisions, runtime dependency wheels and managed bundle.
+Observer 0.6.0a1 is built from `9e5a875`; Tmux Plus 0.12.0a1 from `dac43de`;
+Mesh 0.1.0a4 from `2cc12ac`. The producer source gate passes 380 tests and seven
+contract bundles / 45 independent cases; Plus passes 293 tests. The exact
+installed Observer runs all four Mesh integration tests, including two owned
+logical hosts over real localhost SSH. Mesh's standalone core gate passes 56
+tests without skips. These results do not establish a two-physical-host rollout.
+The final 600-second owned probe observes 78.6 MiB fleet/bridge RSS, 24.6 MiB
+local owner RSS, 3.75 percent combined sampled CPU and 7.0 ms cached RPC p95.
+It preserves native references/attachment counts and cleans owned resources.
+Its desktop-disabled fixture and authority/remote-owner exclusions make it a
+scoped probe, not ordinary two-host or declared-capacity acceptance.
+
+Review fixed delayed control acknowledgement admission and refresh settlement
+across a replaced owner epoch. The latter regression reproduced false completion
+before the fix and now returns `stale_scope` while current source facts remain
+independent. Previous artifact results retain their original scope and hashes.
+
+Snap is unattended with its screens off. DMS fade-to-DPMS layers hold exclusive
+input, so the owned graphical harness refused to type. The final a4 graphical
+gate is pending. Earlier a2 warm-frame probes missed the unchanged 150 ms target
+on both Mesh (153.1 ms p95) and legacy (164.1 ms); they do not attribute the miss
+to Mesh or establish final-candidate timing. No graphical guard was weakened.
+
+The current shared Mesh launcher selects the separate Agent environment, which
+does not contain Tmux Observer. The rollout must add the selected Tmux pure
+facade and merge its source entry. Neither that shared environment nor the
+existing Tmux services was changed by this loop.
 
 ## Acceptance
 
@@ -106,15 +138,27 @@ facts. A completed native child still waits for Mesh-confirmed post-request
 attempt/proof before completing its fleet ticket. CLI request correlation is an
 additive option; no public schema or Mesh lock changed.
 
-The regular stdlib source gate runs without the Mesh extra. Development resolves
-that extra from immutable public Git revision `2cc12accb331db7ee65ab426da09576a907b291c`.
+The regular stdlib source gate runs without the Mesh extra. Development pins
+that extra to Git revision `2cc12accb331db7ee65ab426da09576a907b291c`.
 The wheel declares optional `mesh-plus==0.1.0a4`; candidate/install workflows must
 supply that exact wheel and its declared dependencies separately.
+That revision was not available on public main during verification; the local
+immutable object seeded the development Git cache. Public CI and releases require
+its publication, plus the exact Observer wheel consumed by Plus's existing gate.
 
 ## Candidate rollout
 
 The default remains `legacy`. Opt in only after the paired artifact and resource
 gates accept the selected tuple. The concrete managed changes will include:
+
+| Managed source | Required selection |
+| --- | --- |
+| `.chezmoiexternal.toml` | Exact Observer wheel, Plus native bundle and common Mesh/dependency hashes |
+| `dot_local/share/tmux-observer/bin/executable_tmux-observer-client` | Optional Mesh/dependency import roots for the selected ABI |
+| `dot_local/bin/symlink_mesh-plus.tmpl` and its selected environment | Both exact native pure facades; preserve Agent's selection |
+| `dot_config/mesh-plus/private_sources.toml.tmpl` | Merge `tmux_default`; retain Agent entries and mode 0600 |
+| `dot_config/systemd/user/symlink_tmux-observer-owner@.service.tmpl` and fleet equivalent | Selected 0.6.0a1 wheel data paths |
+| Fleet `managed.conf` drop-in | Explicit transport/source selection after acceptance |
 
 1. Select the exact Observer and pinned Tmux Plus wheels/bundles together.
    Select the a4 Mesh wheel plus exact JSON Schema/runtime dependency wheels for
@@ -147,14 +191,22 @@ gates accept the selected tuple. The concrete managed changes will include:
    Environment=TMUX_OBSERVER_MESH_SOURCE=tmux_default
    ```
 
-   Discover each active context's exact fleet unit. Restart only that owned unit,
-   one endpoint at a time. Prepared/fresh/native identity, viewer freshness,
+   Before backend selection, accept the installed producer on one endpoint:
+   compare its exact bytes, restart only `tmux-observer-owner@HOST.service` if
+   replacing the running producer, and require the new owner publication while
+   preserving full native references/attachments. An old process cannot establish
+   the new producer's live acceptance. Keep the fleet on legacy through that gate.
+   Discover each active context's exact fleet unit, then restart only that owned
+   fleet with the Mesh selection, one endpoint at a time. Prepared/fresh/native
+   identity, viewer freshness,
    explicit refresh, separate disposable actions, reconnect and exact installed
    bytes must pass before selecting the second endpoint.
 5. Exercise rollback by selecting `TMUX_OBSERVER_TRANSPORT=legacy` on the same
    candidate tuple and restarting one reader at a time. Full tuple rollback
    selects the previously accepted Observer 0.5.0a1 / Plus 0.11.0a1 and restores
-   their previous fleet unit; Mesh authority a1 is its separate rollback input.
+   their previous owner/fleet units. Accept the reverted owner publication before
+   the corresponding fleet, serially per endpoint. Keep the independently
+   selected Agent/Mesh tuple.
    Restore only Tmux-owned launcher/config changes after all new Tmux readers
    have stopped. Do not roll back a separately selected Agent Mesh environment
    or remove its source entry; shared changes require both domains' verification.

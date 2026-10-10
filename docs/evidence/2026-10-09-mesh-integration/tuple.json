@@ -1,0 +1,136 @@
+{
+  "abi": {
+    "architecture": "x86_64",
+    "hostsReadOnlyCompared": [
+      "snap",
+      "starship"
+    ],
+    "limits": [
+      "Python and Rofi digest comparison only; no Starship graphical or new installed selection acceptance"
+    ],
+    "python": "3.14.7",
+    "rofiMode": 7,
+    "rofiSha256": "4f8dcd3a87d4c41af3e7c5f3ab4891a0926f21ab659072e5471e7332cf30a1ca"
+  },
+  "deployedTmuxServices": {
+    "fleet": {
+      "pid": 2277603,
+      "started": "2026-10-09 02:41:52 PDT",
+      "unit": "tmux-observer-fleet@45803d3a0aa1c400d7602f29eecd73a2.service"
+    },
+    "host": "snap",
+    "owner": {
+      "pid": 2277586,
+      "started": "2026-10-09 02:41:52 PDT",
+      "unit": "tmux-observer-owner@snap.service"
+    },
+    "result": "original processes still active; no restart/apply by this loop"
+  },
+  "excluded": [
+    "physical suspend",
+    "Starship foreground input"
+  ],
+  "format": "tmux-observer.mesh-candidate-tuple.v1",
+  "gates": {
+    "graphical": "pending: Snap unattended/screens off; DMS input guard refused typing",
+    "managedSelection": "pending",
+    "native": "passed: owned default tmux namespaces, localhost SSH and cleanup",
+    "package": "passed: repeatable wheels/bundle and private installed payload parity",
+    "publicCI": "pending: exact source/artifacts not published by this loop",
+    "resource": "passed scoped owned 600-second probe; ordinary/capacity pending",
+    "source": "passed: Observer 380 / Plus 293 / Mesh core 56"
+  },
+  "localArtifactRoot": "/tmp/tmux-mesh-goal-btRb2Y",
+  "mesh": {
+    "frozenWireChangesFromA2": [],
+    "publicMainAtVerification": "dc796237583187a891ac6c7623a06d5566c4c6d2",
+    "source": "2cc12accb331db7ee65ab426da09576a907b291c",
+    "version": "0.1.0a4",
+    "wheel": "mesh_plus-0.1.0a4-py3-none-any.whl",
+    "wheelSha256": "55a8ef018e0bab994ce3dd2106552a69fdcb5a397ed607cd9cab92afb51659dd"
+  },
+  "observer": {
+    "source": "9e5a8752b6f4715969ab4fd669951cbdf6a87219",
+    "version": "0.6.0a1",
+    "wheel": {
+      "bytes": 254398,
+      "file": "tmux_observer-0.6.0a1-py3-none-any.whl",
+      "sha256": "faccbe94e35b464403744211032c579a6bcbce09aa83adc6396279dd85cb06fe"
+    }
+  },
+  "recordedAtUtc": "2026-10-10T03:34:37.720274+00:00",
+  "remaining": [
+    "Final Snap graphical and 150 ms warm-frame timing gate",
+    "Ordinary two-physical-host desktop/authority resources and recovery",
+    "Declared capacity resource and queue high-water acceptance",
+    "Public source/artifact availability and producer/consumer CI",
+    "Shared public Mesh launcher exposes selected Tmux native facade and merged tmux_default source while preserving and verifying Agent",
+    "Serial exact installed owner/fleet/frontend selection, freshness, disposable actions and rollback"
+  ],
+  "rollback": {
+    "backend": "legacy on the same candidate; restart only the exact context fleet",
+    "fullTmuxTuple": {
+      "observer": "0.5.0a1",
+      "tmuxPlus": "0.11.0a1"
+    },
+    "sharedMesh": "preserve the independently selected Agent/Mesh tuple; verify both domains for shared changes"
+  },
+  "runtimeDependencies": {
+    "architecture": "x86_64",
+    "pythonAbi": "cp314",
+    "wheels": [
+      {
+        "bytes": 67548,
+        "file": "attrs-26.1.0-py3-none-any.whl",
+        "name": "attrs",
+        "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+        "version": "26.1.0"
+      },
+      {
+        "bytes": 90630,
+        "file": "jsonschema-4.26.0-py3-none-any.whl",
+        "name": "jsonschema",
+        "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+        "version": "4.26.0"
+      },
+      {
+        "bytes": 18437,
+        "file": "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+        "name": "jsonschema-specifications",
+        "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+        "version": "2025.9.1"
+      },
+      {
+        "bytes": 26766,
+        "file": "referencing-0.37.0-py3-none-any.whl",
+        "name": "referencing",
+        "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+        "version": "0.37.0"
+      },
+      {
+        "bytes": 371623,
+        "file": "rpds_py-2026.9.1-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+        "name": "rpds-py",
+        "sha256": "eac2f5dbafd585dfe31f86a23ebf0d3ba480a9d49ebc87947267b5608d4ea0cd",
+        "version": "2026.9.1"
+      }
+    ]
+  },
+  "state": "reviewable_unpromoted",
+  "tmuxPlus": {
+    "managedBundle": {
+      "bytes": 2066071,
+      "file": "rofi-tmux-plus-0.12.0a1-linux_x86_64.zip",
+      "sha256": "fad4e1047c193501454e7edf6af255149ea157bff2513bef752e42caeec93c7b",
+      "state": "built_unaccepted"
+    },
+    "source": "dac43deab6847f58b432fe9b6ff0fbd7a6f85db8",
+    "version": "0.12.0a1",
+    "wheel": {
+      "bytes": 81158,
+      "file": "rofi_tmux_plus-0.12.0a1-py3-none-linux_x86_64.whl",
+      "sha256": "1cd1ffdd34205859a972bd8bdcd483c7ef131ac6ad1932bfb0353ecf882a8df3"
+    }
+  },
+  "transportDefault": "legacy"
+}

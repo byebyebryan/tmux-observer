@@ -1,0 +1,11 @@
+{
+  "graphicalAcceptance": false,
+  "installedPayloads": 30,
+  "nativeModeAbi": 7,
+  "nativeRofiSha256": "4f8dcd3a87d4c41af3e7c5f3ab4891a0926f21ab659072e5471e7332cf30a1ca",
+  "observerSource": "9e5a8752b6f4715969ab4fd669951cbdf6a87219",
+  "observerWheel": "faccbe94e35b464403744211032c579a6bcbce09aa83adc6396279dd85cb06fe",
+  "plusSource": "dac43deab6847f58b432fe9b6ff0fbd7a6f85db8",
+  "plusWheel": "1cd1ffdd34205859a972bd8bdcd483c7ef131ac6ad1932bfb0353ecf882a8df3",
+  "state": "passed"
+}

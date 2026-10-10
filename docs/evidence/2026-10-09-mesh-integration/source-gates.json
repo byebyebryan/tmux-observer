@@ -1,0 +1,41 @@
+{
+  "limits": [
+    "Source, contract and package checks are separate from graphical/managed/live acceptance",
+    "Mesh a4 source commit was not on public main at verification; public CI requires its publication"
+  ],
+  "mesh": {
+    "command": "scripts/check.py in the frozen Mesh source archive",
+    "logSha256": "597847af2889d726a4ff78bd7b623a56412ebd2b226df0350db1f7bc3cf6f296",
+    "runtimeTests": 56,
+    "scope": "core-only IPC/lifecycle/quoting; Tmux native integration is a separate Observer gate",
+    "skips": 0,
+    "source": "2cc12accb331db7ee65ab426da09576a907b291c"
+  },
+  "observer": {
+    "command": "uv run --extra dev ./scripts/check",
+    "contracts": "seven exact bundles, dependency digests and 45 independent valid/invalid cases",
+    "logSha256": "3a65106463f61127a4d19e42b4a8ce70af910a713ba8ad16efacbb5d5327b041",
+    "source": "9e5a8752b6f4715969ab4fd669951cbdf6a87219",
+    "tests": 380
+  },
+  "priorFailure": {
+    "error": "NoServer during the pre-existing one-second deferred-session creation fixture",
+    "isolatedRetry": "passed",
+    "logSha256": "0fffb6f1cfabc9791a417ecfbd36e6a37d4bf7e58a4ea2309d8388a9e2a8c17f",
+    "observerSource": "ee5831e17ed887a115e74a9772c5d1ee45bcf234",
+    "test": "test_action_local.IsolatedServer.test_deferred_session_times_out_and_removes_its_own_pending_session",
+    "wholeGateRetry": "379 tests passed without code changes"
+  },
+  "python": "3.14.7",
+  "review": {
+    "delayedControlAcknowledgement": "deadline checked before admission; regression passed",
+    "ownerEpochSettlement": "same publisher and native attempt after route epoch replacement returned false completion before the fix; regression now requires stale_scope"
+  },
+  "state": "passed",
+  "tmuxPlus": {
+    "command": "scripts/check with the exact installed Observer candidate",
+    "logSha256": "c4bb5e5db96ed628a9ff9adcbde986064682fd067339f5bb97caf5288172e4fd",
+    "source": "dac43deab6847f58b432fe9b6ff0fbd7a6f85db8",
+    "tests": 293
+  }
+}

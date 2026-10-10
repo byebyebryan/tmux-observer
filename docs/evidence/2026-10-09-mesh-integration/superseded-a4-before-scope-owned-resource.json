@@ -1,0 +1,28 @@
+{
+  "cleanup": true,
+  "combinedCpuPercent": 3.755724825098936,
+  "cpuScope": "observed owned self CPU plus fleet/local-owner reaped CPU; may conservatively count a sampled reaped child twice",
+  "elapsedSeconds": 600.1504649480339,
+  "format": "tmux-observer.mesh-resource-probe.v1",
+  "harnessSha256": "3334a7f19d8361b79c5f544b801bdc9e153b3bc973bd64b6bc82cfd8d9e346d1",
+  "limits": [
+    "owned localhost SSH and nine disposable sessions per host",
+    "desktop disabled; fixed fixture catalog excludes authority CLI cost",
+    "sampled RSS can miss peaks; SSH server excluded like the established logical-reader budget",
+    "not ordinary two-host resource, capacity, graphical, installed or deployment acceptance"
+  ],
+  "maximum": {
+    "fleetAndBridgeRss": 78700544,
+    "ownerRss": 25600000,
+    "processes": 3
+  },
+  "observerVersion": "0.6.0a1",
+  "seconds": 600,
+  "state": "passed_probe",
+  "warmRpcMs": {
+    "count": 100,
+    "max": 9.36282,
+    "p95": 5.179679
+  },
+  "withinProbeTargets": true
+}
