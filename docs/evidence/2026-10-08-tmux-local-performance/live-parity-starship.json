@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "result": "passed",
+  "endpoint": "starship",
+  "selectionSha256": "edeeaa05208de8677f459cd208ffe441ad5f0d9cb86a78f569c1ee122921de1b",
+  "readerId": "00821053-e47e-47d9-8c7b-9ed2f0b5306b",
+  "desktopState": "ready",
+  "hosts": [
+    {
+      "hostId": "snap",
+      "nativeSessions": 9,
+      "preparedSessions": 9,
+      "freshSessions": 9,
+      "fullReferencesAndGenerationMatch": true
+    },
+    {
+      "hostId": "starship",
+      "nativeSessions": 10,
+      "preparedSessions": 10,
+      "freshSessions": 10,
+      "fullReferencesAndGenerationMatch": true
+    }
+  ],
+  "foregroundInput": false,
+  "nativeActions": false
+}

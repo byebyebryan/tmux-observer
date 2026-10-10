@@ -1,0 +1,36 @@
+{
+  "harnessSha256": "beda516774e1121948671b89b8140e4a06c572569b03bfd85cb081cc9016a508",
+  "limit": "This reconciliation publishes evidence only; subsequent documentation merges must preserve private history and unrelated edits again",
+  "records": [
+    {
+      "divergence": "0\t10",
+      "host": "snap",
+      "mergedHead": "befb14735c7cc2536c5614b848ee7986b2257470",
+      "previousHead": "fb6f8b53a50df95a4b09aea024f165428f40eac2",
+      "privateCommitsPreserved": true,
+      "privateCommitsPushed": false,
+      "publishedSelection": "a679bd923954e46d83cb4795d5dcc10687b79e3f",
+      "result": "passed",
+      "statusAfter": "?? scripts/__pycache__/",
+      "statusBefore": "?? scripts/__pycache__/",
+      "unrelatedTrackedEditHashes": {}
+    },
+    {
+      "divergence": "0\t10",
+      "host": "starship",
+      "mergedHead": "aeb01715486526a9d0d5b5a4366ef368c7dd6385",
+      "previousHead": "9de3ecc6d89e3aa6942e19c84e5505b22ddb71fb",
+      "privateCommitsPreserved": true,
+      "privateCommitsPushed": false,
+      "publishedSelection": "a679bd923954e46d83cb4795d5dcc10687b79e3f",
+      "result": "passed",
+      "statusAfter": "M dot_config/kitty/kitty.conf",
+      "statusBefore": "M dot_config/kitty/kitty.conf",
+      "unrelatedTrackedEditHashes": {
+        "dot_config/kitty/kitty.conf": "a3d55d08639873fa7e56d9d87f39202577d4dd7e3b05caf473c57c63f3e60baf"
+      }
+    }
+  ],
+  "result": "passed",
+  "schemaVersion": 1
+}

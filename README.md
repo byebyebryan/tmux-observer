@@ -32,7 +32,7 @@ The [catalog bound-fix record](docs/evidence/2026-10-10-catalog-bound-fix/README
 binds exact artifacts and source/package/native, headless, resource/capacity and
 managed recovery/paired rollback evidence. SDK a6 remains available for the
 tested previous-tuple rollback. The
-[managed operations ledger](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md)
+[managed operations ledger](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md)
 owns installed selection; [implementation status](docs/implementation-status.md)
 and the [Mesh integration ledger](docs/mesh-integration.md) retain checkpoint history.
 

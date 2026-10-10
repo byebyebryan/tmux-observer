@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "host": "snap",
+  "operation": "rollback",
+  "selectionSha256": "edeeaa05208de8677f459cd208ffe441ad5f0d9cb86a78f569c1ee122921de1b",
+  "verifiedBeforeRollback": {
+    "core": 172,
+    "frontend": 265
+  },
+  "restoredControls": true,
+  "restoredArchiveSha256": {
+    "core": "dc78e4b3ea682525cb503494e04c42518dcb387d64af50a4b7f0cc15c607b665",
+    "frontend": "ad645c7d924e9d0b80877c2a0cb4cde38deab15a1794a020493535fd711b80c2"
+  },
+  "servicesStopped": true,
+  "installedCore": "restored matching baseline artifact",
+  "restoredFacadeImportVerified": true,
+  "preexistingReferencesSurvive": true,
+  "result": "passed"
+}

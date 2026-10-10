@@ -1,0 +1,842 @@
+{
+  "graphical": {
+    "cases": 23,
+    "host": "snap",
+    "result": "passed",
+    "url": "https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/evidence/2026-10-09-cpu-performance/managed-picker-snap.json"
+  },
+  "harnessSha256": {
+    "installed-actions.py": "561763dfc3975e3f3bbeaa6842545eb0abf7ff5cb7f6743b7c7c88dc9b27333c",
+    "installed-cpu.py": "aac3499c86401eb618b94cbf65fb399b6ac9eb83b00d5ccc443acdb185f948b0",
+    "live-parity.py": "432a7c6803293616cdb5bf3259bb151af2428104202ec03d5db1605caf3fd03b",
+    "manage.py": "f74cf8ec17819272c59402043207d09a1795491fa0d4476d6da1cbb29961427c",
+    "merge-source.py": "12bcbfd0cc5413b94d0d229249539fc114ab05b8d3de8c2b301e865fd96c7531",
+    "normal-source-verify.py": "b2391c4931f3bec51d3187248a70a0aa904aa4bbe9312d1d71e0d4402881fd3a"
+  },
+  "installedSampleLogicalCpuPercentOfOneCore": {
+    "snap": 2.786596962846118,
+    "starship": 1.9129880094716707
+  },
+  "limits": [
+    "Private captures, session references, control contents, preferences and baseline archives excluded",
+    "Recovery and rollback serialized across endpoints",
+    "Snap-only foreground input; physical suspend optional and unverified",
+    "One-minute installed counters are descriptive; independent ten-minute producer gate used prior Mesh provider",
+    "No causal whole-service before/after savings claim; active desktop workloads differ"
+  ],
+  "records": [
+    {
+      "name": "snap-preflight",
+      "value": {
+        "changedFileHeaders": 174,
+        "dryRunSha256": "f20e4c63e1db7854fc6cf058e1331e48646d6e4450bd1e9d4edc0d0cd2ccda5f",
+        "host": "snap",
+        "niriControlsByteUnchanged": true,
+        "phase": "preflight",
+        "priorProviderFiles": 62,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "snap-apply",
+      "value": {
+        "host": "snap",
+        "niriValidation": true,
+        "ownerStartedBeforeDesktop": true,
+        "phase": "apply",
+        "providerFiles": 68,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "snap-rollback-provider",
+      "value": {
+        "host": "snap",
+        "immutablePriorProviderRestored": true,
+        "phase": "rollback-provider",
+        "providerFiles": 62,
+        "result": "passed",
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "snap-reselect",
+      "value": {
+        "host": "snap",
+        "niriValidation": true,
+        "ownerStartedBeforeDesktop": true,
+        "phase": "reselect",
+        "providerFiles": 68,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "snap-preserve",
+      "value": {
+        "currentReferences": 9,
+        "foregroundInput": false,
+        "generationAndHooksPreserved": true,
+        "host": "snap",
+        "meshRevisionPreserved": true,
+        "ordinaryReferencesPreserved": 9,
+        "phase": "preserve",
+        "providerFiles": 68,
+        "result": "passed",
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429",
+        "unrelatedControlsPreserved": true
+      }
+    },
+    {
+      "name": "verify-snap",
+      "value": {
+        "freshHosts": [
+          {
+            "hostId": "snap",
+            "sessions": 9
+          },
+          {
+            "hostId": "starship",
+            "sessions": 10
+          }
+        ],
+        "host": "snap",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "verify",
+        "preexistingReferencesSurvive": true,
+        "prepared": {
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "snap",
+              "local": true,
+              "publisherId": "ec013592-76f9-40e0-934c-58c921e5905e",
+              "sessions": 9,
+              "transport": "local"
+            },
+            {
+              "hostId": "starship",
+              "local": false,
+              "publisherId": "213b9c5f-0c7b-478e-9949-cc96040f8cde",
+              "sessions": 10,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "93821ddf-1952-4483-8c3c-47ad382e480f"
+        },
+        "preparedFrameBytes": 15311,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "recover-snap",
+      "value": {
+        "after": {
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "snap",
+              "local": true,
+              "publisherId": "8f553390-c5f1-48bd-9880-100bfb28214d",
+              "sessions": 9,
+              "transport": "local"
+            },
+            {
+              "hostId": "starship",
+              "local": false,
+              "publisherId": "5a79aa7c-c847-47e9-b9ca-ee5967860618",
+              "sessions": 10,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "ddc20afb-bd08-4dde-a0e0-0c028524c25a"
+        },
+        "before": {
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "snap",
+              "local": true,
+              "publisherId": "ec013592-76f9-40e0-934c-58c921e5905e",
+              "sessions": 9,
+              "transport": "local"
+            },
+            {
+              "hostId": "starship",
+              "local": false,
+              "publisherId": "5a79aa7c-c847-47e9-b9ca-ee5967860618",
+              "sessions": 10,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "93821ddf-1952-4483-8c3c-47ad382e480f"
+        },
+        "freshHosts": [
+          {
+            "hostId": "snap",
+            "sessions": 9
+          },
+          {
+            "hostId": "starship",
+            "sessions": 10
+          }
+        ],
+        "host": "snap",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "recover",
+        "preexistingReferencesSurvive": true,
+        "preparedFrameBytes": 15311,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "rollback-snap",
+      "value": {
+        "host": "snap",
+        "installedCore": "restored matching baseline artifact",
+        "operation": "rollback",
+        "preexistingReferencesSurvive": true,
+        "restoredArchiveSha256": {
+          "core": "23a478c7940aa380730ad693f3dd02a21cbf640c363a83323c08a3137dee30da",
+          "frontend": "8222abc30f868663bf9d7850d06d6168b105e8f2fef763be9868fb0e78b533a4"
+        },
+        "restoredControls": true,
+        "restoredFacadeImportVerified": true,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429",
+        "servicesStopped": true,
+        "verifiedBeforeRollback": {
+          "core": 173,
+          "frontend": 321
+        }
+      }
+    },
+    {
+      "name": "verify-reselected-snap",
+      "value": {
+        "freshHosts": [
+          {
+            "hostId": "snap",
+            "sessions": 9
+          },
+          {
+            "hostId": "starship",
+            "sessions": 10
+          }
+        ],
+        "host": "snap",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "verify",
+        "preexistingReferencesSurvive": true,
+        "prepared": {
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "snap",
+              "local": true,
+              "publisherId": "8b803580-3c27-4a9f-92e9-15d5793ee151",
+              "sessions": 9,
+              "transport": "local"
+            },
+            {
+              "hostId": "starship",
+              "local": false,
+              "publisherId": "70903e01-1f53-4585-9bcf-c0ed3c93db46",
+              "sessions": 10,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "bd5ceda0-f72d-4df6-8688-7d987d085fd4"
+        },
+        "preparedFrameBytes": 15311,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "installed-actions-snap",
+      "value": {
+        "checks": [
+          "create",
+          "duplicate collision",
+          "rename full reference",
+          "stale-name kill rejected",
+          "guarded kill",
+          "ordinary references preserved",
+          "owned fixture removed",
+          "SSH usage history unchanged"
+        ],
+        "endpoint": "snap",
+        "events": [
+          "[check] exact-reference Tmux lifecycle across 2 advertised hosts",
+          "[ok] snap: create/duplicate/rename/stale-kill/kill verified",
+          "[ok] starship: create/duplicate/rename/stale-kill/kill verified"
+        ],
+        "foregroundInput": false,
+        "harnessSha256": "93d31f23deaa1569c93aa2cbc50fd8e2be8a78b4ae3267449a68159465b0f8ce",
+        "hosts": [
+          "snap",
+          "starship"
+        ],
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429",
+        "terminalLaunches": false
+      }
+    },
+    {
+      "name": "live-parity-snap",
+      "value": {
+        "desktopState": "ready",
+        "endpoint": "snap",
+        "foregroundInput": false,
+        "hosts": [
+          {
+            "freshSessions": 9,
+            "fullReferencesAndGenerationMatch": true,
+            "hostId": "snap",
+            "nativeSessions": 9,
+            "preparedSessions": 9
+          },
+          {
+            "freshSessions": 10,
+            "fullReferencesAndGenerationMatch": true,
+            "hostId": "starship",
+            "nativeSessions": 10,
+            "preparedSessions": 10
+          }
+        ],
+        "nativeActions": false,
+        "readerId": "bd5ceda0-f72d-4df6-8688-7d987d085fd4",
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "installed-cpu-snap",
+      "value": {
+        "cpuPercentOfOneCore": {
+          "fleetIncludingChildren": 1.5798994132792392,
+          "incomingBridge": 0.1999961280916546,
+          "ownerIncludingChildren": 1.0900322304003418,
+          "physicalHostTotal": 2.8699277717712355
+        },
+        "durationSeconds": 60.00116159499157,
+        "host": "snap",
+        "instrumentation": "procfs and cgroup counters; no profiler, native actions or foreground input",
+        "limits": [
+          "Descriptive one-minute sample, not the ten-minute acceptance gate",
+          "Incoming bridge serves the peer fleet; logical aggregation uses the peer's incoming bridge",
+          "Active desktops differ from prior samples; no causal whole-service savings claim"
+        ],
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "starship-preflight",
+      "value": {
+        "changedFileHeaders": 174,
+        "dryRunSha256": "f20e4c63e1db7854fc6cf058e1331e48646d6e4450bd1e9d4edc0d0cd2ccda5f",
+        "host": "starship",
+        "niriControlsByteUnchanged": true,
+        "phase": "preflight",
+        "priorProviderFiles": 62,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "starship-apply",
+      "value": {
+        "host": "starship",
+        "niriValidation": true,
+        "ownerStartedBeforeDesktop": true,
+        "phase": "apply",
+        "providerFiles": 68,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "starship-rollback-provider",
+      "value": {
+        "host": "starship",
+        "immutablePriorProviderRestored": true,
+        "phase": "rollback-provider",
+        "providerFiles": 62,
+        "result": "passed",
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "starship-reselect",
+      "value": {
+        "host": "starship",
+        "niriValidation": true,
+        "ownerStartedBeforeDesktop": true,
+        "phase": "reselect",
+        "providerFiles": 68,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "starship-preserve",
+      "value": {
+        "currentReferences": 10,
+        "foregroundInput": false,
+        "generationAndHooksPreserved": true,
+        "host": "starship",
+        "meshRevisionPreserved": true,
+        "ordinaryReferencesPreserved": 10,
+        "phase": "preserve",
+        "providerFiles": 68,
+        "result": "passed",
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429",
+        "unrelatedControlsPreserved": true
+      }
+    },
+    {
+      "name": "verify-starship",
+      "value": {
+        "freshHosts": [
+          {
+            "hostId": "starship",
+            "sessions": 10
+          },
+          {
+            "hostId": "snap",
+            "sessions": 9
+          }
+        ],
+        "host": "starship",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "verify",
+        "preexistingReferencesSurvive": true,
+        "prepared": {
+          "contextId": "13debc1a8b7b99705fb17616ae09a886",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "starship",
+              "local": true,
+              "publisherId": "5a79aa7c-c847-47e9-b9ca-ee5967860618",
+              "sessions": 10,
+              "transport": "local"
+            },
+            {
+              "hostId": "snap",
+              "local": false,
+              "publisherId": "ec013592-76f9-40e0-934c-58c921e5905e",
+              "sessions": 9,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "4992ec52-b64f-43b5-9c84-2953273d2fa0"
+        },
+        "preparedFrameBytes": 15293,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "recover-starship",
+      "value": {
+        "after": {
+          "contextId": "13debc1a8b7b99705fb17616ae09a886",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "starship",
+              "local": true,
+              "publisherId": "70903e01-1f53-4585-9bcf-c0ed3c93db46",
+              "sessions": 10,
+              "transport": "local"
+            },
+            {
+              "hostId": "snap",
+              "local": false,
+              "publisherId": "8f553390-c5f1-48bd-9880-100bfb28214d",
+              "sessions": 9,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "d66eb4e0-8f4b-40e8-a57b-57ea9a03de3a"
+        },
+        "before": {
+          "contextId": "13debc1a8b7b99705fb17616ae09a886",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "starship",
+              "local": true,
+              "publisherId": "5a79aa7c-c847-47e9-b9ca-ee5967860618",
+              "sessions": 10,
+              "transport": "local"
+            },
+            {
+              "hostId": "snap",
+              "local": false,
+              "publisherId": "8f553390-c5f1-48bd-9880-100bfb28214d",
+              "sessions": 9,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "4992ec52-b64f-43b5-9c84-2953273d2fa0"
+        },
+        "freshHosts": [
+          {
+            "hostId": "starship",
+            "sessions": 10
+          },
+          {
+            "hostId": "snap",
+            "sessions": 9
+          }
+        ],
+        "host": "starship",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "recover",
+        "preexistingReferencesSurvive": true,
+        "preparedFrameBytes": 15293,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "rollback-starship",
+      "value": {
+        "host": "starship",
+        "installedCore": "restored matching baseline artifact",
+        "operation": "rollback",
+        "preexistingReferencesSurvive": true,
+        "restoredArchiveSha256": {
+          "core": "2e2fe44a4a27808c921d0be78a29914d91b80818b6ab2b0c1f858944f1b04992",
+          "frontend": "2721aea1a4bff2e4c50270d60c9157b9b8bf02c700882ab2e9d425b7ffce9fbe"
+        },
+        "restoredControls": true,
+        "restoredFacadeImportVerified": true,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429",
+        "servicesStopped": true,
+        "verifiedBeforeRollback": {
+          "core": 173,
+          "frontend": 321
+        }
+      }
+    },
+    {
+      "name": "verify-reselected-starship",
+      "value": {
+        "freshHosts": [
+          {
+            "hostId": "starship",
+            "sessions": 10
+          },
+          {
+            "hostId": "snap",
+            "sessions": 9
+          }
+        ],
+        "host": "starship",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "verify",
+        "preexistingReferencesSurvive": true,
+        "prepared": {
+          "contextId": "13debc1a8b7b99705fb17616ae09a886",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "starship",
+              "local": true,
+              "publisherId": "55f68bf1-b980-4aef-8434-271b46f6ae6d",
+              "sessions": 10,
+              "transport": "local"
+            },
+            {
+              "hostId": "snap",
+              "local": false,
+              "publisherId": "8b803580-3c27-4a9f-92e9-15d5793ee151",
+              "sessions": 9,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "15296a3b-f009-4a16-834b-acc85c6a433f"
+        },
+        "preparedFrameBytes": 15293,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "installed-actions-starship",
+      "value": {
+        "checks": [
+          "create",
+          "duplicate collision",
+          "rename full reference",
+          "stale-name kill rejected",
+          "guarded kill",
+          "ordinary references preserved",
+          "owned fixture removed",
+          "SSH usage history unchanged"
+        ],
+        "endpoint": "starship",
+        "events": [
+          "[check] exact-reference Tmux lifecycle across 2 advertised hosts",
+          "[ok] starship: create/duplicate/rename/stale-kill/kill verified",
+          "[ok] snap: create/duplicate/rename/stale-kill/kill verified"
+        ],
+        "foregroundInput": false,
+        "harnessSha256": "93d31f23deaa1569c93aa2cbc50fd8e2be8a78b4ae3267449a68159465b0f8ce",
+        "hosts": [
+          "starship",
+          "snap"
+        ],
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429",
+        "terminalLaunches": false
+      }
+    },
+    {
+      "name": "live-parity-starship",
+      "value": {
+        "desktopState": "ready",
+        "endpoint": "starship",
+        "foregroundInput": false,
+        "hosts": [
+          {
+            "freshSessions": 9,
+            "fullReferencesAndGenerationMatch": true,
+            "hostId": "snap",
+            "nativeSessions": 9,
+            "preparedSessions": 9
+          },
+          {
+            "freshSessions": 10,
+            "fullReferencesAndGenerationMatch": true,
+            "hostId": "starship",
+            "nativeSessions": 10,
+            "preparedSessions": 10
+          }
+        ],
+        "nativeActions": false,
+        "readerId": "15296a3b-f009-4a16-834b-acc85c6a433f",
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "installed-cpu-starship",
+      "value": {
+        "cpuPercentOfOneCore": {
+          "fleetIncludingChildren": 1.0948573542502853,
+          "incomingBridge": 0.11666531916653725,
+          "ownerIncludingChildren": 0.6181345271297308,
+          "physicalHostTotal": 1.8296572005465535
+        },
+        "durationSeconds": 60.00069300807081,
+        "host": "starship",
+        "instrumentation": "procfs and cgroup counters; no profiler, native actions or foreground input",
+        "limits": [
+          "Descriptive one-minute sample, not the ten-minute acceptance gate",
+          "Incoming bridge serves the peer fleet; logical aggregation uses the peer's incoming bridge",
+          "Active desktops differ from prior samples; no causal whole-service savings claim"
+        ],
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "normal-source-verify-snap",
+      "value": {
+        "foregroundInput": false,
+        "host": "snap",
+        "nativeActions": false,
+        "ordinarySourceScopedVerify": true,
+        "providerFiles": 68,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "final-normal-verify-snap",
+      "value": {
+        "freshHosts": [
+          {
+            "hostId": "snap",
+            "sessions": 9
+          },
+          {
+            "hostId": "starship",
+            "sessions": 10
+          }
+        ],
+        "host": "snap",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "verify",
+        "preexistingReferencesSurvive": true,
+        "prepared": {
+          "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "snap",
+              "local": true,
+              "publisherId": "8b803580-3c27-4a9f-92e9-15d5793ee151",
+              "sessions": 9,
+              "transport": "local"
+            },
+            {
+              "hostId": "starship",
+              "local": false,
+              "publisherId": "55f68bf1-b980-4aef-8434-271b46f6ae6d",
+              "sessions": 10,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "bd5ceda0-f72d-4df6-8688-7d987d085fd4"
+        },
+        "preparedFrameBytes": 15310,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "normal-source-verify-starship",
+      "value": {
+        "foregroundInput": false,
+        "host": "starship",
+        "nativeActions": false,
+        "ordinarySourceScopedVerify": true,
+        "providerFiles": 68,
+        "result": "passed",
+        "scopedPaths": 18,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    },
+    {
+      "name": "final-normal-verify-starship",
+      "value": {
+        "freshHosts": [
+          {
+            "hostId": "starship",
+            "sessions": 10
+          },
+          {
+            "hostId": "snap",
+            "sessions": 9
+          }
+        ],
+        "host": "starship",
+        "installedPayloads": {
+          "core": 173,
+          "frontend": 321
+        },
+        "operation": "verify",
+        "preexistingReferencesSurvive": true,
+        "prepared": {
+          "contextId": "13debc1a8b7b99705fb17616ae09a886",
+          "desktopState": "ready",
+          "hosts": [
+            {
+              "hostId": "starship",
+              "local": true,
+              "publisherId": "55f68bf1-b980-4aef-8434-271b46f6ae6d",
+              "sessions": 10,
+              "transport": "local"
+            },
+            {
+              "hostId": "snap",
+              "local": false,
+              "publisherId": "8b803580-3c27-4a9f-92e9-15d5793ee151",
+              "sessions": 9,
+              "transport": "ready"
+            }
+          ],
+          "localBindingState": "ready",
+          "meshState": "ready",
+          "readerId": "15296a3b-f009-4a16-834b-acc85c6a433f"
+        },
+        "preparedFrameBytes": 15292,
+        "result": "passed",
+        "schemaVersion": 1,
+        "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429"
+      }
+    }
+  ],
+  "result": "passed",
+  "schemaVersion": 1,
+  "selectionSha256": "645943a612f240df63e0f1694b04b22072e47811555abd776ff71740bd093429",
+  "sourceReconciliation": "source-reconciliation.json",
+  "sourceSelectionCommit": "a1d8641d291724ae01f0fafcd01e5dfef68e84e3"
+}

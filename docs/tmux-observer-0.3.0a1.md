@@ -58,7 +58,7 @@ that belongs to the paired chezmoi operation record.
 The exact accepted wheel is published as
 [0.3.0a1](https://github.com/byebyebryan/tmux-observer/releases/tag/v0.3.0a1)
 and selected with Plus 0.9.0a1 on Snap/Starship. The independent
-[paired managed record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-local-performance-operations.md)
+[paired managed record](https://github.com/byebyebryan/tmux-observer/blob/main/docs/local-performance-implementation.md)
 passes all installed bytes, leases/native parity, restart recovery, performed
 rollback/reselection and guarded lifecycle checks. Ordinary references,
 generations, hooks and unrelated desktop/Agent controls are preserved.

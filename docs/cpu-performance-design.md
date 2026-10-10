@@ -221,7 +221,7 @@ deployment acceptance now passes independently.
 Published immutable Core 0.5.0a1 and Plus 0.11.0a1 downloads match the accepted
 checksums. The separately accepted Mesh startup provider `a69bd75` is selected
 with them on Snap and Starship. The
-[managed record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-cpu-performance-operations.md)
+[managed record](https://github.com/byebyebryan/tmux-observer/blob/main/docs/cpu-performance-design.md)
 captures eighteen-path preflight/application, all 173 Core, 321 frontend plus
 manifest and 68 provider files, serial recovery, actual matched package/control
 rollback plus separate provider rollback and baseline-verified reselection.
@@ -242,3 +242,11 @@ and process scans, and public Mesh queries; it cannot be labeled networking
 CPU alone. Native two-second polling and fresh remote C3 scans remain. Native
 batching and outgoing caches retain their CP2 disposition. Physical suspend and
 Starship foreground acceptance remain outside the accepted scope.
+
+## Managed checkpoint record
+
+The CPU-performance pair was accepted on both endpoints with scoped selection and normal-unit measurements. The 0.5.0a1 / 0.11.0a1 record remains historical; it does not certify later Mesh/Observer artifacts or physical suspend.
+The transferred [captured records](evidence/2026-10-09-tmux-cpu-performance/) retain every original JSON
+and hash-bound harness byte. [Original rollout narrative](https://github.com/byebyebryan/dotfiles/blob/5ff8b412a45b69cac64b8eb356444e6cf0705012/docs/tmux-observer-cpu-performance-operations.md) retains
+private snapshot references and historical limits. Current recovery/rollback
+commands are in [managed operations](managed-operations.md).

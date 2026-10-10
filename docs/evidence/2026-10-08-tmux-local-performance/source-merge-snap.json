@@ -1,0 +1,13 @@
+{
+  "host": "snap",
+  "result": "passed",
+  "previousHead": "fc85646b547c9e1b091d7e3b4911c2eaed89ea68",
+  "publishedSelection": "5e6dc05d1ab2bbc3fe074b7b399018022dfb55d1",
+  "mergedHead": "e60b26add1ca1f496e3d4cf48c1035e8170ff352",
+  "divergence": "0\t7",
+  "statusBefore": "?? scripts/__pycache__/",
+  "statusAfter": "?? scripts/__pycache__/",
+  "unrelatedTrackedEditHashes": {},
+  "privateCommitsPreserved": true,
+  "privateCommitsPushed": false
+}

@@ -24,7 +24,7 @@ and Observer client launchers expose SDK a7 from
 `~/.local/share/mesh-plus/0.1.0a7/python`; the original common a6 root stays
 available for the tested previous-tuple rollback. Exact roots, payloads and
 controls are recorded in
-[managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md).
+[managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md).
 
 Merge the following source entry into the existing private
 `~/.config/mesh-plus/sources.toml` on each owner host. Preserve existing Agent

@@ -27,3 +27,17 @@ ruff check src tests scripts/read-contract scripts/check-contracts scripts/updat
 ruff format --check src tests scripts/read-contract scripts/check-contracts scripts/update-contracts scripts/accept-native-collector scripts/accept-native-associations scripts/accept-native-bindings scripts/accept-native-actions scripts/accept-native-actions-desktop scripts/accept-native-owner scripts/accept-native-context scripts/accept-native-fleet scripts/accept-normal-resources scripts/accept-native-direct scripts/accept-native-desktop scripts/accept-native-remote-desktop scripts/accept-native-suspend scripts/accept-simulated-recovery scripts/accept-installed-capacity scripts/probe-rofi-interaction scripts/candidate-artifact scripts/artifact_input.py scripts/update-boundary-contracts scripts/update-bindings-contract scripts/read-boundary-contract scripts/check-boundary-contracts scripts/measure-fleet-work scripts/measure-remote-proofs
 git diff --check
 git diff --cached --check
+
+python3 - <<'PY_EVIDENCE'
+import hashlib
+import json
+from pathlib import Path
+manifest = json.loads(Path("docs/evidence/dotfiles-transfer.json").read_text())
+for record in manifest["records"]:
+    path = Path(record["destinationPath"])
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == record["sha256"], path
+print(f"[ok] {len(manifest['records'])} immutable transferred evidence files")
+PY_EVIDENCE
+
+ruff check scripts/tmux-observer-operations
+ruff format --check scripts/tmux-observer-operations

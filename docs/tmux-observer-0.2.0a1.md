@@ -67,6 +67,6 @@ verified before reselection. Snap's installed Mod+G gate passes 21 cases at
 warm-frame p95 95.39 ms with inspected screenshots and prior focus restored.
 Both prepared/fresh rosters match independent native full references and server
 generations for eight/ten ordinary sessions. The
-[managed operations record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-boundary-operations.md)
+[managed operations record](https://github.com/byebyebryan/tmux-observer/blob/main/docs/boundary-implementation.md)
 owns those independent gates. The selected pair is now Observer 0.2.0a1 / Plus
 0.8.0a1. All B0–B5 work is complete within the declared always-on scope.

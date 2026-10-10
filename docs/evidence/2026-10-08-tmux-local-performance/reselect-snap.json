@@ -1,0 +1,9 @@
+{
+  "phase": "reselect",
+  "host": "snap",
+  "result": "passed",
+  "scopedPaths": 17,
+  "ownerStartedBeforeDesktop": true,
+  "niriValidation": true,
+  "selectionSha256": "edeeaa05208de8677f459cd208ffe441ad5f0d9cb86a78f569c1ee122921de1b"
+}

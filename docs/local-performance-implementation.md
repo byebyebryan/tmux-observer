@@ -204,7 +204,7 @@ checksums. Review CI `37892716964` and consumer CI `37892723636` pass against th
 published producer. No accepted runtime payload or native pin is rebuilt.
 
 Chezmoi selection `167cf9b` passes independent
-[managed acceptance](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-local-performance-operations.md)
+[managed acceptance](https://github.com/byebyebryan/tmux-observer/blob/main/docs/local-performance-implementation.md)
 on Snap and Starship: scoped render/dry-run/apply, all 172/265 installed members,
 manifest/fifteen controls, independent local binding/native readiness, restart
 recovery, actual paired rollback and reselection. Native/fresh/prepared full
@@ -220,3 +220,11 @@ because chezmoi protects restored controls. A first Starship readiness attempt
 ran while Snap was stopped for rollback; it failed before issuing recovery and
 passed once the peer was reselected. These attempts remain separate from passing
 records. Always-on, relocation, remote-cost and resource-margin limits remain.
+
+## Managed checkpoint record
+
+Attachment-driven owner publication and prepared reader checks retain the frozen local-performance pair. Native/source/installed proofs and capacity/resource scopes are distinct; rollout preserved ordinary native references and private recovery controls.
+The transferred [captured records](evidence/2026-10-08-tmux-local-performance/) retain every original JSON
+and hash-bound harness byte. [Original rollout narrative](https://github.com/byebyebryan/dotfiles/blob/5ff8b412a45b69cac64b8eb356444e6cf0705012/docs/tmux-observer-local-performance-operations.md) retains
+private snapshot references and historical limits. Current recovery/rollback
+commands are in [managed operations](managed-operations.md).

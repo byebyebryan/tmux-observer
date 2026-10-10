@@ -3,7 +3,7 @@
 Updated 2026-10-10 for Observer 0.6.0a2 / Tmux Plus 0.12.0a2 / Mesh 0.1.0a7.
 This is the current component overview. The [original architecture](architecture.md)
 and [boundary design](component-boundaries.md) retain the extraction history.
-[Managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md)
+[Managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md)
 and [accepted artifact evidence](evidence/2026-10-10-catalog-bound-fix/README.md)
 own selection and acceptance.
 

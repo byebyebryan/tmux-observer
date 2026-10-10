@@ -1,0 +1,39 @@
+{
+  "limits": [
+    "Recorded merge heads establish selected runtime-source ancestry; later documentation-only commits are merged separately",
+    "Private history remains local; no reset, stash or private-head push",
+    "Starship tracked Kitty edit hash and source status preserved"
+  ],
+  "records": [
+    {
+      "divergence": "0\t13",
+      "host": "snap",
+      "mergedHead": "a5ac511c8f8eba9c0361039bcf025bf4a9cba909",
+      "previousHead": "9015eb12d58077cb0dcd5a29ccc9b8c34c178fb3",
+      "privateCommitsPreserved": true,
+      "privateCommitsPushed": false,
+      "publishedSelection": "e1811425f20c7f82cf499d7cd47cab74fed4bb73",
+      "result": "passed",
+      "statusAfter": "?? scripts/__pycache__/",
+      "statusBefore": "?? scripts/__pycache__/",
+      "unrelatedTrackedEditHashes": {}
+    },
+    {
+      "divergence": "0\t13",
+      "host": "starship",
+      "mergedHead": "4a0e27b51682bac77f959c6cc1fe7a4c308c2198",
+      "previousHead": "0c6611de2cbb8ac44a87ddd6cdeeb719fece0df3",
+      "privateCommitsPreserved": true,
+      "privateCommitsPushed": false,
+      "publishedSelection": "e1811425f20c7f82cf499d7cd47cab74fed4bb73",
+      "result": "passed",
+      "statusAfter": "M dot_config/kitty/kitty.conf",
+      "statusBefore": "M dot_config/kitty/kitty.conf",
+      "unrelatedTrackedEditHashes": {
+        "dot_config/kitty/kitty.conf": "a3d55d08639873fa7e56d9d87f39202577d4dd7e3b05caf473c57c63f3e60baf"
+      }
+    }
+  ],
+  "result": "passed",
+  "schemaVersion": 1
+}

@@ -502,7 +502,7 @@ fixtures that resolved an operator-installed launcher; explicit fixture argv
 repairs only the tests, and the complete hermetic gate passes 287 tests.
 
 Managed selection `027c049` installs the matching pair through scoped chezmoi
-on both hosts. The [operations record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-boundary-operations.md)
+on both hosts. The [operations record](https://github.com/byebyebryan/tmux-observer/blob/main/docs/boundary-implementation.md)
 links independent installed-byte/control verification, new-reader recovery,
 performed paired rollback, complete baseline byte verification and reselection.
 Both endpoints' prepared/fresh views match independent native references and
@@ -518,3 +518,11 @@ All B0–B5 gates are complete in this always-on, two-physical-host scope.
 Physical suspend, native-event collection, stronger remote binding and capacity
 CPU/unsampled peaks remain explicit optional or separate work. Unrelated source,
 private Agent commits, ordinary sessions and live work are preserved.
+
+## Managed checkpoint record
+
+The boundary pair separated consumer presentation/actions from supported public prepared/action facades. Native references, session generations and hooks survived selection, recovery, paired rollback and reselection. Snap graphical timing is harness-bounded; Starship graphical input and physical suspend were unrun.
+The transferred [captured records](evidence/2026-10-08-tmux-boundary/) retain every original JSON
+and hash-bound harness byte. [Original rollout narrative](https://github.com/byebyebryan/dotfiles/blob/5ff8b412a45b69cac64b8eb356444e6cf0705012/docs/tmux-observer-boundary-operations.md) retains
+private snapshot references and historical limits. Current recovery/rollback
+commands are in [managed operations](managed-operations.md).

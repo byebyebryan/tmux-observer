@@ -25,7 +25,7 @@ class ProjectionTests(unittest.TestCase):
         self.owner_frame["source"]["uid"] = os.getuid()
         self.owner_frame["snapshot"]["source"]["uid"] = os.getuid()
         self.host = self.owner_frame["source"]["hostId"]
-        self.fleet = FleetPublisher(self.host)
+        self.fleet = FleetPublisher(self.host, scanner=False)
         state = FleetState(self.host, "0" * 32, self.owner_frame["clock"])
         state.catalog(None)
         self.fleet.state = state

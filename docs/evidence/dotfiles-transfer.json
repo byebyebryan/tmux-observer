@@ -1,0 +1,405 @@
+{
+  "sourceRepository": "https://github.com/byebyebryan/dotfiles",
+  "sourceCommit": "5ff8b412a45b69cac64b8eb356444e6cf0705012",
+  "records": [
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/acceptance.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/acceptance.json",
+      "sha256": "aa7343a13a96474828a42653311052e43ae7d1c607688e1cc723899a4d393843",
+      "bytes": 2952
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/installed-actions-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/installed-actions-snap.json",
+      "sha256": "f77576f783da474ed46a0e14e7b4310c4b7607fe51ca74a70206f809305aa00a",
+      "bytes": 816
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/installed-actions-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/installed-actions-starship.json",
+      "sha256": "97538de1bd394011adf3e6c3302d154252f6b9bc11f92876b543ed55315e9ef3",
+      "bytes": 820
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/installed-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/installed-snap.json",
+      "sha256": "945ee1e6abcbf4d89cde3a6972531e06ecf88ca5890b0fa1b235914ab4679e0d",
+      "bytes": 1031
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/installed-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/installed-starship.json",
+      "sha256": "d7da722de1f47dae59462e290ed7d54048ef1a61d9d42d2310f5b5d3358f2639",
+      "bytes": 1035
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/live-parity-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/live-parity-snap.json",
+      "sha256": "8cd34cdb475e6671f0b0343d2db25014fecac4bc429f8434a85ae2d90ea2e0d0",
+      "bytes": 649
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/live-parity-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/live-parity-starship.json",
+      "sha256": "4261a1e23ee604dbdf3ffb7ce84a9b5817fcaf9d83cf393cd3f87582576a20e6",
+      "bytes": 653
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/recovered-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/recovered-snap.json",
+      "sha256": "eecd9e4d79688ead5f144af82a8ac60e715969f253ee4c6561e0a7593a3118a0",
+      "bytes": 1600
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/recovered-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/recovered-starship.json",
+      "sha256": "1f0edcf8c82b3d0950201cc9d6d8f0f7657fa3a1f9acef198825db4026e49def",
+      "bytes": 1604
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/reselected-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/reselected-snap.json",
+      "sha256": "44638061fd8a19383e2a0a3fbf521bb3ef8ee2410e107a14c485714551b5c2a7",
+      "bytes": 1031
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/reselected-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/reselected-starship.json",
+      "sha256": "bfb1e1325c749d8c7cda01f08e80d8cdaa47c079ef48cdc03ff820c4913673fe",
+      "bytes": 1035
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-snap.json",
+      "sha256": "6d34e424fa71941c7d62fff0a69cec64b6a2043790ea025dc471ed541b9206e7",
+      "bytes": 643
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-starship.json",
+      "sha256": "b005829735f17bb68f31fcf36843ed56ed9be17d88a50ed833494dec92df8ddd",
+      "bytes": 647
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-verified-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-verified-snap.json",
+      "sha256": "374a9e4177349681647ddc6fc9a387b0e0c8288aa46cd45ccf1b51df7ab86499",
+      "bytes": 289
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-verified-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-boundary/rollback-verified-starship.json",
+      "sha256": "4a58593ee3b120df8e152e8b66f5c93281b028460a0b29aff2decbd8e60d606f",
+      "bytes": 293
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/acceptance.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/acceptance.json",
+      "sha256": "ca64d95e410f55e71115c3b9f8c561fc86016b133c60fa78684c3373b4746c71",
+      "bytes": 5551
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/apply-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/apply-snap.json",
+      "sha256": "d79fb21ecc7348925907e8a09f2ad585ed0ac14cb7ffaf57b8de29ac7f70869c",
+      "bytes": 236
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/apply-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/apply-starship.json",
+      "sha256": "27e97c46b6cf938fb2e5cf689722f8d71c6b5ca794ab841306de4112e998d496",
+      "bytes": 240
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/installed-actions-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/installed-actions-snap.json",
+      "sha256": "ad075833d86e10ce52ef35098934b39869c601202933186db60069717257bf18",
+      "bytes": 816
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/installed-actions-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/installed-actions-starship.json",
+      "sha256": "d0866a211b68ba27986b2221ea94209c3ac7319e093eb933b8ef2ff308da5c9a",
+      "bytes": 820
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/installed-actions.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/installed-actions.py",
+      "sha256": "71bd773ad78427425fda89646da3c61d0202ab585363412dd430a641f8333ce6",
+      "bytes": 1799
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/live-parity-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/live-parity-snap.json",
+      "sha256": "ace1e2143528d4483ee05805261d944961812a4206279ad285b0a7f17c121680",
+      "bytes": 649
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/live-parity-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/live-parity-starship.json",
+      "sha256": "9a8678f1e303bafa35eb378cd4bdd1b239cb8afe8232e90e38b4546d0d73bcdd",
+      "bytes": 653
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/live-parity.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/live-parity.py",
+      "sha256": "86b6c86111c446c66040fe2b2675df5500e9a82198fd8828ae4005055178c6ed",
+      "bytes": 2530
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/manage.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/manage.py",
+      "sha256": "2dd620f60c28f636cdfb9bb9fa4283d35231f3d5af1b6bb06ce6a41a644b005c",
+      "bytes": 5399
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/normal-source-verify-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/normal-source-verify-snap.json",
+      "sha256": "a107e032360a3dc52e90d0455ceb2560ae9078a5b4693b40831820e8846c5883",
+      "bytes": 1065
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/normal-source-verify-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/normal-source-verify-starship.json",
+      "sha256": "ad129db0006adccf8a792bc5a4e8663939f3db21592ab9218e7493bc15550e9e",
+      "bytes": 1069
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/preflight-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/preflight-snap.json",
+      "sha256": "9d556bc6103aa79806ad67c4eea406f984612aa63286bbd135fcac9f579b2ede",
+      "bytes": 438
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/preflight-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/preflight-starship.json",
+      "sha256": "13eb8c430db9e9908ed24525e35e2b966ce6d39fa587481d5e6f99d4c76f8e99",
+      "bytes": 442
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/preserve-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/preserve-snap.json",
+      "sha256": "7ef0b0ca3a395b3553ee85db9de011304892ffefda46991f64a5d4c7dd1e01f7",
+      "bytes": 233
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/preserve-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/preserve-starship.json",
+      "sha256": "338677782ef22868985ac6f6a2fca297b212b94e8b2c309449ae62b86c080384",
+      "bytes": 239
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/recover-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/recover-snap.json",
+      "sha256": "1b71c0d5608743652fce8108803b2d69de7096768a887c50bd6e91bfd9b66dee",
+      "bytes": 1668
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/recover-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/recover-starship.json",
+      "sha256": "51721e05d3073beaecf2d5ae36fb0233e807dc02ea425f17d7c43b29fe3f8dbd",
+      "bytes": 1672
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/reselect-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/reselect-snap.json",
+      "sha256": "1bc738ac964c2d7fc639f215af0ed4f171d67ff3bff1fdfb0e1f263d9ea128d1",
+      "bytes": 239
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/reselect-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/reselect-starship.json",
+      "sha256": "a9c6dea77bc7c3e3b97229e05d9635f94aec4858314b2e3fe03c731855b699c2",
+      "bytes": 243
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/reselected-verify-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/reselected-verify-snap.json",
+      "sha256": "5879853eb2839d496d40267d8ce33968ca8ad2976cf783a5f21b464ea2a54564",
+      "bytes": 1065
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/reselected-verify-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/reselected-verify-starship.json",
+      "sha256": "5e2e03887e11f0a9e39344b02d76c714a8fd94682e2669582de837980158f216",
+      "bytes": 1069
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/rollback-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/rollback-snap.json",
+      "sha256": "ee018cc8601620706d875019eddbbc7ad3665c1c9e392aa76e7c53de24a9128f",
+      "bytes": 643
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/rollback-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/rollback-starship.json",
+      "sha256": "ea570414d346b6955c1288321a1dae94f5304562a36dc8dce4273deff0c0eb66",
+      "bytes": 647
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/source-merge-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/source-merge-snap.json",
+      "sha256": "47264349782c8f3dcc215cb76bf7485695149b3f5ac6bf504e30b5f0cb4c8b6e",
+      "bytes": 450
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/source-merge-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/source-merge-starship.json",
+      "sha256": "6d3d3e532cab930407e72d9168b49b5c10d4e416d9acbf0c611b740cec62d3aa",
+      "bytes": 571
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/verify-snap.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/verify-snap.json",
+      "sha256": "23a518e6bba1b7d58a9bbde56a45672f647651426e5fac558d87f7ea6931b6cf",
+      "bytes": 1065
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-08-tmux-local-performance/verify-starship.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-08-tmux-local-performance/verify-starship.json",
+      "sha256": "44eb74cd6dcac43acbd42339640f72543814da252e6a97321ebf409e1886c5e0",
+      "bytes": 1069
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/acceptance.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/acceptance.json",
+      "sha256": "45964926f44e4f7c3109e519b993264bee208ed9a80f80c73b60bfa93fc99527",
+      "bytes": 26737
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/installed-actions.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/installed-actions.py",
+      "sha256": "561763dfc3975e3f3bbeaa6842545eb0abf7ff5cb7f6743b7c7c88dc9b27333c",
+      "bytes": 1795
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/installed-cpu.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/installed-cpu.py",
+      "sha256": "aac3499c86401eb618b94cbf65fb399b6ac9eb83b00d5ccc443acdb185f948b0",
+      "bytes": 3828
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/live-parity.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/live-parity.py",
+      "sha256": "432a7c6803293616cdb5bf3259bb151af2428104202ec03d5db1605caf3fd03b",
+      "bytes": 2526
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/manage.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/manage.py",
+      "sha256": "f74cf8ec17819272c59402043207d09a1795491fa0d4476d6da1cbb29961427c",
+      "bytes": 7957
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/merge-source.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/merge-source.py",
+      "sha256": "12bcbfd0cc5413b94d0d229249539fc114ab05b8d3de8c2b301e865fd96c7531",
+      "bytes": 1389
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/normal-source-verify.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/normal-source-verify.py",
+      "sha256": "b2391c4931f3bec51d3187248a70a0aa904aa4bbe9312d1d71e0d4402881fd3a",
+      "bytes": 1898
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-cpu-performance/source-reconciliation.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-cpu-performance/source-reconciliation.json",
+      "sha256": "0f5b57ff25897f639b1285a8e966024cd95512b20297ef118baf34341b6bf1ee",
+      "bytes": 1491
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-fleet-performance/acceptance.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-fleet-performance/acceptance.json",
+      "sha256": "dc62bf27529a005109fa47b0ec3239fa8623af35ec86e938bf4d417d907d4576",
+      "bytes": 19505
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-fleet-performance/installed-actions.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-fleet-performance/installed-actions.py",
+      "sha256": "6a92331e67ac0ef84146f68834e16f02589267cad9c5ce5ab5b202e049c52209",
+      "bytes": 1799
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-fleet-performance/live-parity.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-fleet-performance/live-parity.py",
+      "sha256": "0f4c7e380dc81f678989dc630947eadd3de8785033d2c2bef9aa5559b0f161fd",
+      "bytes": 2530
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-fleet-performance/manage.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-fleet-performance/manage.py",
+      "sha256": "d29d7228a08188055efe937c6c4507e936eb6e714ba2daba20efe8695b4e58c6",
+      "bytes": 5399
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-fleet-performance/merge-source.py",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-fleet-performance/merge-source.py",
+      "sha256": "beda516774e1121948671b89b8140e4a06c572569b03bfd85cb081cc9016a508",
+      "bytes": 1391
+    },
+    {
+      "oldPath": "docs/evidence/2026-10-09-tmux-fleet-performance/source-reconciliation.json",
+      "owner": "tmux-observer",
+      "destinationPath": "docs/evidence/2026-10-09-tmux-fleet-performance/source-reconciliation.json",
+      "sha256": "24ce1f6048237c1c367d3ef3c3a8524a102f543628e1e17491902cfe33a6951e",
+      "bytes": 1437
+    }
+  ]
+}

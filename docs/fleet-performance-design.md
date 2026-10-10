@@ -175,3 +175,11 @@ are serialized and pass without relaxing readiness. Source reconciliation keeps
 private Agent history and the unrelated Starship Kitty source edit; it publishes
 only the isolated intended chezmoi selection and evidence. Physical suspend and
 retained remote viewer contracts remain explicitly deferred.
+
+## Managed checkpoint record
+
+The fleet-performance pair reduced repeated remote work while retaining receipt expiry, fixed source/host authority and independent action validation. Existing-unit resources, installed behavior, recovery and paired rollback have separate captured outcomes.
+The transferred [captured records](evidence/2026-10-09-tmux-fleet-performance/) retain every original JSON
+and hash-bound harness byte. [Original rollout narrative](https://github.com/byebyebryan/dotfiles/blob/5ff8b412a45b69cac64b8eb356444e6cf0705012/docs/tmux-observer-fleet-performance-operations.md) retains
+private snapshot references and historical limits. Current recovery/rollback
+commands are in [managed operations](managed-operations.md).

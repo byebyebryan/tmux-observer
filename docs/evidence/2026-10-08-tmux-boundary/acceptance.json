@@ -1,0 +1,54 @@
+{
+  "dryRunChangedFilesPerHost": 255,
+  "installedFiles": {
+    "core": 152,
+    "frontend": 243,
+    "frontendManifest": 1
+  },
+  "limits": [
+    "Always-on scope; no physical sleep/wake",
+    "No Starship foreground input; Snap managed binding GUI separately recorded",
+    "Public summary omits private baseline control contents and session rosters",
+    "Independent component/artifact/CI/managed/GUI evidence remains scoped"
+  ],
+  "nativePreservation": {
+    "snap": {
+      "baselineReferences": 8,
+      "currentReferences": 8,
+      "generationAndHooksPreserved": true
+    },
+    "starship": {
+      "baselineReferences": 10,
+      "currentReferences": 10,
+      "generationAndHooksPreserved": true
+    }
+  },
+  "niriConfiguration": "valid on both hosts",
+  "recordSha256": {
+    "installed-actions-snap.json": "f77576f783da474ed46a0e14e7b4310c4b7607fe51ca74a70206f809305aa00a",
+    "installed-actions-starship.json": "97538de1bd394011adf3e6c3302d154252f6b9bc11f92876b543ed55315e9ef3",
+    "installed-snap.json": "945ee1e6abcbf4d89cde3a6972531e06ecf88ca5890b0fa1b235914ab4679e0d",
+    "installed-starship.json": "d7da722de1f47dae59462e290ed7d54048ef1a61d9d42d2310f5b5d3358f2639",
+    "live-parity-snap.json": "8cd34cdb475e6671f0b0343d2db25014fecac4bc429f8434a85ae2d90ea2e0d0",
+    "live-parity-starship.json": "4261a1e23ee604dbdf3ffb7ce84a9b5817fcaf9d83cf393cd3f87582576a20e6",
+    "recovered-snap.json": "eecd9e4d79688ead5f144af82a8ac60e715969f253ee4c6561e0a7593a3118a0",
+    "recovered-starship.json": "1f0edcf8c82b3d0950201cc9d6d8f0f7657fa3a1f9acef198825db4026e49def",
+    "reselected-snap.json": "44638061fd8a19383e2a0a3fbf521bb3ef8ee2410e107a14c485714551b5c2a7",
+    "reselected-starship.json": "bfb1e1325c749d8c7cda01f08e80d8cdaa47c079ef48cdc03ff820c4913673fe",
+    "rollback-snap.json": "6d34e424fa71941c7d62fff0a69cec64b6a2043790ea025dc471ed541b9206e7",
+    "rollback-starship.json": "b005829735f17bb68f31fcf36843ed56ed9be17d88a50ed833494dec92df8ddd",
+    "rollback-verified-snap.json": "374a9e4177349681647ddc6fc9a387b0e0c8288aa46cd45ccf1b51df7ab86499",
+    "rollback-verified-starship.json": "4a58593ee3b120df8e152e8b66f5c93281b028460a0b29aff2decbd8e60d606f"
+  },
+  "recovery": {
+    "snap": "new owner publisher and reader incarnation, current local profile and both owner leases",
+    "starship": "new owner publisher and reader incarnation, current local profile and both owner leases"
+  },
+  "result": "passed",
+  "rollback": "both matching baseline roots and 15 controls restored and independently byte-verified per host; then scoped reselection",
+  "schemaVersion": 1,
+  "scopePaths": 17,
+  "selectionCommit": "027c049",
+  "selectionSha256": "72a5eafef6d7ab59a16fc236b5acd2bb029561ec3141e4b307111a2c03544ac7",
+  "sourcePreservation": "normal checkouts retain unpublished Agent Observer commits; Starship Kitty source edit and Snap Agent operations edit/caches preserved; only isolated Tmux selection/evidence commits pushed"
+}

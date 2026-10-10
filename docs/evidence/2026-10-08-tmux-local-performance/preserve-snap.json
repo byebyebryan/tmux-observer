@@ -1,0 +1,10 @@
+{
+  "phase": "preserve",
+  "host": "snap",
+  "result": "passed",
+  "ordinaryReferencesPreserved": 9,
+  "currentReferences": 9,
+  "generationAndHooksPreserved": true,
+  "unrelatedControlsPreserved": true,
+  "foregroundInput": false
+}

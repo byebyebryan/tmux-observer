@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "host": "snap",
+  "operation": "recover",
+  "selectionSha256": "edeeaa05208de8677f459cd208ffe441ad5f0d9cb86a78f569c1ee122921de1b",
+  "installedPayloads": {
+    "core": 172,
+    "frontend": 265
+  },
+  "before": {
+    "readerId": "87da534a-0328-467b-a50a-0c93bfc30605",
+    "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+    "meshState": "ready",
+    "hosts": [
+      {
+        "hostId": "snap",
+        "local": true,
+        "sessions": 9,
+        "publisherId": "b533b942-df42-4ae5-bd1b-9feb7a7c14e6",
+        "transport": "local"
+      },
+      {
+        "hostId": "starship",
+        "local": false,
+        "sessions": 10,
+        "publisherId": "1660482a-39e4-4cbf-aa42-7af6ce493643",
+        "transport": "ready"
+      }
+    ],
+    "desktopState": "ready",
+    "localBindingState": "ready"
+  },
+  "after": {
+    "readerId": "591448bf-b54f-4707-890e-c7115cc5d4d4",
+    "contextId": "45803d3a0aa1c400d7602f29eecd73a2",
+    "meshState": "ready",
+    "hosts": [
+      {
+        "hostId": "snap",
+        "local": true,
+        "sessions": 9,
+        "publisherId": "74b837ae-68fa-4607-9849-44aaabd54c99",
+        "transport": "local"
+      },
+      {
+        "hostId": "starship",
+        "local": false,
+        "sessions": 10,
+        "publisherId": "1660482a-39e4-4cbf-aa42-7af6ce493643",
+        "transport": "ready"
+      }
+    ],
+    "desktopState": "ready",
+    "localBindingState": "ready"
+  },
+  "freshHosts": [
+    {
+      "hostId": "snap",
+      "sessions": 9
+    },
+    {
+      "hostId": "starship",
+      "sessions": 10
+    }
+  ],
+  "preparedFrameBytes": 15317,
+  "preexistingReferencesSurvive": true,
+  "result": "passed"
+}

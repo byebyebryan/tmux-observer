@@ -1,0 +1,10 @@
+{
+  "phase": "preserve",
+  "host": "starship",
+  "result": "passed",
+  "ordinaryReferencesPreserved": 10,
+  "currentReferences": 10,
+  "generationAndHooksPreserved": true,
+  "unrelatedControlsPreserved": true,
+  "foregroundInput": false
+}

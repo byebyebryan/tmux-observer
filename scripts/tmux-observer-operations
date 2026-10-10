@@ -1,0 +1,732 @@
+#!/usr/bin/env python3
+"""Scoped installed-byte, reader recovery and reversible selection checks."""
+
+from __future__ import annotations
+
+import argparse
+import base64
+import contextlib
+import hashlib
+import json
+import os
+import shutil
+import stat
+import subprocess
+import tempfile
+import time
+import zipfile
+from pathlib import Path
+
+ROOT = None
+HOME = Path.home()
+TUPLE = None
+FRONTEND_VERIFIER = None
+
+
+def run(argv, *, env=None, check=True, timeout=20):
+    value = subprocess.run(
+        argv, env=env, check=False, capture_output=True, text=True, timeout=timeout
+    )
+    if check and value.returncode:
+        raise RuntimeError(value.stderr[:2048] or value.stdout[:2048] or "operation failed")
+    return value
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def control_paths(host):
+    return [
+        ".local/bin/tmux-observer",
+        ".local/bin/tmux-observer-client",
+        ".local/bin/rofi-tmux-plus",
+        ".local/bin/rofi-tmux-plus-rofi",
+        ".local/share/tmux-observer/bin/tmux-observer",
+        ".local/share/tmux-observer/bin/tmux-observer-client",
+        ".local/share/tmux-observer/bin/tmux-observer-desktop",
+        ".config/systemd/user/tmux-observer-owner@.service",
+        ".config/systemd/user/tmux-observer-fleet@.service",
+        ".config/systemd/user/tmux-observer-desktop.service",
+        ".config/systemd/user/tmux-observer-owner@.service.d/managed.conf",
+        ".config/systemd/user/tmux-observer-fleet@.service.d/managed.conf",
+        ".config/systemd/user/default.target.wants/tmux-observer-owner@" + host + ".service",
+        ".config/niri/config.kdl",
+        ".config/niri/dms/binds.kdl",
+        ".local/bin/mesh-plus",
+        ".config/mesh-plus/sources.toml",
+    ]
+
+
+def node(path):
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return None
+    if stat.S_ISLNK(info.st_mode):
+        return {"link": os.readlink(path)}
+    require(
+        stat.S_ISREG(info.st_mode) and info.st_size <= 2 * 1024 * 1024,
+        "unsafe control node",
+    )
+    return {
+        "data": base64.b64encode(path.read_bytes()).decode(),
+        "mode": stat.S_IMODE(info.st_mode),
+    }
+
+
+def native_references():
+    env = dict(os.environ)
+    for key in ("TMUX", "TMUX_PANE", "TMUX_TMPDIR"):
+        env.pop(key, None)
+    result = run(
+        [
+            "/usr/bin/tmux",
+            "-L",
+            "default",
+            "list-sessions",
+            "-F",
+            "#{session_id}|#{session_created}",
+        ],
+        env=env,
+        check=False,
+    )
+    return sorted(result.stdout.splitlines())
+
+
+def active_fleet_unit():
+    value = run(
+        [
+            "systemctl",
+            "--user",
+            "list-units",
+            "--type=service",
+            "--state=active",
+            "--no-legend",
+            "--plain",
+            "tmux-observer-fleet@*.service",
+        ]
+    )
+    units = [line.split()[0] for line in value.stdout.splitlines() if line.strip()]
+    require(len(units) == 1, "need exactly one active captured Tmux fleet context")
+    unit = units[0]
+    require(
+        unit.startswith("tmux-observer-fleet@") and unit.endswith(".service"),
+        "unexpected fleet unit",
+    )
+    return unit
+
+
+def owner_ready(host, *, seconds=15):
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        reply = run(
+            [
+                str(HOME / ".local/bin/tmux-observer"),
+                "snapshot",
+                "--expected-host",
+                host,
+            ],
+            env=environment(),
+            check=False,
+            timeout=2,
+        )
+        try:
+            frame = json.loads(reply.stdout)
+            receipt = frame.get("receipt") or {}
+            now = time.clock_gettime_ns(time.CLOCK_BOOTTIME) // 1000000
+            if receipt.get("state") == "ready" and (receipt.get("expiresAt") or 0) > now:
+                return frame
+        except (ValueError, TypeError):
+            pass
+        time.sleep(0.1)
+    raise RuntimeError("restarted owner did not publish current native facts")
+
+
+def environment():
+    value = dict(os.environ)
+    for key in (
+        "TMUX",
+        "TMUX_PANE",
+        "TMUX_TMPDIR",
+        "PYTHONPATH",
+        "PYTHONHOME",
+        "NIRI_SOCKET",
+        "WAYLAND_DISPLAY",
+        "DISPLAY",
+        "SSH_AUTH_SOCK",
+    ):
+        value.pop(key, None)
+    for line in run(["systemctl", "--user", "show-environment"]).stdout.splitlines():
+        key, separator, item = line.partition("=")
+        if separator and key in (
+            "NIRI_SOCKET",
+            "WAYLAND_DISPLAY",
+            "DISPLAY",
+            "SSH_AUTH_SOCK",
+        ):
+            value[key] = item
+    value["PATH"] = str(HOME / ".local/bin") + ":/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
+    value["XDG_RUNTIME_DIR"] = f"/run/user/{os.getuid()}"
+    return value
+
+
+def prepared_ready(
+    frame, host, now, *, profile=None, local_attachments=False, local_bindings=False
+):
+    snapshot = frame.get("snapshot")
+    if not snapshot or snapshot["mesh"]["state"] not in ("ready", "local_only"):
+        return False
+    desktop = snapshot["desktop"]
+    if not (local_bindings and snapshot["mesh"]["state"] == "local_only") and (
+        desktop["state"] != "ready" or not desktop["expiresAt"] or desktop["expiresAt"] <= now
+    ):
+        return False
+    hosts = snapshot["hosts"]
+    if not hosts or not all(
+        h["owner"]["receipt"]
+        and h["owner"]["receipt"]["state"] == "ready"
+        and h["owner"]["localExpiry"]
+        and h["owner"]["localExpiry"] > now
+        for h in hosts
+    ):
+        return False
+    local = [h for h in hosts if h["local"] and h["hostId"] == host]
+    if local_bindings:
+        batch = local[0].get("localBindings") if len(local) == 1 else None
+        if not batch or (
+            batch["receipt"]["state"] != "ready"
+            or batch["receipt"]["expiresAt"] <= now
+            or batch["contextId"] != frame["contextId"]
+            or batch["clock"] != frame["clock"]
+            or batch["publisherId"] != local[0]["owner"]["publisherId"]
+        ):
+            return False
+    if not local_attachments:
+        return True
+    if len(local) != 1 or not profile or profile.get("kind") == "operation_error":
+        return False
+    owner = local[0]["owner"]
+    receipt = profile.get("receipt")
+    facts = profile.get("snapshot")
+    if (
+        not receipt
+        or receipt["state"] != "ready"
+        or receipt["expiresAt"] <= now
+        or facts is None
+        or profile["source"] != owner["source"]
+        or profile["clock"] != frame["clock"]
+        or profile["publisherId"] != owner["publisherId"]
+        or facts["serverGeneration"] != owner["serverGeneration"]
+    ):
+        return False
+    keys = ("hostId", "serverGeneration", "sessionId", "createdAt")
+    expected = {tuple(row[key] for key in keys) for row in local[0]["sessions"]}
+    actual = {tuple(row[key] for key in keys) for row in facts["sessions"]}
+    return expected <= actual
+
+
+def fleet_ready(host, *, seconds=15, local_attachments=False, local_bindings=False):
+    deadline = time.monotonic() + seconds
+    env = environment()
+    latest = {}
+    while time.monotonic() < deadline:
+        reply = run(
+            [
+                str(HOME / ".local/bin/tmux-observer-client"),
+                "snapshot",
+                "--access",
+                "cached",
+                "--expected-host",
+                host,
+                "--json",
+            ],
+            env=env,
+            check=False,
+            timeout=2,
+        )
+        latest = json.loads(reply.stdout)
+        profile = None
+        if local_attachments:
+            reply = run(
+                [
+                    str(HOME / ".local/bin/tmux-observer"),
+                    "local-attachments",
+                    "--expected-host",
+                    host,
+                ],
+                env=env,
+                check=False,
+                timeout=2,
+            )
+            profile = json.loads(reply.stdout)
+        if prepared_ready(
+            latest,
+            host,
+            time.clock_gettime_ns(time.CLOCK_BOOTTIME) // 1000000,
+            profile=profile,
+            local_attachments=local_attachments,
+            local_bindings=local_bindings,
+        ):
+            return latest
+        time.sleep(0.1)
+    raise RuntimeError("managed reader did not become ready: " + str(latest.get("error")))
+
+
+def frame_summary(frame):
+    return {
+        "readerId": frame["readerId"],
+        "contextId": frame["contextId"],
+        "meshState": frame["snapshot"]["mesh"]["state"],
+        "hosts": [
+            {
+                "hostId": h["hostId"],
+                "local": h["local"],
+                "sessions": len(h["sessions"]),
+                "publisherId": h["owner"]["publisherId"],
+                "transport": h["owner"]["transport"],
+            }
+            for h in frame["snapshot"]["hosts"]
+        ],
+        "desktopState": frame["snapshot"]["desktop"]["state"],
+        "localBindingState": next(
+            (
+                (h.get("localBindings") or {}).get("receipt", {}).get("state")
+                for h in frame["snapshot"]["hosts"]
+                if h["local"]
+            ),
+            None,
+        ),
+    }
+
+
+def verify_frontend(prefix):
+    require(
+        FRONTEND_VERIFIER is not None
+        and FRONTEND_VERIFIER.is_file()
+        and not FRONTEND_VERIFIER.is_symlink()
+        and FRONTEND_VERIFIER.stat().st_uid == os.getuid(),
+        "frontend verifier ownership",
+    )
+    result = run(
+        ["python3", "-I", "-B", str(FRONTEND_VERIFIER), "--prefix", str(prefix)], env=environment()
+    )
+    require(json.loads(result.stdout).get("status") == "accepted", "frontend verifier rejected")
+
+
+def installed(selection, host):
+    counts = {}
+    for kind in ("core", "frontend"):
+        selected = selection[kind]
+        prefix = HOME / selected["prefix"]
+        require(prefix.is_dir() and not prefix.is_symlink(), "missing managed package root")
+        for name, expected in selected["files"].items():
+            path = prefix / name
+            require(
+                path.is_file() and not path.is_symlink(),
+                "missing or linked managed payload: " + name,
+            )
+            raw = path.read_bytes()
+            require(
+                len(raw) == expected["bytes"]
+                and hashlib.sha256(raw).hexdigest() == expected["sha256"],
+                "managed payload drift: " + name,
+            )
+            if "executable" in expected:
+                require(
+                    bool(path.stat().st_mode & 0o111) == expected["executable"],
+                    "managed executable drift: " + name,
+                )
+        counts[kind] = len(selected["files"])
+    for selected in selection.get("sharedMesh", {}).get("packages", []):
+        prefix = HOME / selected["prefix"]
+        for name, expected in selected["files"].items():
+            path = prefix / name
+            require(path.is_file() and not path.is_symlink(), "missing shared Mesh payload")
+            raw = path.read_bytes()
+            require(
+                len(raw) == expected["bytes"]
+                and hashlib.sha256(raw).hexdigest() == expected["sha256"],
+                "shared Mesh payload drift: " + name,
+            )
+        counts[selected["name"]] = len(selected["files"])
+    manifest = HOME / selection["frontend"]["prefix"] / "release-manifest.json"
+    require(
+        hashlib.sha256(manifest.read_bytes()).hexdigest()
+        == selection["frontend"]["manifestSha256"],
+        "bundle manifest drift",
+    )
+    for relative in control_paths(host):
+        desired = run(
+            ["chezmoi", "--source", str(ROOT), "cat", str(HOME / relative)]
+        ).stdout.rstrip("\n")
+        actual = node(HOME / relative)
+        require(actual is not None, "missing managed control: " + relative)
+        content = actual.get("link", base64.b64decode(actual.get("data", "")).decode())
+        require(content.rstrip("\n") == desired, "managed control drift: " + relative)
+    prefix = HOME / selection["frontend"]["prefix"]
+    verify_frontend(prefix)
+    require(
+        run(
+            ["systemctl", "--user", "is-enabled", f"tmux-observer-owner@{host}.service"]
+        ).stdout.strip()
+        == "enabled",
+        "owner startup is not enabled",
+    )
+    require(
+        run(["systemctl", "--user", "is-active", "tmux-observer-desktop.service"]).stdout.strip()
+        == "active",
+        "desktop owner is not active",
+    )
+    active_fleet_unit()
+    return counts
+
+
+def save_tree(prefix, output, expected):
+    with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED) as archive:
+        for name, selected in sorted(expected.items()):
+            path = prefix / name
+            require(path.is_file() and not path.is_symlink(), "unsafe baseline tree")
+            raw = path.read_bytes()
+            require(
+                len(raw) == selected["bytes"]
+                and hashlib.sha256(raw).hexdigest() == selected["sha256"],
+                "baseline payload drift: " + name,
+            )
+            archive.write(path, name)
+
+
+def capture_payloads(selection, output):
+    payloads = {}
+    for kind in ("core", "frontend"):
+        selected = selection[kind]
+        prefix = HOME / selected["prefix"]
+        expected = dict(selected["files"])
+        if kind == "frontend":
+            raw = (prefix / "release-manifest.json").read_bytes()
+            require(
+                hashlib.sha256(raw).hexdigest() == selected["manifestSha256"],
+                "baseline release manifest drift",
+            )
+            expected["release-manifest.json"] = {
+                "bytes": len(raw),
+                "sha256": selected["manifestSha256"],
+            }
+        archive = output.with_suffix("." + kind + ".zip")
+        save_tree(prefix, archive, expected)
+        payloads[kind] = {
+            "prefix": selected["prefix"],
+            "archive": str(archive),
+            "archiveSha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
+            "files": expected,
+        }
+    return payloads
+
+
+@contextlib.contextmanager
+def staging_directory(parent):
+    private = Path(tempfile.mkdtemp(prefix=".tmux-rollback-", dir=parent))
+    try:
+        yield private
+    finally:
+        # A failed restore must never delete the surviving selected tree.
+        if not (private / "selected").exists():
+            shutil.rmtree(private)
+
+
+@contextlib.contextmanager
+def staged_payloads(captured, selection):
+    payloads = captured.get("payloads")
+    require(
+        isinstance(payloads, dict) and set(payloads) == {"core", "frontend"},
+        "baseline must capture both Observer and frontend payloads",
+    )
+    with contextlib.ExitStack() as stack:
+        staged = []
+        for kind in ("core", "frontend"):
+            saved = payloads[kind]
+            require(saved["prefix"] == selection[kind]["prefix"], "baseline root differs")
+            prefix = HOME / saved["prefix"]
+            require(prefix.is_dir() and not prefix.is_symlink(), "unsafe selected root")
+            archive = Path(saved["archive"])
+            require(
+                archive.is_file()
+                and not archive.is_symlink()
+                and hashlib.sha256(archive.read_bytes()).hexdigest() == saved["archiveSha256"],
+                "baseline archive drift",
+            )
+            private = stack.enter_context(staging_directory(prefix.parent))
+            tree = private / "tree"
+            tree.mkdir()
+            with zipfile.ZipFile(archive) as baseline:
+                infos = baseline.infolist()
+                require(
+                    len(infos) <= 2048
+                    and len({info.filename for info in infos}) == len(infos)
+                    and {info.filename for info in infos} == set(saved["files"]),
+                    "baseline member coverage differs",
+                )
+                require(
+                    sum(info.file_size for info in infos) <= 64 * 1024 * 1024,
+                    "baseline archive exceeds bound",
+                )
+                for info in infos:
+                    path = Path(info.filename)
+                    mode = info.external_attr >> 16
+                    require(
+                        not path.is_absolute()
+                        and ".." not in path.parts
+                        and path.as_posix() == info.filename
+                        and not info.is_dir()
+                        and stat.S_ISREG(mode)
+                        and not mode & 0o7000,
+                        "unsafe baseline member",
+                    )
+                    raw = baseline.read(info)
+                    expected = saved["files"][info.filename]
+                    require(
+                        len(raw) == expected["bytes"]
+                        and hashlib.sha256(raw).hexdigest() == expected["sha256"],
+                        "baseline member drift: " + info.filename,
+                    )
+                    target = tree / path
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(raw)
+                    target.chmod(mode & 0o777)
+            staged.append((prefix, tree, private / "selected"))
+        yield staged
+
+
+def replace_payloads(staged, finalize):
+    """Restore a coordinated tuple; retain the selected trees until finalization."""
+    changed = []
+    try:
+        for prefix, tree, backup in staged:
+            prefix.rename(backup)
+            changed.append((prefix, tree, backup))
+            tree.rename(prefix)
+        finalize()
+    except BaseException:
+        for prefix, tree, backup in reversed(changed):
+            if prefix.exists():
+                prefix.rename(tree)
+            backup.rename(prefix)
+        raise
+    for _prefix, _tree, backup in changed:
+        shutil.rmtree(backup)
+
+
+def write_control(relative, value):
+    path = HOME / relative
+    if value is None:
+        path.unlink(missing_ok=True)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(".tmux-rollback-" + path.name)
+    require(
+        not temporary.exists() and not temporary.is_symlink(),
+        "rollback temporary exists",
+    )
+    try:
+        if "link" in value:
+            temporary.symlink_to(value["link"])
+        else:
+            temporary.write_bytes(base64.b64decode(value["data"]))
+            temporary.chmod(value["mode"])
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def restore_controls(before, selected):
+    require(set(before) == set(selected), "control snapshot coverage differs")
+    for relative in before:
+        require(
+            node(HOME / relative) == selected[relative],
+            "control changed after selection: " + relative,
+        )
+    changed = []
+    try:
+        for relative, value in before.items():
+            write_control(relative, value)
+            changed.append(relative)
+    except BaseException:
+        for relative in reversed(changed):
+            require(node(HOME / relative) == before[relative], "rollback control changed")
+            write_control(relative, selected[relative])
+        raise
+
+
+def main():
+    global ROOT, TUPLE, FRONTEND_VERIFIER
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("operation", choices=("capture", "verify", "recover", "rollback"))
+    parser.add_argument("--host", choices=("snap", "starship"), required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--before", type=Path)
+    parser.add_argument("--source", type=Path, required=True)
+    parser.add_argument("--selection", type=Path, required=True)
+    parser.add_argument("--frontend-verifier", type=Path, required=True)
+    args = parser.parse_args()
+    ROOT = args.source.resolve()
+    TUPLE = args.selection.resolve()
+    FRONTEND_VERIFIER = args.frontend_verifier.absolute()
+    selection = json.loads(TUPLE.read_text())
+    before_refs = native_references()
+    result = {
+        "schemaVersion": 1,
+        "host": args.host,
+        "operation": args.operation,
+        "selectionSha256": hashlib.sha256(TUPLE.read_bytes()).hexdigest(),
+    }
+    if args.operation == "capture":
+        require(not args.output.exists(), "baseline output already exists")
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        result["verifiedBaselinePayloads"] = installed(selection, args.host)
+        result.update(
+            controls={p: node(HOME / p) for p in control_paths(args.host)},
+            payloads=capture_payloads(selection, args.output),
+            nativeReferences=before_refs,
+            fleetUnit=active_fleet_unit(),
+        )
+    elif args.operation == "rollback":
+        require(args.before is not None, "rollback needs its baseline")
+        require(
+            not run(["pgrep", "-x", "rofi"], check=False).stdout,
+            "Rofi is open; no rollback performed",
+        )
+        result["verifiedBeforeRollback"] = installed(selection, args.host)
+        captured = json.loads(args.before.read_text())
+        require(
+            captured["host"] == args.host and captured["operation"] == "capture",
+            "foreign baseline",
+        )
+        selected = {p: node(HOME / p) for p in control_paths(args.host)}
+        with staged_payloads(captured, selection) as staged:
+            require(
+                set(captured["controls"]) == set(selected),
+                "baseline control coverage differs",
+            )
+            fleet_unit = active_fleet_unit()
+            run(
+                [
+                    "systemctl",
+                    "--user",
+                    "stop",
+                    fleet_unit,
+                    f"tmux-observer-owner@{args.host}.service",
+                ]
+            )
+
+            def finalize():
+                restore_controls(captured["controls"], selected)
+                try:
+                    run(["systemctl", "--user", "daemon-reload"])
+                    prefix = HOME / selection["frontend"]["prefix"]
+                    verify_frontend(prefix)
+                except BaseException:
+                    restore_controls(selected, captured["controls"])
+                    raise
+
+            try:
+                replace_payloads(staged, finalize)
+            except BaseException:
+                # Unit symlinks may point inside the restored core tree, so
+                # reload only after the selected payloads have been put back.
+                run(["systemctl", "--user", "daemon-reload"], check=False)
+                raise
+        result.update(
+            restoredControls=True,
+            restoredArchiveSha256={
+                kind: saved["archiveSha256"] for kind, saved in captured["payloads"].items()
+            },
+            servicesStopped=True,
+            installedCore="restored matching baseline artifact",
+            restoredFacadeImportVerified=True,
+        )
+    else:
+        result["installedPayloads"] = installed(selection, args.host)
+        requirements = selection.get("requirements", {})
+        first = fleet_ready(
+            args.host,
+            local_attachments=requirements.get("localAttachments", False),
+            local_bindings=requirements.get("localBindings", False),
+        )
+        if args.operation == "recover":
+            fleet_unit = active_fleet_unit()
+            run(
+                [
+                    "systemctl",
+                    "--user",
+                    "restart",
+                    f"tmux-observer-owner@{args.host}.service",
+                ]
+            )
+            owner = owner_ready(args.host)
+            # The desktop oneshot Requires the owner. Restarting the owner can
+            # stop it and its captured context, so restore that explicit owner
+            # before finding and restarting the current fleet instance.
+            run(["systemctl", "--user", "start", "tmux-observer-desktop.service"])
+            fleet_unit = active_fleet_unit()
+            run(["systemctl", "--user", "restart", fleet_unit])
+            recovered = fleet_ready(
+                args.host,
+                local_attachments=requirements.get("localAttachments", False),
+                local_bindings=requirements.get("localBindings", False),
+            )
+            require(
+                recovered["readerId"] != first["readerId"],
+                "reader incarnation did not change",
+            )
+            result["before"] = frame_summary(first)
+            result["after"] = frame_summary(recovered)
+            result["fleetUnit"] = fleet_unit
+            result["restartedOwnerPublisher"] = owner["publisherId"]
+        else:
+            result["prepared"] = frame_summary(first)
+        with tempfile.TemporaryDirectory(prefix="tmux-installed-read-") as private:
+            env = dict(
+                environment(),
+                XDG_STATE_HOME=private + "/state",
+                XDG_CACHE_HOME=private + "/cache",
+            )
+            inventory = json.loads(
+                run(
+                    [str(HOME / ".local/bin/rofi-tmux-plus"), "inventory", "--json"],
+                    env=env,
+                ).stdout
+            )
+            require(
+                inventory["schemaVersion"] == 1
+                and all(h["status"] == "ok" for h in inventory["hosts"]),
+                "installed fresh facade is not healthy",
+            )
+            result["freshHosts"] = [
+                {"hostId": h["hostId"], "sessions": len(h["sessions"])} for h in inventory["hosts"]
+            ]
+            raw = run(
+                [str(HOME / ".local/bin/rofi-tmux-plus")],
+                env=dict(env, ROFI_RETV="0"),
+            ).stdout
+            require(
+                "Prepared Tmux Observer unavailable" not in raw and "\0data\x1f" in raw,
+                "installed prepared frame failed",
+            )
+            result["preparedFrameBytes"] = len(raw.encode())
+    after_refs = native_references()
+    result["preexistingReferencesSurvive"] = set(before_refs) <= set(after_refs)
+    require(
+        result["preexistingReferencesSurvive"],
+        "a preexisting native session disappeared during the check",
+    )
+    result["result"] = "passed"
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(result, indent=2) + "\n")
+    print(
+        json.dumps({k: v for k, v in result.items() if k not in ("controls", "nativeReferences")})
+    )
+
+
+if __name__ == "__main__":
+    main()

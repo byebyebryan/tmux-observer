@@ -11,7 +11,7 @@ names the exact frozen inputs and independent package/native, headless,
 resource/capacity, installed recovery and paired rollback evidence. Graphical
 presentation and physical suspend are optional and unrun for this wiring change.
 The exact current tuple and member/rollout evidence are owned by
-[managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md),
+[managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md),
 rather than the original a1 identities recorded below.
 
 The [component boundary design](component-boundaries.md) and
@@ -46,7 +46,7 @@ on Snap/Starship, preserving the unchanged v1 CLI and native passivity. The exac
 frontend wheel passed 20 graphical cases on Starship; the user reserves Snap for active work.
 See [the consumer migration record](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/observer-migration.md)
 for exact frontend artifacts and its independent graphical gate. Delivery E/T15
-is accepted through [managed operations and evidence](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md):
+is accepted through [managed operations and evidence](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md):
 69 Core and 198 frontend members plus controls match on both hosts, ready prepared
 local/remote/Desktop frames and fresh facade pass, restart changes publisher/reader
 incarnations, each runtime rollback restores the old bytes and healthy facade,
@@ -128,7 +128,7 @@ that review checkpoint.
 | B: owner service | Accepted: T07–T09; G2 passed | Bounded tickets/stdio and [11 installed/native cases](evidence/2026-10-08-final-candidate-g2.json) |
 | C: fleet service | Accepted: T10–T12; G3 passed for always-on hosts | Same-wheel awake native/resources and [four installed recovery simulations](evidence/2026-10-08-always-on-simulated-recovery.json); physical suspend optional/unverified |
 | D: Rofi client | Accepted: T13/T14; G4 passed | 30 fresh facade cases on both hosts, 20 installed graphical cases on Starship; exact consumer artifact and acceptance remain separate from G3 |
-| E: managed rollout | Accepted: T15; G6 passed | 13 installed/recovery/rollback/reselection checks on both hosts, 20 actual managed-bundle graphical cases on Starship; [managed record](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md) |
+| E: managed rollout | Accepted: T15; G6 passed | 13 installed/recovery/rollback/reselection checks on both hosts, 20 actual managed-bundle graphical cases on Starship; [managed record](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md) |
 
 ## Prior checkpoint history
 

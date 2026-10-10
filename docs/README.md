@@ -14,7 +14,7 @@ and Mesh **0.1.0a7** on Snap and Starship, as of 2026-10-10.
 | [Service contexts](service-contexts.md) | Explicit startup, captured desktop environment and context teardown |
 | [Mesh integration](mesh-integration.md) | Source configuration, state delivery, separate refresh control and rollout history |
 | [Candidate artifacts](candidate-artifacts.md) | Frozen committed-source builds and package verification |
-| [Managed operations](https://github.com/byebyebryan/dotfiles/blob/main/docs/tmux-observer-operations.md) | Exact installed tuple, managed controls and rollback |
+| [Managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md) | Exact installed tuple, managed controls and rollback |
 
 ## Selection and acceptance
 

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "host": "starship",
+  "result": "passed",
+  "restoredBaselinePayloads": {
+    "core": 69,
+    "frontend": 211
+  },
+  "restoredControls": 15,
+  "servicesInactive": true,
+  "baselineSelectionSha256": "48e00facaf7caafc334992916b619c684ff2c9607bff37ee75781723c53f632a"
+}

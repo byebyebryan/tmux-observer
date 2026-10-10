@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "endpoint": "starship",
+  "result": "passed",
+  "selectionSha256": "72a5eafef6d7ab59a16fc236b5acd2bb029561ec3141e4b307111a2c03544ac7",
+  "harnessSha256": "93d31f23deaa1569c93aa2cbc50fd8e2be8a78b4ae3267449a68159465b0f8ce",
+  "hosts": [
+    "starship",
+    "snap"
+  ],
+  "checks": [
+    "create",
+    "duplicate collision",
+    "rename full reference",
+    "stale-name kill rejected",
+    "guarded kill",
+    "ordinary references preserved",
+    "owned fixture removed",
+    "SSH usage history unchanged"
+  ],
+  "foregroundInput": false,
+  "terminalLaunches": false,
+  "events": [
+    "[check] exact-reference Tmux lifecycle across 2 advertised hosts",
+    "[ok] starship: create/duplicate/rename/stale-kill/kill verified",
+    "[ok] snap: create/duplicate/rename/stale-kill/kill verified"
+  ]
+}
