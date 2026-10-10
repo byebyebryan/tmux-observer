@@ -6,6 +6,7 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import test_owner
 from mesh_plus.catalog import Catalog
@@ -126,6 +127,47 @@ class MeshFleetTests(unittest.TestCase):
                 self.read(fleet, operation=operation)
             self.assertEqual((collector.calls, len(scanner.calls), authority.calls), before)
             self.assertTrue(all(c.future is None for c in fleet.connections.values()))
+
+    def test_rotation_reaches_projection_without_restarting_reader(self):
+        from mesh_plus.reader import Reader
+
+        original_watch = Reader.watch
+        delivered = []
+        from tmux_observer_client._mesh_worker import MeshWorker
+
+        original_put = MeshWorker.put
+
+        def fast_watch(reader, **kwargs):
+            return original_watch(reader, proof_interval=0.1, **kwargs)
+
+        def capture(worker, event):
+            if event[0] == "view":
+                host = event[1]["mesh"]["hosts"][0]
+                delivered.append((event[1]["mesh"]["reader"]["id"], host["delivery"]))
+            return original_put(worker, event)
+
+        with (
+            tempfile.TemporaryDirectory(prefix="tmux-mesh-rotation-") as temporary,
+            patch("mesh_plus.client.ROTATION_HANDLES", 4),
+            patch.object(Reader, "watch", fast_watch),
+            patch.object(MeshWorker, "put", capture),
+        ):
+            fleet, _owner, _collector, _scanner, _authority = self.start(Path(temporary))
+            self.wait(lambda: any(d["epoch"] >= 3 and d["status"] == "ready" for _, d in delivered))
+            revoked = [
+                d
+                for _, d in delivered
+                if d["error"] and d["error"]["code"] == "channel_rotation_required"
+            ]
+            self.assertGreaterEqual(len(revoked), 2)
+            self.assertTrue(all(d["error"]["code"] == "channel_rotation_required" for d in revoked))
+            self.assertEqual(len({reader for reader, _ in delivered}), 1)
+            # The compatibility projection can regain current owner facts after rotation.
+            self.wait(
+                lambda: (
+                    self.read(fleet)["snapshot"]["hosts"][0]["owner"]["localExpiry"] > boottime_ms()
+                )
+            )
 
     def test_grouped_refresh_requires_mesh_confirmed_native_attempt(self):
         with tempfile.TemporaryDirectory(prefix="tmux-mesh-refresh-") as temporary:

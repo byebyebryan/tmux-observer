@@ -48,15 +48,15 @@ class CapturedAuthority:
 
 class MeshWorker:
     def __init__(self, host_id, *, owner_path=None, source="tmux_default", authority=None):
-        if __version__ not in {"0.1.0a4", "0.1.0a5", "0.1.0a6", "0.1.0a7"}:
+        if __version__ not in {"0.1.0a4", "0.1.0a5", "0.1.0a6", "0.1.0a7", "0.1.0a8"}:
             raise ValueError(
-                "Mesh backend requires a reviewed mesh-plus 0.1.0a4/a5/a6/a7 candidate"
+                "Mesh backend requires a reviewed mesh-plus 0.1.0a4/a5/a6/a7/a8 candidate"
             )
         self.host_id = host_id
         self.owner_path = owner_socket() if owner_path is None else owner_path
         self.source = source
         self.owns_authority = authority is None
-        if authority is None and __version__ in {"0.1.0a6", "0.1.0a7"}:
+        if authority is None and __version__ in {"0.1.0a6", "0.1.0a7", "0.1.0a8"}:
             from mesh_plus.library_authority import LibraryMeshAuthority
 
             authority = LibraryMeshAuthority()
