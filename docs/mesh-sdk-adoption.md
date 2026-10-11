@@ -33,3 +33,18 @@ purity, optional import isolation and the existing owned native/SSH case.
 [The checkpoint report](evidence/2026-10-11-mesh-sdk-adoption/profile-source.json)
 binds the tested source files. This checkpoint has not yet wired the profile
 through the fleet worker, frozen a new wheel or accepted managed selection.
+
+## Explicit reader integration
+
+The fleet worker now supplies the same owner profile to the public SDK's
+configured reader and stream guard. Native validation, Fleet v1 projection,
+refresh binding, route reporting and owned shutdown retain their existing paths.
+The cached publisher adapter remains the accepted reference implementation.
+
+The source gate passes 398 tests. The Mesh gate passes **20 tests**, including
+configured local polling/watch, disconnect revocation and cleanup. Every
+existing fleet case and the real-tmux/SSH passivity, refresh, restart and empty
+case run with implicit `ReferenceProfile` construction forbidden. Rotation,
+authority loss and refresh gap revocation recover through the explicit profile.
+[The reader report](evidence/2026-10-11-mesh-sdk-adoption/reader-source.json)
+binds these source inputs. Installed artifact and resource acceptance follow.

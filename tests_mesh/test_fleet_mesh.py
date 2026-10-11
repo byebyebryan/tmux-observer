@@ -11,6 +11,7 @@ from unittest.mock import patch
 
 import test_owner
 from mesh_plus.catalog import Catalog
+from mesh_plus.state import ReferenceProfile
 from test_fleet import Scanner
 
 from tmux_observer._clock import boottime_ms
@@ -55,6 +56,13 @@ class Authority:
 
 
 class MeshFleetTests(unittest.TestCase):
+    def setUp(self):
+        blocker = patch.object(
+            ReferenceProfile, "__init__", side_effect=AssertionError("implicit reference profile")
+        )
+        blocker.start()
+        self.addCleanup(blocker.stop)
+
     def wait(self, check, budget=5):
         until = time.monotonic() + budget
         while time.monotonic() < until:

@@ -9,14 +9,13 @@ import uuid
 from pathlib import Path
 
 from mesh_plus import __version__
-from mesh_plus.bridge import Bridge
+from mesh_plus.api import Bridge, ReadGuard, configured_reader
 from mesh_plus.catalog import MeshAuthority
-from mesh_plus.configured_read import configured_reader
 from mesh_plus.transport import IPCServer
-from mesh_plus.view import ReadGuard
 
 from tmux_observer._ipc import owner_socket
 from tmux_observer.mesh import TmuxMeshAdapter
+from tmux_observer.mesh_profile import TmuxMeshProfile
 
 QUEUE_LIMIT = 16 * 1048576
 
@@ -53,6 +52,7 @@ class MeshWorker:
         self.host_id = host_id
         self.owner_path = owner_socket() if owner_path is None else owner_path
         self.source = source
+        self.profile = TmuxMeshProfile()
         self.owns_authority = authority is None
         if authority is None:
             from mesh_plus.library_authority import LibraryMeshAuthority
@@ -97,12 +97,18 @@ class MeshWorker:
             socket=bridge_path,
             authority=authority,
             report_routes=True,
+            profile=self.profile,
         )
         catalog = authority.catalog
         if catalog.local_host != self.host_id:
             raise ValueError("Mesh catalog local host differs from configured Observer")
         request_id = uuid.uuid4().hex
-        guard = ReadGuard("tmux", request_id, host_ids=[host["id"] for host in catalog.hosts])
+        guard = ReadGuard(
+            "tmux",
+            request_id,
+            host_ids=[host["id"] for host in catalog.hosts],
+            profile=self.profile,
+        )
         iterator = reader.watch(request_id=request_id)
         try:
             async for frame in iterator:

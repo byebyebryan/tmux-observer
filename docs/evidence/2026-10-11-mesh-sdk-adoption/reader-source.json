@@ -1,0 +1,26 @@
+{
+  "phase": "explicit_reader_integration",
+  "checkedAtUtc": "2026-10-11T07:29:39.712518+00:00",
+  "state": "passed",
+  "meshVersion": "0.1.0a11",
+  "files": {
+    "src/tmux_observer/mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+    "src/tmux_observer_client/_mesh_worker.py": "08ca09d3968d67fcd7cb5a3e7027b817506ceb3e7d83cb08a779a5a297502331",
+    "tests_mesh/test_fleet_mesh.py": "72df473e6c249f977c6c5b6bed294ba233caa57996ba286823986855adb2db8b",
+    "tests_mesh/test_native_mesh.py": "7fd2daf904352ef084a36c069073de68b1d1449bb8a621d21d12214deba456f7",
+    "tests_mesh/test_profile.py": "ef74f25cfeb35bfcd6bada2cb820f88c67ed2ceeedc46f2ca39cdd4bd6a174ef"
+  },
+  "sourceTests": 398,
+  "meshTests": 20,
+  "implicitReferenceProfileForbidden": [
+    "all seven fleet cases",
+    "owned native SSH case",
+    "configured IPC poll/watch",
+    "frozen projection oracle"
+  ],
+  "limits": [
+    "Existing cached reference publisher retained",
+    "No frozen Observer artifact or resource acceptance yet",
+    "No managed selection change"
+  ]
+}

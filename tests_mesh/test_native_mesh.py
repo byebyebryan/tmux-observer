@@ -11,6 +11,7 @@ from tmux_observer_client.mesh_fleet import MeshFleetPublisher
 
 
 class NativeMeshTests(unittest.TestCase):
+    setUp = test_fleet_mesh.MeshFleetTests.setUp
     wait = test_fleet_mesh.MeshFleetTests.wait
     read = test_fleet_mesh.MeshFleetTests.read
 

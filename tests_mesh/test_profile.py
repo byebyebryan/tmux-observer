@@ -1,20 +1,33 @@
 """Independent owner-native semantics and the frozen Mesh differential oracle."""
 
+import asyncio
 import copy
 import hashlib
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from contextlib import ExitStack
 from dataclasses import FrozenInstanceError
 from pathlib import Path
 from unittest.mock import patch
 
-from mesh_plus.api import Endpoint, Reader, current_sessions, reconstructed, validate_response
+import test_owner
+from mesh_plus.api import (
+    Bridge,
+    Endpoint,
+    Reader,
+    ReadGuard,
+    configured_reader,
+    current_sessions,
+    reconstructed,
+    validate_response,
+)
 from mesh_plus.protocol import ProtocolError
+from mesh_plus.transport import IPCServer, boottime_ms
 
-from tmux_observer.mesh import TmuxMeshCodec
+from tmux_observer.mesh import TmuxMeshAdapter, TmuxMeshCodec
 from tmux_observer.mesh_profile import TmuxMeshProfile
 from tmux_observer.native import ValidationError
 
@@ -280,3 +293,62 @@ TmuxMeshProfile().bind('local', 'tmux_default')
                 self.assertRaisesRegex(ValueError, "reviewed mesh-plus 0.1.0a11"),
             ):
                 MeshWorker("fixture-local", authority=authority)
+
+
+class ProfileIPCTests(unittest.IsolatedAsyncioTestCase):
+    async def test_configured_poll_watch_disconnect_and_owned_retirement(self):
+        profile = TmuxMeshProfile()
+        with tempfile.TemporaryDirectory(prefix="tmux-sdk-ipc-") as temporary:
+            root = Path(temporary)
+            owner, thread, _collector = test_owner.OwnerTests().start(root / "owner.sock")
+            server = None
+            stream = None
+            try:
+                adapter = TmuxMeshAdapter("fixture-local", root / "owner.sock")
+                path = root / "bridge.sock"
+                server = await IPCServer(path, Bridge(adapter).serve, max_clients=2).start()
+                with patch(
+                    "mesh_plus.state.ReferenceProfile",
+                    side_effect=AssertionError("implicit profile"),
+                ):
+                    reader = await configured_reader(
+                        "tmux",
+                        source="tmux_default",
+                        socket=path,
+                        scope="local",
+                        local_host="fixture-local",
+                        profile=profile,
+                    )
+                    response = await reader.snapshot()
+                    self.assertTrue(
+                        current_sessions(
+                            response,
+                            boottime_ms(),
+                            response["mesh"]["reader"]["clock"],
+                            profile=profile,
+                        )
+                    )
+                    request_id = "a" * 32
+                    guard = ReadGuard("tmux", request_id, profile=profile)
+                    stream = reader.watch(request_id=request_id, proof_interval=0.1)
+                    for _ in range(20):
+                        response = await asyncio.wait_for(anext(stream), 3)
+                        guard.accept(response)
+                        clock = response["mesh"]["reader"]["clock"]
+                        if guard.current(boottime_ms(), clock):
+                            break
+                    self.assertTrue(guard.current(boottime_ms(), clock))
+                    guard.disconnect()
+                    self.assertEqual(guard.current(boottime_ms(), clock), [])
+                    await stream.aclose()
+                    stream = None
+                    self.assertEqual(reader.inspect()["activeConnections"], 0)
+                    self.assertEqual(reader.inspect()["cleanupFailures"], 0)
+            finally:
+                if stream is not None:
+                    await stream.aclose()
+                if server is not None:
+                    await server.close()
+                owner.stop()
+                thread.join(3)
+                self.assertFalse(thread.is_alive())
