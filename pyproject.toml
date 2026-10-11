@@ -14,10 +14,10 @@ authors = [{name = "Bryan"}]
 
 [project.optional-dependencies]
 dev = ["ruff==0.16.6", "jsonschema>=4.18,<5"]
-mesh = ["mesh-plus==0.1.0a10"]
+mesh = ["mesh-plus==0.1.0a11"]
 
 [tool.uv.sources]
-mesh-plus = {git = "https://github.com/byebyebryan/mesh-plus.git", rev = "3684fe083c0ab5af3c74aa27dff169e5764489f5"}
+mesh-plus = {git = "https://github.com/byebyebryan/mesh-plus.git", rev = "9d570c59041832d177519fd634d26c56ed572e81"}
 
 [project.scripts]
 tmux-observer = "tmux_observer.cli:main"

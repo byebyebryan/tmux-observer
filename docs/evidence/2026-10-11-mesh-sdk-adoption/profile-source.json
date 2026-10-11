@@ -1,0 +1,35 @@
+{
+  "phase": "pure_profile_and_sdk_dependency",
+  "checkedAtUtc": "2026-10-11T07:23:42.862153+00:00",
+  "state": "passed",
+  "meshVersion": "0.1.0a11",
+  "meshCommit": "9d570c59041832d177519fd634d26c56ed572e81",
+  "files": {
+    "src/tmux_observer/mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+    "src/tmux_observer/mesh.py": "f36e18f391a10fe8c29e48d7d12aa8b8ce2326173a07ccc5d8355885d6f671fc",
+    "src/tmux_observer_client/_mesh_worker.py": "cbf67310912ec1bf4797330ca8ffccf229bea34c7f553c80f881fb8b7d4df6f0",
+    "pyproject.toml": "8820aa742ec5c4e17e190b911bc6724161b30898685b47e76eb072fd4ad84064",
+    "uv.lock": "7abf28b396d89eb6c840157f143f58ed73764782ceddfb963142f51f7fa28972",
+    ".github/workflows/check.yml": "dfaa30803dad8dc98ba9a2424d04dc3f57c9553d8139a19acbccf3757c237d56",
+    "tests/test_native_imports.py": "8f7a2ac8b001106fcb08864f15b189ed59c1e1219bafb89f5ab942bd36268f64",
+    "tests_mesh/test_profile.py": "ad5b29b766a96dfde5ea24baac518ea3d13af625f160165d12ae0c4e61a22101"
+  },
+  "source": {
+    "tests": 398,
+    "contracts": true,
+    "lint": true,
+    "format": true
+  },
+  "mesh": {
+    "tests": 19,
+    "nativeSSH": "owned existing reference-adapter/reader integration",
+    "projectionCases": 6,
+    "selectionComparisons": 18,
+    "ownerCallbacks": "pure explicit profile"
+  },
+  "limits": [
+    "Fleet worker profile injection belongs to the next checkpoint",
+    "No frozen candidate wheel, resource or managed acceptance",
+    "Prior local SDKs use their prior Observer artifact; remote a10 compatibility is separately tested"
+  ]
+}

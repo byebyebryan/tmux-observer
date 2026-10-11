@@ -5,6 +5,8 @@ The recorded current selection is Observer **0.6.0a5**, Tmux Plus **0.12.0a5**
 and Mesh **0.1.0a10** on Snap and Starship, as of 2026-10-10.
 The [Mesh SDK integration plan](mesh-sdk-integration-plan.md) covers proposed a11
 profile adoption and its preimplementation validation.
+The [adoption checkpoints](mesh-sdk-adoption.md) record implementation and its
+separate acceptance gates.
 
 ## Current interfaces and operation
 

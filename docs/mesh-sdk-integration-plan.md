@@ -11,6 +11,8 @@ Status: preimplementation plan and feasibility validation, 2026-10-11. The
 [research record](evidence/2026-10-11-mesh-sdk-research/README.md) establishes
 feasibility with disposable experiments. It does not accept an implemented
 Observer candidate or change the selected a10/a5/a5 deployment.
+Implementation is now authorized; [adoption checkpoints](mesh-sdk-adoption.md)
+record progress without changing the original research scope below.
 
 ## Reviewed inputs
 
