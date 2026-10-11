@@ -22,7 +22,7 @@ released CLI and copied candidate CLI have recorded SHA-256 digests.
 
 The runner verifies installed wheel payloads: 84 Observer files, 49 Mesh a13
 files and 36 Mesh a10 files. The baseline environment also uses the same checked
-Observer a6 payload. Mesh a13 is pinned to source `d9cdac4`; the current Mesh
+Observer a6 payload. Mesh a13 is pinned to source `d9cdac4`; the reviewed Mesh
 handoff at `9fbcd3a` leaves `src/mesh_plus`, `pyproject.toml` and `contracts`
 unchanged relative to that input. The WSS study is not adopted here.
 
