@@ -1,25 +1,30 @@
 # Implementation status
 
-Updated: 2026-10-10. Goal: Deliveries A–E, with reviewed commits as work progresses.
+Updated: 2026-10-11. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
 ## Current selection
 
-Observer `0.6.0a2`, Tmux Plus `0.12.0a2` and Mesh `0.1.0a7` are released and
-selected on Snap and Starship. The [catalog bound-fix record](evidence/2026-10-10-catalog-bound-fix/README.md)
-names the exact frozen inputs and independent package/native, headless,
-resource/capacity, installed recovery and paired rollback evidence. Graphical
-presentation and physical suspend are optional and unrun for this wiring change.
+Observer `0.6.0a6` and Tmux Plus `0.12.0a6` are released and selected on Snap
+and Starship. The Tmux reader uses Mesh SDK `0.1.0a13`; the shared bridge CLI
+retains compatible `0.1.0a10`. The [SDK adoption record](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+names the exact frozen inputs and independent source, package/native, headless,
+resource/capacity, installed recovery and paired rollback evidence. Snap's
+managed acceptance uses owner scope; Starship's uses desktop scope. Graphical
+presentation and physical suspend are optional and unrun for these wiring releases.
 The exact current tuple and member/rollout evidence are owned by
 [managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md),
-rather than the original a1 identities recorded below.
+rather than the historical identities recorded below.
 
 The [component boundary design](component-boundaries.md) and
 [source review](component-boundaries-review.md) describe the accepted native
 association, desktop and action-client extraction. Their original checkpoints
-remain below. Observer `0.6.0a2` / Mesh `0.1.0a7` close bounded catalog reads with
-independent package/native and paired operational acceptance. Optional
-T17/native events and physical sleep/wake remain separate.
+remain below. The earlier [Observer a2 / Mesh a7 catalog checkpoint](evidence/2026-10-10-catalog-bound-fix/README.md)
+retains its independent package/native and paired operational acceptance.
+The accepted SDK adoption supplies an Observer-owned pure profile and explicitly
+bound readers and guards. Cached publisher extraction remains a separate
+[fixed-CLI factory review](mesh-sdk-integration-plan.md#cached-publisher-extraction-after-sdk-adoption).
+Optional T17/native events and physical sleep/wake remain separate.
 
 [Current runtime architecture](runtime-architecture.md) summarizes implemented
 component ownership. The [documentation index](README.md) separates current

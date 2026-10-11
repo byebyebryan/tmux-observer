@@ -23,14 +23,15 @@ separate acceptance gates.
 
 ## Selection and acceptance
 
-[Current hardening adoption](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
-is the front door for the selected artifacts' native, headless, resource and
-installed recovery/rollback evidence. [Implementation status](implementation-status.md)
+[Current SDK adoption](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+is the front door for the selected artifacts' source, native, headless, resource
+and installed recovery/rollback evidence. [Implementation status](implementation-status.md)
 keeps the original A–E checkpoint history. Acceptance belongs to the exact
 artifact, endpoint and scope recorded by each report.
 
 | Historical record | Scope |
 | --- | --- |
+| [Previous hardening adoption](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md) | SDK a10 / Observer 0.6.0a5 / Plus 0.12.0a5 |
 | [Previous Mesh rollout](evidence/2026-10-10-mesh-rollout/README.md) | SDK a6 / Observer 0.6.0a1 / Plus 0.12.0a1 |
 | [Original Mesh candidate](evidence/2026-10-09-mesh-integration/README.md) | Earlier candidate inputs, diagnostics and limitations |
 | [CPU performance](cpu-performance-design.md) | Observer 0.5.0a1 delivery |

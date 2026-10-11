@@ -81,8 +81,9 @@ See the [Mesh integration ledger](mesh-integration.md#scope-and-decisions).
 The generic fleet command and packaged unit default to the `legacy` backend.
 Current managed controls explicitly select `mesh` and source `tmux_default`.
 A failed Mesh backend never silently chooses legacy or direct collection.
-The retained a6 SDK and prior Observer/Plus tuple provide the tested rollback;
-legacy remains an explicitly selectable backend.
+The prior Observer/Plus a5 pair and Mesh a10 reader provide the recorded paired
+rollback baseline; older SDK roots remain available. Legacy remains an explicitly
+selectable backend.
 
 ## Identity, clocks and uncertainty
 
@@ -126,12 +127,20 @@ display observation, not a verified focus/close handle or provider lifecycle aut
 
 ## Acceptance and remaining work
 
-The [current evidence](evidence/2026-10-10-catalog-bound-fix/README.md) records
+The [current evidence](evidence/2026-10-11-mesh-sdk-adoption/README.md) records
 independent source, exact package/native, headless picker, ordinary two-host
 resource, declared capacity, installed recovery and paired rollback gates.
+The a13 ten-minute resource gate covers headless cached delivery; it does not
+measure desktop/viewer work. Earlier desktop-inclusive measurements retain their
+own artifact scope. Snap's recorded CPU is 4.286% against 5%; fleet/bridge RSS
+is approximately 83 MiB against 96 MiB, so future changes need measured comparison.
 The capacity profile uses sixteen synthetic logical owners on two physical hosts;
 it does not establish native truth on sixteen physical hosts. RSS is sampled and
 Mesh byte/proof counters remain unmeasured.
+
+The publisher still uses Mesh's reference adapter. Its extraction requires a
+supported fixed-CLI factory and independent local/remote publisher acceptance;
+the completed profile/reader adoption does not certify that later change.
 
 Optional native control-mode events need an independent passivity and benefit
 gate. Physical sleep/wake and graphical checks for the Mesh wiring releases
