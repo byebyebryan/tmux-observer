@@ -40,7 +40,41 @@ their deadlines. Native identities, hooks and attachment counts survive owned
 teardown. This accepts headless cached delivery only; sampled RSS can miss
 transient peaks, and no graphical or physical-suspend acceptance is claimed.
 The producer package is accepted within these recorded scopes. Consumer and
-managed acceptance follow independently.
+managed acceptance pass independently as recorded below.
+
+## Consumer and managed completion
+
+[Plus a6 acceptance](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/evidence/2026-10-11-mesh-sdk-adoption/README.md)
+passes 293 source tests and installed wheel/bundle headless gates. The 100-frame
+p95 values are 57.963/58.929 ms, below 150 ms. Observer a6 and Plus a6 releases
+are published; downloaded wheel/bundle assets match the accepted hashes.
+
+[Managed acceptance](managed-acceptance.json) binds configuration `e094b17` and
+both hosts' installed checks, recovery, restored a5 paired baseline and a6
+reselection. Snap uses owner scope; Starship uses desktop scope. Cached snapshot
+and watch deliver all fourteen native rows through each endpoint's explicit a13
+profile with owned connection retirement. The
+[retained a10 CLI/new a6 facade matrix](retained-bridge-a13.json) passes all 24
+installed cases. Kernel peers, interpreter and source clocks match each owner.
+Agent's a17 reader/a16 bridge remains independently accepted; its packages and
+service incarnations are unchanged. Native generations/references/hooks/client
+counts, static controls, preferences and Starship's two source edits survive.
+
+Snap's first apply failed on a missing versioned SDK parent and restored the
+captured pair/controls before retry. Parent preparation precedes the successful
+apply. The archived [adoption helper](adopt-cohort.py),
+[cached probe](cached-probe.py), [native preservation](native.py),
+[kernel identity](identity.py) and [protection snapshot](preserve.py) bind their
+executed hashes; they are dated harnesses, not general deployment entry points.
+Private logs, ordinary native identities and rollback control bodies stay local.
+Starship's route-health aggregate changes under existing reporting policy. Its
+recent-history file's last write precedes the baseline; the per-file baseline
+digest was not captured, so the report states that timestamp evidence limit.
+
+Source CI passed Observer `cea86a9` and Plus `215c705`. The final documentation
+commits advance these heads without changing the frozen runtime artifacts.
+Graphical input and physical suspend remain optional and unrun. Native publisher
+extraction retains its independent fixed-CLI factory/endpoint review.
 
 Only `tmux_observer/__init__.py`, the optional compatibility `mesh.py` module and
 the Mesh worker differ from the selected a5 runtime; `mesh_profile.py` is new.

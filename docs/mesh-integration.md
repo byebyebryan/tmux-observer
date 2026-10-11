@@ -3,13 +3,12 @@
 Started 2026-10-09. The user authorized the migration goal loop after review of
 Mesh Plus's [handoff](https://github.com/byebyebryan/mesh-plus/blob/fd40916/docs/handoff.md)
 and frozen state boundary. This ledger owns the candidate implementation and
-acceptance. Recorded managed selection, 2026-10-10, is Mesh **0.1.0a10** /
-Observer **0.6.0a5** / Plus **0.12.0a5** on Snap and Starship. The
-[hardening adoption](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
-binds those artifacts and their native, headless, resource and managed recovery/
-rollback gates. The [SDK adoption checkpoints](mesh-sdk-adoption.md) record the
-new a6 source candidate's explicit profile integration with Mesh a13; source
-acceptance does not select that candidate. The
+acceptance. Recorded managed selection, 2026-10-11, is Observer **0.6.0a6** /
+Plus **0.12.0a6**, with Mesh **0.1.0a13** reader SDK and retained shared CLI
+**0.1.0a10** on Snap and Starship. [SDK adoption checkpoints](mesh-sdk-adoption.md)
+and [accepted package/managed evidence](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+bind exact artifacts, native/headless checks, unchanged resource budgets,
+recovery and paired rollback/reselection. The
 [previous accepted rollout](evidence/2026-10-10-mesh-rollout/README.md)
 binds Mesh `74b9e54` / Observer `1931d73` / Plus `07c2619` and retains its own
 exact released bytes, gates and operational scope. For a concise component map,
@@ -19,9 +18,9 @@ see [runtime architecture](runtime-architecture.md).
 
 Prepared Mesh browsing requires a compatible catalog authority, the selected
 Mesh SDK/runtime dependencies, native Tmux facades available to its bridge, and
-an already running owner on each participating host. The selected public Mesh
-and Observer client launchers expose SDK a10 from
-`~/.local/share/mesh-plus/0.1.0a10/python`. Prior versioned roots remain
+an already running owner on each participating host. The selected Observer client launcher exposes SDK a13 from
+`~/.local/share/mesh-plus/0.1.0a13/python`; the public Mesh bridge CLI retains
+SDK a10 at `~/.local/share/mesh-plus/0.1.0a10/python`. Prior versioned roots remain
 available for their recorded rollback checkpoints. Exact roots, payloads and
 controls are recorded in
 [managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md).

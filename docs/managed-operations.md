@@ -8,6 +8,15 @@ paired rollback. Tmux Plus owns frontend/native verification through its public
 both repositories on the deployment host and record their exact commits. No
 Snap-only checkout or private sibling import is required.
 
+The accepted 2026-10-11 cohort is Observer a6 / Plus a6, with versioned reader
+SDK a13 and the retained shared a10 bridge CLI. Exact hashes, per-host scopes,
+recovery, paired rollback and reselection are in the
+[SDK adoption record](evidence/2026-10-11-mesh-sdk-adoption/README.md).
+When staging a new external SDK archive through a scoped apply, prepare its
+versioned parent directory before applying the `python` archive target. Review
+the exact directory, URL/checksum, diff and dry run first. Keep old SDK roots for
+paired rollback, and load the owner before recreating any desktop context.
+
 ```sh
 ./scripts/tmux-observer-operations verify --host snap --scope owner --source /absolute/chezmoi --selection /absolute/chezmoi/deployments/tmux-observer.json --frontend-verifier /absolute/rofi-tmux-plus/scripts/check-installed-artifact --output /absolute/private/verify.json
 ./scripts/tmux-observer-operations verify --host starship --scope desktop --source /absolute/chezmoi --selection /absolute/chezmoi/deployments/tmux-observer.json --frontend-verifier /absolute/rofi-tmux-plus/scripts/check-installed-artifact --output /absolute/private/verify.json

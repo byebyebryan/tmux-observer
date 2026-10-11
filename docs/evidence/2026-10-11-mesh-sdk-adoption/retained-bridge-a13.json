@@ -1,0 +1,12 @@
+{
+  "harnessSha256": "5125b5104c8fe1fbde5ac266f79f8cec71b1fd02c08fb0e699300f2a031f3d88",
+  "installedModules": 84,
+  "mode": "installed",
+  "observerSource": "cb45e40a7915f78fc13a65b955d2ce2d2bc7b4e9",
+  "observerWheel": "232e604ab64c99657852b884720afaefdbcd45be00a56a797793b402e36ff640",
+  "remoteBridgePackages": {
+    "mesh-plus": "0.1.0a10",
+    "tmux-observer": "0.6.0a6"
+  },
+  "state": "passed"
+}

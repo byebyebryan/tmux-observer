@@ -1,13 +1,13 @@
 # Runtime architecture
 
-Updated 2026-10-11. Recorded managed selection is Observer 0.6.0a5 /
-Tmux Plus 0.12.0a5 / Mesh 0.1.0a10. Source candidate a6 uses Mesh a13;
-[SDK adoption checkpoints](mesh-sdk-adoption.md) own its separate acceptance.
-This is the current component overview. The [original architecture](architecture.md)
-and [boundary design](component-boundaries.md) retain the extraction history.
-[Managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md)
-and [accepted artifact evidence](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
-own selection and acceptance.
+Updated 2026-10-11. Snap and Starship select Observer 0.6.0a6 / Tmux Plus
+0.12.0a6, with Mesh SDK 0.1.0a13 for the Tmux reader and retained shared bridge
+CLI 0.1.0a10. [SDK adoption checkpoints](mesh-sdk-adoption.md) and the
+[accepted artifact/managed evidence](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+bind the separate source, package, resource and operational gates. This is the
+current component overview. The [original architecture](architecture.md) and
+[boundary design](component-boundaries.md) retain the extraction history.
+[Managed operations](managed-operations.md) owns selection and recovery.
 
 ## Who owns what
 

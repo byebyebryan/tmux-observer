@@ -1,6 +1,6 @@
 # Tmux Observer
 
-Source candidate **0.6.0a6** integrates the released Mesh **0.1.0a13** SDK
+Released **0.6.0a6** integrates the released Mesh **0.1.0a13** SDK
 through an Observer-owned pure native profile and explicitly bound readers and
 stream guards. [Adoption checkpoints](docs/mesh-sdk-adoption.md) distinguish
 source, package, resource and managed acceptance. Frozen contracts are unchanged.
@@ -13,15 +13,16 @@ consumes those views and sends explicit intent to a separate action client.
 
 ## Current selection
 
-As recorded on **2026-10-10**, Snap and Starship select:
+As recorded on **2026-10-11**, Snap and Starship select:
 
 | Component | Version | Responsibility |
 | --- | --- | --- |
-| Tmux Observer | **0.6.0a5** | Native facts, owner publication, prepared composition, desktop association and separate actions |
-| Tmux Plus | **0.12.0a5** | Picker presentation, user intent and Tmux Session v1 compatibility CLI |
-| Mesh Plus | **0.1.0a10** | Host catalog authority and reusable cached state delivery |
+| Tmux Observer | **0.6.0a6** | Native facts, owner publication, prepared composition, desktop association and separate actions |
+| Tmux Plus | **0.12.0a6** | Picker presentation, user intent and Tmux Session v1 compatibility CLI |
+| Mesh reader SDK | **0.1.0a13** | Host catalog authority and guarded reusable cached delivery |
+| Shared Mesh bridge CLI | **0.1.0a10** | Retained compatible owner-only IPC/SSH bridge |
 
-The [hardening adoption record](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
+The [SDK adoption record](docs/evidence/2026-10-11-mesh-sdk-adoption/README.md)
 binds exact artifacts and native, headless, resource and managed
 recovery/paired rollback evidence. The
 [managed operations ledger](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md)

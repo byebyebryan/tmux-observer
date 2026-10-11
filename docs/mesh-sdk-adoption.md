@@ -1,8 +1,9 @@
 # Mesh SDK adoption checkpoints
 
 Implementation follows the [reviewed integration plan](mesh-sdk-integration-plan.md)
-and its separately recorded feasibility experiments. The selected managed tuple
-remains Mesh a10 / Observer a5 / Plus a5 until artifact and rollout acceptance.
+and its separately recorded feasibility experiments. The selected managed tuple is Observer a6 / Plus a6, with reader SDK a13 and
+retained shared bridge CLI a10 after independently accepted artifact and rollout
+gates. Earlier checkpoints below retain their original scope.
 
 ## Pure profile and reviewed dependency
 
@@ -98,3 +99,31 @@ cases. Its fresh ten-minute two-host resource gate passes unchanged CPU, memory
 and foreground deadlines with owned cleanup and native preservation. Producer
 acceptance allows the downstream exact artifact pin checkpoint; it does not
 establish that the consumer or managed selection already passed.
+
+## Consumer and managed acceptance
+
+Plus a6 pins the exact accepted Observer wheel and all 84 runtime Python modules.
+Its 293 source tests and installed wheel/bundle headless gates pass. The two
+100-frame p95 measurements are 57.963/58.929 ms against 150 ms. Both prereleases
+are published; downloaded assets match the accepted checksums and source CI is
+green. The [consumer record](https://github.com/byebyebryan/rofi-tmux-plus/blob/main/docs/evidence/2026-10-11-mesh-sdk-adoption/README.md)
+retains these exact artifact scopes.
+
+[Managed acceptance](evidence/2026-10-11-mesh-sdk-adoption/managed-acceptance.json)
+passes on Snap in owner scope and Starship in desktop scope. Both verify exact
+package/control bytes, kernel peer/interpreter/clock identity, current cached
+snapshot/watch, recovery, restored a5 paired baseline and final a6 reselection.
+The retained CLI a10 also passes all 24 installed cases with the new a6 native
+facade. Agent's independently selected a17 reader/a16 bridge remains accepted
+without package/service changes. Native generations, complete references, hooks
+and attachment counts survive. Static controls, preferences and foreign source
+edits are preserved. Starship's route-health aggregate changes under the existing
+reporting policy; its recent-history file predates the baseline, with the recorded
+per-file digest limitation. Graphical input and physical suspend remain unrun.
+
+The first scoped apply on Snap found a missing versioned SDK parent. Captured
+package/control restoration and owner restart succeeded; explicit parent
+preparation preceded the successful retry. The public operations procedure now
+states that preparation requirement. The cached publisher adapter remains the
+reference integration; its later extraction still needs the separate fixed-CLI
+factory design and endpoint acceptance described in the plan.
