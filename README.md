@@ -1,6 +1,6 @@
 # Tmux Observer
 
-Source candidate **0.6.0a6** integrates the released Mesh **0.1.0a11** SDK
+Source candidate **0.6.0a6** integrates the released Mesh **0.1.0a13** SDK
 through an Observer-owned pure native profile and explicitly bound readers and
 stream guards. [Adoption checkpoints](docs/mesh-sdk-adoption.md) distinguish
 source, package, resource and managed acceptance. Frozen contracts are unchanged.

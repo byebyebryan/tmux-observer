@@ -47,8 +47,8 @@ class CapturedAuthority:
 
 class MeshWorker:
     def __init__(self, host_id, *, owner_path=None, source="tmux_default", authority=None):
-        if __version__ != "0.1.0a11":
-            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a11 SDK")
+        if __version__ != "0.1.0a13":
+            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a13 SDK")
         self.host_id = host_id
         self.owner_path = owner_socket() if owner_path is None else owner_path
         self.source = source

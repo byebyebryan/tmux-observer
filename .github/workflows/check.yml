@@ -22,7 +22,7 @@ jobs:
         run: ./scripts/check
       - name: Install frozen optional Mesh candidate and owned SSH tools
         run: |
-          python -m pip install 'mesh-plus @ git+https://github.com/byebyebryan/mesh-plus.git@9d570c59041832d177519fd634d26c56ed572e81'
+          python -m pip install 'mesh-plus @ git+https://github.com/byebyebryan/mesh-plus.git@d9cdac4ba6314430c3c8eb4d948a9d697c90b411'
           sudo apt-get install --yes openssh-server
           sudo mkdir -p /run/sshd
       - name: Run Mesh integration and owned native SSH gate

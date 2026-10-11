@@ -13,9 +13,10 @@ identities, original Service v1 receipts, warming/null and complete-empty state,
 and historical records after source failure. Projection and reconstruction own
 their mutable data. Callbacks perform no file, process or socket I/O.
 
-The source and CI dependency is Mesh **0.1.0a11**, commit
-`9d570c59041832d177519fd634d26c56ed572e81`. This producer's Mesh worker accepts
-that SDK artifact and keeps the library authority as its default. Older local
+The final source and CI dependency is Mesh **0.1.0a13**, commit
+`d9cdac4ba6314430c3c8eb4d948a9d697c90b411`. The first profile/reader checkpoint
+used released a11. This producer's Mesh worker accepts only the reviewed a13
+SDK artifact and keeps the library authority as its default. Older local
 SDKs require the corresponding prior Observer artifact; a10 remote bridge
 compatibility is a separate installed checkpoint. SDK interface 1 does not
 automatically admit future artifacts.
@@ -68,3 +69,20 @@ gate passes on both physical hosts: Snap 4.05% CPU, Starship 2.60%, and both wit
 the unchanged owner/fleet memory ceilings. Disposable services clean up while
 ordinary native generations, references and hooks survive. These a11 measurements
 remain evidence for their exact candidate; a newer final SDK needs fresh gates.
+
+## Released a13 conformance checkpoint
+
+Mesh published a13 during implementation. Its SDK API, state/view, Reader,
+Client, Bridge, transport and frozen contract bytes match the reviewed a11 input.
+The additions are opt-in conformance and diagnostics, with compatible CLI commands.
+The downloaded 107,803-byte wheel matches SHA-256
+`62b42bc76e7d79d95d89c41ee6f73c5e0169d24e2f1ac911c151c13f1f2b6f07`.
+[The exact input tuple](evidence/2026-10-11-mesh-sdk-adoption/mesh-a13-inputs.json)
+retains the previously reviewed Python 3.14 dependency wheels.
+
+The source gate passes 404 tests; the Mesh gate passes **24 tests**. The portable
+kit exercises six independent profile cases, ten owned IPC/remote-proof update,
+restart and retirement cases, and one owned actual SSH case. A profile dropping
+required receipts is rejected by the independent oracle. These supplement the
+existing native passivity, identity, refresh and receipt checks; fixture publisher
+conformance does not certify deployment of an extracted owner adapter.
