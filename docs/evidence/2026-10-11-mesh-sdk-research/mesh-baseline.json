@@ -1,0 +1,10 @@
+{
+  "mode": "baseline",
+  "mesh": "0.1.0a10",
+  "observer": "0.6.0a5",
+  "testsRun": 8,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "passed"
+}

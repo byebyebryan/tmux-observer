@@ -1,0 +1,93 @@
+{
+  "state": "captured uncommitted kit, not a12 package acceptance",
+  "positive": {
+    "format": "mesh-plus.conformance.v1",
+    "interfaceVersion": 1,
+    "sdkVersion": 1,
+    "profile": {
+      "sdk_version": 1,
+      "profile_id": "tmux-observer.mesh-candidate.v1",
+      "native_protocol": "tmux-observer.observation.v1",
+      "native_version": 1,
+      "contract_digest": "sha256:49169be091510b9afd85dd6eaa099298280cc8177f7e426f433ceb091ef3eafc",
+      "frame_bytes": 1064960
+    },
+    "corpusDigest": "sha256:43545f68c4b5852f7d351eae3d2132454d9c24e9c9656b2121606aa5981e47c7",
+    "ok": true,
+    "testsRun": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "cases": [
+      {
+        "caseId": "profile-tmux-empty",
+        "status": "passed"
+      },
+      {
+        "caseId": "profile-tmux-fleet",
+        "status": "passed"
+      },
+      {
+        "caseId": "profile-tmux-historical",
+        "status": "passed"
+      },
+      {
+        "caseId": "profile-tmux-local",
+        "status": "passed"
+      },
+      {
+        "caseId": "profile-tmux-partial-host",
+        "status": "passed"
+      },
+      {
+        "caseId": "profile-tmux-warming",
+        "status": "passed"
+      }
+    ]
+  },
+  "brokenRequiredReceipts": {
+    "format": "mesh-plus.conformance.v1",
+    "interfaceVersion": 1,
+    "sdkVersion": 1,
+    "profile": {
+      "sdk_version": 1,
+      "profile_id": "tmux-observer.mesh-candidate.v1",
+      "native_protocol": "tmux-observer.observation.v1",
+      "native_version": 1,
+      "contract_digest": "sha256:49169be091510b9afd85dd6eaa099298280cc8177f7e426f433ceb091ef3eafc",
+      "frame_bytes": 1064960
+    },
+    "corpusDigest": "sha256:43545f68c4b5852f7d351eae3d2132454d9c24e9c9656b2121606aa5981e47c7",
+    "ok": false,
+    "testsRun": 6,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 0,
+    "cases": [
+      {
+        "caseId": "profile-tmux-empty",
+        "status": "passed"
+      },
+      {
+        "caseId": "profile-tmux-fleet",
+        "status": "failed"
+      },
+      {
+        "caseId": "profile-tmux-historical",
+        "status": "passed"
+      },
+      {
+        "caseId": "profile-tmux-local",
+        "status": "failed"
+      },
+      {
+        "caseId": "profile-tmux-partial-host",
+        "status": "failed"
+      },
+      {
+        "caseId": "profile-tmux-warming",
+        "status": "passed"
+      }
+    ]
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "status": "feasible_for_profile_reader_integration",
+  "checkedAtUtc": "2026-10-11T07:05:36.596018+00:00",
+  "observerHarnessCommit": "3de61eb7d5b3db7fdf4eb2f6207b9f6549935703",
+  "observerRuntimeSourceCommit": "5d8b7234ba10920beb59bde35c2f79c73d382b25",
+  "observerRuntimeMembers": 83,
+  "observerRuntimeMatchesHarness": true,
+  "meshReleasedSourceCommit": "9d570c59041832d177519fd634d26c56ed572e81",
+  "meshHandoffCommit": "17b8096beed20eeece3d0d86e2df655d1bc1f8ed",
+  "differential": {
+    "fixtures": 6,
+    "selectionComparisons": 18,
+    "baselineMesh": "0.1.0a10",
+    "candidateMesh": "0.1.0a11",
+    "profile": "scratch owner implementation using native/delivery public facades",
+    "equal": true,
+    "sampleDigest": "b3c8a8c0d8e8e39ccdbad8b84a12dcbdd72cb5af576ff0ac0b68a219e10dc62a"
+  },
+  "nativeAdmissionCases": [
+    {
+      "case": "forged owner digest",
+      "rejected": true,
+      "error": "remote_proof_binding"
+    },
+    {
+      "case": "extended receipt expiry",
+      "rejected": true,
+      "error": "remaining_lease_changed"
+    },
+    {
+      "case": "removed original receipt",
+      "rejected": true,
+      "error": "current_receipt_binding"
+    },
+    {
+      "case": "duplicate complete identity",
+      "rejected": true,
+      "error": "duplicate_identity"
+    },
+    {
+      "case": "record outside host scope",
+      "rejected": true,
+      "error": "row_host_scope"
+    },
+    {
+      "case": "ready.json native bool counter",
+      "rejected": true
+    },
+    {
+      "case": "warming.json native bool counter",
+      "rejected": true
+    },
+    {
+      "case": "wrong endpoint binding",
+      "rejected": true
+    },
+    {
+      "case": "empty required evidence",
+      "positiveRows": 0
+    }
+  ],
+  "profilePurity": {
+    "callbacks": 9,
+    "fileProcessSocketIOBlocked": true,
+    "status": "passed"
+  },
+  "configuredIPC": {
+    "snapshot": "passed",
+    "watch": "passed",
+    "disconnectRevocation": "passed",
+    "ownedCleanup": "passed",
+    "configuredSource": "tmux_default",
+    "nativeReceiptSource": "default"
+  },
+  "matrix": {
+    "mesh-baseline.json": {
+      "mode": "baseline",
+      "mesh": "0.1.0a10",
+      "observer": "0.6.0a5",
+      "testsRun": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "status": "passed"
+    },
+    "mesh-admission-only.json": {
+      "mode": "admission-only",
+      "mesh": "0.1.0a11",
+      "observer": "0.6.0a5",
+      "unmodifiedAdmission": "Mesh backend requires a reviewed mesh-plus 0.1.0a4/a5/a6/a7/a8/a9/a10 candidate",
+      "testsRun": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "status": "passed"
+    },
+    "mesh-explicit-profile.json": {
+      "mode": "explicit-profile",
+      "mesh": "0.1.0a11",
+      "observer": "0.6.0a5",
+      "unmodifiedAdmission": "Mesh backend requires a reviewed mesh-plus 0.1.0a4/a5/a6/a7/a8/a9/a10 candidate",
+      "testsRun": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "status": "passed"
+    },
+    "mesh-mixed-native.json": {
+      "mode": "mixed-native",
+      "mesh": "0.1.0a11",
+      "observer": "0.6.0a5",
+      "unmodifiedAdmission": "Mesh backend requires a reviewed mesh-plus 0.1.0a4/a5/a6/a7/a8/a9/a10 candidate",
+      "remoteBridgeSDK": "0.1.0a10",
+      "testsRun": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "status": "passed"
+    }
+  },
+  "concurrentMeshWork": {
+    "headObserved": "d2af3c2b09181af13e6ac1a7f4fbd2baf079a1a1",
+    "state": "uncommitted a12 testing kit captured by file digests",
+    "supplementaryResult": "six owner profile cases passed; no-receipts mutation produced three assertion failures, zero errors",
+    "installedA12Acceptance": false
+  },
+  "scope": {
+    "productionRuntimeEdited": false,
+    "pinsEdited": false,
+    "frozenContractsEdited": false,
+    "ordinaryServicesChanged": false,
+    "deployed": false,
+    "published": false
+  },
+  "limits": [
+    "Disposable profile model and in-memory worker hooks; no accepted implemented Observer candidate",
+    "Existing a11 runtime admission remains rejected without the labelled diagnostic allowlist substitution",
+    "Owned native/loopback SSH fixtures; no ordinary tmux sessions or production services used",
+    "No installed candidate resource, managed recovery/rollback, GUI or physical suspend acceptance",
+    "Native cached publisher extraction and fixed remote CLI factory remain separate design work",
+    "Supplemental draft conformance kit is not released a12 evidence"
+  ]
+}

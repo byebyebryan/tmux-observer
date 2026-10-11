@@ -1,8 +1,10 @@
 # Tmux Observer documentation
 
 Start with the [project overview](../README.md) and [current runtime architecture](runtime-architecture.md).
-The recorded current selection is Observer **0.6.0a2**, Tmux Plus **0.12.0a2**
-and Mesh **0.1.0a7** on Snap and Starship, as of 2026-10-10.
+The recorded current selection is Observer **0.6.0a5**, Tmux Plus **0.12.0a5**
+and Mesh **0.1.0a10** on Snap and Starship, as of 2026-10-10.
+The [Mesh SDK integration plan](mesh-sdk-integration-plan.md) covers proposed a11
+profile adoption and its preimplementation validation.
 
 ## Current interfaces and operation
 
@@ -18,9 +20,9 @@ and Mesh **0.1.0a7** on Snap and Starship, as of 2026-10-10.
 
 ## Selection and acceptance
 
-[Current accepted catalog fix](evidence/2026-10-10-catalog-bound-fix/README.md)
-is the front door for the selected artifact's native, headless, resource/capacity
-and installed recovery/rollback evidence. [Implementation status](implementation-status.md)
+[Current hardening adoption](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
+is the front door for the selected artifacts' native, headless, resource and
+installed recovery/rollback evidence. [Implementation status](implementation-status.md)
 keeps the original A–E checkpoint history. Acceptance belongs to the exact
 artifact, endpoint and scope recorded by each report.
 
