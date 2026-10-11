@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tmux-observer"
-version = "0.6.0a5"
+version = "0.6.0a6"
 description = "Passive default-server tmux observation and explicit read clients"
 requires-python = ">=3.11"
 readme = "README.md"

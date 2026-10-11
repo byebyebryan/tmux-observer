@@ -3,14 +3,14 @@
 Started 2026-10-09. The user authorized the migration goal loop after review of
 Mesh Plus's [handoff](https://github.com/byebyebryan/mesh-plus/blob/fd40916/docs/handoff.md)
 and frozen state boundary. This ledger owns the candidate implementation and
-acceptance. Current recorded selection, 2026-10-10, is Mesh **0.1.0a7** /
-Observer **0.6.0a2** / Plus **0.12.0a2** on Snap and Starship. The
-[catalog bound fix](evidence/2026-10-10-catalog-bound-fix/README.md) closes input growth
-and pathname replacement races, current-selection documentation and managed
-source publication. Its exact artifacts repeat independent source/package/native,
-600-second resources, capacity, installed headless and both-host managed
-recovery/rollback gates. SDK a6 stays installed for the tested preceding-tuple
-rollback. The [previous accepted rollout](evidence/2026-10-10-mesh-rollout/README.md)
+acceptance. Recorded managed selection, 2026-10-10, is Mesh **0.1.0a10** /
+Observer **0.6.0a5** / Plus **0.12.0a5** on Snap and Starship. The
+[hardening adoption](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
+binds those artifacts and their native, headless, resource and managed recovery/
+rollback gates. The [SDK adoption checkpoints](mesh-sdk-adoption.md) record the
+new a6 source candidate's explicit profile integration with Mesh a11; source
+acceptance does not select that candidate. The
+[previous accepted rollout](evidence/2026-10-10-mesh-rollout/README.md)
 binds Mesh `74b9e54` / Observer `1931d73` / Plus `07c2619` and retains its own
 exact released bytes, gates and operational scope. For a concise component map,
 see [runtime architecture](runtime-architecture.md).
@@ -20,9 +20,9 @@ see [runtime architecture](runtime-architecture.md).
 Prepared Mesh browsing requires a compatible catalog authority, the selected
 Mesh SDK/runtime dependencies, native Tmux facades available to its bridge, and
 an already running owner on each participating host. The selected public Mesh
-and Observer client launchers expose SDK a7 from
-`~/.local/share/mesh-plus/0.1.0a7/python`; the original common a6 root stays
-available for the tested previous-tuple rollback. Exact roots, payloads and
+and Observer client launchers expose SDK a10 from
+`~/.local/share/mesh-plus/0.1.0a10/python`. Prior versioned roots remain
+available for their recorded rollback checkpoints. Exact roots, payloads and
 controls are recorded in
 [managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md).
 

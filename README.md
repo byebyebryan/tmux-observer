@@ -1,16 +1,9 @@
 # Tmux Observer
 
-Source candidate 0.6.0a5 selects the reviewed Mesh a10 runtime checkpoint. It
-includes stale control-binding rejection and bounded private bridge retirement
-headroom. The released/deployed a4 tuple remains selected until the new exact
-artifacts pass installed, resource and paired rollback gates.
-
-Coordinated transport selection, 2026-10-10: Mesh 0.1.0a9, Tmux Observer
-0.6.0a4 and Tmux Plus 0.12.0a4 are deployed on Snap and Starship. Agent's
-a13 reader and a12 bridge use new private a9 environments; its a15 collector
-and a16 writer retain their prior artifacts. The frozen networking contracts
-are unchanged. [Exact gates and limits](https://github.com/byebyebryan/mesh-plus/blob/main/docs/evidence/2026-10-10-fleet-adoption/README.md)
-keep source, packaged, installed and operational acceptance distinct.
+Source candidate **0.6.0a6** integrates the released Mesh **0.1.0a11** SDK
+through an Observer-owned pure native profile and explicitly bound readers and
+stream guards. [Adoption checkpoints](docs/mesh-sdk-adoption.md) distinguish
+source, package, resource and managed acceptance. Frozen contracts are unchanged.
 
 Passive tmux observation and shared prepared views for local and remote clients.
 The host-local core reads session metadata; an owner service publishes it.
@@ -24,14 +17,13 @@ As recorded on **2026-10-10**, Snap and Starship select:
 
 | Component | Version | Responsibility |
 | --- | --- | --- |
-| Tmux Observer | **0.6.0a2** | Native facts, owner publication, prepared composition, desktop association and separate actions |
-| Tmux Plus | **0.12.0a2** | Picker presentation, user intent and Tmux Session v1 compatibility CLI |
-| Mesh Plus | **0.1.0a7** | Host catalog authority and reusable cached state delivery |
+| Tmux Observer | **0.6.0a5** | Native facts, owner publication, prepared composition, desktop association and separate actions |
+| Tmux Plus | **0.12.0a5** | Picker presentation, user intent and Tmux Session v1 compatibility CLI |
+| Mesh Plus | **0.1.0a10** | Host catalog authority and reusable cached state delivery |
 
-The [catalog bound-fix record](docs/evidence/2026-10-10-catalog-bound-fix/README.md)
-binds exact artifacts and source/package/native, headless, resource/capacity and
-managed recovery/paired rollback evidence. SDK a6 remains available for the
-tested previous-tuple rollback. The
+The [hardening adoption record](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
+binds exact artifacts and native, headless, resource and managed
+recovery/paired rollback evidence. The
 [managed operations ledger](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md)
 owns installed selection; [implementation status](docs/implementation-status.md)
 and the [Mesh integration ledger](docs/mesh-integration.md) retain checkpoint history.

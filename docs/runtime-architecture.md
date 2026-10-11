@@ -1,10 +1,12 @@
 # Runtime architecture
 
-Updated 2026-10-10 for Observer 0.6.0a2 / Tmux Plus 0.12.0a2 / Mesh 0.1.0a7.
+Updated 2026-10-11. Recorded managed selection is Observer 0.6.0a5 /
+Tmux Plus 0.12.0a5 / Mesh 0.1.0a10. Source candidate a6 uses Mesh a11;
+[SDK adoption checkpoints](mesh-sdk-adoption.md) own its separate acceptance.
 This is the current component overview. The [original architecture](architecture.md)
 and [boundary design](component-boundaries.md) retain the extraction history.
 [Managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md)
-and [accepted artifact evidence](evidence/2026-10-10-catalog-bound-fix/README.md)
+and [accepted artifact evidence](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
 own selection and acceptance.
 
 ## Who owns what
@@ -14,7 +16,7 @@ own selection and acceptance.
 | Native contract and collector | `tmux_observer.native`, `collector`, `attachment_collector` | Full session identities and bounded passive default-server metadata reads |
 | Owner publisher | `tmux_observer.owner`, `delivery` | Fixed host scope, scheduled samples, independent receipts, snapshot/watch and passive refresh hints |
 | Networking and catalog | [Mesh Plus](https://github.com/byebyebryan/mesh-plus) | Logical hosts/routes, reusable local/SSH state delivery, proof and recovery |
-| Mesh adapter and composition | `tmux_observer.mesh`, `tmux_observer_client.mesh_fleet` | Native-to-Mesh adaptation, guarded owner projection and existing Fleet v1 facade |
+| Mesh profile, adapter and composition | `tmux_observer.mesh_profile`, `mesh`, `tmux_observer_client.mesh_fleet` | Pure native projection, cached publication, guarded owner composition and existing Fleet v1 facade |
 | Desktop association | `tmux_observer_client.desktop`, local bindings and desktop adapters | Endpoint-local Niri/terminal/process evidence joined to accepted native inputs |
 | Prepared consumer facade | `tmux_observer_client.public`, `contract` | Cached queries/watch, context identity, source freshness and bounded refresh tickets |
 | Action client | `tmux_observer_actions.public`, `contract` | Independent route/target validation, native lifecycle, terminal launch and window actions |
