@@ -1,7 +1,7 @@
 # Runtime architecture
 
 Updated 2026-10-11. Recorded managed selection is Observer 0.6.0a5 /
-Tmux Plus 0.12.0a5 / Mesh 0.1.0a10. Source candidate a6 uses Mesh a11;
+Tmux Plus 0.12.0a5 / Mesh 0.1.0a10. Source candidate a6 uses Mesh a13;
 [SDK adoption checkpoints](mesh-sdk-adoption.md) own its separate acceptance.
 This is the current component overview. The [original architecture](architecture.md)
 and [boundary design](component-boundaries.md) retain the extraction history.

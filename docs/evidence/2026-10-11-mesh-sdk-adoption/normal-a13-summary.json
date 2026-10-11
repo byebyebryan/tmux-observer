@@ -1,0 +1,47 @@
+{
+  "state": "passed",
+  "gate": "cached-delivery-resources",
+  "resourceScope": "headless-cached-delivery",
+  "viewerAcceptance": false,
+  "desktopAcceptance": false,
+  "scope": "installed two-host owners passively observing ordinary default servers, real SSH and cached fleet delivery; private preferences/units/IPC only; desktop and viewer acceptance excluded",
+  "cases": [
+    "both_installed_native_profiles_and_cached_delivery_ready",
+    "hundred_warm_queries_per_endpoint_meet_deadlines",
+    "owned_fleet_teardown_preserves_native_references_generation_and_hooks"
+  ],
+  "cleanup": true,
+  "transport": "mesh",
+  "harnessCommit": "cb45e40a7915f78fc13a65b955d2ce2d2bc7b4e9",
+  "sourceCommit": "cb45e40a7915f78fc13a65b955d2ce2d2bc7b4e9",
+  "normalResourceAssessment": {
+    "snap": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 87035904,
+      "ownerMaxObservedRssBytes": 25989120,
+      "combinedCpuPercent": 4.285533898212853,
+      "withinSelectedTargets": true
+    },
+    "starship": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 86433792,
+      "ownerMaxObservedRssBytes": 20840448,
+      "combinedCpuPercent": 2.5076688219973864,
+      "withinSelectedTargets": true
+    }
+  },
+  "limits": [
+    "Sampled RSS can miss transient peaks",
+    "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
+    "Two physical hosts and private catalog/preferences; no managed selection",
+    "Desktop readiness and positive viewer associations were not assessed"
+  ],
+  "privateReportSha256": "0a3c69ce71e4110906c5e7911a07304d815058739f1fbb5ff45f70342b1d14f2",
+  "wheelSha256": "232e604ab64c99657852b884720afaefdbcd45be00a56a797793b402e36ff640",
+  "meshVersion": "0.1.0a13",
+  "nativePreservation": "Required native reference, generation, hook and attachment checks passed before and after owned teardown"
+}

@@ -86,3 +86,15 @@ restart and retirement cases, and one owned actual SSH case. A profile dropping
 required receipts is rejected by the independent oracle. These supplement the
 existing native passivity, identity, refresh and receipt checks; fixture publisher
 conformance does not certify deployment of an extracted owner adapter.
+
+## Producer package acceptance
+
+The frozen Observer a6 wheel from `cb45e40` has SHA-256
+`232e604ab64c99657852b884720afaefdbcd45be00a56a797793b402e36ff640`.
+[The package record](evidence/2026-10-11-mesh-sdk-adoption/README.md) binds installed
+24-case Mesh/portable conformance, mixed a10 bridge compatibility, 11 native owner
+and 28 direct cases, four recovery simulations, and eleven actual-SSH capacity
+cases. Its fresh ten-minute two-host resource gate passes unchanged CPU, memory
+and foreground deadlines with owned cleanup and native preservation. Producer
+acceptance allows the downstream exact artifact pin checkpoint; it does not
+establish that the consumer or managed selection already passed.

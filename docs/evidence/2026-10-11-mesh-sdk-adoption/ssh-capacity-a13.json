@@ -1,0 +1,115 @@
+{
+  "gate": "T12-installed-ssh-capacity-partial",
+  "result": "passed_partial",
+  "sourceCommit": "cb45e40a7915f78fc13a65b955d2ce2d2bc7b4e9",
+  "harnessCommit": "cb45e40a7915f78fc13a65b955d2ce2d2bc7b4e9",
+  "harnessTreeDirty": false,
+  "sourceTreeDirty": false,
+  "wheelSha256": "232e604ab64c99657852b884720afaefdbcd45be00a56a797793b402e36ff640",
+  "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+  "limits": [
+    "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints",
+    "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+    "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+    "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included",
+    "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
+    "All sixteen owners enable local association scheduling and IPC with synthetic empty-client profiles; native client sampling cost is covered by the separate normal resource gate"
+  ],
+  "privateReportSha256": "1096f658205e034f643c97f272992e1b3234f7f72bb47bfbd0cbb8e4a6cb511a",
+  "cases": [
+    {
+      "name": "enabled_local_association_profile_is_current_without_mesh_export",
+      "result": "passed"
+    },
+    {
+      "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+      "result": "passed",
+      "frameBytes": 22627
+    },
+    {
+      "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_two_watchers_share_sixteen_owner_connections",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_third_reader_receives_explicit_capacity_error",
+      "result": "passed"
+    },
+    {
+      "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+      "result": "passed",
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 723296,
+        "retainedBytes": 35280,
+        "connections": 16,
+        "perPeerBytes": 22603
+      }
+    },
+    {
+      "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+      "result": "passed",
+      "frameBytes": 862148
+    },
+    {
+      "name": "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners",
+      "result": "passed"
+    },
+    {
+      "name": "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
+      "result": "passed",
+      "rpcMs": [
+        19.678299002407584,
+        21.78949000517605,
+        23.173208996013273,
+        13.17900000140071,
+        26.90919399901759,
+        23.513275002187584,
+        20.38166599959368,
+        20.050531995366327,
+        17.543539994221646,
+        17.245905997697264
+      ],
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 30297028,
+        "retainedBytes": 930864,
+        "connections": 16,
+        "perPeerBytes": 1836207
+      }
+    },
+    {
+      "name": "seventeenth_catalog_owner_fails_authority_without_truncated_success",
+      "result": "passed"
+    },
+    {
+      "name": "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+      "result": "passed",
+      "elapsedMs": 46.814
+    }
+  ],
+  "resources": {
+    "targetBytes": 805306368,
+    "memoryTarget": "passed",
+    "conservativeCombinedPeakBytes": 721534976,
+    "durationMs": 30711,
+    "sampleIntervalMs": 100,
+    "sampleCount": 202,
+    "fleetAndBridgePeakBytes": 236589056
+  },
+  "nearCapRpcMs": [
+    19.678299002407584,
+    21.78949000517605,
+    23.173208996013273,
+    13.17900000140071,
+    26.90919399901759,
+    23.513275002187584,
+    20.38166599959368,
+    20.050531995366327,
+    17.543539994221646,
+    17.245905997697264
+  ]
+}

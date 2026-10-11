@@ -8,7 +8,7 @@ Observer **0.6.0a5** / Plus **0.12.0a5** on Snap and Starship. The
 [hardening adoption](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md)
 binds those artifacts and their native, headless, resource and managed recovery/
 rollback gates. The [SDK adoption checkpoints](mesh-sdk-adoption.md) record the
-new a6 source candidate's explicit profile integration with Mesh a11; source
+new a6 source candidate's explicit profile integration with Mesh a13; source
 acceptance does not select that candidate. The
 [previous accepted rollout](evidence/2026-10-10-mesh-rollout/README.md)
 binds Mesh `74b9e54` / Observer `1931d73` / Plus `07c2619` and retains its own
