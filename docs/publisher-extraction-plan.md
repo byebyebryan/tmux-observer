@@ -42,6 +42,8 @@ the unchanged Delivery payload. `proof({nonce})` validates the nonce before
 calling a new native cached `snapshot()`; retained watch data cannot prove owner
 liveness. Equal accepted counters cannot acquire a new expiry within an owner
 publisher/clock binding. Publisher replacement resets that binding.
+Published frames and barriers are owned copies; a source retaining its input
+cannot mutate queued evidence. Failed admission updates no accepted counters.
 
 The proposed CLI hook is `main(*, publisher_factories=None)`, threaded to
 `configured_adapter(..., publisher_factories=None)`. A trusted installed caller
@@ -53,9 +55,11 @@ discovery mechanism for choosing code.
 
 Default calls preserve the reference integration. A domain omitted from an
 explicit mapping retains that declared compatibility path. A supplied factory
-that is missing, raises or returns a wrong binding fails; it never falls back to
+that cannot load, raises or returns a wrong binding fails; it never falls back to
 the reference adapter. The factory mapping is copied at entry so later caller
 mutation cannot change one invocation's code selection.
+The trusted entry point imports its factory lazily when the selected publisher
+is constructed. Catalog-only commands retain the stdlib authority fast path.
 
 The explicit new entry point requires its paired Observer factory. Existing
 launchers retain reference publication until a separately accepted managed change.
@@ -138,5 +142,6 @@ topology, recovery and paired rollback. The unchanged UI needs no new graphical
 gate for wiring alone; graphical/action or physical sleep changes require their
 own scope. No WSS, event source, broker, pooling or provider change belongs here.
 
-The final [review](publisher-extraction-review.md) records the actual feasibility
-disposition, evidence limitations and implementation sequence once complete.
+The final [review](publisher-extraction-review.md) accepts the
+[executed feasibility study](evidence/2026-10-11-publisher-feasibility/README.md)
+and records its limits and producer-first implementation sequence.

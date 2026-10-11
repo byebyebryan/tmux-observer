@@ -58,7 +58,9 @@ The [component boundary design](component-boundaries.md) and
 [source review](component-boundaries-review.md) record the subsequent extraction.
 The [publisher extraction plan](publisher-extraction-plan.md) and
 [review](publisher-extraction-review.md) cover the next isolated factory/native
-source study; they do not change accepted runtime selection.
+source boundary. The [accepted feasibility evidence](evidence/2026-10-11-publisher-feasibility/README.md)
+supports a producer-first implementation backlog; it does not change accepted
+runtime selection.
 [Local performance implementation](local-performance-implementation.md) records
 later association work. [Context and primary sources](context-and-sources.md)
 preserve the checked design inputs.

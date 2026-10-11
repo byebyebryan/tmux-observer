@@ -141,6 +141,9 @@ Mesh byte/proof counters remain unmeasured.
 The publisher still uses Mesh's reference adapter. Its extraction requires a
 supported fixed-CLI factory and independent local/remote publisher acceptance;
 the completed profile/reader adoption does not certify that later change.
+The [publisher feasibility review](publisher-extraction-review.md) now records a
+passing isolated IPC/SSH study and a Mesh-first implementation backlog. The
+reference publisher remains selected until those later package/resource gates pass.
 
 Optional native control-mode events need an independent passivity and benefit
 gate. Physical sleep/wake and graphical checks for the Mesh wiring releases
