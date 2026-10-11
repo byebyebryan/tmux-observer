@@ -48,3 +48,23 @@ case run with implicit `ReferenceProfile` construction forbidden. Rotation,
 authority loss and refresh gap revocation recover through the explicit profile.
 [The reader report](evidence/2026-10-11-mesh-sdk-adoption/reader-source.json)
 binds these source inputs. Installed artifact and resource acceptance follow.
+
+## Headless operations and mixed-version acceptance
+
+The operations tool now accepts an explicit owner-only scope. It rejects an
+active desktop or captured fleet, checks current owner/attachment bindings and
+complete native identities, and restarts only the owner during recovery. Capture
+and paired rollback retain their scope and staged payload/control guarantees.
+The source gate passes **404 tests**, including six added topology, evidence,
+recovery and rollback cases. Read-only verification of Snap's selected a10/a5/a5
+installation passes exact payload/control checks, current owner evidence, fresh
+CLI inventory and preserved native generation/references.
+
+The installed Mesh gate also supports an explicit isolated bridge interpreter.
+The frozen a6 candidate with a11 passes all 20 cases against an installed
+a10/Observer-a5 SSH bridge. This is mixed-version package/native evidence,
+separate from managed adoption. Its ten-minute headless cached-delivery resource
+gate passes on both physical hosts: Snap 4.05% CPU, Starship 2.60%, and both within
+the unchanged owner/fleet memory ceilings. Disposable services clean up while
+ordinary native generations, references and hooks survive. These a11 measurements
+remain evidence for their exact candidate; a newer final SDK needs fresh gates.

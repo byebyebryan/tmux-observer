@@ -7,6 +7,7 @@ import importlib.machinery
 import importlib.util
 import json
 import stat
+import subprocess
 import tempfile
 import unittest
 import warnings
@@ -240,6 +241,104 @@ class CoordinatedRollbackTests(unittest.TestCase):
             )
         self.assert_selected_survives()
 
+    def test_headless_rollback_rejects_desktop_baseline_before_stop(self):
+        captured = {**self.captured, "host": "snap", "operation": "capture", "scope": "desktop"}
+        before = self.home / "before.json"
+        before.write_text(json.dumps(captured))
+        selection = self.home / "selection.json"
+        selection.write_text(json.dumps(self.selection))
+        with (
+            patch.object(operations, "native_references", return_value=[]),
+            patch.object(operations, "installed", return_value={}),
+            patch.object(operations, "run") as runner,
+            patch(
+                "sys.argv",
+                [
+                    "operations",
+                    "rollback",
+                    "--host",
+                    "snap",
+                    "--scope",
+                    "owner",
+                    "--before",
+                    str(before),
+                    "--output",
+                    str(self.home / "result.json"),
+                    "--source",
+                    str(self.home),
+                    "--selection",
+                    str(selection),
+                    "--frontend-verifier",
+                    str(self.home / "verifier"),
+                ],
+            ),
+        ):
+            runner.return_value.stdout = ""
+            with self.assertRaisesRegex(RuntimeError, "baseline scope differs"):
+                operations.main()
+            self.assertEqual(
+                [call.args[0] for call in runner.call_args_list], [["pgrep", "-x", "rofi"]]
+            )
+        self.assert_selected_survives()
+
+    def test_headless_paired_rollback_stops_only_owner(self):
+        captured = {
+            **self.captured,
+            "host": "snap",
+            "operation": "capture",
+            "scope": "owner",
+            "controls": {},
+        }
+        before = self.home / "before.json"
+        before.write_text(json.dumps(captured))
+        selection = self.home / "selection.json"
+        selection.write_text(json.dumps(self.selection))
+        with (
+            patch.object(operations, "native_references", return_value=[]),
+            patch.object(
+                operations,
+                "native_identity",
+                return_value={"serverGeneration": "generation", "references": []},
+            ),
+            patch.object(operations, "installed", return_value={}),
+            patch.object(operations, "control_paths", return_value=[]),
+            patch.object(
+                operations, "active_fleet_unit", side_effect=AssertionError("fleet discovery")
+            ),
+            patch.object(operations, "verify_frontend"),
+            patch.object(operations, "run") as runner,
+            patch("builtins.print"),
+            patch(
+                "sys.argv",
+                [
+                    "operations",
+                    "rollback",
+                    "--host",
+                    "snap",
+                    "--scope",
+                    "owner",
+                    "--before",
+                    str(before),
+                    "--output",
+                    str(self.home / "result.json"),
+                    "--source",
+                    str(self.home),
+                    "--selection",
+                    str(selection),
+                    "--frontend-verifier",
+                    str(self.home / "verifier"),
+                ],
+            ),
+        ):
+            runner.return_value.stdout = ""
+            operations.main()
+            stops = [call.args[0] for call in runner.call_args_list if "stop" in call.args[0]]
+            self.assertEqual(
+                stops, [["systemctl", "--user", "stop", "tmux-observer-owner@snap.service"]]
+            )
+        self.assertEqual((self.home / "core/module.py").read_text(), "old-core")
+        self.assertEqual((self.home / "frontend/module.py").read_text(), "old-frontend")
+
 
 class PreparedReadinessTests(unittest.TestCase):
     def setUp(self):
@@ -367,6 +466,152 @@ class PreparedReadinessTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HeadlessOperationsTests(unittest.TestCase):
+    def setUp(self):
+        self.reference = {
+            "hostId": "snap",
+            "serverGeneration": "generation",
+            "sessionId": "$1",
+            "createdAt": 1,
+        }
+        self.frame = {
+            "source": {"hostId": "snap", "uid": 1000},
+            "clock": {"bootId": "boot", "timeNamespace": "time:1"},
+            "publisherId": "publisher",
+            "receipt": {"state": "ready"},
+            "snapshot": {"serverGeneration": "generation", "sessions": [self.reference]},
+        }
+
+    def test_scope_requires_its_explicit_service_topology(self):
+        for scope, desktop, fleets, accepted in (
+            ("owner", "inactive", "", True),
+            ("owner", "active", "", False),
+            ("owner", "failed", "", False),
+            ("owner", "inactive", "tmux-observer-fleet@one.service active\n", False),
+            ("desktop", "inactive", "", False),
+            ("desktop", "active", "tmux-observer-fleet@one.service active\n", True),
+        ):
+
+            def run(argv, desktop_state=desktop, fleet_output=fleets, **_kwargs):
+                return subprocess.CompletedProcess(
+                    argv, 0, desktop_state if "is-active" in argv else fleet_output, ""
+                )
+
+            with (
+                self.subTest(scope=scope, desktop=desktop, fleets=fleets),
+                patch.object(operations, "run", run),
+            ):
+                if accepted:
+                    operations.check_service_scope(scope)
+                else:
+                    with self.assertRaises(RuntimeError):
+                        operations.check_service_scope(scope)
+
+    def test_required_attachment_profile_keeps_full_owner_binding(self):
+        profile = {**copy.deepcopy(self.frame), "receipt": {"state": "ready", "expiresAt": 20}}
+        self.assertTrue(operations.owner_profile_ready(self.frame, profile, 10))
+        for key, value in (
+            ("publisherId", "other"),
+            ("source", {"hostId": "snap", "uid": 2000}),
+            ("clock", {"bootId": "other", "timeNamespace": "time:1"}),
+            ("receipt", {"state": "failed", "expiresAt": 20}),
+            ("receipt", {"state": "ready", "expiresAt": 10}),
+            ("snapshot", {"serverGeneration": "other", "sessions": [self.reference]}),
+            ("snapshot", {"serverGeneration": "generation", "sessions": []}),
+        ):
+            altered = {**profile, key: value}
+            with self.subTest(key=key, value=value):
+                self.assertFalse(operations.owner_profile_ready(self.frame, altered, 10))
+
+    def exercise(self, operation, *, changed_generation=False, unchanged_publisher=False):
+        with tempfile.TemporaryDirectory(prefix="tmux-headless-ops-") as temporary:
+            root = Path(temporary)
+            selection = root / "selection.json"
+            selection.write_text('{"requirements":{"localAttachments":true}}\n')
+            identity = {
+                "serverGeneration": "generation",
+                "references": [("snap", "generation", "$1", 1)],
+            }
+            after_identity = (
+                {**identity, "serverGeneration": "other"} if changed_generation else identity
+            )
+            recovered = {
+                **self.frame,
+                "publisherId": "publisher" if unchanged_publisher else "restarted",
+            }
+            frames = [self.frame, recovered] if operation == "recover" else [self.frame]
+
+            def run(argv, **_kwargs):
+                if argv[-2:] == ["inventory", "--json"]:
+                    return subprocess.CompletedProcess(
+                        argv,
+                        0,
+                        '{"schemaVersion":1,"hosts":[{"hostId":"snap","status":"ok","sessions":[]}]}',
+                        "",
+                    )
+                if argv == ["systemctl", "--user", "restart", "tmux-observer-owner@snap.service"]:
+                    return subprocess.CompletedProcess(argv, 0, "", "")
+                raise AssertionError("unexpected headless command: " + str(argv))
+
+            with (
+                patch.object(operations, "HOME", root),
+                patch.object(operations, "installed", return_value={}) as installed,
+                patch.object(operations, "native_references", return_value=[]),
+                patch.object(operations, "native_identity", side_effect=[identity, after_identity]),
+                patch.object(operations, "owner_scope_ready", side_effect=frames),
+                patch.object(
+                    operations, "fleet_ready", side_effect=AssertionError("fleet readiness")
+                ),
+                patch.object(operations, "environment", return_value={}),
+                patch.object(operations, "run", side_effect=run) as runner,
+                patch("builtins.print"),
+                patch(
+                    "sys.argv",
+                    [
+                        "operations",
+                        operation,
+                        "--host",
+                        "snap",
+                        "--scope",
+                        "owner",
+                        "--source",
+                        str(root),
+                        "--selection",
+                        str(selection),
+                        "--frontend-verifier",
+                        str(root / "verifier"),
+                        "--output",
+                        str(root / "result.json"),
+                    ],
+                ),
+            ):
+                operations.main()
+                installed.assert_called_once_with(
+                    {"requirements": {"localAttachments": True}}, "snap", scope="owner"
+                )
+                result = json.loads((root / "result.json").read_text())
+                self.assertEqual(result["scope"], "owner")
+                self.assertNotIn("preparedFrameBytes", result)
+                return result, [call.args[0] for call in runner.call_args_list]
+
+    def test_verify_and_recovery_do_not_require_or_start_a_desktop(self):
+        verified, commands = self.exercise("verify")
+        self.assertEqual(len(commands), 1)
+        self.assertTrue(verified["nativeGenerationPreserved"])
+        recovered, commands = self.exercise("recover")
+        self.assertEqual(
+            commands[0], ["systemctl", "--user", "restart", "tmux-observer-owner@snap.service"]
+        )
+        self.assertEqual(recovered["after"]["publisherId"], "restarted")
+        self.assertTrue(recovered["completeReferencesSurvive"])
+
+    def test_recovery_rejects_unchanged_publisher_and_native_generation_drift(self):
+        with self.assertRaisesRegex(RuntimeError, "owner incarnation"):
+            self.exercise("recover", unchanged_publisher=True)
+        with self.assertRaisesRegex(RuntimeError, "native server generation"):
+            self.exercise("verify", changed_generation=True)
 
 
 class FrontendBoundaryTests(unittest.TestCase):

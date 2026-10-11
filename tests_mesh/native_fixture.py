@@ -114,7 +114,11 @@ class NativeFixture:
         self.write(
             self.bin / "mesh-plus",
             "#!/bin/sh\nexec "
-            + shlex.join([sys.executable, "-m", "mesh_plus.cli"])
+            + shlex.join(
+                [os.environ["TMUX_OBSERVER_TEST_BRIDGE_PYTHON"], "-I", "-B", "-m", "mesh_plus.cli"]
+                if "TMUX_OBSERVER_TEST_BRIDGE_PYTHON" in os.environ
+                else [sys.executable, "-m", "mesh_plus.cli"]
+            )
             + ' "$@" --config '
             + shlex.quote(str(config))
             + " 2>"

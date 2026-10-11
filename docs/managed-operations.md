@@ -9,7 +9,8 @@ both repositories on the deployment host and record their exact commits. No
 Snap-only checkout or private sibling import is required.
 
 ```sh
-./scripts/tmux-observer-operations verify --host snap --source /absolute/chezmoi --selection /absolute/chezmoi/deployments/tmux-observer.json --frontend-verifier /absolute/rofi-tmux-plus/scripts/check-installed-artifact --output /absolute/private/verify.json
+./scripts/tmux-observer-operations verify --host snap --scope owner --source /absolute/chezmoi --selection /absolute/chezmoi/deployments/tmux-observer.json --frontend-verifier /absolute/rofi-tmux-plus/scripts/check-installed-artifact --output /absolute/private/verify.json
+./scripts/tmux-observer-operations verify --host starship --scope desktop --source /absolute/chezmoi --selection /absolute/chezmoi/deployments/tmux-observer.json --frontend-verifier /absolute/rofi-tmux-plus/scripts/check-installed-artifact --output /absolute/private/verify.json
 ```
 
 The operation is explicit: there is no default apply or recovery. Verification
@@ -21,12 +22,28 @@ source/clock/publisher/generation and complete references must also be current.
 Presentation membership grants no operation authority. JSON outputs can contain
 private controls and inventories; keep capture files in an owned private tree.
 
+The default `--scope desktop` requires an active desktop service and exactly
+one captured fleet context. Explicit `--scope owner` accepts the headless
+topology only when the desktop is inactive and no captured fleet is active.
+It verifies the same installed pair, controls and owner enablement, current
+owner facts and required local attachment evidence, plus direct native generation
+and complete references before/after the operation. Fresh CLI inventory remains
+an independent check. Desktop bindings, prepared picker frames and viewer
+positives are excluded from this scope; they are not normalized to healthy.
+Snap's recorded headless baseline uses owner scope; Starship's captured desktop
+uses desktop scope. Selecting a scope starts no missing service.
+
 `capture` saves exact controls, separate paired payload archives and ordinary
 native reference IDs. Capture alone is not rollback. `recover` restarts only the
 selected owner and captured desktop/fleet reader: owner recovery tears down the
 old desktop context, so explicitly recreate desktop context, discover its new
 fleet and require new incarnations and current leases. No tmux session, provider,
 desktop shell or ordinary SSH master is stopped.
+Owner-scope recovery restarts only the owner, requires a new publisher and
+current attachment evidence, and preserves native generation and complete
+references. Capture records its scope; rollback rejects a baseline from another
+scope before stopping services. Owner-scope paired rollback stops only the owner
+and retains the same staged pair/control recovery guarantees.
 
 `rollback --before /absolute/private/before.json` requires Rofi closed and
 verifies the current selection before staging archives. Digests, complete member
