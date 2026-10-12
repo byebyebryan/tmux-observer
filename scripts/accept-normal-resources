@@ -272,6 +272,12 @@ def coordinate(
             if len(profiles) < 2:
                 time.sleep(10)
         record["backgroundProfiles"] = profiles
+        if transport == "mesh":
+            for host, profile in profiles.items():
+                assert {(row["host"], row["source"]) for row in profile["publisherFactories"]} == {
+                    (host, "tmux_default")
+                }, "resource workload did not use the owned publisher on both SSH endpoints"
+            record["cases"].append("owned_publisher_factory_selected_on_both_ssh_endpoints")
         assessments = {}
         for host, value in profiles.items():
             associated = profiles["starship" if host == "snap" else "snap"]

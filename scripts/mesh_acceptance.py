@@ -40,6 +40,27 @@ def mesh_wheels(directory):
     return paths
 
 
+def write_owned_mesh_cli(path, python, trace):
+    """Install a trusted, lazy factory map; selected failures stay terminal."""
+    path.write_text(
+        "#!"
+        + str(python)
+        + "\nimport json,pathlib\n"
+        + "from mesh_plus.cli import main\n"
+        + "def factory(host,source,socket):\n"
+        + " from tmux_observer import mesh_publisher\n"
+        + " publisher=mesh_publisher.make_publisher(host,source,socket)\n"
+        + " with pathlib.Path("
+        + repr(str(trace))
+        + ").open('a') as out:\n"
+        + "  out.write(json.dumps({'host':host,'source':source,'module':mesh_publisher.__file__})+'\\n')\n"
+        + " return publisher\n"
+        + "raise SystemExit(main(publisher_factories={'tmux':factory}))\n"
+    )
+    path.chmod(0o700)
+    return path
+
+
 def private_mesh_routes(root, python, *, socket, host, executable, sources=None):
     """Route only the fixture's bridge into its installed SDK and private config.
 
@@ -65,7 +86,9 @@ def private_mesh_routes(root, python, *, socket, host, executable, sources=None)
             + "\n"
         )
         path.chmod(0o600)
-    cli = Path(python).parent / "mesh-plus"
+    cli = write_owned_mesh_cli(
+        binary / "mesh-owned-cli", python, root / "publisher-factories.jsonl"
+    )
     wrapper = binary / "mesh-plus"
     wrapper.write_text(
         "#!"

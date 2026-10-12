@@ -313,6 +313,10 @@ def profile_native(root, seconds):
         time.sleep(1)
     duration_us = elapsed * 1000
     output["state"] = "complete"
+    trace = root / "publisher-factories.jsonl"
+    output["publisherFactories"] = (
+        [json.loads(line) for line in trace.read_text().splitlines()] if trace.exists() else []
+    )
     output["serviceCpuPercent"] = {
         role: (now["services"][role]["cpuUsec"] - first["services"][role]["cpuUsec"])
         / duration_us

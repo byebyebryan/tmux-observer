@@ -167,6 +167,12 @@ def remote_bundle(root):
                         "current": samples[-1],
                         "ownersAlive": sum(process.poll() is None for process in owners),
                     }
+                    trace = root / "publisher-factories.jsonl"
+                    result["publisherFactories"] = (
+                        [json.loads(line) for line in trace.read_text().splitlines()]
+                        if trace.exists()
+                        else []
+                    )
             else:
                 raise ValueError("unsupported owned bundle control")
             print(json.dumps({"ok": True, "result": result}), flush=True)
@@ -643,6 +649,13 @@ def main(
         (root / "bridge").chmod(0o700)
         settings = {"owners": 16, "padding": 8}
         if transport == "mesh":
+            from mesh_acceptance import write_owned_mesh_cli
+
+            owned_cli = write_owned_mesh_cli(
+                root / "mesh-owned-cli",
+                root / "venv/bin/python",
+                root / "publisher-factories.jsonl",
+            )
             settings["meshTransport"] = True
             # Each configured fixture route selects a fixed source config.
             # No native server or ordinary Mesh source is involved.
@@ -662,7 +675,7 @@ def main(
                     "#!/bin/sh\nprintf '%s\\n' \"$$\" > "
                     + shlex.quote(str(root / ("bridge-pid-" + host)))
                     + "\nexec "
-                    + shlex.quote(str(root / "venv/bin/mesh-plus"))
+                    + shlex.quote(str(owned_cli))
                     + ' "$@" --config '
                     + shlex.quote(str(config))
                     + "\n"
@@ -810,6 +823,7 @@ def main(
                             "-q",
                             *map(str, root.glob("fixture-*.toml")),
                             *map(str, root.glob("mesh-bridge-fixture-*")),
+                            str(root / "mesh-owned-cli"),
                             ssh_host + ":" + str(root) + "/",
                         ],
                         env=env,
@@ -1144,6 +1158,10 @@ def main(
                     time.sleep(0.05)
                 assert remote_profile["ownersAlive"] == 15
                 assert not remote_profile["current"]["processes"]
+                if transport == "mesh":
+                    assert {
+                        (row["host"], row["source"]) for row in remote_profile["publisherFactories"]
+                    } == {(f"fixture-{index:02d}", "tmux_default") for index in range(1, 16)}
             passed(
                 "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
                 elapsedMs=round((time.monotonic() - started) * 1000, 3),
