@@ -3,6 +3,18 @@
 2026-10-11. Primary-led source/design review, not an independent agent review.
 The [plan](publisher-extraction-plan.md) defines this pass's scope.
 
+## Current handoff disposition
+
+Mesh runtime `c46262c` and acceptance handoff `de2ee36` complete the upstream
+generic publisher and trusted factory seam in the a15 private candidate. Its
+wheel digest/runtime parity and installed core publisher suite were checked
+locally. Proceed with Observer source/private candidate integration using the
+[updated plan](publisher-integration-plan.md). The public Mesh release, our own
+native/resource/consumer gates and managed adoption remain outstanding.
+The feasibility disposition and original backlog below retain their dated scope;
+P1/P2 are completed upstream source/private-wheel checkpoints, not remaining
+Mesh implementation tasks or public-release/deployment acceptance.
+
 ## Final disposition
 
 **Go for a Mesh producer implementation proposal**, followed by an Observer-owned

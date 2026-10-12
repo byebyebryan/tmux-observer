@@ -144,6 +144,10 @@ the completed profile/reader adoption does not certify that later change.
 The [publisher feasibility review](publisher-extraction-review.md) now records a
 passing isolated IPC/SSH study and a Mesh-first implementation backlog. The
 reference publisher remains selected until those later package/resource gates pass.
+Mesh's a15 private candidate now provides the generic helper and trusted factory
+hook. The [current integration plan](publisher-integration-plan.md) records this
+accepted producer input; Observer source, installed native/resource, public
+release, consumer and managed acceptance remain separate checkpoints.
 
 Optional native control-mode events need an independent passivity and benefit
 gate. Physical sleep/wake and graphical checks for the Mesh wiring releases

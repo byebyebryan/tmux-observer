@@ -5,6 +5,11 @@ feasibility and an implementation decision. It does not select new packages or
 replace the accepted Observer a6 / Plus a6 / reader SDK a13 / bridge CLI a10 cohort.
 The [completed SDK adoption](mesh-sdk-adoption.md) remains accepted.
 
+Mesh has since accepted the additive publisher/factory seam in its a15 private
+candidate. This document retains the completed feasibility plan; the current
+[publisher integration plan](publisher-integration-plan.md) records the actual
+handoff, reviewed artifact and remaining Observer/Plus/managed checkpoints.
+
 ## Problem and intended boundary
 
 Observer owns its pure native profile and explicit Reader/ReadGuard bindings.

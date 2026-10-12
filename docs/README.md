@@ -60,7 +60,9 @@ The [publisher extraction plan](publisher-extraction-plan.md) and
 [review](publisher-extraction-review.md) cover the next isolated factory/native
 source boundary. The [accepted feasibility evidence](evidence/2026-10-11-publisher-feasibility/README.md)
 supports a producer-first implementation backlog; it does not change accepted
-runtime selection.
+runtime selection. Mesh's a15 private candidate now supplies the public helper
+and factory seam; the [current publisher integration plan](publisher-integration-plan.md)
+records the exact handoff and remaining implementation and adoption gates.
 [Local performance implementation](local-performance-implementation.md) records
 later association work. [Context and primary sources](context-and-sources.md)
 preserve the checked design inputs.
