@@ -1,9 +1,11 @@
 # Mesh SDK adoption checkpoints
 
 Implementation follows the [reviewed integration plan](mesh-sdk-integration-plan.md)
-and its separately recorded feasibility experiments. The selected managed tuple is Observer a6 / Plus a6, with reader SDK a13 and
-retained shared bridge CLI a10 after independently accepted artifact and rollout
-gates. Earlier checkpoints below retain their original scope.
+and its separately recorded feasibility experiments. The subsequent selected
+cohort is Observer a7 / Plus a7 with SDK/shared CLI a15;
+see [owned publisher acceptance](evidence/2026-10-12-publisher-integration/README.md).
+The a6/a13 reader and a10 bridge checkpoint below retains its independently
+accepted artifact and rollout gates. Its version-specific statements are historical.
 
 ## Pure profile and reviewed dependency
 

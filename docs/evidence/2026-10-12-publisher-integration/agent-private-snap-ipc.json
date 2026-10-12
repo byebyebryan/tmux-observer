@@ -1,0 +1,28 @@
+{
+  "state": "passed",
+  "host": "snap",
+  "transport": "IPC",
+  "packages": {
+    "mesh-plus": "0.1.0a15",
+    "agent-observer": "0.5.0a16",
+    "tmux-observer": "0.6.0a7"
+  },
+  "reconnectedSamples": [
+    {
+      "snapshotRows": 93,
+      "proofRows": 93,
+      "watchRows": 93,
+      "originalReceiptLeases": "preserved"
+    },
+    {
+      "snapshotRows": 93,
+      "proofRows": 93,
+      "watchRows": 93,
+      "originalReceiptLeases": "preserved"
+    }
+  ],
+  "cleanup": "owned channels retired",
+  "limits": [
+    "Cached delivery only; no Agent producer migration or collection parity claim"
+  ]
+}

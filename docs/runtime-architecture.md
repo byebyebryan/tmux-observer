@@ -1,9 +1,9 @@
 # Runtime architecture
 
-Updated 2026-10-11. Snap and Starship select Observer 0.6.0a6 / Tmux Plus
-0.12.0a6, with Mesh SDK 0.1.0a13 for the Tmux reader and retained shared bridge
-CLI 0.1.0a10. [SDK adoption checkpoints](mesh-sdk-adoption.md) and the
-[accepted artifact/managed evidence](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+Updated 2026-10-12. Snap and Starship select Observer 0.6.0a7 / Tmux Plus
+0.12.0a7, with Mesh SDK/shared CLI 0.1.0a15 and the Observer-owned cached
+publisher factory. [Publisher integration](publisher-integration-plan.md) and the
+[accepted artifact/managed evidence](evidence/2026-10-12-publisher-integration/README.md)
 bind the separate source, package, resource and operational gates. This is the
 current component overview. The [original architecture](architecture.md) and
 [boundary design](component-boundaries.md) retain the extraction history.
@@ -16,7 +16,7 @@ current component overview. The [original architecture](architecture.md) and
 | Native contract and collector | `tmux_observer.native`, `collector`, `attachment_collector` | Full session identities and bounded passive default-server metadata reads |
 | Owner publisher | `tmux_observer.owner`, `delivery` | Fixed host scope, scheduled samples, independent receipts, snapshot/watch and passive refresh hints |
 | Networking and catalog | [Mesh Plus](https://github.com/byebyebryan/mesh-plus) | Logical hosts/routes, reusable local/SSH state delivery, proof and recovery |
-| Mesh profile, adapter and composition | `tmux_observer.mesh_profile`, `mesh`, `tmux_observer_client.mesh_fleet` | Pure native projection, cached publication, guarded owner composition and existing Fleet v1 facade |
+| Mesh profile, adapter and composition | `tmux_observer.mesh_profile`, `_mesh_source`, `mesh_publisher`, `tmux_observer_client.mesh_fleet` | Pure native projection, checked cached acquisition, public Mesh publisher construction and guarded owner composition and existing Fleet v1 facade |
 | Desktop association | `tmux_observer_client.desktop`, local bindings and desktop adapters | Endpoint-local Niri/terminal/process evidence joined to accepted native inputs |
 | Prepared consumer facade | `tmux_observer_client.public`, `contract` | Cached queries/watch, context identity, source freshness and bounded refresh tickets |
 | Action client | `tmux_observer_actions.public`, `contract` | Independent route/target validation, native lifecycle, terminal launch and window actions |
@@ -58,6 +58,14 @@ or viewer state. Multiple local clients share the fleet service's collection and
 transport; separate desktops retain independent views. No reverse desktop
 connection or cross-host fleet replication is involved.
 
+Observer's cached source owns Service v1 status/watch admission, fixed host/UID/
+request/clock/order checks and operation cleanup. Its resource-free public factory
+supplies that source and the pure Tmux profile to Mesh's generic `CachedPublisher`.
+Mesh owns copied publication, canonical digest, original receipt leases and
+nonce proof. The installed launcher injects the same static lazy factory for
+fixed SSH dispatch. Agent factory/reference selection is independent of Tmux;
+its subsequent a20 publisher adoption retains the Tmux factory in the shared map.
+
 The selected fleet uses Mesh's public configured reader and pure admission guard.
 Observer retains native semantics, complete identities, original source receipts,
 historical rows and the Fleet v1 projection. Loss, gaps or scope replacement
@@ -81,8 +89,8 @@ See the [Mesh integration ledger](mesh-integration.md#scope-and-decisions).
 The generic fleet command and packaged unit default to the `legacy` backend.
 Current managed controls explicitly select `mesh` and source `tmux_default`.
 A failed Mesh backend never silently chooses legacy or direct collection.
-The prior Observer/Plus a5 pair and Mesh a10 reader provide the recorded paired
-rollback baseline; older SDK roots remain available. Legacy remains an explicitly
+The prior Observer/Plus a6 pair, Mesh a13 reader and a10 shared CLI provide the
+recorded paired rollback baseline; older SDK roots remain available. Legacy remains an explicitly
 selectable backend.
 
 ## Identity, clocks and uncertainty

@@ -1,0 +1,302 @@
+{
+  "state": "passed",
+  "configurationCommit": "698764d",
+  "configurationSelectionSha256": "140d1528b8a4859459b5d6ea8cbd7e88cd86905d9cfd42d450dae5f96cefde8a",
+  "tuple": {
+    "core": {
+      "version": "0.6.0a7",
+      "sourceCommit": "fcaa8a868ce875b033bec7a0efcd2186a4baa533",
+      "sha256": "e73a88f89b38242631766dd45f6e669f43c54e36857e5716595c0a56321e5091"
+    },
+    "frontend": {
+      "version": "0.12.0a7",
+      "sourceCommit": "657c62c529aa368e1740fbd3a9cd42db176b1eca",
+      "sha256": "9ff245167b6f8508bc2b4ca0fd95d7dc0b9564fa6c84836f8c6e9555616aa4ae"
+    }
+  },
+  "readerSdk": {
+    "prefix": ".local/share/mesh-plus/0.1.0a15/python",
+    "sha256": "42b25045f8f89afda61e56525f443a189dcc6769637aee5bcab959f096527f0f",
+    "sourceCommit": "c46262c0f0185244e96c79ea2036e4f57b2e4e1e",
+    "url": "https://github.com/byebyebryan/mesh-plus/releases/download/v0.1.0a15/mesh_plus-0.1.0a15-py3-none-any.whl",
+    "version": "0.1.0a15"
+  },
+  "sharedBridge": "0.1.0a15",
+  "factory": "tmux_observer.mesh_publisher.make_publisher",
+  "endpoints": {
+    "snap": {
+      "scope": "owner",
+      "operations": {
+        "initialInstall": {
+          "result": "passed",
+          "scope": "owner",
+          "privateReportSha256": "efcb666b9ff14f1ee6dc06e75d271d5b2fe15c94bdab21823c6b2ba60be94ad8",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 181,
+            "frontend": 377,
+            "mesh-plus": 64,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9
+          },
+          "nativeGenerationPreserved": true,
+          "completeReferencesSurvive": true
+        },
+        "recovery": {
+          "result": "passed",
+          "scope": "owner",
+          "privateReportSha256": "8d00b2fea1ea224bdc25f30527d7838ee7646e22c8eac0a4084942e31406bc04",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 181,
+            "frontend": 377,
+            "mesh-plus": 64,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9
+          },
+          "nativeGenerationPreserved": true,
+          "completeReferencesSurvive": true
+        },
+        "rollback": {
+          "result": "passed",
+          "scope": "owner",
+          "privateReportSha256": "eb4554b175fcfa8598ddfdd72bece702fc35c06c667e26ce13e453b387e5828b",
+          "nativeReferencesSurvive": true,
+          "restoredControls": true,
+          "restoredFacadeImportVerified": true,
+          "servicesStopped": true,
+          "nativeGenerationPreserved": true,
+          "completeReferencesSurvive": true
+        },
+        "restoredBaseline": {
+          "result": "passed",
+          "scope": "owner",
+          "privateReportSha256": "747a22c211e463e9c849009f065cc79f82797fabb4c246790f82996fc9cccda2",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 179,
+            "frontend": 372,
+            "mesh-plus": 41,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9,
+            "tmux-reader-sdk": 54
+          },
+          "nativeGenerationPreserved": true,
+          "completeReferencesSurvive": true
+        },
+        "reselection": {
+          "result": "passed",
+          "scope": "owner",
+          "privateReportSha256": "45638a45029f86b15db80bc3d08fb3c04f8171d32e057d96a8fc32e3c56f498e",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 181,
+            "frontend": 377,
+            "mesh-plus": 64,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9
+          },
+          "nativeGenerationPreserved": true,
+          "completeReferencesSurvive": true
+        }
+      },
+      "cachedDelivery": {
+        "state": "passed",
+        "host": "snap",
+        "readerSdk": "0.1.0a15",
+        "observer": "0.6.0a7",
+        "profile": "explicit TmuxMeshProfile",
+        "snapshotHosts": 2,
+        "currentRows": 13,
+        "snapshotAndWatch": true,
+        "ownedRetirement": true,
+        "limits": [
+          "Cached owner facts; no collection, refresh, action, graphical input or persistent service selected"
+        ]
+      },
+      "selectedAgentFixedSSH": {
+        "state": "passed",
+        "host": "snap",
+        "transport": "fixed SSH",
+        "packages": {
+          "mesh-plus": "0.1.0a15",
+          "agent-observer": "0.5.0a16",
+          "tmux-observer": "0.6.0a7"
+        },
+        "reconnectedSamples": [
+          {
+            "snapshotRows": 93,
+            "proofRows": 93,
+            "watchRows": 93,
+            "originalReceiptLeases": "preserved"
+          },
+          {
+            "snapshotRows": 93,
+            "proofRows": 93,
+            "watchRows": 93,
+            "originalReceiptLeases": "preserved"
+          }
+        ],
+        "cleanup": "owned channels retired",
+        "limits": [
+          "Cached delivery only; no Agent producer migration or collection parity claim"
+        ]
+      },
+      "protected": {
+        "packages": true,
+        "units": true,
+        "foreignSource": true,
+        "agentSelections": true,
+        "preferences": true
+      },
+      "unchangedProtectedControls": true
+    },
+    "starship": {
+      "scope": "desktop",
+      "operations": {
+        "initialInstall": {
+          "result": "passed",
+          "scope": "desktop",
+          "privateReportSha256": "3b2d40b983c66c9818b8cb8d6e6f61474b64d2ec4469a37b9f9ecc20636b9da9",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 181,
+            "frontend": 377,
+            "mesh-plus": 64,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9
+          }
+        },
+        "recovery": {
+          "result": "passed",
+          "scope": "desktop",
+          "privateReportSha256": "784aca18d7d73541777060198e450339ed84dc3246061bd2657612bb18bd42cb",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 181,
+            "frontend": 377,
+            "mesh-plus": 64,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9
+          }
+        },
+        "rollback": {
+          "result": "passed",
+          "scope": "desktop",
+          "privateReportSha256": "403083e3a38a78760595f8670247fe645d72223a7241b3a080ea3a86960b0d19",
+          "nativeReferencesSurvive": true,
+          "restoredControls": true,
+          "restoredFacadeImportVerified": true,
+          "servicesStopped": true
+        },
+        "restoredBaseline": {
+          "result": "passed",
+          "scope": "desktop",
+          "privateReportSha256": "9d65805e54cdc04bd3c221fee125a7cb138c8bbecb4be400e5f628131213ab60",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 179,
+            "frontend": 372,
+            "mesh-plus": 41,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9,
+            "tmux-reader-sdk": 54
+          }
+        },
+        "reselection": {
+          "result": "passed",
+          "scope": "desktop",
+          "privateReportSha256": "d0f58ad70fcb9569775342dacdf2753409bf60a70b0f365fd09998bef0904d0a",
+          "nativeReferencesSurvive": true,
+          "installedPayloads": {
+            "core": 181,
+            "frontend": 377,
+            "mesh-plus": 64,
+            "attrs": 35,
+            "jsonschema": 43,
+            "jsonschema-specifications": 28,
+            "referencing": 19,
+            "rpds-py": 9
+          }
+        }
+      },
+      "cachedDelivery": {
+        "state": "passed",
+        "host": "starship",
+        "readerSdk": "0.1.0a15",
+        "observer": "0.6.0a7",
+        "profile": "explicit TmuxMeshProfile",
+        "snapshotHosts": 2,
+        "currentRows": 13,
+        "snapshotAndWatch": true,
+        "ownedRetirement": true,
+        "limits": [
+          "Cached owner facts; no collection, refresh, action, graphical input or persistent service selected"
+        ]
+      },
+      "selectedAgentFixedSSH": {
+        "state": "passed",
+        "host": "starship",
+        "transport": "fixed SSH",
+        "packages": {
+          "mesh-plus": "0.1.0a15",
+          "agent-observer": "0.5.0a16",
+          "tmux-observer": "0.6.0a7"
+        },
+        "reconnectedSamples": [
+          {
+            "snapshotRows": 389,
+            "proofRows": 389,
+            "watchRows": 389,
+            "originalReceiptLeases": "preserved"
+          },
+          {
+            "snapshotRows": 389,
+            "proofRows": 389,
+            "watchRows": 389,
+            "originalReceiptLeases": "preserved"
+          }
+        ],
+        "cleanup": "owned channels retired",
+        "limits": [
+          "Cached delivery only; no Agent producer migration or collection parity claim"
+        ]
+      },
+      "protected": {
+        "packages": true,
+        "units": true,
+        "foreignSource": true,
+        "agentSelections": true,
+        "preferences": true
+      },
+      "unchangedProtectedControls": true
+    }
+  },
+  "limits": [
+    "Snap accepts owner scope; desktop/viewer positives are not assessed there",
+    "Cached facts and display membership grant no lifecycle action authority",
+    "Graphical input, physical suspend and WSS remain outside this acceptance",
+    "Starship route-health aggregate changes under existing reporting policy; recent-history last-write predates the preservation snapshot, but its individual baseline digest was not captured"
+  ]
+}

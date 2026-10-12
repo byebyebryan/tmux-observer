@@ -1,0 +1,74 @@
+{
+  "state": "passed",
+  "scope": "Tmux revalidation after independent Agent a20 publisher adoption",
+  "sharedCli": "0.1.0a15",
+  "factoryMap": [
+    "tmux",
+    "agent"
+  ],
+  "tmuxFactory": "tmux_observer.mesh_publisher.make_publisher",
+  "agentSelection": "independent Agent a20 publisher; collector remains a18",
+  "endpoints": {
+    "snap": {
+      "installedResult": "passed",
+      "installedPayloads": {
+        "core": 181,
+        "frontend": 377,
+        "mesh-plus": 64,
+        "attrs": 35,
+        "jsonschema": 43,
+        "jsonschema-specifications": 28,
+        "referencing": 19,
+        "rpds-py": 9
+      },
+      "nativeReferencesSurvive": true,
+      "privateReportSha256": "45638a45029f86b15db80bc3d08fb3c04f8171d32e057d96a8fc32e3c56f498e",
+      "cachedDelivery": {
+        "state": "passed",
+        "host": "snap",
+        "readerSdk": "0.1.0a15",
+        "observer": "0.6.0a7",
+        "profile": "explicit TmuxMeshProfile",
+        "snapshotHosts": 2,
+        "currentRows": 13,
+        "snapshotAndWatch": true,
+        "ownedRetirement": true,
+        "limits": [
+          "Cached owner facts; no collection, refresh, action, graphical input or persistent service selected"
+        ]
+      }
+    },
+    "starship": {
+      "installedResult": "passed",
+      "installedPayloads": {
+        "core": 181,
+        "frontend": 377,
+        "mesh-plus": 64,
+        "attrs": 35,
+        "jsonschema": 43,
+        "jsonschema-specifications": 28,
+        "referencing": 19,
+        "rpds-py": 9
+      },
+      "nativeReferencesSurvive": true,
+      "privateReportSha256": "44c37b4f1572b150bf6ca9d99f9cfb39398727659e66b38f1061c84054fe31eb",
+      "cachedDelivery": {
+        "state": "passed",
+        "host": "starship",
+        "readerSdk": "0.1.0a15",
+        "observer": "0.6.0a7",
+        "profile": "explicit TmuxMeshProfile",
+        "snapshotHosts": 2,
+        "currentRows": 13,
+        "snapshotAndWatch": true,
+        "ownedRetirement": true,
+        "limits": [
+          "Cached owner facts; no collection, refresh, action, graphical input or persistent service selected"
+        ]
+      }
+    }
+  },
+  "limits": [
+    "Agent adoption belongs to its independent owner ledger; Tmux rollback receipts bind the preceding reference-Agent checkpoint"
+  ]
+}

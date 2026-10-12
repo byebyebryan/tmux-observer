@@ -1,9 +1,11 @@
 # Tmux Observer
 
-Released **0.6.0a6** integrates the released Mesh **0.1.0a13** SDK
-through an Observer-owned pure native profile and explicitly bound readers and
-stream guards. [Adoption checkpoints](docs/mesh-sdk-adoption.md) distinguish
-source, package, resource and managed acceptance. Frozen contracts are unchanged.
+Released **0.6.0a7** owns cached native acquisition and integrates Mesh
+**0.1.0a15** through its public publisher helper, pure Observer profile and
+explicitly bound readers/stream guards. The same lazy factory serves local and
+fixed SSH publication. [Publisher acceptance](docs/evidence/2026-10-12-publisher-integration/README.md)
+separates source, artifact, resource, consumer and managed gates. Frozen wire
+contracts are unchanged.
 
 Passive tmux observation and shared prepared views for local and remote clients.
 The host-local core reads session metadata; an owner service publishes it.
@@ -13,16 +15,16 @@ consumes those views and sends explicit intent to a separate action client.
 
 ## Current selection
 
-As recorded on **2026-10-11**, Snap and Starship select:
+As recorded on **2026-10-12**, Snap and Starship select:
 
 | Component | Version | Responsibility |
 | --- | --- | --- |
-| Tmux Observer | **0.6.0a6** | Native facts, owner publication, prepared composition, desktop association and separate actions |
-| Tmux Plus | **0.12.0a6** | Picker presentation, user intent and Tmux Session v1 compatibility CLI |
-| Mesh reader SDK | **0.1.0a13** | Host catalog authority and guarded reusable cached delivery |
-| Shared Mesh bridge CLI | **0.1.0a10** | Retained compatible owner-only IPC/SSH bridge |
+| Tmux Observer | **0.6.0a7** | Native facts, owner publication, prepared composition, desktop association and separate actions |
+| Tmux Plus | **0.12.0a7** | Picker presentation, user intent and Tmux Session v1 compatibility CLI |
+| Mesh reader SDK | **0.1.0a15** | Host catalog authority and guarded reusable cached delivery |
+| Shared Mesh bridge CLI | **0.1.0a15** | Generic cached publisher/proof and fixed IPC/SSH dispatch |
 
-The [SDK adoption record](docs/evidence/2026-10-11-mesh-sdk-adoption/README.md)
+The [Publisher acceptance record](docs/evidence/2026-10-12-publisher-integration/README.md)
 binds exact artifacts and native, headless, resource and managed
 recovery/paired rollback evidence. The
 [managed operations ledger](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md)

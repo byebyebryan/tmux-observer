@@ -1,13 +1,13 @@
 # Implementation status
 
-Updated: 2026-10-11. Goal: Deliveries A–E, with reviewed commits as work progresses.
+Updated: 2026-10-12. Goal: Deliveries A–E, with reviewed commits as work progresses.
 The design/backlog baseline is commit `a4fba75`.
 
 ## Current selection
 
-Observer `0.6.0a6` and Tmux Plus `0.12.0a6` are released and selected on Snap
-and Starship. The Tmux reader uses Mesh SDK `0.1.0a13`; the shared bridge CLI
-retains compatible `0.1.0a10`. The [SDK adoption record](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+Observer `0.6.0a7` and Tmux Plus `0.12.0a7` are released and selected on Snap
+and Starship. The Tmux reader/shared bridge use Mesh `0.1.0a15` and the static owned
+publisher factory. The [publisher acceptance record](evidence/2026-10-12-publisher-integration/README.md)
 names the exact frozen inputs and independent source, package/native, headless,
 resource/capacity, installed recovery and paired rollback evidence. Snap's
 managed acceptance uses owner scope; Starship's uses desktop scope. Graphical

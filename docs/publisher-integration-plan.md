@@ -4,10 +4,10 @@
 [publisher acceptance ledger](evidence/2026-10-12-publisher-integration/README.md).
 Updated after the Mesh publisher handoff. This is the implementation
 plan following the [completed feasibility study](publisher-extraction-plan.md)
-and [review](publisher-extraction-review.md). The current selected cohort remains
-Observer 0.6.0a6 / Plus 0.12.0a6 / reader SDK 0.1.0a13 / bridge CLI 0.1.0a10.
-I1-I4 are implemented and accepted. Plus, public dependent artifacts and managed
-selection remain independent checkpoints; the selected runtime cohort is unchanged.
+and [review](publisher-extraction-review.md). The selected cohort is now Observer 0.6.0a7 / Plus 0.12.0a7 / Mesh reader SDK
+and shared CLI 0.1.0a15. I1-I5 and R1-R2 pass their independent source, artifact,
+compatibility, resource, public and managed gates. The prior a6/a13/a10 cohort
+remains the independently verified paired rollback baseline.
 
 ## Accepted producer input
 
@@ -21,7 +21,7 @@ We do not need to implement another generic wrapper or copy its CLI.
 | Candidate SDK/CLI | Mesh Plus `0.1.0a15`, SDK interface 1 |
 | Private wheel | `mesh_plus-0.1.0a15-py3-none-any.whl` |
 | Wheel SHA-256 | `42b25045f8f89afda61e56525f443a189dcc6769637aee5bcab959f096527f0f` |
-| Disposition | Accepted upstream candidate; identical public a15 wheel verified; not deployed here |
+| Disposition | Accepted upstream input; identical public a15 wheel verified and selected by R2 |
 
 The immutable [public API handoff](https://github.com/byebyebryan/mesh-plus/blob/de2ee3642501664e8b6ede4dc6d3cf5ff6ba4713/docs/publisher-api.md)
 and [installed acceptance](https://github.com/byebyebryan/mesh-plus/blob/de2ee3642501664e8b6ede4dc6d3cf5ff6ba4713/docs/evidence/2026-10-11-publisher-factory/README.md)

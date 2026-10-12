@@ -3,10 +3,10 @@
 Started 2026-10-09. The user authorized the migration goal loop after review of
 Mesh Plus's [handoff](https://github.com/byebyebryan/mesh-plus/blob/fd40916/docs/handoff.md)
 and frozen state boundary. This ledger owns the candidate implementation and
-acceptance. Recorded managed selection, 2026-10-11, is Observer **0.6.0a6** /
-Plus **0.12.0a6**, with Mesh **0.1.0a13** reader SDK and retained shared CLI
-**0.1.0a10** on Snap and Starship. [SDK adoption checkpoints](mesh-sdk-adoption.md)
-and [accepted package/managed evidence](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+acceptance. Recorded managed selection, 2026-10-12, is Observer **0.6.0a7** /
+Plus **0.12.0a7**, with Mesh **0.1.0a15** reader SDK/shared CLI and the owned
+Observer publisher factory on Snap and Starship. [Publisher integration checkpoints](publisher-integration-plan.md)
+and [accepted package/managed evidence](evidence/2026-10-12-publisher-integration/README.md)
 bind exact artifacts, native/headless checks, unchanged resource budgets,
 recovery and paired rollback/reselection. The
 [previous accepted rollout](evidence/2026-10-10-mesh-rollout/README.md)
@@ -18,9 +18,11 @@ see [runtime architecture](runtime-architecture.md).
 
 Prepared Mesh browsing requires a compatible catalog authority, the selected
 Mesh SDK/runtime dependencies, native Tmux facades available to its bridge, and
-an already running owner on each participating host. The selected Observer client launcher exposes SDK a13 from
-`~/.local/share/mesh-plus/0.1.0a13/python`; the public Mesh bridge CLI retains
-SDK a10 at `~/.local/share/mesh-plus/0.1.0a10/python`. Prior versioned roots remain
+an already running owner on each participating host. The Observer client and
+shared bridge launchers expose SDK a15 from
+`~/.local/share/mesh-plus/0.1.0a15/python`. The bridge injects the static lazy
+`tmux_observer.mesh_publisher.make_publisher` factory; its Agent reference branch
+retains independently selected native facades. Prior versioned roots remain
 available for their recorded rollback checkpoints. Exact roots, payloads and
 controls are recorded in
 [managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md).

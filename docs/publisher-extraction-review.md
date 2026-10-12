@@ -1,5 +1,9 @@
 # Cached publisher design review
 
+The owned publisher is implemented, accepted and selected in the
+[2026-10-12 integration record](evidence/2026-10-12-publisher-integration/README.md).
+The study and review below retain their historical inputs and scope.
+
 2026-10-11. Primary-led source/design review, not an independent agent review.
 The [plan](publisher-extraction-plan.md) defines this pass's scope.
 

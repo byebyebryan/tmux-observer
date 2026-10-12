@@ -1,5 +1,9 @@
 # Cached publisher extraction: design and feasibility
 
+The owned publisher is implemented, accepted and selected in the
+[2026-10-12 integration record](evidence/2026-10-12-publisher-integration/README.md).
+The study and review below retain their historical inputs and scope.
+
 2026-10-11. This pass covers documentation, a proposed interface, isolated
 feasibility and an implementation decision. It does not select new packages or
 replace the accepted Observer a6 / Plus a6 / reader SDK a13 / bridge CLI a10 cohort.

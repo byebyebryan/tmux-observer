@@ -8,10 +8,10 @@ paired rollback. Tmux Plus owns frontend/native verification through its public
 both repositories on the deployment host and record their exact commits. No
 Snap-only checkout or private sibling import is required.
 
-The accepted 2026-10-11 cohort is Observer a6 / Plus a6, with versioned reader
-SDK a13 and the retained shared a10 bridge CLI. Exact hashes, per-host scopes,
+The accepted 2026-10-12 cohort is Observer a7 / Plus a7, with versioned reader
+SDK/shared CLI a15 and the static owned Tmux publisher factory. Exact hashes, per-host scopes,
 recovery, paired rollback and reselection are in the
-[SDK adoption record](evidence/2026-10-11-mesh-sdk-adoption/README.md).
+[publisher acceptance record](evidence/2026-10-12-publisher-integration/README.md).
 When staging a new external SDK archive through a scoped apply, prepare its
 versioned parent directory before applying the `python` archive target. Review
 the exact directory, URL/checksum, diff and dry run first. Keep old SDK roots for
