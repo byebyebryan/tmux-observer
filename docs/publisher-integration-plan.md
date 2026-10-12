@@ -98,11 +98,13 @@ admission; substituting it would weaken direct-client validation. Preserve the
 supported legacy codec facade in this pass, separate from the new factory path.
 Do not broaden this extraction into a codec/API rewrite.
 
-The current grouped-refresh success fixture patches Mesh's reference adapter.
-Move that instrumentation to the owned native source/publication path and prove
-it is exercised. Preserve the independent delivered-attempt attribution and
-negative coalescing/revocation checks; changing the mock target must not hide a
-missing refresh delivery.
+The implemented grouped-refresh success fixture instruments the owned native
+source/publication path and asserts actual publication acknowledgement. It uses
+the existing two-second delivery budget; the independent delivered-attempt
+attribution and negative coalescing/revocation checks remain. The
+[acceptance record](evidence/2026-10-12-publisher-integration/README.md)
+retains the controlled reproduction of the earlier fixture cutoff and the final
+installed result. Production deadlines and packaged runtime bytes are unchanged.
 
 Use the actual publisher helper rather than the study wrapper. Retain source
 guards from the feasibility work only after production review; remove tracing,
@@ -120,9 +122,12 @@ guard construction completes.
 
 ## Resource and rollout limits
 
-Source/private candidate work may proceed before R1. Public dependent releases
-and operational adoption require R1 plus owner/consumer acceptance; no managed
-pin or service changes follow from this documentation update.
+I1-I5 and R1-R2 are complete for the exact a7/a15 artifacts and their recorded
+scopes. The checkpoint table retains the reviewed implementation requirements.
+At the Tmux rollout, R2 preserved Agent's omitted reference branch. Its later,
+independent a20 publisher adoption adds the Agent factory to the shared launcher;
+[post-Agent Tmux revalidation](evidence/2026-10-12-publisher-integration/post-agent-compatibility.json)
+checks the combined map without adopting Agent producer work here.
 
 Use the [accepted a13 resource evidence](evidence/2026-10-11-mesh-sdk-adoption/README.md#final-frozen-producer-input)
 as the measured baseline: Snap combined CPU 4.286% against 5%, approximately
@@ -134,5 +139,5 @@ acceptance or a capacity CPU soak. Copy/projection costs need measurement.
 
 Physical suspend, graphical/action behavior changes, WSS selection, native
 control mode, events/replay, pooling and provider changes remain separate work.
-Retain the accepted reference cohort and paired rollback until every applicable
-new artifact and managed gate passes.
+The accepted a6/a13/a10 reference cohort remains the verified paired rollback
+baseline. Its evidence is independent of the selected a7/a15 cohort.

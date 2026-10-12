@@ -135,27 +135,29 @@ display observation, not a verified focus/close handle or provider lifecycle aut
 
 ## Acceptance and remaining work
 
-The [current evidence](evidence/2026-10-11-mesh-sdk-adoption/README.md) records
+The [current publisher evidence](evidence/2026-10-12-publisher-integration/README.md) records
 independent source, exact package/native, headless picker, ordinary two-host
 resource, declared capacity, installed recovery and paired rollback gates.
-The a13 ten-minute resource gate covers headless cached delivery; it does not
+The a15 ten-minute resource gate covers headless cached delivery; it does not
 measure desktop/viewer work. Earlier desktop-inclusive measurements retain their
-own artifact scope. Snap's recorded CPU is 4.286% against 5%; fleet/bridge RSS
-is approximately 83 MiB against 96 MiB, so future changes need measured comparison.
+own artifact scope. Snap/Starship recorded CPU is 4.580%/2.751% against 5%;
+fleet/associated-bridge RSS is 83.621/82.828 MiB against 96 MiB, and owner RSS
+is 22.641/24.895 MiB against 64 MiB. Future changes need measured comparison.
 The capacity profile uses sixteen synthetic logical owners on two physical hosts;
-it does not establish native truth on sixteen physical hosts. RSS is sampled and
-Mesh byte/proof counters remain unmeasured.
+fifteen actual SSH links and thirty-two readers pass the 250 ms cached RPC gate.
+Its conservative combined sampled peak is 693.383 MiB against 768 MiB. It does
+not establish native truth on sixteen physical hosts or a capacity CPU soak.
+RSS is sampled and Mesh byte/proof counters remain unmeasured.
 
-The publisher still uses Mesh's reference adapter. Its extraction requires a
-supported fixed-CLI factory and independent local/remote publisher acceptance;
-the completed profile/reader adoption does not certify that later change.
-The [publisher feasibility review](publisher-extraction-review.md) now records a
-passing isolated IPC/SSH study and a Mesh-first implementation backlog. The
-reference publisher remains selected until those later package/resource gates pass.
-Mesh's a15 private candidate now provides the generic helper and trusted factory
-hook. The [current integration plan](publisher-integration-plan.md) records this
-accepted producer input; Observer source, installed native/resource, public
-release, consumer and managed acceptance remain separate checkpoints.
+Observer-owned cached publication is implemented and selected through Mesh's
+public a15 helper and trusted factory seam. The
+[integration plan](publisher-integration-plan.md) records completed I1-I5 and
+R1-R2 checkpoints, including local/fixed-SSH publication, old/new compatibility,
+exact artifacts/resources, public releases and managed recovery/paired rollback.
+The legacy `TmuxMeshCodec` keeps its pure reference-codec compatibility; the
+dedicated runtime publisher factory imports no reference adapter. The
+[feasibility review](publisher-extraction-review.md) preserves the earlier study
+and its original acceptance limits.
 
 Optional native control-mode events need an independent passivity and benefit
 gate. Physical sleep/wake and graphical checks for the Mesh wiring releases

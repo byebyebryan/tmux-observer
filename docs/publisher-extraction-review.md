@@ -7,7 +7,7 @@ The study and review below retain their historical inputs and scope.
 2026-10-11. Primary-led source/design review, not an independent agent review.
 The [plan](publisher-extraction-plan.md) defines this pass's scope.
 
-## Current handoff disposition
+## Historical handoff before owner integration
 
 Mesh runtime `c46262c` and acceptance handoff `de2ee36` complete the upstream
 generic publisher and trusted factory seam in the a15 private candidate. Its

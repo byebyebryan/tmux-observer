@@ -1,13 +1,13 @@
 # Tmux Observer documentation
 
 Start with the [project overview](../README.md) and [current runtime architecture](runtime-architecture.md).
-The recorded current selection is Observer **0.6.0a6** / Tmux Plus **0.12.0a6**,
-with Mesh reader SDK **0.1.0a13** and shared bridge CLI **0.1.0a10** on Snap and
-Starship, as of 2026-10-11.
-The [Mesh SDK integration plan](mesh-sdk-integration-plan.md) retains the original
-a11 feasibility plan; the final accepted implementation uses reviewed a13.
-The [adoption checkpoints](mesh-sdk-adoption.md) record implementation and its
-separate acceptance gates.
+The recorded current selection is Observer **0.6.0a7** / Tmux Plus **0.12.0a7**,
+with Mesh reader SDK/shared bridge CLI **0.1.0a15** and the Observer-owned cached
+publisher factory on Snap and Starship, as of 2026-10-12. The
+[publisher integration plan](publisher-integration-plan.md) records completed
+implementation and independent acceptance gates. The earlier
+[Mesh SDK integration plan](mesh-sdk-integration-plan.md) and
+[SDK adoption checkpoints](mesh-sdk-adoption.md) retain their historical scope.
 
 ## Current interfaces and operation
 
@@ -23,7 +23,7 @@ separate acceptance gates.
 
 ## Selection and acceptance
 
-[Current SDK adoption](evidence/2026-10-11-mesh-sdk-adoption/README.md)
+[Current publisher integration](evidence/2026-10-12-publisher-integration/README.md)
 is the front door for the selected artifacts' source, native, headless, resource
 and installed recovery/rollback evidence. [Implementation status](implementation-status.md)
 keeps the original A–E checkpoint history. Acceptance belongs to the exact
@@ -31,6 +31,7 @@ artifact, endpoint and scope recorded by each report.
 
 | Historical record | Scope |
 | --- | --- |
+| [Previous SDK adoption](evidence/2026-10-11-mesh-sdk-adoption/README.md) | Observer a6 / Plus a6 / reader SDK a13 / retained bridge a10; paired rollback baseline |
 | [Previous hardening adoption](https://github.com/byebyebryan/mesh-plus/blob/17b8096beed20eeece3d0d86e2df655d1bc1f8ed/docs/evidence/2026-10-10-hardening-adoption/README.md) | SDK a10 / Observer 0.6.0a5 / Plus 0.12.0a5 |
 | [Previous Mesh rollout](evidence/2026-10-10-mesh-rollout/README.md) | SDK a6 / Observer 0.6.0a1 / Plus 0.12.0a1 |
 | [Original Mesh candidate](evidence/2026-10-09-mesh-integration/README.md) | Earlier candidate inputs, diagnostics and limitations |
@@ -57,12 +58,10 @@ Planning command names and future tense in these documents belong to that baseli
 The [component boundary design](component-boundaries.md) and
 [source review](component-boundaries-review.md) record the subsequent extraction.
 The [publisher extraction plan](publisher-extraction-plan.md) and
-[review](publisher-extraction-review.md) cover the next isolated factory/native
-source boundary. The [accepted feasibility evidence](evidence/2026-10-11-publisher-feasibility/README.md)
-supports a producer-first implementation backlog; it does not change accepted
-runtime selection. Mesh's a15 private candidate now supplies the public helper
-and factory seam; the [current publisher integration plan](publisher-integration-plan.md)
-records the exact handoff and remaining implementation and adoption gates.
+[review](publisher-extraction-review.md) preserve the completed factory/native
+source study. Its [accepted feasibility evidence](evidence/2026-10-11-publisher-feasibility/README.md)
+establishes the earlier design decision, with separate implementation and runtime
+acceptance in the [completed publisher integration plan](publisher-integration-plan.md).
 [Local performance implementation](local-performance-implementation.md) records
 later association work. [Context and primary sources](context-and-sources.md)
 preserve the checked design inputs.

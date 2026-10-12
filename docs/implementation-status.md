@@ -22,9 +22,12 @@ association, desktop and action-client extraction. Their original checkpoints
 remain below. The earlier [Observer a2 / Mesh a7 catalog checkpoint](evidence/2026-10-10-catalog-bound-fix/README.md)
 retains its independent package/native and paired operational acceptance.
 The accepted SDK adoption supplies an Observer-owned pure profile and explicitly
-bound readers and guards. Cached publisher extraction remains a separate
-[fixed-CLI factory review](mesh-sdk-integration-plan.md#cached-publisher-extraction-after-sdk-adoption).
-Optional T17/native events and physical sleep/wake remain separate.
+bound readers and guards. The subsequent
+[owned publisher integration](publisher-integration-plan.md) completed its
+independent local/fixed-SSH, artifact/resource, consumer and managed gates.
+The [earlier fixed-CLI factory review](mesh-sdk-integration-plan.md#cached-publisher-extraction-after-sdk-adoption)
+retains the SDK adoption checkpoint's original scope. Optional T17/native events
+and physical sleep/wake remain separate.
 
 [Current runtime architecture](runtime-architecture.md) summarizes implemented
 component ownership. The [documentation index](README.md) separates current

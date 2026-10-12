@@ -21,8 +21,10 @@ Mesh SDK/runtime dependencies, native Tmux facades available to its bridge, and
 an already running owner on each participating host. The Observer client and
 shared bridge launchers expose SDK a15 from
 `~/.local/share/mesh-plus/0.1.0a15/python`. The bridge injects the static lazy
-`tmux_observer.mesh_publisher.make_publisher` factory; its Agent reference branch
-retains independently selected native facades. Prior versioned roots remain
+`tmux_observer.mesh_publisher.make_publisher` factory. Agent's subsequent,
+independently accepted a20 publisher adoption adds its own factory to the shared
+map; its collector, reader and bridge selections retain their separate ownership.
+Prior versioned roots remain
 available for their recorded rollback checkpoints. Exact roots, payloads and
 controls are recorded in
 [managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md).
@@ -120,7 +122,11 @@ Headless timing passes at 124.256 ms p95; all eleven capacity cases pass within
 the declared two-physical-host / 16-synthetic-owner scope. Installed selection,
 serial recovery, old-pair rollback and reselection subsequently pass on both hosts.
 
-## Checkpoints
+## Original Mesh migration checkpoints
+
+These M0-M5 checkpoints retain the first Mesh rollout's scope. The later SDK
+and owned-publisher deliveries have their own exact artifact and operational
+evidence in the [current publisher record](evidence/2026-10-12-publisher-integration/README.md).
 
 | Gate | Result | State |
 | --- | --- | --- |
@@ -206,10 +212,13 @@ gates pass. Preserve unrelated source/live edits, private history and ordinary
 services. Recovery and rollback are serialized across endpoints. Publication or
 live promotion follows the user's concrete authorization for the reviewed tuple.
 
-## Candidate implementation
+## Current implementation
 
-`tmux_observer.mesh` exposes the Tmux adapter/codec over Mesh's reference cached
-adapter. `mesh_fleet.MeshFleetPublisher` keeps the prepared fleet endpoint,
+`tmux_observer.mesh_publisher.make_publisher` supplies Observer's checked native
+cached source and pure profile to Mesh's public `CachedPublisher`. The optional
+`tmux_observer.mesh` facade retains the legacy adapter constructor and full
+reference-codec validation; runtime publication uses the dedicated owned factory.
+`mesh_fleet.MeshFleetPublisher` keeps the prepared fleet endpoint,
 desktop jobs and ticket store. Its worker owns one guarded replacement stream,
 an in-process local Mesh bridge, and configured remote Mesh SSH bridges. The
 handoff is bounded to eight replacements / 16 MiB. Native retained documents
@@ -230,8 +239,8 @@ attempt/proof before completing its fleet ticket. CLI request correlation is an
 additive option; no public schema or Mesh lock changed.
 
 The regular stdlib source gate runs without the Mesh extra. Development pins
-that extra to Git revision `74b9e54c1fc433aaeb5db29683faf65f6b61016a`.
-The wheel declares optional `mesh-plus==0.1.0a6`; candidate/install workflows must
+that extra to Git revision `c46262c0f0185244e96c79ea2036e4f57b2e4e1e`.
+The wheel declares optional `mesh-plus==0.1.0a15`; candidate/install workflows must
 supply that exact wheel and its declared dependencies separately.
 The reviewed source revision is published independently of artifact selection.
 Public CI also requires the exact Observer wheel consumed by Plus's existing gate.
