@@ -1,0 +1,70 @@
+{
+  "state": "passed",
+  "gate": "cached-delivery-resources",
+  "resourceScope": "headless-cached-delivery",
+  "viewerAcceptance": false,
+  "desktopAcceptance": false,
+  "scope": "installed two-host owners passively observing ordinary default servers, real SSH and cached fleet delivery; private preferences/units/IPC only; desktop and viewer acceptance excluded",
+  "cases": [
+    "both_installed_native_profiles_and_cached_delivery_ready",
+    "hundred_warm_queries_per_endpoint_meet_deadlines",
+    "owned_publisher_factory_selected_on_both_ssh_endpoints",
+    "owned_fleet_teardown_preserves_native_references_generation_and_hooks"
+  ],
+  "cleanup": true,
+  "transport": "mesh",
+  "harnessCommit": "fcaa8a868ce875b033bec7a0efcd2186a4baa533",
+  "sourceCommit": "fcaa8a868ce875b033bec7a0efcd2186a4baa533",
+  "normalResourceAssessment": {
+    "snap": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 87683072,
+      "ownerMaxObservedRssBytes": 23740416,
+      "combinedCpuPercent": 4.580067430644831,
+      "withinSelectedTargets": true
+    },
+    "starship": {
+      "fleetTargetMiB": 96,
+      "ownerTargetMiB": 64,
+      "combinedCpuTargetPercent": 5,
+      "fleetAndAssociatedBridgeMaxObservedRssBytes": 86851584,
+      "ownerMaxObservedRssBytes": 26103808,
+      "combinedCpuPercent": 2.7505816029459487,
+      "withinSelectedTargets": true
+    }
+  },
+  "limits": [
+    "Sampled RSS can miss transient peaks",
+    "Existing default-server clients and matching desktop windows are read passively; no viewer launch or Rofi proof",
+    "Two physical hosts and private catalog/preferences; no managed selection",
+    "Desktop readiness and positive viewer associations were not assessed"
+  ],
+  "privateReportSha256": "7f717e0f4e7fee2af3cc23e59e64f5d51b3262bc0b0f10a836013c6a4263eecd",
+  "wheelSha256": "e73a88f89b38242631766dd45f6e669f43c54e36857e5716595c0a56321e5091",
+  "meshVersion": "0.1.0a15",
+  "nativePreservation": "Required native reference, generation, hook and attachment checks passed before and after owned teardown",
+  "profileDurationMs": {
+    "snap": 600967,
+    "starship": 600390
+  },
+  "publisherFactories": {
+    "snap": [
+      {
+        "host": "snap",
+        "source": "tmux_default"
+      }
+    ],
+    "starship": [
+      {
+        "host": "starship",
+        "source": "tmux_default"
+      },
+      {
+        "host": "starship",
+        "source": "tmux_default"
+      }
+    ]
+  }
+}

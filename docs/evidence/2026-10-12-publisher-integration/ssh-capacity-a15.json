@@ -1,0 +1,555 @@
+{
+  "gate": "T12-installed-ssh-capacity-partial",
+  "sourceCommit": "fcaa8a868ce875b033bec7a0efcd2186a4baa533",
+  "sourceTreeDirty": false,
+  "cases": [
+    {
+      "name": "enabled_local_association_profile_is_current_without_mesh_export",
+      "result": "passed"
+    },
+    {
+      "name": "sixteen_installed_owners_join_current_snapshots_through_one_watch_each",
+      "result": "passed",
+      "frameBytes": 22788
+    },
+    {
+      "name": "fifteen_actual_ssh_links_join_distinct_remote_owner_scopes_with_attributed_plain_bridges",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_two_watchers_share_sixteen_owner_connections",
+      "result": "passed"
+    },
+    {
+      "name": "thirty_third_reader_receives_explicit_capacity_error",
+      "result": "passed"
+    },
+    {
+      "name": "nonreading_watchers_keep_logical_memory_bounds_and_healthy_reader_progress",
+      "result": "passed",
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 728416,
+        "retainedBytes": 35472,
+        "connections": 16,
+        "perPeerBytes": 22763
+      }
+    },
+    {
+      "name": "near_cap_aggregate_is_complete_untruncated_independently_readable",
+      "result": "passed",
+      "frameBytes": 918276
+    },
+    {
+      "name": "thirty_two_simultaneous_readers_receive_complete_near_cap_frames_over_sixteen_current_owners",
+      "result": "passed"
+    },
+    {
+      "name": "near_cap_nonreaders_retire_while_healthy_cached_queries_keep_the_250ms_deadline",
+      "result": "passed",
+      "rpcMs": [
+        21.704201004467905,
+        14.779284014366567,
+        18.05025100475177,
+        24.065525009064004,
+        28.515359008451924,
+        50.595718988915905,
+        27.342512010363862,
+        20.074317988473922,
+        13.536259008105844,
+        25.729373999638483
+      ],
+      "highWater": {
+        "readers": 32,
+        "outputBytes": 29384105,
+        "retainedBytes": 931056,
+        "connections": 16,
+        "perPeerBytes": 918324
+      }
+    },
+    {
+      "name": "seventeenth_catalog_owner_fails_authority_without_truncated_success",
+      "result": "passed"
+    },
+    {
+      "name": "fleet_stop_reaps_owned_bridge_tree_and_preserves_fixture_owners",
+      "result": "passed",
+      "elapsedMs": 135.939
+    }
+  ],
+  "transport": "mesh",
+  "scope": "one installed wheel; 16 synthetic owners across Snap/Starship; 15 real strict SSH links and installed plain remote bridges",
+  "limits": [
+    "Actual SSH processes/network are included; sixteen logical owner scopes use two physical endpoints",
+    "Synthetic facts/catalog do not establish native tmux, Host Mesh, remote clocks or desktop truth",
+    "100 ms RSS samples can miss transient peaks; this is not a ten-minute idle CPU profile",
+    "Synthetic owners/readers/coordinator are outside fleet accounting; all SSH children and associated remote bridges are included",
+    "The fleet worker includes the fixture tool imports; bridge processes use the plain installed CLI",
+    "All sixteen owners enable local association scheduling and IPC with synthetic empty-client profiles; native client sampling cost is covered by the separate normal resource gate"
+  ],
+  "harnessCommit": "f95134e3525462edd2f114ed44c3fd1376f41584",
+  "harnessTreeDirty": false,
+  "artifactInput": {
+    "state": "built_unaccepted",
+    "source": {
+      "commit": "fcaa8a868ce875b033bec7a0efcd2186a4baa533",
+      "epoch": 1791789546,
+      "tree": "d3ebc248f51569c538a5b326f9327f23e939b330"
+    },
+    "wheelSha256": "e73a88f89b38242631766dd45f6e669f43c54e36857e5716595c0a56321e5091",
+    "descriptorSha256": "4bb030c22f9cf6c0d77d743dfa2b467529d785d56a9d8ff747794a6f7c5eeab1",
+    "sourceFilesMatchHarness": true
+  },
+  "meshInputs": [
+    {
+      "file": "mesh_plus-0.1.0a15-py3-none-any.whl",
+      "sha256": "42b25045f8f89afda61e56525f443a189dcc6769637aee5bcab959f096527f0f"
+    },
+    {
+      "bytes": 67548,
+      "file": "attrs-26.1.0-py3-none-any.whl",
+      "name": "attrs",
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309",
+      "version": "26.1.0"
+    },
+    {
+      "bytes": 90630,
+      "file": "jsonschema-4.26.0-py3-none-any.whl",
+      "name": "jsonschema",
+      "sha256": "d489f15263b8d200f8387e64b4c3a75f06629559fb73deb8fdfb525f2dab50ce",
+      "version": "4.26.0"
+    },
+    {
+      "bytes": 18437,
+      "file": "jsonschema_specifications-2025.9.1-py3-none-any.whl",
+      "name": "jsonschema-specifications",
+      "sha256": "98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe",
+      "version": "2025.9.1"
+    },
+    {
+      "bytes": 26766,
+      "file": "referencing-0.37.0-py3-none-any.whl",
+      "name": "referencing",
+      "sha256": "381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231",
+      "version": "0.37.0"
+    },
+    {
+      "bytes": 371623,
+      "file": "rpds_py-2026.9.1-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "rpds-py",
+      "sha256": "eac2f5dbafd585dfe31f86a23ebf0d3ba480a9d49ebc87947267b5608d4ea0cd",
+      "version": "2026.9.1"
+    }
+  ],
+  "meshTupleInput": {
+    "path": "docs/evidence/2026-10-12-publisher-integration/mesh-a15-inputs.json",
+    "sha256": "18701e070f4d8c4ab9463c0b65232cb4150249241aac918cd3c7db99bc40f45d"
+  },
+  "wheelSha256": "e73a88f89b38242631766dd45f6e669f43c54e36857e5716595c0a56321e5091",
+  "remoteEndpoint": {
+    "wheelSha256": "e73a88f89b38242631766dd45f6e669f43c54e36857e5716595c0a56321e5091",
+    "clock": {
+      "bootId": "3b53c5dc-1562-4173-b4ec-0d1e55a1e836",
+      "timeNamespace": "time:4026531834"
+    },
+    "owners": 15
+  },
+  "nearCapRpcMs": [
+    21.704201004467905,
+    14.779284014366567,
+    18.05025100475177,
+    24.065525009064004,
+    28.515359008451924,
+    50.595718988915905,
+    27.342512010363862,
+    20.074317988473922,
+    13.536259008105844,
+    25.729373999638483
+  ],
+  "nearCapRpcPhases": [
+    {
+      "index": 0,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 11.348366999300197,
+      "decodeMs": 3.426364011829719,
+      "validateMs": 6.8755639949813485,
+      "elapsedMs": 21.704201004467905
+    },
+    {
+      "index": 1,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 8.744916005525738,
+      "decodeMs": 2.669487992534414,
+      "validateMs": 3.2993440108839422,
+      "elapsedMs": 14.779284014366567
+    },
+    {
+      "index": 2,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 10.771875997306779,
+      "decodeMs": 2.8129270067438483,
+      "validateMs": 4.3238419748377055,
+      "elapsedMs": 18.05025100475177
+    },
+    {
+      "index": 3,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 17.03170800465159,
+      "decodeMs": 2.588497009128332,
+      "validateMs": 4.31660600588657,
+      "elapsedMs": 24.065525009064004
+    },
+    {
+      "index": 4,
+      "phase": "validated_reply",
+      "records": 2,
+      "receiveMs": 15.100567979970947,
+      "decodeMs": 5.598685995209962,
+      "validateMs": 7.635974005097523,
+      "elapsedMs": 28.515359008451924
+    },
+    {
+      "index": 5,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 44.8222589911893,
+      "decodeMs": 2.4637680035084486,
+      "validateMs": 3.2500209927093238,
+      "elapsedMs": 50.595718988915905
+    },
+    {
+      "index": 6,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 19.162414013408124,
+      "decodeMs": 4.008978983620182,
+      "validateMs": 4.0021629829425365,
+      "elapsedMs": 27.342512010363862
+    },
+    {
+      "index": 7,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 13.782327994704247,
+      "decodeMs": 2.6012710004579276,
+      "validateMs": 3.5510009911376983,
+      "elapsedMs": 20.074317988473922
+    },
+    {
+      "index": 8,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 7.8391389979515225,
+      "decodeMs": 2.466031990479678,
+      "validateMs": 3.153130004648119,
+      "elapsedMs": 13.536259008105844
+    },
+    {
+      "index": 9,
+      "phase": "validated_reply",
+      "records": 1,
+      "receiveMs": 19.96163500007242,
+      "decodeMs": 2.4892610090319067,
+      "validateMs": 3.1237879884429276,
+      "elapsedMs": 25.729373999638483
+    }
+  ],
+  "profile": {
+    "sampleIntervalMs": 100,
+    "sampleCount": 204,
+    "durationMs": 30863,
+    "fleetAndBridgePeak": {
+      "at": 143004962,
+      "rssBytes": 235302912,
+      "processes": [
+        {
+          "pid": 2025790,
+          "incarnation": "14298824",
+          "name": "python",
+          "rssBytes": 64212992
+        },
+        {
+          "pid": 2025830,
+          "incarnation": "14298982",
+          "name": "ssh",
+          "rssBytes": 11292672
+        },
+        {
+          "pid": 2025829,
+          "incarnation": "14298976",
+          "name": "ssh",
+          "rssBytes": 11259904
+        },
+        {
+          "pid": 2025828,
+          "incarnation": "14298972",
+          "name": "ssh",
+          "rssBytes": 11378688
+        },
+        {
+          "pid": 2025827,
+          "incarnation": "14298943",
+          "name": "ssh",
+          "rssBytes": 11255808
+        },
+        {
+          "pid": 2025826,
+          "incarnation": "14298939",
+          "name": "ssh",
+          "rssBytes": 11251712
+        },
+        {
+          "pid": 2025821,
+          "incarnation": "14298932",
+          "name": "ssh",
+          "rssBytes": 11358208
+        },
+        {
+          "pid": 2025820,
+          "incarnation": "14298930",
+          "name": "ssh",
+          "rssBytes": 11362304
+        },
+        {
+          "pid": 2025815,
+          "incarnation": "14298896",
+          "name": "ssh",
+          "rssBytes": 11546624
+        },
+        {
+          "pid": 2025814,
+          "incarnation": "14298891",
+          "name": "ssh",
+          "rssBytes": 11530240
+        },
+        {
+          "pid": 2025812,
+          "incarnation": "14298888",
+          "name": "ssh",
+          "rssBytes": 11251712
+        },
+        {
+          "pid": 2025802,
+          "incarnation": "14298887",
+          "name": "ssh",
+          "rssBytes": 11526144
+        },
+        {
+          "pid": 2025800,
+          "incarnation": "14298843",
+          "name": "ssh",
+          "rssBytes": 11321344
+        },
+        {
+          "pid": 2025799,
+          "incarnation": "14298842",
+          "name": "ssh",
+          "rssBytes": 11575296
+        },
+        {
+          "pid": 2025798,
+          "incarnation": "14298842",
+          "name": "ssh",
+          "rssBytes": 11501568
+        },
+        {
+          "pid": 2025797,
+          "incarnation": "14298842",
+          "name": "ssh",
+          "rssBytes": 11677696
+        }
+      ]
+    },
+    "targetBytes": 805306368,
+    "memoryTarget": "passed",
+    "associatedRemoteBridges": {
+      "sampleIntervalMs": 100,
+      "sampleCount": 306,
+      "peak": {
+        "atBootTimeMs": 161964797,
+        "rssBytes": 491761664,
+        "processes": [
+          {
+            "pid": 671473,
+            "incarnation": "16193791",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32686080
+          },
+          {
+            "pid": 671471,
+            "incarnation": "16193788",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32718848
+          },
+          {
+            "pid": 671468,
+            "incarnation": "16193782",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32673792
+          },
+          {
+            "pid": 671405,
+            "incarnation": "16193752",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32686080
+          },
+          {
+            "pid": 671403,
+            "incarnation": "16193748",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32591872
+          },
+          {
+            "pid": 671400,
+            "incarnation": "16193743",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32686080
+          },
+          {
+            "pid": 671397,
+            "incarnation": "16193740",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32620544
+          },
+          {
+            "pid": 671385,
+            "incarnation": "16193709",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32755712
+          },
+          {
+            "pid": 671383,
+            "incarnation": "16193705",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32608256
+          },
+          {
+            "pid": 671381,
+            "incarnation": "16193700",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32706560
+          },
+          {
+            "pid": 671378,
+            "incarnation": "16193697",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32718848
+          },
+          {
+            "pid": 671336,
+            "incarnation": "16193664",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32702464
+          },
+          {
+            "pid": 671334,
+            "incarnation": "16193659",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32731136
+          },
+          {
+            "pid": 671323,
+            "incarnation": "16193655",
+            "name": "mesh-owned-cli",
+            "rssBytes": 32780288
+          },
+          {
+            "pid": 671321,
+            "incarnation": "16193650",
+            "name": "mesh-owned-cli",
+            "rssBytes": 34095104
+          }
+        ]
+      },
+      "current": {
+        "atBootTimeMs": 161966925,
+        "rssBytes": 0,
+        "processes": []
+      },
+      "ownersAlive": 15,
+      "publisherFactories": [
+        {
+          "host": "fixture-03",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-04",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-02",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-01",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-05",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-07",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-06",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-08",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-09",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-10",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-11",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-12",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-13",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-14",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        },
+        {
+          "host": "fixture-15",
+          "source": "tmux_default",
+          "module": "/tmp/tmux-observer-capacity-srwg0il2/venv/lib/python3.14/site-packages/tmux_observer/mesh_publisher.py"
+        }
+      ]
+    },
+    "conservativeCombinedPeakBytes": 727064576
+  },
+  "result": "passed_partial"
+}

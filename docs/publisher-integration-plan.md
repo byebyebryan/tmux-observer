@@ -1,10 +1,13 @@
 # Observer-owned cached publisher integration
 
-2026-10-11. Updated after the Mesh publisher handoff. This is the implementation
+2026-10-12. Implementation and exact producer acceptance are recorded in the
+[publisher acceptance ledger](evidence/2026-10-12-publisher-integration/README.md).
+Updated after the Mesh publisher handoff. This is the implementation
 plan following the [completed feasibility study](publisher-extraction-plan.md)
 and [review](publisher-extraction-review.md). The current selected cohort remains
 Observer 0.6.0a6 / Plus 0.12.0a6 / reader SDK 0.1.0a13 / bridge CLI 0.1.0a10.
-This documentation pass changes no runtime source, pin, launcher or service.
+I1-I4 are implemented and accepted. Plus, public dependent artifacts and managed
+selection remain independent checkpoints; the selected runtime cohort is unchanged.
 
 ## Accepted producer input
 
@@ -18,7 +21,7 @@ We do not need to implement another generic wrapper or copy its CLI.
 | Candidate SDK/CLI | Mesh Plus `0.1.0a15`, SDK interface 1 |
 | Private wheel | `mesh_plus-0.1.0a15-py3-none-any.whl` |
 | Wheel SHA-256 | `42b25045f8f89afda61e56525f443a189dcc6769637aee5bcab959f096527f0f` |
-| Disposition | Accepted upstream private candidate; not publicly released or deployed |
+| Disposition | Accepted upstream candidate; identical public a15 wheel verified; not deployed here |
 
 The immutable [public API handoff](https://github.com/byebyebryan/mesh-plus/blob/de2ee3642501664e8b6ede4dc6d3cf5ff6ba4713/docs/publisher-api.md)
 and [installed acceptance](https://github.com/byebyebryan/mesh-plus/blob/de2ee3642501664e8b6ede4dc6d3cf5ff6ba4713/docs/evidence/2026-10-11-publisher-factory/README.md)
@@ -82,10 +85,10 @@ checkpoint; changing an artifact requires fresh evidence for its changed bytes.
 | R1 — Public artifacts | Confirm a public immutable Mesh release for the reviewed input before publishing dependent Observer/Plus packages or selecting managed download URLs. Coordinate exact reviewed publication where in scope. | Published wheel digest/runtime parity, coherent dependency metadata and immutable Observer/Plus artifacts. If public bytes differ from the private candidate, reopen the owning acceptance checkpoint. |
 | R2 — Managed cohort | Select a versioned shared bridge and inject the static lazy Observer factory in the managed launcher. Preserve the intentionally omitted Agent reference branch and its independent producer/reader/bridge-facade selections. | Exact bytes and descriptors on each host; actual selected Agent cached snapshot/watch/recovery compatibility; owner/fleet readiness and restart recovery; headless consumer checks; paired rollback and reselection. |
 
-The factory in `mesh_publisher.py` is a planned Observer export; it does not exist
-yet. Keep its imports independent of the optional legacy codec facade so local
-and remote publication can run with reference-integration imports forbidden.
-Public Mesh API additions do not establish this Observer implementation.
+The implemented `mesh_publisher.make_publisher` export is independent of the
+optional legacy codec facade. Local and fixed-SSH publication pass with reference
+integration imports forbidden; the installed capacity and resource launchers
+explicitly inject this factory and record its use.
 
 ## Compatibility details that must survive
 

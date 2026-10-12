@@ -1,0 +1,44 @@
+{
+  "scope": "installed packages, one disposable default server and real localhost fixed SSH",
+  "harnessSha256": "d3ff8ea6e4a54def74fcc4c5e3e8f78c2775d552f2d94465b8e757aadfe74031",
+  "state": "passed",
+  "cases": {
+    "a13_reader_a15_owned_publisher": {
+      "packages": {
+        "mesh-plus": "0.1.0a13",
+        "tmux-observer": "0.6.0a6"
+      },
+      "references": [
+        [
+          "fixture-remote",
+          "tmux-v1:1791790119:2017783:/home/bryan/.tmux-mesh-b_n0jqal/remote/tmux-1000/default",
+          "$0",
+          1791790119
+        ]
+      ],
+      "snapshotWatchProofExpiryDisconnectCleanup": "passed"
+    },
+    "a15_default_cli_old_observer_reference": {
+      "packages": {
+        "mesh-plus": "0.1.0a15",
+        "tmux-observer": "0.6.0a7"
+      },
+      "references": [
+        [
+          "fixture-remote",
+          "tmux-v1:1791790119:2017783:/home/bryan/.tmux-mesh-b_n0jqal/remote/tmux-1000/default",
+          "$0",
+          1791790119
+        ]
+      ],
+      "snapshotWatchProofExpiryDisconnectCleanup": "passed"
+    },
+    "injected_factory_missing": "failed explicitly without fallback",
+    "injected_factory_old_facade": "failed explicitly without fallback"
+  },
+  "limits": [
+    "Selected Agent and managed two-host compatibility have separate gates"
+  ],
+  "nativePassivity": "references hooks attachment counts unchanged",
+  "cleanup": "completed_owned_fixture"
+}
