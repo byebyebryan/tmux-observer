@@ -181,10 +181,11 @@ class MeshFleetTests(unittest.TestCase):
 
     def test_grouped_refresh_requires_mesh_confirmed_native_attempt(self):
         from mesh_plus.client import Subscription
-        from mesh_plus.observer import ObserverAdapter
+
+        from tmux_observer._mesh_source import TmuxCachedSource
 
         consumed = {}
-        original_next, original_watch = Subscription.__anext__, ObserverAdapter.watch
+        original_next, original_watch = Subscription.__anext__, TmuxCachedSource.watch
 
         def marker(frame):
             return frame["requestId"], frame["sequence"]
@@ -197,11 +198,11 @@ class MeshFleetTests(unittest.TestCase):
                     barrier.set()
             return frame
 
-        async def uncoalesced_watch(adapter):
-            iterator = original_watch(adapter)
+        async def uncoalesced_watch(source):
+            iterator = original_watch(source)
             try:
                 async for publication in iterator:
-                    key = marker(publication.payload["ownerFrame"])
+                    key = marker(publication.frame)
                     barrier = asyncio.Event()
                     consumed[key] = barrier
                     yield publication
@@ -215,7 +216,7 @@ class MeshFleetTests(unittest.TestCase):
         with (
             tempfile.TemporaryDirectory(prefix="tmux-mesh-refresh-") as temporary,
             patch.object(Subscription, "__anext__", consume_publication),
-            patch.object(ObserverAdapter, "watch", uncoalesced_watch),
+            patch.object(TmuxCachedSource, "watch", uncoalesced_watch),
         ):
             fleet, _owner, _collector, _scanner, _authority = self.start(Path(temporary))
             ticket = self.read(

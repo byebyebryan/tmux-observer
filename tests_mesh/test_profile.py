@@ -286,11 +286,11 @@ TmuxMeshProfile().bind('local', 'tmux_default')
         with patch("mesh_plus.library_authority.LibraryMeshAuthority", return_value=authority):
             worker = MeshWorker("fixture-local")
         self.assertIs(worker.authority, authority)
-        for version in ("0.1.0a10", "0.1.0a11", "0.1.0a12", "0.1.0a14"):
+        for version in ("0.1.0a10", "0.1.0a11", "0.1.0a12", "0.1.0a13", "0.1.0a14"):
             with (
                 self.subTest(version=version),
                 patch("tmux_observer_client._mesh_worker.__version__", version),
-                self.assertRaisesRegex(ValueError, "reviewed mesh-plus 0.1.0a13"),
+                self.assertRaisesRegex(ValueError, "reviewed mesh-plus 0.1.0a15"),
             ):
                 MeshWorker("fixture-local", authority=authority)
 

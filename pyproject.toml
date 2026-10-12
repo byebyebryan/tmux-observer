@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tmux-observer"
-version = "0.6.0a6"
+version = "0.6.0a7"
 description = "Passive default-server tmux observation and explicit read clients"
 requires-python = ">=3.11"
 readme = "README.md"
@@ -14,10 +14,10 @@ authors = [{name = "Bryan"}]
 
 [project.optional-dependencies]
 dev = ["ruff==0.16.6", "jsonschema>=4.18,<5"]
-mesh = ["mesh-plus==0.1.0a13"]
+mesh = ["mesh-plus==0.1.0a15"]
 
 [tool.uv.sources]
-mesh-plus = {git = "https://github.com/byebyebryan/mesh-plus.git", rev = "d9cdac4ba6314430c3c8eb4d948a9d697c90b411"}
+mesh-plus = {git = "https://github.com/byebyebryan/mesh-plus.git", rev = "c46262c0f0185244e96c79ea2036e4f57b2e4e1e"}
 
 [project.scripts]
 tmux-observer = "tmux_observer.cli:main"

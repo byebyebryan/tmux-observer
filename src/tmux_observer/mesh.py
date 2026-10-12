@@ -1,14 +1,16 @@
 """Explicit optional Mesh cached-state adapter for the native owner contract.
 
 Import this facade only when Mesh delivery is selected. The reviewed Mesh
-reference codec and cached adapter retain their compatibility behavior. The
+reference codec retains its pure compatibility validation. Cached acquisition
+uses the Observer-owned source and public generic Mesh publisher. The
 Observer-owned SDK profile supplies pure native interpretation through
 ``native`` and ``delivery``. These interfaces start no collection.
 """
 
-from mesh_plus.observer import ObserverAdapter, ObserverCodec
+from mesh_plus.observer import ObserverCodec
 
 from .mesh_profile import TmuxMeshProfile, TmuxMeshStateCodec
+from .mesh_publisher import make_publisher
 
 
 class TmuxMeshCodec(ObserverCodec):
@@ -16,9 +18,14 @@ class TmuxMeshCodec(ObserverCodec):
         super().__init__("tmux", host, source)
 
 
-class TmuxMeshAdapter(ObserverAdapter):
+class TmuxMeshAdapter:
+    """Compatibility constructor over the independently imported owner factory."""
+
     def __init__(self, host, path, source="tmux_default"):
-        super().__init__("tmux", host, source, path)
+        self.publisher = make_publisher(host, source, path)
+
+    def __getattr__(self, name):
+        return getattr(self.publisher, name)
 
 
 __all__ = ["TmuxMeshAdapter", "TmuxMeshCodec", "TmuxMeshProfile", "TmuxMeshStateCodec"]

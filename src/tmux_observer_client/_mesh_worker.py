@@ -14,8 +14,8 @@ from mesh_plus.catalog import MeshAuthority
 from mesh_plus.transport import IPCServer
 
 from tmux_observer._ipc import owner_socket
-from tmux_observer.mesh import TmuxMeshAdapter
 from tmux_observer.mesh_profile import TmuxMeshProfile
+from tmux_observer.mesh_publisher import make_publisher
 
 QUEUE_LIMIT = 16 * 1048576
 
@@ -47,8 +47,8 @@ class CapturedAuthority:
 
 class MeshWorker:
     def __init__(self, host_id, *, owner_path=None, source="tmux_default", authority=None):
-        if __version__ != "0.1.0a13":
-            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a13 SDK")
+        if __version__ != "0.1.0a15":
+            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a15 SDK")
         self.host_id = host_id
         self.owner_path = owner_socket() if owner_path is None else owner_path
         self.source = source
@@ -129,7 +129,7 @@ class MeshWorker:
         self.loop = asyncio.get_running_loop()
         self.root_task = asyncio.current_task()
         with tempfile.TemporaryDirectory(prefix="tmux-mesh-") as temporary:
-            adapter = TmuxMeshAdapter(self.host_id, self.owner_path, self.source)
+            adapter = make_publisher(self.host_id, self.source, self.owner_path)
             bridge = Bridge(adapter)
             path = Path(temporary) / "bridge.sock"
             # One active Reader plus one retiring handler. Client socket closure
