@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""Installed a13/a15 publisher compatibility over owned native tmux and fixed SSH."""
+
+import argparse
+import asyncio
+import hashlib
+import importlib.metadata
+import json
+import os
+import shlex
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def packages(python):
+    return json.loads(
+        subprocess.check_output(
+            [
+                str(python),
+                "-I",
+                "-c",
+                "import importlib.metadata as m,json;print(json.dumps({n:m.version(n) for n in ('mesh-plus','tmux-observer')}))",
+            ],
+            timeout=5,
+        )
+    )
+
+
+async def probe(ssh):
+    from mesh_plus.api import Client, Endpoint, Reader, ReadGuard, current_sessions, reconstructed
+    from mesh_plus.transport import boottime_ms, connect_ssh
+
+    from tmux_observer.mesh_profile import TmuxMeshProfile
+
+    profile = TmuxMeshProfile()
+    codec = profile.bind("fixture-remote", "tmux_default")
+    revision = "sha256:" + "6" * 64
+
+    async def catalog():
+        return revision
+
+    async def connect():
+        return await Client.connect(
+            await connect_ssh("fixture-remote", "tmux_default", executable=str(ssh)),
+            host=codec.host,
+            source=codec.source,
+            profile=codec.profile_id,
+            codec=codec.validate_bridge,
+        )
+
+    reader = Reader(
+        "tmux",
+        [Endpoint(codec.host, False, "sha256:" + "7" * 64, connect, codec)],
+        local_host="fixture-local",
+        catalog_revision=revision,
+        catalog_check=catalog,
+        profile=profile,
+    )
+    response = await reader.snapshot()
+    clock = response["mesh"]["reader"]["clock"]
+    rows = current_sessions(response, boottime_ms(), clock, profile=profile)
+    assert len(rows) == 1, "mixed snapshot lost the owned current native identity"
+    native = reconstructed(response, response["mesh"]["hosts"][0], profile=profile)
+    assert native["snapshot"]["sessions"] == rows
+    guard = ReadGuard("tmux", "a" * 32, profile=profile)
+    stream = reader.watch(request_id="a" * 32, proof_interval=0.1)
+    try:
+        for _ in range(20):
+            frame = await asyncio.wait_for(anext(stream), 3)
+            guard.accept(frame)
+            clock = frame["mesh"]["reader"]["clock"]
+            if guard.current(boottime_ms(), clock):
+                break
+        assert guard.current(boottime_ms(), clock)
+        assert guard.current(2**52, clock) == [], "cached transport renewed expired facts"
+        guard.disconnect()
+        assert guard.current(boottime_ms(), clock) == []
+    finally:
+        await stream.aclose()
+    assert reader.inspect()["activeConnections"] == 0
+    assert reader.inspect()["cleanupFailures"] == 0
+    return {
+        "packages": {
+            name: importlib.metadata.version(name) for name in ("mesh-plus", "tmux-observer")
+        },
+        "references": [
+            [row[key] for key in ("hostId", "serverGeneration", "sessionId", "createdAt")]
+            for row in rows
+        ],
+        "snapshotWatchProofExpiryDisconnectCleanup": "passed",
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--reader-python", type=Path)
+    parser.add_argument("--reference-python", type=Path)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--probe-ssh", type=Path, help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    if args.probe_ssh is not None:
+        print(json.dumps(asyncio.run(probe(args.probe_ssh))))
+        return 0
+    if any(value is None for value in (args.reader_python, args.reference_python, args.output)):
+        parser.error("separately installed a13 Reader, a15/reference Observer and output required")
+    assert packages(sys.executable) == {"mesh-plus": "0.1.0a15", "tmux-observer": "0.6.0a7"}
+    assert packages(args.reader_python) == {"mesh-plus": "0.1.0a13", "tmux-observer": "0.6.0a6"}
+    assert packages(args.reference_python) == {"mesh-plus": "0.1.0a15", "tmux-observer": "0.6.0a6"}
+    # Harness-only imports; subprocesses use installed packages under Python -I.
+    sys.path.insert(0, str(ROOT / "tests_mesh"))
+    from native_fixture import NativeFixture
+
+    class InstalledFixture(NativeFixture):
+        def env(self, role):
+            value = super().env(role)
+            value.pop("PYTHONPATH", None)
+            return value
+
+    os.environ.pop("PYTHONPATH", None)
+    os.environ.pop("TMUX_OBSERVER_TEST_BRIDGE_PYTHON", None)
+    fixture = InstalledFixture()
+    record = {
+        "scope": "installed packages, one disposable default server and real localhost fixed SSH",
+        "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "state": "running",
+        "cases": {},
+        "limits": ["Selected Agent and managed two-host compatibility have separate gates"],
+    }
+    try:
+        fixture.native("remote", "new-session", "-d", "-s", "compat-owned", "sleep 180")
+        fixture.start_owner("remote")
+        fixture.start_ssh()
+        arguments = (
+            "list-sessions",
+            "-F",
+            "#{session_id}|#{session_created}|#{session_attached}",
+        )
+        before = fixture.native("remote", *arguments)
+        hooks = fixture.native("remote", "show-hooks")
+
+        def read(python):
+            return json.loads(
+                subprocess.check_output(
+                    [
+                        str(python),
+                        "-I",
+                        str(Path(__file__).resolve()),
+                        "--probe-ssh",
+                        str(fixture.bin / "ssh"),
+                    ],
+                    timeout=30,
+                )
+            )
+
+        old_reader = read(args.reader_python)
+        record["cases"]["a13_reader_a15_owned_publisher"] = old_reader
+        assert (fixture.root / "factory.jsonl").is_file()
+        # An intentionally uninjected a15 CLI uses the separately installed old facade.
+        fixture.write(
+            fixture.bin / "mesh-plus",
+            "#!/bin/sh\nexec "
+            + shlex.join([str(args.reference_python.absolute()), "-I", "-B", "-m", "mesh_plus.cli"])
+            + ' "$@" --config '
+            + shlex.quote(str(fixture.root / "sources.toml"))
+            + "\n",
+            executable=True,
+        )
+        reference = read(sys.executable)
+        assert reference["references"] == old_reader["references"]
+        record["cases"]["a15_default_cli_old_observer_reference"] = reference
+        failure_probe = """
+import sys
+from mesh_plus.cli import configured_adapter
+if sys.argv[2] == 'missing':
+ class Fence:
+  def find_spec(self, fullname, path=None, target=None):
+   if fullname == 'tmux_observer' or fullname.startswith('tmux_observer.'):
+    raise ImportError('owned producer unavailable')
+ sys.meta_path.insert(0,Fence())
+def factory(host,source,socket):
+ from tmux_observer.mesh_publisher import make_publisher
+ return make_publisher(host,source,socket)
+try:
+ configured_adapter(sys.argv[1],'tmux_default',publisher_factories={'tmux':factory})
+except ImportError:
+ print('selected factory failure remained terminal')
+else:
+ raise AssertionError('missing owned factory fell back to reference dispatch')
+"""
+        for mode in ("missing", "old_facade"):
+            subprocess.run(
+                [
+                    str(args.reference_python.absolute()),
+                    "-I",
+                    "-c",
+                    failure_probe,
+                    str(fixture.root / "sources.toml"),
+                    mode,
+                ],
+                check=True,
+                capture_output=True,
+                timeout=5,
+            )
+            record["cases"]["injected_factory_" + mode] = "failed explicitly without fallback"
+        assert fixture.native("remote", *arguments) == before
+        assert fixture.native("remote", "show-hooks") == hooks
+        assert fixture.native("remote", "list-clients", "-F", "#{client_pid}") == b""
+        record["nativePassivity"] = "references hooks attachment counts unchanged"
+        record["state"] = "passed"
+    except BaseException:
+        record["state"] = "failed"
+        raise
+    finally:
+        fixture.close()
+        record["cleanup"] = "completed_owned_fixture"
+        args.output.write_text(json.dumps(record, indent=2) + "\n")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
