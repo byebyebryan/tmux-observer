@@ -1,12 +1,15 @@
 """Concrete Mesh/Fleet integration over owned tmux servers and real SSH."""
 
+import json
 import threading
 import unittest
+from unittest.mock import patch
 
 import test_fleet_mesh
 from native_fixture import NativeFixture
 
 from tmux_observer._clock import boottime_ms
+from tmux_observer_client import _mesh_worker
 from tmux_observer_client.mesh_fleet import MeshFleetPublisher
 
 
@@ -18,6 +21,16 @@ class NativeMeshTests(unittest.TestCase):
     def test_two_hosts_passivity_refresh_restart_empty_and_cleanup(self):
         fixture = NativeFixture()
         self.addCleanup(fixture.close)
+        factories = []
+        original_factory = _mesh_worker.make_publisher
+
+        def local_factory(host, source, socket):
+            factories.append((host, source))
+            return original_factory(host, source, socket)
+
+        factory_patch = patch.object(_mesh_worker, "make_publisher", local_factory)
+        factory_patch.start()
+        self.addCleanup(factory_patch.stop)
         for role in ("local", "remote"):
             fixture.native(role, "new-session", "-d", "-s", "mesh-owned-" + role, "sleep 120")
         before = {
@@ -110,6 +123,19 @@ class NativeMeshTests(unittest.TestCase):
                 }
             ) from error
         self.assertIsNotNone(first["snapshot"]["hosts"][1]["owner"]["proof"])
+        self.assertEqual(factories, [("fixture-local", "tmux_default")])
+        if fixture.publisher_mode == "owned":
+            remote_factories = [
+                json.loads(line)
+                for line in (fixture.root / "factory.jsonl").read_text().splitlines()
+            ]
+            self.assertTrue(remote_factories)
+            self.assertTrue(
+                all(
+                    row == {"host": "fixture-remote", "source": "tmux_default"}
+                    for row in remote_factories
+                )
+            )
         for _ in range(10):
             self.read(fleet)
         for role in ("local", "remote"):

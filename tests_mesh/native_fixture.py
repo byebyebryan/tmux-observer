@@ -24,6 +24,9 @@ class NativeFixture:
         self.temporary = tempfile.TemporaryDirectory(prefix=".tmux-mesh-", dir=Path.home())
         self.root = Path(self.temporary.name)
         self.processes = []
+        self.publisher_mode = (
+            "reference" if "TMUX_OBSERVER_TEST_BRIDGE_PYTHON" in os.environ else "owned"
+        )
         self.local = self.root / "local"
         self.remote = self.root / "remote"
         self.bin = self.root / "bin"
@@ -111,13 +114,34 @@ class NativeFixture:
             'version = 1\nhost = "fixture-remote"\n[sources.tmux_default]\n'
             'domain = "tmux"\nsocket = ' + json.dumps(str(self.remote / "owner.sock")) + "\n",
         )
+        launcher = self.root / "publisher-launcher.py"
+        self.write(
+            launcher,
+            "import sys,json,pathlib\n"
+            + "sys.path[:0] = "
+            + repr([path for path in os.environ.get("PYTHONPATH", "").split(os.pathsep) if path])
+            + "\n"
+            + "class Fence:\n"
+            + " def find_spec(self, fullname, path=None, target=None):\n"
+            + "  if fullname.startswith(('mesh_plus.observer','tmux_observer.collector','tmux_observer.owner','tmux_observer_actions')):\n"
+            + "   raise ImportError('owned fixture bridge imported reference/native implementation')\n"
+            + "sys.meta_path.insert(0,Fence())\n"
+            + "from mesh_plus.cli import main\n"
+            + "def factory(host,source,socket):\n"
+            + " from tmux_observer.mesh_publisher import make_publisher\n"
+            + " with pathlib.Path("
+            + repr(str(self.root / "factory.jsonl"))
+            + ").open('a') as trace: trace.write(json.dumps({'host':host,'source':source})+'\\n')\n"
+            + " return make_publisher(host,source,socket)\n"
+            + "raise SystemExit(main(publisher_factories={'tmux':factory}))\n",
+        )
         self.write(
             self.bin / "mesh-plus",
             "#!/bin/sh\nexec "
             + shlex.join(
                 [os.environ["TMUX_OBSERVER_TEST_BRIDGE_PYTHON"], "-I", "-B", "-m", "mesh_plus.cli"]
                 if "TMUX_OBSERVER_TEST_BRIDGE_PYTHON" in os.environ
-                else [sys.executable, "-m", "mesh_plus.cli"]
+                else [sys.executable, "-I", "-B", str(launcher)]
             )
             + ' "$@" --config '
             + shlex.quote(str(config))
