@@ -184,7 +184,7 @@ class MeshFleetTests(unittest.TestCase):
 
         from tmux_observer._mesh_source import TmuxCachedSource
 
-        consumed = {}
+        consumed, delivered, timeouts = {}, [], []
         original_next, original_watch = Subscription.__anext__, TmuxCachedSource.watch
 
         def marker(frame):
@@ -195,6 +195,7 @@ class MeshFleetTests(unittest.TestCase):
             if frame["kind"] == "data":
                 barrier = consumed.get(marker(frame["payload"]["ownerFrame"]))
                 if barrier is not None:
+                    delivered.append(marker(frame["payload"]["ownerFrame"]))
                     barrier.set()
             return frame
 
@@ -208,7 +209,14 @@ class MeshFleetTests(unittest.TestCase):
                     yield publication
                     # This success fixture delivers each cached replacement.
                     # Real coalescing and revocation have their own IPC case.
-                    await asyncio.wait_for(barrier.wait(), 0.5)
+                    # Match the owned frame budget. A 500 ms fixture cutoff can
+                    # retire a valid cold/loaded subscription during startup,
+                    # changing the control association while refresh is active.
+                    try:
+                        await asyncio.wait_for(barrier.wait(), 2)
+                    except TimeoutError:
+                        timeouts.append(key)
+                        raise
                     del consumed[key]
             finally:
                 await iterator.aclose()
@@ -237,7 +245,11 @@ class MeshFleetTests(unittest.TestCase):
                 return frame if frame["ticket"]["state"] in TERMINAL else None
 
             frame = self.wait(terminal)
+            self.assertFalse(timeouts, "success fixture lost a delivery acknowledgement")
             self.assertEqual(frame["ticket"]["state"], "complete", frame["ticket"])
+            self.assertGreaterEqual(
+                len(delivered), 2, "owned publication fixture was not exercised"
+            )
             source = frame["snapshot"]["hosts"][0]["owner"]["receipt"]
             self.assertGreaterEqual(source["startedAt"], ticket["requestedAt"])
             self.assertGreaterEqual(frame["snapshot"]["desktop"]["startedAt"], source["acceptedAt"])
