@@ -1,5 +1,11 @@
 # Tmux Observer
 
+The **0.6.0a8 source/private candidate** adds an optional
+[owner preparation facade](docs/mesh-preparation.md) for Mesh a18.
+[Actual IPC/SSH qualification](docs/evidence/2026-10-14-preparation/README.md)
+retains the existing Fleet guard: preparation removes no work in that path.
+This candidate does not change the managed selection below.
+
 Released **0.6.0a7** owns cached native acquisition and integrates Mesh
 **0.1.0a15** through its public publisher helper, pure Observer profile and
 explicitly bound readers/stream guards. The same lazy factory serves local and

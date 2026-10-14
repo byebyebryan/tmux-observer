@@ -1,0 +1,204 @@
+[
+  {
+    "state": "passed",
+    "versions": {
+      "mesh-plus": "0.1.0a15",
+      "tmux-observer": "0.6.0a7"
+    },
+    "preparedDiagnostic": false,
+    "instrumented": true,
+    "certification": false,
+    "reads": 4,
+    "updates": 2,
+    "cleanup": true,
+    "harnessSha256": "deb000a577629b76fa0da1af17ba16343caacc993d9cfbcb5669ef0aeffb22cd",
+    "coordinatorCpuNs": 566190920,
+    "wallNs": 3755020851,
+    "rpcCount": 8,
+    "rpcP95Ns": 1117453,
+    "rpcMaxNs": 1314021,
+    "markers": [
+      [
+        [
+          "fixture-local",
+          "$0",
+          "probe-1"
+        ],
+        [
+          "fixture-remote",
+          "$0",
+          "probe-1"
+        ]
+      ],
+      [
+        [
+          "fixture-local",
+          "$0",
+          "probe-2"
+        ],
+        [
+          "fixture-remote",
+          "$0",
+          "probe-2"
+        ]
+      ]
+    ],
+    "acceptedCounters": [
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "counts": {
+      "fleetFrame": 139,
+      "meshAccept": 4,
+      "ownerProjection": 8,
+      "nativeDocumentAdmission": 8
+    },
+    "checkedPublications": 0,
+    "actorWindowMs": null,
+    "coordinatorPssBytes": 25972736,
+    "coordinatorPeakRssBytes": 39137280,
+    "scope": "coordinator process CPU includes foreground RPC, Fleet projection, Mesh worker/local bridge and oracle; excludes child owner/remote bridge/SSH CPU; actual local IPC and loopback SSH; fixed native cadence; not production fleet performance",
+    "tuple": "A"
+  },
+  {
+    "state": "passed",
+    "versions": {
+      "mesh-plus": "0.1.0a18",
+      "tmux-observer": "0.6.0a8"
+    },
+    "preparedDiagnostic": false,
+    "instrumented": true,
+    "certification": false,
+    "reads": 4,
+    "updates": 2,
+    "cleanup": true,
+    "harnessSha256": "deb000a577629b76fa0da1af17ba16343caacc993d9cfbcb5669ef0aeffb22cd",
+    "coordinatorCpuNs": 514560374,
+    "wallNs": 3833277521,
+    "rpcCount": 8,
+    "rpcP95Ns": 2710836,
+    "rpcMaxNs": 3423780,
+    "markers": [
+      [
+        [
+          "fixture-local",
+          "$0",
+          "probe-1"
+        ],
+        [
+          "fixture-remote",
+          "$0",
+          "probe-1"
+        ]
+      ],
+      [
+        [
+          "fixture-local",
+          "$0",
+          "probe-2"
+        ],
+        [
+          "fixture-remote",
+          "$0",
+          "probe-2"
+        ]
+      ]
+    ],
+    "acceptedCounters": [
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "counts": {
+      "meshAccept": 5,
+      "ownerProjection": 10,
+      "nativeDocumentAdmission": 10,
+      "fleetFrame": 144
+    },
+    "checkedPublications": 0,
+    "actorWindowMs": null,
+    "coordinatorPssBytes": 25318400,
+    "coordinatorPeakRssBytes": 38617088,
+    "scope": "coordinator process CPU includes foreground RPC, Fleet projection, Mesh worker/local bridge and oracle; excludes child owner/remote bridge/SSH CPU; actual local IPC and loopback SSH; fixed native cadence; not production fleet performance",
+    "tuple": "B"
+  },
+  {
+    "state": "passed",
+    "versions": {
+      "mesh-plus": "0.1.0a18",
+      "tmux-observer": "0.6.0a8"
+    },
+    "preparedDiagnostic": true,
+    "instrumented": true,
+    "certification": false,
+    "reads": 4,
+    "updates": 2,
+    "cleanup": true,
+    "harnessSha256": "deb000a577629b76fa0da1af17ba16343caacc993d9cfbcb5669ef0aeffb22cd",
+    "coordinatorCpuNs": 508097337,
+    "wallNs": 3738085026,
+    "rpcCount": 8,
+    "rpcP95Ns": 1210309,
+    "rpcMaxNs": 1259907,
+    "markers": [
+      [
+        [
+          "fixture-local",
+          "$0",
+          "probe-1"
+        ],
+        [
+          "fixture-remote",
+          "$0",
+          "probe-1"
+        ]
+      ],
+      [
+        [
+          "fixture-local",
+          "$0",
+          "probe-2"
+        ],
+        [
+          "fixture-remote",
+          "$0",
+          "probe-2"
+        ]
+      ]
+    ],
+    "acceptedCounters": [
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "counts": {
+      "ownerProjection": 10,
+      "nativeDocumentAdmission": 10,
+      "fleetFrame": 140,
+      "preparedAccept": 4,
+      "meshAccept": 4
+    },
+    "checkedPublications": 0,
+    "actorWindowMs": null,
+    "coordinatorPssBytes": 25315328,
+    "coordinatorPeakRssBytes": 36917248,
+    "scope": "coordinator process CPU includes foreground RPC, Fleet projection, Mesh worker/local bridge and oracle; excludes child owner/remote bridge/SSH CPU; actual local IPC and loopback SSH; fixed native cadence; not production fleet performance",
+    "tuple": "C"
+  }
+]

@@ -73,7 +73,7 @@ def main(args):
                     cell.append(value)
                     cases.append(value)
                     (args.output / "cases.json").write_text(json.dumps(cases, indent=2) + "\n")
-                # Actual cadence/proofs and readiness polls may vary; record
+                # Actual cadence/proofs may vary; record
                 # counters/elapsed time, and require identical requested semantic
                 # updates and successful cached RPC work. Never call it exact
                 # acquisition/transport work or whole-tree CPU attribution.
@@ -100,7 +100,11 @@ def main(args):
                 "cases": len(cases),
                 "blocks": blocks,
                 "audit": args.audit,
-                "scope": "actual IPC/loopback SSH, matched semantic updates/RPCs; coordinator CPU only; variable natural source/proof cadence and readiness polls",
+                "scope": (
+                    "actual IPC/loopback SSH, matched semantic updates/RPCs; "
+                    "coordinator CPU only; variable natural source/proof cadence; "
+                    "audit polls readiness, timing uses fixed 2500 ms actor windows"
+                ),
             },
             indent=2,
         )

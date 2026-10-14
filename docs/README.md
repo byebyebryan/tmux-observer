@@ -9,6 +9,10 @@ implementation and independent acceptance gates. The earlier
 [Mesh SDK integration plan](mesh-sdk-integration-plan.md) and
 [SDK adoption checkpoints](mesh-sdk-adoption.md) retain their historical scope.
 
+The [optional Mesh preparation facade](mesh-preparation.md) and its
+[private a8/a18 qualification](evidence/2026-10-14-preparation/README.md)
+are separate from released and managed selections.
+
 ## Current interfaces and operation
 
 | Read | Purpose |

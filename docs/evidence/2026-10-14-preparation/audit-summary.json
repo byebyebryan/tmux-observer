@@ -1,0 +1,7 @@
+{
+  "state": "passed",
+  "cases": 3,
+  "blocks": [],
+  "audit": true,
+  "scope": "actual IPC/loopback SSH, matched semantic updates/RPCs; coordinator CPU only; variable natural source/proof cadence and readiness polls"
+}
