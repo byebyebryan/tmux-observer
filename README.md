@@ -1,6 +1,6 @@
 # Tmux Observer
 
-The **a9 source/private candidate** explicitly binds Mesh a19's publisher-history
+The **a10 source/private candidate** explicitly binds Mesh a20's publisher-history
 fix and expiry scheduling candidate. Observation, Service, Fleet schemas, native
 collection and the Fleet guard stay unchanged. The
 [idle simplification study](docs/evidence/2026-10-14-idle-simplification/README.md)
@@ -11,7 +11,7 @@ The **0.6.0a8 source/private candidate** adds an optional
 [owner preparation facade](docs/mesh-preparation.md) for Mesh a18.
 [Actual IPC/SSH qualification](docs/evidence/2026-10-14-preparation/README.md)
 retains the existing Fleet guard: preparation removes no work in that path.
-This candidate does not change the managed selection below.
+That preceding checkpoint does not change the managed selection below.
 
 Released **0.6.0a7** owns cached native acquisition and integrates Mesh
 **0.1.0a15** through its public publisher helper, pure Observer profile and

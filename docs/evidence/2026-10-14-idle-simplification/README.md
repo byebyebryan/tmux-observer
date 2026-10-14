@@ -83,3 +83,11 @@ this independent action fixture issue is resolved. The source and optional Mesh
 gates now run as separate jobs, with both gates retained, so action setup timing
 cannot prevent the networking gate from executing. This changes validation
 coordination, not product action behavior or its acceptance criteria.
+
+The expiry-registration edge case found during final Mesh review allocates a
+corrected private a20/a10 tuple. Tmux a10 source `f693674` and wheel
+`5d7c922ec9229e8e34149cfa13cde86f9c3877339e78d41ddfcc9dbb3d45c913`
+retain the same producer/runtime policy with an explicit Mesh a20 pin at `f7bef1e`.
+Installed acceptance passes all 42 Mesh cases. The preceding a9/a19 wheels and
+timing evidence remain immutable; only corrected a20/a10 is the handoff candidate.
+No live selection, action implementation or native collection changes occur.
