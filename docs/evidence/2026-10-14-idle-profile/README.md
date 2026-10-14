@@ -172,3 +172,19 @@ Standalone script lint/format, JSON/checksums, links, frozen-path comparison and
 native runs are checked. Full production runtime suites are not required to infer
 a performance result from this diagnostic-only change; hosted source CI has its
 separate status. No release, graphical or deployment acceptance is claimed.
+
+## Hosted checkpoint and retained integration concern
+
+The [CI checkpoint](ci-checkpoint.json) binds Observer `aed331e` run 38526645393
+and Mesh `94a7858` run 38526750779. Mesh passes. Observer's canonical source gate
+passes, then its integration gate reproduces the same grouped-refresh success
+test failure seen in the previous preparation pass: a `stale_scope` control
+association revocation. The [original failed log](observer-ci-first-failure.log.gz)
+is retained. Product runtime, tests and dependency pins are unchanged by this
+diagnostic pass. No source or test relaxation is made to turn this green.
+
+The cause remains unresolved; it is not established whether fixture synchronization
+or runtime scheduling owns the race. Investigate it before implementing timer or
+refresh scheduling changes. This is a separate correctness concern from the
+successful idle fixture measurements. The report is retained on the profiling
+branch rather than promoted as a fully green integration checkpoint.

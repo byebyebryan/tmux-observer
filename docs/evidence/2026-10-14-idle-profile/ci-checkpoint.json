@@ -1,0 +1,106 @@
+{
+  "observer": {
+    "conclusion": "failure",
+    "headSha": "aed331e8dbc10cda03e6582ae8c534ba4e752fef",
+    "jobs": [
+      {
+        "completedAt": "2026-10-14T07:12:49Z",
+        "conclusion": "failure",
+        "databaseId": 115728458873,
+        "name": "test",
+        "startedAt": "2026-10-14T07:10:39Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T07:10:40Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T07:10:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:10:41Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-14T07:10:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:10:42Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-python@v5",
+            "number": 3,
+            "startedAt": "2026-10-14T07:10:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:10:55Z",
+            "conclusion": "success",
+            "name": "Install constrained backend and development tools",
+            "number": 4,
+            "startedAt": "2026-10-14T07:10:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:12:15Z",
+            "conclusion": "success",
+            "name": "Run source and contract gate",
+            "number": 5,
+            "startedAt": "2026-10-14T07:10:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:12:19Z",
+            "conclusion": "success",
+            "name": "Install frozen optional Mesh candidate and owned SSH tools",
+            "number": 6,
+            "startedAt": "2026-10-14T07:12:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:12:47Z",
+            "conclusion": "failure",
+            "name": "Run Mesh integration and owned native SSH gate",
+            "number": 7,
+            "startedAt": "2026-10-14T07:12:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:12:47Z",
+            "conclusion": "skipped",
+            "name": "Post Run actions/setup-python@v5",
+            "number": 13,
+            "startedAt": "2026-10-14T07:12:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:12:48Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 14,
+            "startedAt": "2026-10-14T07:12:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T07:12:48Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "startedAt": "2026-10-14T07:12:48Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/byebyebryan/tmux-observer/actions/runs/38526645393/job/115728458873"
+      }
+    ],
+    "status": "completed"
+  },
+  "mesh": {
+    "conclusion": "success",
+    "headSha": "94a7858a0ca18e05c03ef748f79645f5130e0637",
+    "status": "completed"
+  },
+  "interpretation": "Observer canonical source gate passed; integration reproduced pre-existing grouped-refresh stale_scope failure; runtime and tests unchanged. No claim this race is fixed; does not invalidate successful isolated profiling cases."
+}
