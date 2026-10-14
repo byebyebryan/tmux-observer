@@ -299,7 +299,7 @@ TmuxMeshProfile().bind('local', 'tmux_default')
             with (
                 self.subTest(version=version),
                 patch("tmux_observer_client._mesh_worker.__version__", version),
-                self.assertRaisesRegex(ValueError, "reviewed mesh-plus 0.1.0a19"),
+                self.assertRaisesRegex(ValueError, "reviewed mesh-plus 0.1.0a20"),
             ):
                 MeshWorker("fixture-local", authority=authority)
 
