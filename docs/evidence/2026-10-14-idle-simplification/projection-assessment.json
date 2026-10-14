@@ -1,0 +1,20 @@
+[
+  {
+    "rows": 0,
+    "baselineUs": 68.29369750000001,
+    "reuseUs": 21.4303955,
+    "estimatedCpuPercentagePoints": 0.00328043114
+  },
+  {
+    "rows": 2,
+    "baselineUs": 94.5289411,
+    "reuseUs": 28.2555467,
+    "estimatedCpuPercentagePoints": 0.004639137607999998
+  },
+  {
+    "rows": 12,
+    "baselineUs": 184.8171194,
+    "reuseUs": 58.7216703,
+    "estimatedCpuPercentagePoints": 0.008826681437000002
+  }
+]

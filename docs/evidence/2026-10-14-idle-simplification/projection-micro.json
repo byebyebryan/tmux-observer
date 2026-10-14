@@ -1,0 +1,38 @@
+[
+  {
+    "rows": 0,
+    "mode": "legacy",
+    "iterations": 5000,
+    "cpuSeconds": 0.395923266
+  },
+  {
+    "rows": 0,
+    "mode": "reuse",
+    "iterations": 5000,
+    "cpuSeconds": 0.11022092000000006
+  },
+  {
+    "rows": 2,
+    "mode": "legacy",
+    "iterations": 5000,
+    "cpuSeconds": 0.5295351359999999
+  },
+  {
+    "rows": 2,
+    "mode": "reuse",
+    "iterations": 5000,
+    "cpuSeconds": 0.144689297
+  },
+  {
+    "rows": 12,
+    "mode": "legacy",
+    "iterations": 5000,
+    "cpuSeconds": 1.053807699
+  },
+  {
+    "rows": 12,
+    "mode": "reuse",
+    "iterations": 5000,
+    "cpuSeconds": 0.30754267000000013
+  }
+]

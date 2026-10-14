@@ -1,0 +1,90 @@
+{
+  "scope": "same-frame private projection only",
+  "harnessSha256": "6e93ec36e2ac6886d9689e12bbf3efad51b8e4ea9b25754e20dc7f55b3f69f9a",
+  "records": [
+    {
+      "cpuNs": 339735881,
+      "iterations": 5000,
+      "outputDigest": "167803358605aa69028e9b0527d13dc43d5f47b4da021849d83f84915f0dc29c",
+      "rows": 0,
+      "variant": "baseline"
+    },
+    {
+      "cpuNs": 107257694,
+      "iterations": 5000,
+      "outputDigest": "167803358605aa69028e9b0527d13dc43d5f47b4da021849d83f84915f0dc29c",
+      "rows": 0,
+      "variant": "candidate"
+    },
+    {
+      "cpuNs": 107046261,
+      "iterations": 5000,
+      "outputDigest": "167803358605aa69028e9b0527d13dc43d5f47b4da021849d83f84915f0dc29c",
+      "rows": 0,
+      "variant": "candidate"
+    },
+    {
+      "cpuNs": 343201094,
+      "iterations": 5000,
+      "outputDigest": "167803358605aa69028e9b0527d13dc43d5f47b4da021849d83f84915f0dc29c",
+      "rows": 0,
+      "variant": "baseline"
+    },
+    {
+      "cpuNs": 474536721,
+      "iterations": 5000,
+      "outputDigest": "7bbaea4744469b60a7bde9342993217440ef34bf46c8fb7dc0b7953105637d83",
+      "rows": 2,
+      "variant": "baseline"
+    },
+    {
+      "cpuNs": 140714540,
+      "iterations": 5000,
+      "outputDigest": "7bbaea4744469b60a7bde9342993217440ef34bf46c8fb7dc0b7953105637d83",
+      "rows": 2,
+      "variant": "candidate"
+    },
+    {
+      "cpuNs": 141840927,
+      "iterations": 5000,
+      "outputDigest": "7bbaea4744469b60a7bde9342993217440ef34bf46c8fb7dc0b7953105637d83",
+      "rows": 2,
+      "variant": "candidate"
+    },
+    {
+      "cpuNs": 470752690,
+      "iterations": 5000,
+      "outputDigest": "7bbaea4744469b60a7bde9342993217440ef34bf46c8fb7dc0b7953105637d83",
+      "rows": 2,
+      "variant": "baseline"
+    },
+    {
+      "cpuNs": 922895273,
+      "iterations": 5000,
+      "outputDigest": "82bcc50d740f1058deb122b7d07bb424a640d9f8d20391c7ceaf5f452f07067e",
+      "rows": 12,
+      "variant": "baseline"
+    },
+    {
+      "cpuNs": 294885169,
+      "iterations": 5000,
+      "outputDigest": "82bcc50d740f1058deb122b7d07bb424a640d9f8d20391c7ceaf5f452f07067e",
+      "rows": 12,
+      "variant": "candidate"
+    },
+    {
+      "cpuNs": 292331534,
+      "iterations": 5000,
+      "outputDigest": "82bcc50d740f1058deb122b7d07bb424a640d9f8d20391c7ceaf5f452f07067e",
+      "rows": 12,
+      "variant": "candidate"
+    },
+    {
+      "cpuNs": 925275921,
+      "iterations": 5000,
+      "outputDigest": "82bcc50d740f1058deb122b7d07bb424a640d9f8d20391c7ceaf5f452f07067e",
+      "rows": 12,
+      "variant": "baseline"
+    }
+  ]
+}

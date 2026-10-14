@@ -1,0 +1,157 @@
+diff --git a/src/tmux_observer_client/_mesh_projection.py b/src/tmux_observer_client/_mesh_projection.py
+index e4d776c..04597d3 100644
+--- a/src/tmux_observer_client/_mesh_projection.py
++++ b/src/tmux_observer_client/_mesh_projection.py
+@@ -12,12 +12,31 @@ from ._owner_document import OwnerDocument
+ from ._remote_state import RemoteState
+ 
+ 
++def _same_json(value, retained):
++    """Exact plain-JSON equality bounded by the already checked retained shape."""
++    kind = type(value)
++    if kind is not type(retained):
++        return False
++    if kind is dict:
++        return (
++            len(value) == len(retained)
++            and all(type(key) is str and key in retained for key in value)
++            and all(_same_json(value[key], child) for key, child in retained.items())
++        )
++    if kind is list:
++        return len(value) == len(retained) and all(
++            _same_json(left, right) for left, right in zip(value, retained)
++        )
++    return kind in (str, int, float, bool, type(None)) and value == retained
++
++
+ class MeshOwnerState(RemoteState):
+     def __init__(self, host_id, *, local_clock=None):
+         super().__init__(host_id, local_clock=local_clock)
+         self.mesh_binding = None
+         self.projection_encoded_at = None
+         self.selected_route = None
++        self._confirmed_header_size = 0
+ 
+     def accept_mesh(
+         self, host, rows, *, reader_id, reader_clock, now, selected_route=None, reserve=None
+@@ -33,10 +52,24 @@ class MeshOwnerState(RemoteState):
+         frame = None
+         document = None
+         scope = None
++        reused = False
+         if owner is not None:
+             metadata = owner["metadata"]
+             snapshot = None if metadata is None else {**metadata, "sessions": rows}
+-            document = OwnerDocument({**owner["service"], "snapshot": snapshot})
++            native = {**owner["service"], "snapshot": snapshot}
++            reused = (
++                self.transport == delivery["status"] == "ready"
++                and self.mesh_binding == (reader_id, delivery["epoch"], self.scope, selected_route)
++                and self.confirmed is not None
++                and _same_json(native, self.confirmed)
++            )
++            document = (
++                OwnerDocument._from_checked(
++                    (self.confirmed, self.confirmed_size, self._confirmed_header_size)
++                )
++                if reused
++                else OwnerDocument(native)
++            )
+             frame = document.value
+             if frame["source"]["hostId"] != self.host_id:
+                 raise ValueError("Mesh owner source differs")
+@@ -148,7 +181,9 @@ class MeshOwnerState(RemoteState):
+             # Warming is not an authoritative empty inventory. Preserve the last
+             # complete descriptors with no current validity until a roster arrives.
+             if frame["snapshot"] is not None or self.confirmed is None:
+-                self.confirm(document)
++                if not reused:
++                    self.confirm(document)
++                    self._confirmed_header_size = document.header_size
+                 self.projection_encoded_at = encoded_at
+ 
+     def project_header(self):
+diff --git a/tests/test_mesh_projection.py b/tests/test_mesh_projection.py
+index 493ecce..8c11777 100644
+--- a/tests/test_mesh_projection.py
++++ b/tests/test_mesh_projection.py
+@@ -5,8 +5,10 @@ import json
+ import os
+ import unittest
+ from pathlib import Path
++from unittest.mock import patch
+ 
+-from tmux_observer_client._mesh_projection import MeshOwnerState
++from tmux_observer_client._mesh_projection import MeshOwnerState, _same_json
++from tmux_observer_client._owner_document import OwnerDocument
+ 
+ 
+ class MeshProjectionTests(unittest.TestCase):
+@@ -180,3 +182,67 @@ class MeshProjectionTests(unittest.TestCase):
+         self.assertIsNone(state.confirmed)
+         self.assertEqual(state.epoch, 0)
+         self.assertEqual(state.expiry, 0)
++
++    def test_exact_reuse_matches_full_admission_including_queue_expiry(self):
++        cached = MeshOwnerState(self.host_id, local_clock=self.clock)
++        legacy = MeshOwnerState(self.host_id, local_clock=self.clock)
++        host, rows = self.outcome()
++        for now in (200, 300, 10101):
++            self.accept(cached, host, rows, now=now)
++            with patch("tmux_observer_client._mesh_projection._same_json", return_value=False):
++                self.accept(legacy, host, rows, now=now)
++            self.assertEqual(cached.__dict__, legacy.__dict__)
++        self.assertEqual(cached.expiry, 0)
++
++    def test_exact_reuse_removes_admission_but_checks_proof_and_pool(self):
++        state = MeshOwnerState(self.host_id)
++        host, rows = self.outcome(local=False)
++        self.accept(state, host, rows, now=1050)
++        with patch.object(OwnerDocument, "__init__", side_effect=AssertionError("readmitted")):
++            self.accept(state, host, rows, now=1060)
++            host["delivery"]["proof"] = None
++            with self.assertRaisesRegex(ValueError, "lacks proof"):
++                self.accept(state, host, rows, now=1070)
++            host["delivery"]["proof"] = self.outcome(local=False)[0]["delivery"]["proof"]
++
++            def reject(_size):
++                raise ValueError("pool full")
++
++            before = copy.deepcopy(state.__dict__)
++            with self.assertRaisesRegex(ValueError, "pool full"):
++                state.accept_mesh(
++                    host, rows, reader_id="reader", reader_clock=self.clock, now=1070,
++                    selected_route="route", reserve=reject,
++                )
++            self.assertEqual(state.__dict__, before)
++
++    def test_changed_same_revision_input_and_rebinding_take_full_admission(self):
++        state = MeshOwnerState(self.host_id, local_clock=self.clock)
++        host, rows = self.outcome()
++        self.accept(state, host, rows)
++        original = state.confirmed["snapshot"]["sessions"][0]["name"]
++        rows[0]["name"] = original + " changed"
++        self.assertEqual(state.confirmed["snapshot"]["sessions"][0]["name"], original)
++        self.accept(state, host, rows)
++        self.assertEqual(state.confirmed["snapshot"]["sessions"][0]["name"], rows[0]["name"])
++        host["delivery"]["epoch"] += 1
++        with patch.object(OwnerDocument, "__init__", side_effect=ValueError("full admission")):
++            with self.assertRaisesRegex(ValueError, "full admission"):
++                self.accept(state, host, rows)
++        rows[0]["name"] = 42
++        with self.assertRaises(ValueError):
++            self.accept(state, host, rows)
++
++    def test_plain_json_match_checks_types_and_rejects_exotic_values(self):
++        self.assertFalse(_same_json({"count": True}, {"count": 1}))
++        self.assertFalse(_same_json({"count": 1.0}, {"count": 1}))
++        self.assertFalse(_same_json({"count": []}, {"count": {}}))
++
++        class Exotic(dict):
++            def __eq__(self, _other):
++                raise AssertionError("exotic equality")
++
++        self.assertFalse(_same_json(Exotic(), {}))
++        cycle = []
++        cycle.append(cycle)
++        self.assertFalse(_same_json(cycle, [[]]))

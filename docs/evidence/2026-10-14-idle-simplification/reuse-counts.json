@@ -1,0 +1,10 @@
+{
+  "hostProjections": 48,
+  "loopTurns": 2697,
+  "nativeAdmissions": 23,
+  "readyCallbacks": 2159,
+  "retainedDocumentReuses": 21,
+  "timers:host_loop": 638,
+  "timers:other": 7,
+  "timers:within_deadline": 416
+}

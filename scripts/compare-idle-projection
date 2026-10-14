@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""Bounded projection-only CPU screen using explicit baseline/candidate roots."""
+
+import argparse
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+
+def child(args):
+    sys.path[:0] = json.loads(args.roots.read_text())
+    from tmux_observer_client._mesh_projection import MeshOwnerState
+
+    root = Path(__file__).resolve().parents[1]
+    frame = json.loads((root / "contracts/service-v1/fixtures/ready.json").read_text())
+    host_id = frame["source"]["hostId"]
+    frame["source"]["uid"] = frame["snapshot"]["source"]["uid"] = os.getuid()
+    row = frame["snapshot"]["sessions"][0]
+    rows = [dict(row, sessionId="$" + str(i), name="fixture-" + str(i)) for i in range(args.rows)]
+    host = {
+        "hostId": host_id,
+        "local": True,
+        "delivery": {"status": "ready", "epoch": 1, "error": None, "proof": None},
+        "owner": {
+            "service": {key: value for key, value in frame.items() if key != "snapshot"},
+            "metadata": {
+                key: value for key, value in frame["snapshot"].items() if key != "sessions"
+            },
+        },
+        "receipts": [
+            {
+                "sourceId": "default",
+                "component": "native",
+                "accepted": 1,
+                "health": "current",
+                "expiresAtMs": 10100,
+            }
+        ],
+    }
+    state = MeshOwnerState(host_id, local_clock=frame["clock"])
+
+    def accept():
+        state.accept_mesh(host, rows, reader_id="reader", reader_clock=frame["clock"], now=200)
+
+    for _ in range(50):
+        accept()
+    start = time.process_time_ns()
+    for _ in range(args.iterations):
+        accept()
+    elapsed = time.process_time_ns() - start
+    output = json.dumps(state.project(), sort_keys=True, separators=(",", ":"))
+    print(
+        json.dumps(
+            {
+                "cpuNs": elapsed,
+                "iterations": args.iterations,
+                "outputDigest": hashlib.sha256(output.encode()).hexdigest(),
+            }
+        )
+    )
+
+
+def main(args):
+    records = []
+    for rows in (0, 2, 12):
+        for variant in ("baseline", "candidate", "candidate", "baseline"):
+            command = [
+                sys.executable,
+                "-I",
+                "-B",
+                str(Path(__file__).resolve()),
+                "--child",
+                "--roots",
+                str(getattr(args, variant)),
+                "--rows",
+                str(rows),
+                "--iterations",
+                str(args.iterations),
+            ]
+            value = json.loads(subprocess.check_output(command, text=True))
+            records.append(dict(value, rows=rows, variant=variant))
+        if len({v["outputDigest"] for v in records if v["rows"] == rows}) != 1:
+            raise ValueError("projection outputs differ")
+    args.output.write_text(
+        json.dumps(
+            {
+                "scope": "same-frame private projection only",
+                "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                "records": records,
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--baseline", type=Path)
+    parser.add_argument("--candidate", type=Path)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--iterations", type=int, default=5000)
+    parser.add_argument("--child", action="store_true")
+    parser.add_argument("--roots", type=Path)
+    parser.add_argument("--rows", type=int)
+    args = parser.parse_args()
+    if not 1 <= args.iterations <= 100000:
+        parser.error("bounded iteration count required")
+    if args.child:
+        child(args)
+    else:
+        if args.output.exists():
+            parser.error("new output file required")
+        main(args)

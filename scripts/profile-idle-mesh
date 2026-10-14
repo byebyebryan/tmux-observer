@@ -47,6 +47,26 @@ def count_deadlines(output, role):
     import collections
 
     counts = collections.Counter()
+    from tmux_observer_client import _owner_document
+    from tmux_observer_client._mesh_projection import MeshOwnerState
+
+    original_admit = _owner_document._checked_service_frame
+    original_project = MeshOwnerState.accept_mesh
+
+    def admit(value):
+        counts["nativeAdmissions"] += 1
+        return original_admit(value)
+
+    def project(owner, *args, **kwargs):
+        before = owner.confirmed
+        result = original_project(owner, *args, **kwargs)
+        counts["hostProjections"] += 1
+        if before is not None and before is owner.confirmed:
+            counts["retainedDocumentReuses"] += 1
+        return result
+
+    _owner_document._checked_service_frame = admit
+    MeshOwnerState.accept_mesh = project
     original_later = asyncio.BaseEventLoop.call_later
     original_once = asyncio.BaseEventLoop._run_once
 
