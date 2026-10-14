@@ -198,6 +198,8 @@ def main(args):
         "desktop": args.desktop,
         "profiled": args.profile,
         "counters": args.counters,
+        "active": args.active,
+        "cachedReaders": args.readers,
         "versions": {"observer": tmux_observer.__version__, "mesh": mesh_plus.__version__},
         "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "runtimeRoots": json.loads(args.runtime_paths.read_text()),
@@ -361,7 +363,18 @@ def main(args):
             raise ValueError("owned transport CPU roots not found")
         baseline = {name: process(pid) for name, pid in monitored.items()}
         started = time.monotonic()
+        next_change = started
+        changes = 0
+        reads = 0
         while time.monotonic() < started + args.seconds:
+            if args.active and time.monotonic() >= next_change:
+                for role in ("local", "remote"):
+                    fixture.native(role, "rename-session", "-t", "$0", f"active-{changes}")
+                changes += 1
+                next_change += 1
+            for _ in range(args.readers):
+                view()
+                reads += 1
             time.sleep(min(1, max(0, started + args.seconds - time.monotonic())))
             if any(p.poll() is not None for p in owned.values()):
                 raise RuntimeError("owned process ended during idle window")
@@ -375,6 +388,8 @@ def main(args):
         after = {role: owner_frame(role)["receipt"] for role in ("local", "remote")}
         record.update(
             elapsedSeconds=elapsed,
+            controlledChanges=changes,
+            controlledCachedReads=reads,
             cpu={
                 name: {
                     label: (row[key] - baseline[name][key])
@@ -394,6 +409,8 @@ def main(args):
             nativeFactsUnchanged=first["snapshot"]["hosts"][0]["sessions"]
             == last["snapshot"]["hosts"][0]["sessions"],
         )
+        if args.active and record["nativeFactsUnchanged"]:
+            raise ValueError("controlled native updates were not observed")
         for role, reference in references.items():
             assert reference == fixture.native(
                 role,
@@ -434,10 +451,14 @@ if __name__ == "__main__":
     modes.add_argument("--profile", action="store_true")
     modes.add_argument("--counters", action="store_true")
     parser.add_argument("--desktop", action="store_true")
+    parser.add_argument("--active", action="store_true")
+    parser.add_argument("--readers", type=int, default=0, choices=(0, 1, 4))
     parser.add_argument("--child", choices=("owner", "fleet"))
     parser.add_argument("--role", choices=("local", "remote"))
     parser.add_argument("--fixture-root", type=Path)
     args = parser.parse_args()
+    if args.active and args.sessions == 0:
+        parser.error("active updates require a nonempty owned fixture")
     if args.profile and sys.version_info[:2] != (3, 14):
         parser.error("process-wide profiling is qualified only on CPython 3.14")
     if args.child:
