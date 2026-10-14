@@ -213,7 +213,14 @@ def run(args):
                     role, "rename-session", "-t", "probe-" + str(index - 1), "probe-" + str(index)
                 )
                 expected["fixture-" + role] = "probe-" + str(index)
-            value = wait(lambda: ready(expected))
+            if args.counts or args.certify:
+                value = wait(lambda: ready(expected))
+            else:
+                # Decision trials use the same actor delay and exact cached RPC
+                # work. Do not charge different readiness-poll counts to a mode.
+                time.sleep(2.5)
+                value = ready(expected)
+                assert value is not None, "fixed_actor_window_not_ready"
             markers.append(
                 tuple(
                     (h["hostId"], h["sessions"][0]["sessionId"], h["sessions"][0]["name"])
@@ -236,6 +243,7 @@ def run(args):
             acceptedCounters=accepted,
             counts=dict(counts),
             checkedPublications=len(checks),
+            actorWindowMs=None if args.counts or args.certify else 2500,
         )
         # Outside decision timing: peak RSS includes startup; PSS is one
         # checkpoint for this coordinator, not a whole process-tree peak bound.
