@@ -2,6 +2,7 @@
 """Read-only runtime study using installed packages and disposable IPC/SSH owners."""
 
 import argparse
+import asyncio
 import atexit
 import cProfile
 import hashlib
@@ -41,6 +42,44 @@ def instrument(output, role):
     atexit.register(finish)
 
 
+def count_deadlines(output, role):
+    """Bounded diagnostic counters; exclude these runs from CPU comparisons."""
+    import collections
+
+    counts = collections.Counter()
+    original_later = asyncio.BaseEventLoop.call_later
+    original_once = asyncio.BaseEventLoop._run_once
+
+    def later(loop, delay, callback, *args, **kwargs):
+        frame = sys._getframe(1)
+        origin = "other"
+        for _ in range(6):
+            if frame is None:
+                break
+            name = frame.f_code.co_name
+            if name in {"within_deadline", "host_loop", "wait_until"}:
+                origin = name
+                break
+            frame = frame.f_back
+        counts["timers:" + origin] += 1
+        return original_later(loop, delay, callback, *args, **kwargs)
+
+    def once(loop):
+        counts["loopTurns"] += 1
+        counts["readyCallbacks"] += len(loop._ready)
+        return original_once(loop)
+
+    asyncio.BaseEventLoop.call_later = later
+    asyncio.BaseEventLoop._run_once = once
+
+    def finish():
+        (output / f"counts-{role}-{os.getpid()}.json").write_text(
+            json.dumps(dict(counts), indent=2, sort_keys=True) + "\n"
+        )
+
+    atexit.register(finish)
+
+
 def bootstrap(args):
     roots = json.loads(args.runtime_paths.read_text())
     sys.path[:0] = roots
@@ -49,6 +88,8 @@ def bootstrap(args):
 
 def child(args):
     bootstrap(args)
+    if args.counters:
+        count_deadlines(args.output, args.child + "-" + args.role)
     if args.child == "owner":
         from tmux_observer.cli import main
         from tmux_observer.owner import OwnerPublisher
@@ -136,10 +177,12 @@ def main(args):
         "seconds": args.seconds,
         "desktop": args.desktop,
         "profiled": args.profile,
+        "counters": args.counters,
         "versions": {"observer": tmux_observer.__version__, "mesh": mesh_plus.__version__},
         "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "runtimeRoots": json.loads(args.runtime_paths.read_text()),
         "limits": [
-            "installed runtime paths; source fixture helpers only",
+            "explicit runtime roots; installed/source provenance must be recorded separately",
             "two owned default-server namespaces and actual localhost SSH",
             "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
             "CPU timing separates persistent SSH client and remote bridge; excludes SSH daemon/server helpers and tmux server CPU",
@@ -166,6 +209,8 @@ def main(args):
         ]
         if args.profile:
             command.append("--profile")
+        if args.counters:
+            command.append("--counters")
         if args.desktop:
             command.append("--desktop")
         with (args.output / f"{kind}-{role}.stderr").open("wb") as errors:
@@ -222,13 +267,15 @@ def main(args):
             launch(role, "owner")
             wait(lambda role=role: owner_frame(role)["receipt"]["state"] == "ready")
         fixture.start_ssh()
-        if args.profile:
+        if args.profile or args.counters:
             launcher = fixture.root / "publisher-launcher.py"
             start = (
                 " import runpy,traceback\n try:\n"
                 + "  runpy.run_path("
                 + repr(str(Path(__file__).resolve()))
-                + ')["instrument"](pathlib.Path('
+                + ')["'
+                + ("instrument" if args.profile else "count_deadlines")
+                + '"](pathlib.Path('
                 + repr(str(args.output))
                 + "), 'remote-bridge')\n except BaseException:\n  traceback.print_exc()\n  raise\n"
             )
@@ -363,7 +410,9 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--sessions", type=int, default=2, choices=(0, 2, 12))
     parser.add_argument("--seconds", type=int, default=60)
-    parser.add_argument("--profile", action="store_true")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--profile", action="store_true")
+    modes.add_argument("--counters", action="store_true")
     parser.add_argument("--desktop", action="store_true")
     parser.add_argument("--child", choices=("owner", "fleet"))
     parser.add_argument("--role", choices=("local", "remote"))
