@@ -1,0 +1,344 @@
+#!/usr/bin/env python3
+"""Read-only runtime study using installed packages and disposable IPC/SSH owners."""
+
+import argparse
+import atexit
+import cProfile
+import hashlib
+import json
+import os
+import pstats
+import signal
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
+
+
+def instrument(output, role):
+    """Per-thread CPU profiles include startup/cleanup, separate from timing."""
+    profiles = []
+    original = threading.Thread.run
+
+    def run(thread):
+        profile = cProfile.Profile(timer=time.thread_time)
+        profiles.append((thread.name, profile))
+        profile.enable()
+        try:
+            return original(thread)
+        finally:
+            profile.disable()
+
+    threading.Thread.run = run
+    main = cProfile.Profile(timer=time.thread_time)
+    profiles.append(("main", main))
+    main.enable()
+
+    def finish():
+        main.disable()
+        rows = []
+        for name, profile in profiles:
+            for key, value in pstats.Stats(profile).stats.items():
+                rows.append(
+                    {
+                        "thread": name,
+                        "file": key[0],
+                        "line": key[1],
+                        "function": key[2],
+                        "calls": value[1],
+                        "selfCpuSeconds": value[2],
+                        "inclusiveCpuSeconds": value[3],
+                    }
+                )
+        (output / f"profile-{role}-{os.getpid()}.json").write_text(
+            json.dumps(rows, indent=2) + "\n"
+        )
+
+    atexit.register(finish)
+
+
+def bootstrap(args):
+    roots = json.loads(args.runtime_paths.read_text())
+    sys.path[:0] = roots
+    os.environ["PYTHONPATH"] = os.pathsep.join(roots)
+
+
+def child(args):
+    bootstrap(args)
+    if args.profile:
+        instrument(args.output, args.child + "-" + args.role)
+    if args.child == "owner":
+        from tmux_observer.cli import main
+
+        raise SystemExit(
+            main(
+                [
+                    "owner",
+                    "--host-id",
+                    "fixture-" + args.role,
+                    "--socket",
+                    str(args.fixture_root / args.role / "owner.sock"),
+                    "--local-attachments",
+                ]
+            )
+        )
+    from mesh_plus.catalog import Catalog
+
+    from tmux_observer_client.mesh_fleet import MeshFleetPublisher
+
+    class Authority:
+        async def load(self):
+            return Catalog(json.loads((args.fixture_root / "catalog.json").read_text()))
+
+        async def report_route(self, **_kwargs):
+            return True
+
+    publisher = MeshFleetPublisher(
+        "fixture-local",
+        path=args.fixture_root / "local/fleet.sock",
+        owner_path=args.fixture_root / "local/owner.sock",
+        authority=Authority(),
+        scanner=None if args.desktop else False,
+        remote_exec=str(args.fixture_root / "bin/tmux-observer"),
+    )
+    signal.signal(signal.SIGTERM, lambda *_: publisher.stop())
+    signal.signal(signal.SIGINT, lambda *_: publisher.stop())
+    publisher.run()
+
+
+def process(pid):
+    try:
+        fields = Path(f"/proc/{pid}/stat").read_text().rpartition(") ")[2].split()
+        return {
+            "birth": fields[19],
+            "selfTicks": int(fields[11]) + int(fields[12]),
+            "reapedTicks": int(fields[13]) + int(fields[14]),
+        }
+    except (OSError, ValueError):
+        return None
+
+
+def main(args):
+    bootstrap(args)
+    sys.path[:0] = [
+        str(Path(__file__).resolve().parents[1] / name) for name in ("tests", "tests_mesh")
+    ]
+    import mesh_plus
+    from native_fixture import NativeFixture
+    from test_fleet_mesh import Authority
+
+    import tmux_observer
+    from tmux_observer._clock import boottime_ms
+    from tmux_observer._ipc import IPCError, exchange
+    from tmux_observer.delivery import SERVICE_PROTOCOL
+    from tmux_observer_client.public import desktop_context_id, read_cached
+
+    args.output.mkdir(mode=0o700)
+    fixture = NativeFixture()
+    owned = {}
+    record = {
+        "state": "running",
+        "sessionsPerHost": args.sessions,
+        "seconds": args.seconds,
+        "desktop": args.desktop,
+        "profiled": args.profile,
+        "versions": {"observer": tmux_observer.__version__, "mesh": mesh_plus.__version__},
+        "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "limits": [
+            "installed runtime paths; source fixture helpers only",
+            "two owned default-server namespaces and actual localhost SSH",
+            "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+            "CPU timing excludes SSH daemon/server helpers and tmux server CPU",
+            "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+            "instrumented profiles include startup and cleanup; never compare their CPU against timing",
+        ],
+    }
+
+    def launch(role, kind):
+        command = [
+            sys.executable,
+            "-B",
+            str(Path(__file__).resolve()),
+            "--child",
+            kind,
+            "--role",
+            role,
+            "--fixture-root",
+            str(fixture.root),
+            "--runtime-paths",
+            str(args.runtime_paths),
+            "--output",
+            str(args.output),
+        ]
+        if args.profile:
+            command.append("--profile")
+        if args.desktop:
+            command.append("--desktop")
+        p = subprocess.Popen(
+            command, env=fixture.env(role), stdout=subprocess.DEVNULL, stderr=subprocess.PIPE
+        )
+        fixture.processes.append(p)
+        owned[kind + "-" + role] = p
+        return p
+
+    def wait(check):
+        end = time.monotonic() + 10
+        while time.monotonic() < end:
+            if any(p.poll() is not None for p in owned.values()):
+                raise RuntimeError("owned process exited")
+            try:
+                value = check()
+            except (IPCError, OSError):
+                value = None
+            if value:
+                return value
+            time.sleep(0.05)
+        raise TimeoutError("owned idle fixture not ready")
+
+    def owner_frame(role):
+        return exchange(
+            {
+                "protocol": SERVICE_PROTOCOL,
+                "schemaVersion": 1,
+                "operation": "status",
+                "requestId": "idle-probe",
+                "expectedHost": "fixture-" + role,
+            },
+            path=getattr(fixture, role) / "owner.sock",
+        )
+
+    def view():
+        return read_cached(
+            desktop_context_id(), path=fixture.local / "fleet.sock", expected_host="fixture-local"
+        )
+
+    try:
+        references = {}
+        for role in ("local", "remote"):
+            for i in range(args.sessions):
+                fixture.native(role, "new-session", "-d", "-s", f"idle-{i}", "sleep 1800")
+            references[role] = fixture.native(
+                role,
+                "list-sessions",
+                "-F",
+                "#{session_id}|#{session_created}|#{session_attached}",
+                ok=bool(args.sessions),
+            )
+            launch(role, "owner")
+            wait(lambda role=role: owner_frame(role)["receipt"]["state"] == "ready")
+        fixture.start_ssh()
+        if args.profile:
+            launcher = fixture.root / "publisher-launcher.py"
+            prefix = (
+                "import runpy,pathlib\n"
+                + "runpy.run_path("
+                + repr(str(Path(__file__).resolve()))
+                + ')["instrument"](pathlib.Path('
+                + repr(str(args.output))
+                + "), 'remote-bridge')\n"
+            )
+            launcher.write_text(prefix + launcher.read_text())
+        authority = Authority()
+        authority.payload["sshPolicy"]["executable"] = str(fixture.bin / "ssh")
+        authority.payload["hosts"].append(
+            {
+                "id": "fixture-remote",
+                "display": "remote",
+                "local": False,
+                "aliases": [],
+                "routes": [
+                    {
+                        "destination": "fixture-remote",
+                        "configuredIndex": 0,
+                        "lastReachableAt": None,
+                        "lastUnreachableAt": None,
+                    }
+                ],
+            }
+        )
+        (fixture.root / "catalog.json").write_text(json.dumps(authority.payload))
+        launch("local", "fleet")
+
+        def ready():
+            frame = view()
+            return (
+                frame
+                if len(frame["snapshot"]["hosts"]) == 2
+                and all(
+                    h["owner"]["localExpiry"] > boottime_ms()
+                    and len(h["sessions"]) == args.sessions
+                    for h in frame["snapshot"]["hosts"]
+                )
+                else None
+            )
+
+        first = wait(ready)
+        before = {role: owner_frame(role)["receipt"] for role in ("local", "remote")}
+        baseline = {name: process(p.pid) for name, p in owned.items()}
+        started = time.monotonic()
+        while time.monotonic() < started + args.seconds:
+            time.sleep(min(1, max(0, started + args.seconds - time.monotonic())))
+            if any(p.poll() is not None for p in owned.values()):
+                raise RuntimeError("owned process ended during idle window")
+        elapsed = time.monotonic() - started
+        end = {name: process(p.pid) for name, p in owned.items()}
+        last = ready()
+        if not last:
+            raise ValueError("idle fleet lost current native facts")
+        after = {role: owner_frame(role)["receipt"] for role in ("local", "remote")}
+        record.update(
+            elapsedSeconds=elapsed,
+            cpu={
+                name: {
+                    label: (row[key] - baseline[name][key])
+                    / os.sysconf("SC_CLK_TCK")
+                    / elapsed
+                    * 100
+                    for key, label in (
+                        ("selfTicks", "selfCpuPercent"),
+                        ("reapedTicks", "reapedChildCpuPercent"),
+                    )
+                }
+                for name, row in end.items()
+            },
+            acceptedSamples={
+                role: after[role]["accepted"] - before[role]["accepted"] for role in before
+            },
+            nativeFactsUnchanged=first["snapshot"]["hosts"][0]["sessions"]
+            == last["snapshot"]["hosts"][0]["sessions"],
+        )
+        for role, reference in references.items():
+            assert reference == fixture.native(
+                role,
+                "list-sessions",
+                "-F",
+                "#{session_id}|#{session_created}|#{session_attached}",
+                ok=bool(args.sessions),
+            )
+        record["state"] = "passed"
+    finally:
+        fixture.close()
+        record["cleanup"] = True
+        (args.output / "result.json").write_text(json.dumps(record, indent=2) + "\n")
+    print(json.dumps(record), flush=True)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--runtime-paths", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--sessions", type=int, default=2, choices=(0, 2, 12))
+    parser.add_argument("--seconds", type=int, default=60)
+    parser.add_argument("--profile", action="store_true")
+    parser.add_argument("--desktop", action="store_true")
+    parser.add_argument("--child", choices=("owner", "fleet"))
+    parser.add_argument("--role", choices=("local", "remote"))
+    parser.add_argument("--fixture-root", type=Path)
+    args = parser.parse_args()
+    if args.child:
+        child(args)
+    else:
+        if args.output.exists() or args.seconds < 5:
+            parser.error("new output directory and at least five seconds required")
+        main(args)
