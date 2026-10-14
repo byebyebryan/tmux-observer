@@ -1,0 +1,129 @@
+{
+  "time": 1791959758.8950932,
+  "selectedDiskVersions": {
+    "observer": "0.6.0a7",
+    "mesh": "0.1.0a15"
+  },
+  "ownerReceipt": {
+    "state": "ready",
+    "attempted": 24992,
+    "accepted": 24992,
+    "acceptedAttempt": 24992,
+    "startedAt": 50453458,
+    "acceptedAt": 50453508,
+    "expiresAt": 50463458,
+    "lastAttemptAt": 50453458,
+    "lastAttemptResult": "complete",
+    "leaseMs": 10000,
+    "remainingMs": 9130,
+    "inFlight": false
+  },
+  "ownerViewRevision": 25,
+  "fleetViewRevision": 673,
+  "hosts": [
+    {
+      "hostId": "snap",
+      "sessionCount": 2,
+      "owner": {
+        "source": {
+          "hostId": "snap",
+          "uid": 1000,
+          "server": "default",
+          "nativeHostname": "80H1VV3"
+        },
+        "clock": {
+          "bootId": "eda0f0ce-5494-4ec7-982f-05861c999557",
+          "timeNamespace": "time:4026531834"
+        },
+        "publisherId": "8672a2e3-7a75-4820-956d-62e952219252",
+        "encodedAt": 50451520,
+        "serverGeneration": "tmux-v1:1791909472:12353:/tmp/tmux-1000/default",
+        "sample": {
+          "startedAt": 50451440,
+          "finishedAt": 50451444,
+          "observedAt": 1791959756008,
+          "coverage": "complete",
+          "error": null
+        },
+        "receipt": {
+          "state": "ready",
+          "attempted": 24991,
+          "accepted": 24991,
+          "acceptedAttempt": 24991,
+          "startedAt": 50451440,
+          "acceptedAt": 50451490,
+          "expiresAt": 50461440,
+          "lastAttemptAt": 50451440,
+          "lastAttemptResult": "complete",
+          "leaseMs": 10000,
+          "remainingMs": 9920,
+          "inFlight": false
+        },
+        "transport": "local",
+        "localExpiry": 50461440,
+        "proof": null,
+        "error": null
+      }
+    },
+    {
+      "hostId": "starship",
+      "sessionCount": 4,
+      "owner": {
+        "source": {
+          "hostId": "starship",
+          "uid": 1000,
+          "server": "default",
+          "nativeHostname": "starship"
+        },
+        "clock": {
+          "bootId": "c145673c-6342-45c2-8d1c-3f2d82469e5f",
+          "timeNamespace": "time:4026531834"
+        },
+        "publisherId": "463bb429-bd90-4894-9f03-1f5ca798d4f4",
+        "encodedAt": 50513182,
+        "serverGeneration": "tmux-v1:1791910717:21789:/tmp/tmux-1000/default",
+        "sample": {
+          "startedAt": 50512711,
+          "finishedAt": 50512715,
+          "observedAt": 1791959758406,
+          "coverage": "complete",
+          "error": null
+        },
+        "receipt": {
+          "state": "ready",
+          "attempted": 25035,
+          "accepted": 25035,
+          "acceptedAttempt": 25035,
+          "startedAt": 50512711,
+          "acceptedAt": 50512761,
+          "expiresAt": 50522711,
+          "lastAttemptAt": 50512711,
+          "lastAttemptResult": "complete",
+          "leaseMs": 10000,
+          "remainingMs": 9529,
+          "inFlight": false
+        },
+        "transport": "ready",
+        "localExpiry": 50463726,
+        "proof": {
+          "requestId": "5e2ec2a7922abdd12d354168fd81457b",
+          "sentAt": 50454297,
+          "receivedAt": 50454320,
+          "remainingMs": 9529,
+          "marginMs": 100
+        },
+        "error": null
+      }
+    }
+  ],
+  "desktop": {
+    "contextId": "1e8feb5a4b75ef449ce44304e6aad301",
+    "epoch": 4,
+    "state": "ready",
+    "startedAt": 50453763,
+    "acceptedAt": 50453813,
+    "expiresAt": 50463763,
+    "inputHash": "sha256:134c06d5c04a60aea504665bb9fac00fda718183f1e8686ac6cf5be23c15b84c",
+    "error": null
+  }
+}

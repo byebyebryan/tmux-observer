@@ -13,6 +13,9 @@ The [optional Mesh preparation facade](mesh-preparation.md) and its
 [private a8/a18 qualification](evidence/2026-10-14-preparation/README.md)
 are separate from released and managed selections.
 
+The [idle profiling study](evidence/2026-10-14-idle-profile/README.md) records
+live a7/a15 costs, empty/small-roster fixtures and diagnostic follow-up targets.
+
 ## Current interfaces and operation
 
 | Read | Purpose |

@@ -1,0 +1,601 @@
+{
+  "scope": "diagnostic observations, not release/deployment or causal performance acceptance",
+  "cpuUnit": "percent of one logical core",
+  "cases": {
+    "baseline-0": {
+      "state": "passed",
+      "sessionsPerHost": 0,
+      "seconds": 60,
+      "desktop": false,
+      "profiled": false,
+      "versions": {
+        "observer": "0.6.0a7",
+        "mesh": "0.1.0a15"
+      },
+      "harnessSha256": "44ea7b5c74431efb2f6250bd43d994a4605a0fb114292a6ba971c069f198c3af",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "instrumented profiles include startup and cleanup; never compare their CPU against timing"
+      ],
+      "elapsedSeconds": 60.000108766005724,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 0.4166659113485517,
+          "reapedChildCpuPercent": 0.5499990029800883
+        },
+        "owner-remote": {
+          "selfCpuPercent": 0.3999992748946096,
+          "reapedChildCpuPercent": 0.5333323665261461
+        },
+        "fleet-local": {
+          "selfCpuPercent": 1.6833302818481488,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 30
+      },
+      "nativeFactsUnchanged": true,
+      "cleanup": true
+    },
+    "baseline-2": {
+      "state": "passed",
+      "sessionsPerHost": 2,
+      "seconds": 60,
+      "desktop": false,
+      "profiled": false,
+      "versions": {
+        "observer": "0.6.0a7",
+        "mesh": "0.1.0a15"
+      },
+      "harnessSha256": "44ea7b5c74431efb2f6250bd43d994a4605a0fb114292a6ba971c069f198c3af",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "instrumented profiles include startup and cleanup; never compare their CPU against timing"
+      ],
+      "elapsedSeconds": 60.000107974003186,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 0.34999937015278154,
+          "reapedChildCpuPercent": 0.43333255352249145
+        },
+        "owner-remote": {
+          "selfCpuPercent": 0.3666660068267235,
+          "reapedChildCpuPercent": 0.4833324635443173
+        },
+        "fleet-local": {
+          "selfCpuPercent": 1.549997210676604,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 30
+      },
+      "nativeFactsUnchanged": true,
+      "cleanup": true
+    },
+    "baseline-12": {
+      "state": "passed",
+      "sessionsPerHost": 12,
+      "seconds": 60,
+      "desktop": false,
+      "profiled": false,
+      "versions": {
+        "observer": "0.6.0a7",
+        "mesh": "0.1.0a15"
+      },
+      "harnessSha256": "44ea7b5c74431efb2f6250bd43d994a4605a0fb114292a6ba971c069f198c3af",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "instrumented profiles include startup and cleanup; never compare their CPU against timing"
+      ],
+      "elapsedSeconds": 60.00030402199627,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 0.6666632886616024,
+          "reapedChildCpuPercent": 0.6166635420119821
+        },
+        "owner-remote": {
+          "selfCpuPercent": 0.6666632886616024,
+          "reapedChildCpuPercent": 0.6166635420119821
+        },
+        "fleet-local": {
+          "selfCpuPercent": 2.366654674748688,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 30
+      },
+      "nativeFactsUnchanged": true,
+      "cleanup": true
+    },
+    "baseline-2-desktop": {
+      "state": "passed",
+      "sessionsPerHost": 2,
+      "seconds": 60,
+      "desktop": true,
+      "profiled": false,
+      "versions": {
+        "observer": "0.6.0a7",
+        "mesh": "0.1.0a15"
+      },
+      "harnessSha256": "44ea7b5c74431efb2f6250bd43d994a4605a0fb114292a6ba971c069f198c3af",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "instrumented profiles include startup and cleanup; never compare their CPU against timing"
+      ],
+      "elapsedSeconds": 60.000105270999484,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 0.5666656724423048,
+          "reapedChildCpuPercent": 0.6333322221413995
+        },
+        "owner-remote": {
+          "selfCpuPercent": 0.5499990350175312,
+          "reapedChildCpuPercent": 0.6499988595661732
+        },
+        "fleet-local": {
+          "selfCpuPercent": 2.7999950873619768,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 30
+      },
+      "nativeFactsUnchanged": false,
+      "cleanup": true
+    },
+    "transport-2": {
+      "state": "passed",
+      "sessionsPerHost": 2,
+      "seconds": 60,
+      "desktop": false,
+      "profiled": false,
+      "versions": {
+        "observer": "0.6.0a7",
+        "mesh": "0.1.0a15"
+      },
+      "harnessSha256": "3bef559e425d77e003ffe647c491c8b20f27a1599a9fbfca5916ca0cfb5c8b6c",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing separates persistent SSH client and remote bridge; excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "instrumented profiles include startup and cleanup; never compare their CPU against timing"
+      ],
+      "elapsedSeconds": 60.00031663000118,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 0.5166639401449337,
+          "reapedChildCpuPercent": 0.6333299911454027
+        },
+        "owner-remote": {
+          "selfCpuPercent": 0.5166639401449337,
+          "reapedChildCpuPercent": 0.6333299911454027
+        },
+        "fleet-local": {
+          "selfCpuPercent": 1.999989445722324,
+          "reapedChildCpuPercent": 0.0
+        },
+        "bridge-remote": {
+          "selfCpuPercent": 0.5333305188592864,
+          "reapedChildCpuPercent": 0.0
+        },
+        "ssh-client": {
+          "selfCpuPercent": 0.0,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 30
+      },
+      "nativeFactsUnchanged": true,
+      "cleanup": true
+    },
+    "profile-2-accepted": {
+      "state": "passed",
+      "sessionsPerHost": 2,
+      "seconds": 60,
+      "desktop": false,
+      "profiled": true,
+      "versions": {
+        "observer": "0.6.0a7",
+        "mesh": "0.1.0a15"
+      },
+      "harnessSha256": "388d991f11fd627deed1c983658a4aaffc4026cb713b45889771d97922491c14",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing separates persistent SSH client and remote bridge; excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "process-wide CPython 3.14 profiles use wall time and include runtime setup/cleanup; not CPU shares"
+      ],
+      "elapsedSeconds": 60.000305970002955,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 1.2833267890083095,
+          "reapedChildCpuPercent": 0.7166630120436015
+        },
+        "owner-remote": {
+          "selfCpuPercent": 1.216660462306579,
+          "reapedChildCpuPercent": 0.6833298486927362
+        },
+        "fleet-local": {
+          "selfCpuPercent": 4.083312510480985,
+          "reapedChildCpuPercent": 0.0
+        },
+        "bridge-remote": {
+          "selfCpuPercent": 1.1166609722539838,
+          "reapedChildCpuPercent": 0.0
+        },
+        "ssh-client": {
+          "selfCpuPercent": 0.0,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 29
+      },
+      "nativeFactsUnchanged": true,
+      "cleanup": true
+    },
+    "profile-2-desktop-accepted": {
+      "state": "passed",
+      "sessionsPerHost": 2,
+      "seconds": 60,
+      "desktop": true,
+      "profiled": true,
+      "versions": {
+        "observer": "0.6.0a7",
+        "mesh": "0.1.0a15"
+      },
+      "harnessSha256": "388d991f11fd627deed1c983658a4aaffc4026cb713b45889771d97922491c14",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing separates persistent SSH client and remote bridge; excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "process-wide CPython 3.14 profiles use wall time and include runtime setup/cleanup; not CPU shares"
+      ],
+      "elapsedSeconds": 60.00040936699952,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 1.3333242363509663,
+          "reapedChildCpuPercent": 0.6833286711298703
+        },
+        "owner-remote": {
+          "selfCpuPercent": 1.2166583656702568,
+          "reapedChildCpuPercent": 0.6666621181754832
+        },
+        "fleet-local": {
+          "selfCpuPercent": 5.333296945403865,
+          "reapedChildCpuPercent": 0.0
+        },
+        "bridge-remote": {
+          "selfCpuPercent": 1.1166590479439342,
+          "reapedChildCpuPercent": 0.0
+        },
+        "ssh-client": {
+          "selfCpuPercent": 0.0,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 30
+      },
+      "nativeFactsUnchanged": false,
+      "cleanup": true
+    },
+    "candidate-2": {
+      "state": "passed",
+      "sessionsPerHost": 2,
+      "seconds": 60,
+      "desktop": false,
+      "profiled": false,
+      "versions": {
+        "observer": "0.6.0a8",
+        "mesh": "0.1.0a18"
+      },
+      "harnessSha256": "388d991f11fd627deed1c983658a4aaffc4026cb713b45889771d97922491c14",
+      "limits": [
+        "installed runtime paths; source fixture helpers only",
+        "two owned default-server namespaces and actual localhost SSH",
+        "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+        "CPU timing separates persistent SSH client and remote bridge; excludes SSH daemon/server helpers and tmux server CPU",
+        "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+        "process-wide CPython 3.14 profiles use wall time and include runtime setup/cleanup; not CPU shares"
+      ],
+      "elapsedSeconds": 60.00015674399765,
+      "cpu": {
+        "owner-local": {
+          "selfCpuPercent": 0.6999981713248047,
+          "reapedChildCpuPercent": 0.7499980407051479
+        },
+        "owner-remote": {
+          "selfCpuPercent": 0.6833315481980236,
+          "reapedChildCpuPercent": 0.7833312869587099
+        },
+        "fleet-local": {
+          "selfCpuPercent": 2.466660222763597,
+          "reapedChildCpuPercent": 0.0
+        },
+        "bridge-remote": {
+          "selfCpuPercent": 0.6499983019444615,
+          "reapedChildCpuPercent": 0.0
+        },
+        "ssh-client": {
+          "selfCpuPercent": 0.0,
+          "reapedChildCpuPercent": 0.0
+        }
+      },
+      "acceptedSamples": {
+        "local": 30,
+        "remote": 30
+      },
+      "nativeFactsUnchanged": true,
+      "cleanup": true
+    }
+  },
+  "profileCounters": {
+    "profile-2-accepted-owner": [
+      {
+        "file": "collector.py",
+        "line": 79,
+        "function": "read",
+        "calls": 124,
+        "selfSeconds": 0.0018817100000000002,
+        "inclusiveSeconds": 0.704922112
+      },
+      {
+        "file": "_process.py",
+        "line": 118,
+        "function": "__call__",
+        "calls": 124,
+        "selfSeconds": 0.011434428,
+        "inclusiveSeconds": 0.6995161120000001
+      },
+      {
+        "file": "collector.py",
+        "line": 347,
+        "function": "collect",
+        "calls": 31,
+        "selfSeconds": 0.001218403,
+        "inclusiveSeconds": 0.475407815
+      },
+      {
+        "file": "attachment_collector.py",
+        "line": 106,
+        "function": "sample",
+        "calls": 31,
+        "selfSeconds": 0.001197927,
+        "inclusiveSeconds": 0.35805562500000004
+      }
+    ],
+    "profile-2-accepted": {
+      "scope": "instrumented complete runtime including setup/cleanup; wall-time totals are not CPU shares; async resumptions not operation counts",
+      "functions": [
+        {
+          "file": "base_events.py",
+          "line": 1982,
+          "function": "_run_once",
+          "calls": 5190,
+          "selfSeconds": 0.091183283,
+          "inclusiveSeconds": 33.437308696
+        },
+        {
+          "file": "protocol.py",
+          "line": 86,
+          "function": "validate",
+          "calls": 366,
+          "selfSeconds": 0.001677834,
+          "inclusiveSeconds": 0.468483976
+        },
+        {
+          "file": "_mesh_projection.py",
+          "line": 22,
+          "function": "accept_mesh",
+          "calls": 86,
+          "selfSeconds": 0.0018202770000000001,
+          "inclusiveSeconds": 0.050364712000000006
+        },
+        {
+          "file": "view.py",
+          "line": 57,
+          "function": "_validated_response",
+          "calls": 86,
+          "selfSeconds": 0.0044362360000000005,
+          "inclusiveSeconds": 0.31742520700000004
+        },
+        {
+          "file": "_wire.py",
+          "line": 117,
+          "function": "validate_tree",
+          "calls": 612,
+          "selfSeconds": 0.070311362,
+          "inclusiveSeconds": 0.111537754
+        },
+        {
+          "file": "fleet.py",
+          "line": 656,
+          "function": "desktop_work",
+          "calls": 21,
+          "selfSeconds": 0.000362499,
+          "inclusiveSeconds": 0.0006394720000000001
+        },
+        {
+          "file": "fleet.py",
+          "line": 299,
+          "function": "project_changed",
+          "calls": 1206,
+          "selfSeconds": 0.032951140000000004,
+          "inclusiveSeconds": 0.086761535
+        },
+        {
+          "file": "_owner_document.py",
+          "line": 33,
+          "function": "__init__",
+          "calls": 82,
+          "selfSeconds": 0.00010376000000000001,
+          "inclusiveSeconds": 0.038505591000000006
+        }
+      ],
+      "meshCurrentQueries": 0
+    },
+    "profile-2-desktop-accepted-owner": [
+      {
+        "file": "collector.py",
+        "line": 79,
+        "function": "read",
+        "calls": 124,
+        "selfSeconds": 0.001684244,
+        "inclusiveSeconds": 0.643328852
+      },
+      {
+        "file": "_process.py",
+        "line": 118,
+        "function": "__call__",
+        "calls": 124,
+        "selfSeconds": 0.010629785000000001,
+        "inclusiveSeconds": 0.6387083880000001
+      },
+      {
+        "file": "collector.py",
+        "line": 347,
+        "function": "collect",
+        "calls": 31,
+        "selfSeconds": 0.000980668,
+        "inclusiveSeconds": 0.39950112800000004
+      },
+      {
+        "file": "attachment_collector.py",
+        "line": 106,
+        "function": "sample",
+        "calls": 31,
+        "selfSeconds": 0.001381508,
+        "inclusiveSeconds": 0.364337941
+      }
+    ],
+    "profile-2-desktop-accepted": {
+      "scope": "instrumented complete runtime including setup/cleanup; wall-time totals are not CPU shares; async resumptions not operation counts",
+      "functions": [
+        {
+          "file": "base_events.py",
+          "line": 1982,
+          "function": "_run_once",
+          "calls": 5058,
+          "selfSeconds": 0.09433753900000001,
+          "inclusiveSeconds": 33.501810654
+        },
+        {
+          "file": "protocol.py",
+          "line": 86,
+          "function": "validate",
+          "calls": 366,
+          "selfSeconds": 0.0018276660000000001,
+          "inclusiveSeconds": 0.5035595700000001
+        },
+        {
+          "file": "_wire.py",
+          "line": 117,
+          "function": "validate_tree",
+          "calls": 1063,
+          "selfSeconds": 0.121010324,
+          "inclusiveSeconds": 0.19244245000000001
+        },
+        {
+          "file": "view.py",
+          "line": 57,
+          "function": "_validated_response",
+          "calls": 86,
+          "selfSeconds": 0.004352965,
+          "inclusiveSeconds": 0.311721324
+        },
+        {
+          "file": "_mesh_projection.py",
+          "line": 22,
+          "function": "accept_mesh",
+          "calls": 86,
+          "selfSeconds": 0.002184619,
+          "inclusiveSeconds": 0.062203173
+        },
+        {
+          "file": "fleet.py",
+          "line": 656,
+          "function": "desktop_work",
+          "calls": 21,
+          "selfSeconds": 0.000594948,
+          "inclusiveSeconds": 0.24064194700000002
+        },
+        {
+          "file": "desktop.py",
+          "line": 119,
+          "function": "scan",
+          "calls": 21,
+          "selfSeconds": 0.00194969,
+          "inclusiveSeconds": 0.21703860200000002
+        },
+        {
+          "file": "fleet.py",
+          "line": 299,
+          "function": "project_changed",
+          "calls": 1201,
+          "selfSeconds": 0.036188120000000004,
+          "inclusiveSeconds": 0.13963819200000002
+        },
+        {
+          "file": "fleet.py",
+          "line": 697,
+          "function": "binding_work",
+          "calls": 49,
+          "selfSeconds": 0.000493219,
+          "inclusiveSeconds": 0.062047920000000006
+        },
+        {
+          "file": "_owner_document.py",
+          "line": 33,
+          "function": "__init__",
+          "calls": 82,
+          "selfSeconds": 0.000130819,
+          "inclusiveSeconds": 0.047884033000000006
+        },
+        {
+          "file": "fleet.py",
+          "line": 631,
+          "function": "attachment_work",
+          "calls": 30,
+          "selfSeconds": 0.000847098,
+          "inclusiveSeconds": 2.413469591
+        }
+      ],
+      "meshCurrentQueries": 0
+    }
+  },
+  "failedInstrumentationExcluded": true
+}

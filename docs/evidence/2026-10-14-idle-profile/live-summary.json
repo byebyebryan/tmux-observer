@@ -1,0 +1,33 @@
+{
+  "seconds": 180.0173683690009,
+  "units": {
+    "tmux-observer-fleet@1e8feb5a4b75ef449ce44304e6aad301.service": {
+      "cpuPercentOneCore": 2.6321238016808683,
+      "memoryMiB": 43.2109375,
+      "stableProcesses": {
+        "tmux-observer-c": {
+          "pid": "2119",
+          "selfCpuPercent": 2.627524245496364,
+          "reapedChildCpuPercent": 0.0
+        },
+        "ssh": {
+          "pid": "1628233",
+          "selfCpuPercent": 0.0,
+          "reapedChildCpuPercent": 0.0
+        }
+      }
+    },
+    "tmux-observer-owner@snap.service": {
+      "cpuPercentOneCore": 1.0975607619982484,
+      "memoryMiB": 15.87109375,
+      "stableProcesses": {
+        "tmux-observer": {
+          "pid": "1821",
+          "selfCpuPercent": 0.5332818764643782,
+          "reapedChildCpuPercent": 0.5610569741968978
+        }
+      }
+    }
+  },
+  "scope": "uninstrumented local managed service cgroups; 180 seconds; no remote-host CPU or external cgroup bridge CPU"
+}

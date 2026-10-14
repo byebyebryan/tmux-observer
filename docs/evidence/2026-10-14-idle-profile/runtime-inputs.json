@@ -1,0 +1,70 @@
+{
+  "python": "Python 3.14.8",
+  "runtimeRoots": [
+    {
+      "path": "/home/bryan/.local/share/tmux-observer/python",
+      "files": 159,
+      "treeSha256": "0ea11c1cfdac15696d8b17c4dd2eed54c8d7867e186f0b46b3d6d7738d93cec4"
+    },
+    {
+      "path": "/home/bryan/.local/share/mesh-plus/0.1.0a15/python",
+      "files": 59,
+      "treeSha256": "34e63202d6385e24a9f6ace5e2060f22d4f828df0a70869939797ef652ee0009"
+    },
+    {
+      "path": "/home/bryan/.local/share/mesh-plus/dependencies/attrs",
+      "files": 19,
+      "treeSha256": "29eae112f1f725365f097c52c913eeeec9db75755e8dc3a31ffc7a3a43c47c92"
+    },
+    {
+      "path": "/home/bryan/.local/share/mesh-plus/dependencies/jsonschema",
+      "files": 38,
+      "treeSha256": "e9d88a60400aac48dc014ab519334fb6f476c304b15da5a94442e7ba3f8d7070"
+    },
+    {
+      "path": "/home/bryan/.local/share/mesh-plus/dependencies/jsonschema-specifications",
+      "files": 10,
+      "treeSha256": "f02c84d9ed7b635219b45e7f88b6647a411d102cfc87b63e86be4f6531c3e4d5"
+    },
+    {
+      "path": "/home/bryan/.local/share/mesh-plus/dependencies/referencing",
+      "files": 13,
+      "treeSha256": "89e3cb810822c2b0623b78d68044f692219f8f85f6dadbae76f0c31a24a52674"
+    },
+    {
+      "path": "/home/bryan/.local/share/mesh-plus/dependencies/rpds-py",
+      "files": 3,
+      "treeSha256": "17d4da831c02ef5d62ad1196cef23897a1fa03cf105a3695261cf5e0cdfa006b"
+    }
+  ],
+  "liveSampling": "systemd CPUUsageNSec deltas and /proc/stat ticks at 1s intervals; cgroups exclude remote hosts",
+  "fixtureHarnessCommitBase": "7e14d799796a96b81f3a35947a7ed3c535701bf2",
+  "candidateWheels": {
+    "observer": {
+      "file": "tmux_observer-0.6.0a8-py3-none-any.whl",
+      "sha256": "b21c6f9e4f16c544ea659529e7f62f3bf461e0ee124d80bf9095270c96d0f01e"
+    },
+    "mesh": {
+      "file": "mesh_plus-0.1.0a18-py3-none-any.whl",
+      "sha256": "b1cb79f4bc11682585fba49cc6fe97d3e567c1101bee8edb32194637c0bb6f46"
+    }
+  },
+  "unchangedOwnerFiles": {
+    "owner.py": {
+      "deployedSha256": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+      "candidateSha256": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+      "identical": true
+    },
+    "collector.py": {
+      "deployedSha256": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+      "candidateSha256": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+      "identical": true
+    },
+    "attachment_collector.py": {
+      "deployedSha256": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+      "candidateSha256": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+      "identical": true
+    }
+  },
+  "candidateRetainsDeadlineHelper": true
+}

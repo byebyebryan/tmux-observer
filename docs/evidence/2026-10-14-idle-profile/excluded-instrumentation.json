@@ -1,0 +1,28 @@
+{
+  "accepted": false,
+  "exclusions": [
+    {
+      "cases": [
+        "profile-2",
+        "profile-smoke",
+        "profile-smoke-debug"
+      ],
+      "reason": "diagnostic attempted independent per-thread cProfile instances; CPython 3.14 tool ID 2 is process-wide"
+    },
+    {
+      "cases": [
+        "profile-smoke-fixed",
+        "profile-smoke-process"
+      ],
+      "reason": "thread CPU clocks invalid for process-wide callbacks; discarded profiles"
+    },
+    {
+      "cases": [
+        "profile-smoke-final",
+        "profile-smoke-trace"
+      ],
+      "reason": "bridge diagnostic wrapper introduced local pathlib import before earlier reference; corrected import scope"
+    }
+  ],
+  "correction": "one process-wide built-in wall-time profiler after module imports, four complete process reports; uninstrumented baselines never used these hooks"
+}

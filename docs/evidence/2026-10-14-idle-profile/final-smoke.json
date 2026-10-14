@@ -1,0 +1,49 @@
+{
+  "state": "passed",
+  "sessionsPerHost": 2,
+  "seconds": 5,
+  "desktop": false,
+  "profiled": true,
+  "versions": {
+    "observer": "0.6.0a7",
+    "mesh": "0.1.0a15"
+  },
+  "harnessSha256": "94fad9883af60fa92b5d1718ba0a4d184f3808bdd703f3c5c6406f2416653660",
+  "limits": [
+    "installed runtime paths; source fixture helpers only",
+    "two owned default-server namespaces and actual localhost SSH",
+    "fixed authority excludes catalog CLI; desktop opt-in reads actual captured compositor",
+    "CPU timing separates persistent SSH client and remote bridge; excludes SSH daemon/server helpers and tmux server CPU",
+    "per-process reaped child CPU includes short-lived native commands; not a whole-host budget",
+    "process-wide CPython 3.14 profiles use wall time and include runtime setup/cleanup; not CPU shares"
+  ],
+  "elapsedSeconds": 5.000194384003407,
+  "cpu": {
+    "owner-local": {
+      "selfCpuPercent": 0.9999611247106654,
+      "reapedChildCpuPercent": 0.3999844498842661
+    },
+    "owner-remote": {
+      "selfCpuPercent": 0.9999611247106654,
+      "reapedChildCpuPercent": 0.5999766748263993
+    },
+    "fleet-local": {
+      "selfCpuPercent": 3.5998600489583956,
+      "reapedChildCpuPercent": 0.0
+    },
+    "bridge-remote": {
+      "selfCpuPercent": 0.9999611247106654,
+      "reapedChildCpuPercent": 0.0
+    },
+    "ssh-client": {
+      "selfCpuPercent": 0.0,
+      "reapedChildCpuPercent": 0.0
+    }
+  },
+  "acceptedSamples": {
+    "local": 2,
+    "remote": 2
+  },
+  "nativeFactsUnchanged": true,
+  "cleanup": true
+}
