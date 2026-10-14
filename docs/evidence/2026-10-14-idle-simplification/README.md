@@ -65,3 +65,11 @@ per cycle, before proving how much of reaped CPU is launch overhead. Keep the
 existing conservative brackets, deadlines, PID rechecks and legacy fallback.
 A distinct producer-owned native pipeline study can reopen it against measured
 remaining owner costs; it is not hidden inside the Mesh optimization or pin bump.
+
+Hosted run 38546950888 at `20c6cf7` passed the 404-test source gate, then rejected
+Mesh startup because the workflow retained an independent a18 commit literal.
+The [original failed log](ci-pin-failure.log.gz) is preserved. This is a candidate
+CI-input mismatch, not a recurrence of the publisher receipt-history defect.
+The optional CI install now derives the trusted Git URL/revision from committed
+`tool.uv.sources.mesh-plus`, the same reviewed input used by the locked project.
+No test or runtime check is relaxed and no package payload changes.

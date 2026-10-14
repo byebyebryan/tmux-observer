@@ -22,7 +22,14 @@ jobs:
         run: ./scripts/check
       - name: Install frozen optional Mesh candidate and owned SSH tools
         run: |
-          python -m pip install 'mesh-plus @ git+https://github.com/byebyebryan/mesh-plus.git@c1b6820a0d92f53cd1b728689ce5f8c39253715f'
+          python - <<'PY_MESH'
+          import subprocess, sys, tomllib
+          from pathlib import Path
+          project = tomllib.loads(Path("pyproject.toml").read_text())
+          source = project["tool"]["uv"]["sources"]["mesh-plus"]
+          requirement = "mesh-plus @ git+" + source["git"] + "@" + source["rev"]
+          subprocess.run([sys.executable, "-m", "pip", "install", requirement], check=True)
+          PY_MESH
           sudo apt-get install --yes openssh-server
           sudo mkdir -p /run/sshd
       - name: Run Mesh integration and owned native SSH gate
