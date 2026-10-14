@@ -17,7 +17,7 @@ dev = ["ruff==0.16.6", "jsonschema>=4.18,<5"]
 mesh = ["mesh-plus==0.1.0a18"]
 
 [tool.uv.sources]
-mesh-plus = {git = "https://github.com/byebyebryan/mesh-plus.git", rev = "b3deb1fab10b3f247643274fa3dd956b0b2b5572"}
+mesh-plus = {git = "https://github.com/byebyebryan/mesh-plus.git", rev = "c1b6820a0d92f53cd1b728689ce5f8c39253715f"}
 
 [project.scripts]
 tmux-observer = "tmux_observer.cli:main"

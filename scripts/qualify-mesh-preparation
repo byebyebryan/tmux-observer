@@ -1,0 +1,301 @@
+#!/usr/bin/env python3
+"""Owned actual IPC/SSH Fleet pipeline: counts, certification or uninstrumented CPU."""
+
+import argparse
+import contextlib
+import hashlib
+import importlib.metadata
+import json
+import resource
+import sys
+import threading
+import time
+from pathlib import Path
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT / "tests"), str(ROOT / "tests_mesh")]
+from mesh_plus.api import ReadGuard
+from native_fixture import NativeFixture
+from test_fleet_mesh import Authority
+
+from tmux_observer._clock import boottime_ms
+from tmux_observer._ipc import IPCError
+from tmux_observer_client import _mesh_worker
+from tmux_observer_client._mesh_projection import MeshOwnerState
+from tmux_observer_client._owner_document import OwnerDocument
+from tmux_observer_client.fleet import FleetPublisher
+from tmux_observer_client.mesh_fleet import MeshFleetPublisher
+from tmux_observer_client.public import read_cached
+
+
+def run(args):
+    versions = {name: importlib.metadata.version(name) for name in ("mesh-plus", "tmux-observer")}
+    fixture = NativeFixture()
+    fleet = thread = None
+    failures, counts, checks = [], {}, []
+    lock = threading.Lock()
+    stack = contextlib.ExitStack()
+    report = {
+        "state": "running",
+        "versions": versions,
+        "preparedDiagnostic": args.prepared,
+        "instrumented": args.counts,
+        "certification": args.certify,
+        "reads": args.reads,
+        "updates": args.updates,
+        "cleanup": False,
+        "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    }
+
+    def counted(cls, method, name):
+        original = getattr(cls, method)
+
+        def call(*values, **kwargs):
+            with lock:
+                counts[name] = counts.get(name, 0) + 1
+            return original(*values, **kwargs)
+
+        stack.enter_context(patch.object(cls, method, call))
+
+    if args.counts:
+        for cls, method, name in (
+            (ReadGuard, "accept", "meshAccept"),
+            (ReadGuard, "current", "meshCurrent"),
+            (MeshOwnerState, "accept_mesh", "ownerProjection"),
+            (OwnerDocument, "__init__", "nativeDocumentAdmission"),
+            (FleetPublisher, "frame", "fleetFrame"),
+        ):
+            counted(cls, method, name)
+
+    if args.prepared:
+        from mesh_plus.api import PreparedReadGuard
+
+        from tmux_observer.mesh_preparation import make_preparation
+
+        preparation = make_preparation()
+
+        def factory(*values, **kwargs):
+            prepared = PreparedReadGuard(*values, preparation=preparation, **kwargs)
+            if not args.certify:
+                return prepared
+            legacy = ReadGuard(*values, **kwargs)
+
+            class Checked:
+                def accept(self, frame):
+                    prepared.accept(frame)
+                    legacy.accept(frame)
+                    if "mesh" in frame:
+                        now, clock = boottime_ms(), frame["mesh"]["reader"]["clock"]
+                        actual = prepared.current(now, clock)
+                        assert actual == legacy.current(now, clock), (
+                            "native_prepared_legacy_mismatch"
+                        )
+                        checks.append(len(actual))
+                        exported = prepared.snapshot()
+                        if exported is not None:
+                            exported["sessions"].clear()
+                            assert prepared.current(now, clock) == actual, "mutable_export_alias"
+                    return frame
+
+                def disconnect(self):
+                    prepared.disconnect()
+                    legacy.disconnect()
+                    assert prepared.snapshot() is None
+
+            return Checked()
+
+        stack.enter_context(patch.object(_mesh_worker, "ReadGuard", factory))
+        if args.counts:
+            counted(PreparedReadGuard, "accept", "preparedAccept")
+            counted(PreparedReadGuard, "current", "preparedCurrent")
+
+    def wait(check, seconds=8):
+        until = time.monotonic() + seconds
+        while time.monotonic() < until:
+            if failures:
+                raise RuntimeError(str(failures))
+            try:
+                value = check()
+            except (IPCError, OSError):
+                value = None
+            if value:
+                return value
+            time.sleep(0.025)
+        raise TimeoutError("owned pipeline condition")
+
+    def read():
+        return read_cached(fleet.state.context_id, path=fleet.path, expected_host="fixture-local")
+
+    def ready(expected=None):
+        value = read()
+        hosts = value["snapshot"]["hosts"]
+        if len(hosts) != 2 or not all(h["owner"]["localExpiry"] > boottime_ms() for h in hosts):
+            return None
+        if expected is not None and not all(
+            h["sessions"][0]["name"] == expected[h["hostId"]] for h in hosts
+        ):
+            return None
+        return value
+
+    try:
+        before = {}
+        owners = {}
+        for role in ("local", "remote"):
+            fixture.native(role, "new-session", "-d", "-s", "probe-0", "sleep 300")
+            before[role] = {
+                "sessions": fixture.native(
+                    role,
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}|#{session_created}|#{session_attached}",
+                ),
+                "hooks": fixture.native(role, "show-hooks"),
+                "options": fixture.native(role, "show-options", "-g"),
+            }
+            owners[role], _ = fixture.start_owner(role)
+        fixture.start_ssh()
+        authority = Authority()
+        authority.payload["sshPolicy"]["executable"] = str(fixture.bin / "ssh")
+        authority.payload["hosts"].append(
+            {
+                "id": "fixture-remote",
+                "display": "remote",
+                "local": False,
+                "aliases": [],
+                "routes": [
+                    {
+                        "destination": "fixture-remote",
+                        "configuredIndex": 0,
+                        "lastReachableAt": None,
+                        "lastUnreachableAt": None,
+                    }
+                ],
+            }
+        )
+
+        async def report_route(**_kwargs):
+            return True
+
+        authority.report_route = report_route
+        fleet = MeshFleetPublisher(
+            "fixture-local",
+            path=fixture.local / "fleet.sock",
+            owner_path=fixture.local / "owner.sock",
+            authority=authority,
+            scanner=False,
+            remote_exec=str(fixture.bin / "tmux-observer"),
+        )
+
+        def serve():
+            try:
+                fleet.run()
+            except Exception as error:  # noqa: BLE001 - owned worker failures must fail evidence
+                failures.append(type(error).__name__)
+
+        thread = threading.Thread(target=serve)
+        thread.start()
+        wait(ready)
+        with lock:
+            counts.clear()
+        latencies, markers, accepted, expected = (
+            [],
+            [],
+            [],
+            {"fixture-local": "probe-0", "fixture-remote": "probe-0"},
+        )
+        cpu, wall = time.process_time_ns(), time.perf_counter_ns()
+        for index in range(1, args.updates + 1):
+            # Native commands mutate only these disposable fixtures, never
+            # native options/attachments/cadence or operational servers.
+            for role in ("local", "remote"):
+                fixture.native(
+                    role, "rename-session", "-t", "probe-" + str(index - 1), "probe-" + str(index)
+                )
+                expected["fixture-" + role] = "probe-" + str(index)
+            value = wait(lambda: ready(expected))
+            markers.append(
+                tuple(
+                    (h["hostId"], h["sessions"][0]["sessionId"], h["sessions"][0]["name"])
+                    for h in value["snapshot"]["hosts"]
+                )
+            )
+            accepted.append([h["owner"]["receipt"]["accepted"] for h in value["snapshot"]["hosts"]])
+            for _ in range(args.reads):
+                started = time.perf_counter_ns()
+                value = ready(expected)
+                assert value is not None, "cached_read_lost_current_rows"
+                latencies.append(time.perf_counter_ns() - started)
+        report.update(
+            coordinatorCpuNs=time.process_time_ns() - cpu,
+            wallNs=time.perf_counter_ns() - wall,
+            rpcCount=len(latencies),
+            rpcP95Ns=sorted(latencies)[max(0, int(len(latencies) * 0.95) - 1)],
+            rpcMaxNs=max(latencies),
+            markers=markers,
+            acceptedCounters=accepted,
+            counts=dict(counts),
+            checkedPublications=len(checks),
+        )
+        # Outside decision timing: peak RSS includes startup; PSS is one
+        # checkpoint for this coordinator, not a whole process-tree peak bound.
+        rollup = Path("/proc/self/smaps_rollup").read_text().splitlines()
+        report["coordinatorPssBytes"] = next(
+            int(line.split()[1]) * 1024 for line in rollup if line.startswith("Pss:")
+        )
+        report["coordinatorPeakRssBytes"] = (
+            resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
+        )
+        for role in ("local", "remote"):
+            assert (
+                fixture.native(
+                    role,
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}|#{session_created}|#{session_attached}",
+                )
+                == before[role]["sessions"]
+            )
+            assert fixture.native(role, "show-hooks") == before[role]["hooks"]
+            assert fixture.native(role, "show-options", "-g") == before[role]["options"]
+        if args.certify:
+            owners["remote"].terminate()
+            owners["remote"].wait(timeout=3)
+            wait(
+                lambda: (
+                    next(h for h in read()["snapshot"]["hosts"] if h["hostId"] == "fixture-remote")[
+                        "owner"
+                    ]["localExpiry"]
+                    == 0
+                )
+            )
+            assert checks, "prepared_native_path_unexercised"
+            report["sourceLossRevoked"] = True
+        report["state"] = "passed"
+    finally:
+        if fleet is not None:
+            fleet.stop()
+        if thread is not None:
+            thread.join(10)
+            assert not thread.is_alive(), "fleet_thread_unretired"
+        fixture.close()
+        stack.close()
+        assert not failures, failures
+        report["cleanup"] = True
+    report["scope"] = (
+        "coordinator process CPU includes foreground RPC, Fleet projection, Mesh worker/local bridge and oracle; excludes child owner/remote bridge/SSH CPU; actual local IPC and loopback SSH; fixed native cadence; not production fleet performance"
+    )
+    print(json.dumps(report), flush=True)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--prepared", action="store_true")
+    parser.add_argument("--counts", action="store_true")
+    parser.add_argument("--certify", action="store_true")
+    parser.add_argument("--reads", type=int, choices=(1, 4, 16), default=4)
+    parser.add_argument("--updates", type=int, choices=(2, 3, 4), default=3)
+    args = parser.parse_args()
+    if args.certify and not args.prepared:
+        parser.error("certification requires explicit diagnostic prepared path")
+    run(args)
