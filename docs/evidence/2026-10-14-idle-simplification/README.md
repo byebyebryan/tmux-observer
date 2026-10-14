@@ -30,7 +30,7 @@ same-frame microbenchmarks deliberately maximize hits; they are not fleet saving
 
 The actual two-host/two-session pipeline [counter sample](reuse-counts.json) has
 48 host projections, 23 native admissions and 21 exact document reuses over 30
-seconds plus setup/cleanup. The 21 hits avoid approximately 0.004-0.012 CPU
+seconds plus setup/cleanup. The 21 hits avoid approximately 0.003-0.009 CPU
 percentage points at the measured projection costs, depending on roster size.
 This estimate transfers an isolated microbenchmark and is not an end-to-end CPU
 claim. Even its favorable scale is far below the observed Fleet floor and timing
