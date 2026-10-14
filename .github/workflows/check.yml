@@ -20,7 +20,21 @@ jobs:
           sudo apt-get install --yes tmux
       - name: Run source and contract gate
         run: ./scripts/check
-      - name: Install frozen optional Mesh candidate and owned SSH tools
+  mesh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install constrained development tools and owned native tools
+        run: |
+          python -m pip install --require-hashes -r packaging/build-constraints.txt
+          python -m pip install --no-build-isolation -e '.[dev]'
+          sudo apt-get update
+          sudo apt-get install --yes tmux openssh-server
+          sudo mkdir -p /run/sshd
+      - name: Install reviewed optional Mesh candidate
         run: |
           python - <<'PY_MESH'
           import subprocess, sys, tomllib
@@ -30,7 +44,5 @@ jobs:
           requirement = "mesh-plus @ git+" + source["git"] + "@" + source["rev"]
           subprocess.run([sys.executable, "-m", "pip", "install", requirement], check=True)
           PY_MESH
-          sudo apt-get install --yes openssh-server
-          sudo mkdir -p /run/sshd
       - name: Run Mesh integration and owned native SSH gate
         run: python scripts/check-mesh

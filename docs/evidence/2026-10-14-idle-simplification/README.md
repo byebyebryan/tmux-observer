@@ -73,3 +73,13 @@ CI-input mismatch, not a recurrence of the publisher receipt-history defect.
 The optional CI install now derives the trusted Git URL/revision from committed
 `tool.uv.sources.mesh-plus`, the same reviewed input used by the locked project.
 No test or runtime check is relaxed and no package payload changes.
+
+Run 38548001847 at `7cdcbd7` fails before optional Mesh installation: the unchanged
+native action test `test_deferred_session_times_out_and_removes_its_own_pending_session`
+reports no tmux server while setting its release option. The
+[original action failure](ci-action-fixture-failure.log.gz) is retained. No action
+code changes belong to this pass, and a later green run does not establish that
+this independent action fixture issue is resolved. The source and optional Mesh
+gates now run as separate jobs, with both gates retained, so action setup timing
+cannot prevent the networking gate from executing. This changes validation
+coordination, not product action behavior or its acceptance criteria.
