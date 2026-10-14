@@ -46,3 +46,6 @@ ruff format --check scripts/tmux-observer-operations
 
 ruff check scripts/qualify-mesh-preparation
 ruff format --check scripts/qualify-mesh-preparation
+
+ruff check scripts/compare-mesh-preparation
+ruff format --check scripts/compare-mesh-preparation

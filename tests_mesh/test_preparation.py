@@ -166,3 +166,40 @@ import tmux_observer.mesh_preparation
         from tmux_observer_client import _mesh_worker
 
         self.assertIs(_mesh_worker.ReadGuard, ReadGuard)
+
+    def test_owner_rules_obey_gap_resync_expiry_and_failed_replacement_barriers(self):
+        response = self.response("tmux-local.json")
+        guard = self.guard(response)
+        guard.accept(response)
+        mesh = response["mesh"]
+        control = {
+            "protocol": response["protocol"],
+            "schemaVersion": 1,
+            "mesh": {
+                key: mesh[key] for key in ("meshProtocol", "requestId", "operation", "access")
+            },
+        }
+        control["mesh"].update(kind="heartbeat", reader={**mesh["reader"], "sequence": 2})
+        guard.accept(control)
+        clock = mesh["reader"]["clock"]
+        expiry = max(
+            r["expiresAtMs"]
+            for h in mesh["hosts"]
+            for r in h["receipts"]
+            if r["expiresAtMs"] is not None
+        )
+        self.assertFalse(guard.current(expiry, clock))
+        control["mesh"].update(kind="gap", reader={**mesh["reader"], "sequence": 3})
+        guard.accept(control)
+        self.assertIsNone(guard.snapshot())
+        resync = copy.deepcopy(response)
+        resync["mesh"].update(kind="resync")
+        resync["mesh"]["reader"].update(sequence=4, revision=2)
+        guard.accept(resync)
+        self.assertEqual(guard.current(mesh["reader"]["encodedAtMs"], clock), response["sessions"])
+        bad = copy.deepcopy(resync)
+        bad["mesh"]["reader"].update(sequence=5)
+        bad["mesh"]["hosts"][0]["receipts"][0]["accepted"] += 1
+        with self.assertRaises(ProtocolError):
+            guard.accept(bad)
+        self.assertIsNone(guard.snapshot())

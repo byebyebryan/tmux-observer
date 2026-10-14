@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""Serial matched semantic work; separate counted audit and uninstrumented ABBA."""
+
+import argparse
+import json
+import os
+import statistics
+import subprocess
+from pathlib import Path
+
+
+def main(args):
+    args.output.mkdir(mode=0o700)
+    cases, blocks = [], []
+    root = Path(__file__).resolve().parent
+    environment = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+
+    def case(label, reads, *, audit=False):
+        command = [
+            str(args.baseline if label == "A" else args.candidate),
+            "-I",
+            "-B",
+            str(root / "qualify-mesh-preparation"),
+            "--reads",
+            str(reads),
+            "--updates",
+            "2",
+        ]
+        if label == "C":
+            command.append("--prepared")
+        if audit:
+            command.append("--counts")
+        result = subprocess.run(
+            command, env=environment, capture_output=True, check=False, timeout=40
+        )
+        if result.returncode:
+            (args.output / "failure.json").write_text(
+                json.dumps(
+                    {
+                        "command": command,
+                        "returncode": result.returncode,
+                        "stdout": result.stdout.decode(),
+                        "stderr": result.stderr.decode(),
+                    },
+                    indent=2,
+                )
+                + "\n"
+            )
+            raise ValueError("pipeline_case_failed")
+        value = json.loads(result.stdout)
+        if value["state"] != "passed" or not value["cleanup"] or value["instrumented"] != audit:
+            raise ValueError("unaccepted_pipeline_case")
+        value["tuple"] = label
+        return value
+
+    if args.audit:
+        for label in ("A", "B", "C"):
+            value = case(label, 4, audit=True)
+            counts = value["counts"]
+            if counts.get("meshCurrent", 0) or counts.get("preparedCurrent", 0):
+                raise ValueError("unexpected_mesh_current_consumer")
+            if not counts.get("ownerProjection") or not counts.get("nativeDocumentAdmission"):
+                raise ValueError("projection_not_exercised")
+            cases.append(value)
+            print(json.dumps(value), flush=True)
+    else:
+        for pair, reads, repetitions in (("AB", 4, 2), ("BC", 1, 4), ("BC", 16, 4)):
+            for block in range(repetitions):
+                cell = []
+                for position, label in enumerate((pair[0], pair[1], pair[1], pair[0])):
+                    value = case(label, reads)
+                    value.update(pair=pair, block=block, position=position)
+                    cell.append(value)
+                    cases.append(value)
+                    (args.output / "cases.json").write_text(json.dumps(cases, indent=2) + "\n")
+                # Actual cadence/proofs and readiness polls may vary; record
+                # counters/elapsed time, and require identical requested semantic
+                # updates and successful cached RPC work. Never call it exact
+                # acquisition/transport work or whole-tree CPU attribution.
+                for key in ("markers", "rpcCount", "reads", "updates", "harnessSha256"):
+                    if any(value[key] != cell[0][key] for value in cell[1:]):
+                        raise ValueError("semantic_work_mismatch")
+                a = statistics.mean(cell[index]["coordinatorCpuNs"] for index in (0, 3))
+                b = statistics.mean(cell[index]["coordinatorCpuNs"] for index in (1, 2))
+                value = {
+                    "pair": pair,
+                    "reads": reads,
+                    "block": block,
+                    "baselineCpuNs": a,
+                    "comparisonCpuNs": b,
+                    "cpuReductionPercent": 100 * (1 - b / a),
+                }
+                blocks.append(value)
+                print(json.dumps(value), flush=True)
+    (args.output / "cases.json").write_text(json.dumps(cases, indent=2) + "\n")
+    (args.output / "summary.json").write_text(
+        json.dumps(
+            {
+                "state": "passed",
+                "cases": len(cases),
+                "blocks": blocks,
+                "audit": args.audit,
+                "scope": "actual IPC/loopback SSH, matched semantic updates/RPCs; coordinator CPU only; variable natural source/proof cadence and readiness polls",
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--baseline", type=Path, required=True)
+    parser.add_argument("--candidate", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--audit", action="store_true")
+    args = parser.parse_args()
+    if not args.baseline.is_absolute() or not args.candidate.is_absolute() or args.output.exists():
+        parser.error("absolute_pinned_environments_and_new_output_required")
+    main(args)
