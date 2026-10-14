@@ -41,3 +41,27 @@ The patch and focused test changes remain dated study evidence. Product runtime
 and tests are restored to the preceding committed implementation. Agent/RLCD
 classification and outcome changes reinforce why identity-only reuse would be
 incorrect; this discarded prototype compared every field instead.
+
+## Paired private compatibility checkpoint
+
+Tmux a9 source freeze `c2d81de` builds wheel
+`60b72977795b1c6b49d2b019c7eb6be7e5434d00b0793e28959a6a368c419c71`.
+Its package descriptor remains `built_unaccepted`; independent acceptance is
+recorded here and in Mesh's owning evidence, without changing the builder's
+immutable descriptor. Exact installed Mesh integration passes 42 tests with zero
+skips; the source core gate passes 404 tests. Product changes are the version
+banner and explicit Mesh a19 dependency/worker acceptance only. No native
+collector, source cadence, desktop policy or Plus runtime changes are included.
+The preparation implementation label follows the new package version and retires
+old prepared guards; its semantics and public signatures stay unchanged.
+
+S4 native-command consolidation is not selected for implementation in this
+networking pass. Owner collection already supplies attachment's opening roster,
+and attachment already combines closing clients/session scope in one process.
+Sharing the remaining owner closing batch and attachment opening-client read
+requires changing the producer's acquisition interface and consistency bracket.
+That adds domain coupling for at most one of the four existing native launches
+per cycle, before proving how much of reaped CPU is launch overhead. Keep the
+existing conservative brackets, deadlines, PID rechecks and legacy fallback.
+A distinct producer-owned native pipeline study can reopen it against measured
+remaining owner costs; it is not hidden inside the Mesh optimization or pin bump.

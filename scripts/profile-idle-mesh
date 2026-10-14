@@ -47,11 +47,21 @@ def count_deadlines(output, role):
     import collections
 
     counts = collections.Counter()
+    from mesh_plus.reader import Reader
+
     from tmux_observer_client import _owner_document
     from tmux_observer_client._mesh_projection import MeshOwnerState
 
+    original_close = Reader._close
     original_admit = _owner_document._checked_service_frame
     original_project = MeshOwnerState.accept_mesh
+
+    async def close_reader(reader, client):
+        result = await original_close(reader, client)
+        counts["readerMetrics"] = reader.inspect()
+        return result
+
+    Reader._close = close_reader
 
     def admit(value):
         counts["nativeAdmissions"] += 1

@@ -1,8 +1,8 @@
 # Optional Mesh preparation
 
-Source/private candidate **Tmux Observer 0.6.0a8** supports Mesh SDK 1 and
-optional preparation interface 1 with the reviewed **Mesh 0.1.0a18** source
-`c1b6820a0d92f53cd1b728689ce5f8c39253715f`. This is an additive local
+Source/private candidate **Tmux Observer 0.6.0a9** supports Mesh SDK 1 and
+optional preparation interface 1 with the reviewed **Mesh 0.1.0a19** source
+`6e2e7e8608602ceb047c1b6c5b5de57532f6a173`. This is an additive local
 Python facade; Observation, Service, Fleet and Mesh wire bytes are unchanged.
 Released/managed Observer a7 / Mesh a15 retain their separate acceptance.
 
@@ -24,7 +24,7 @@ guard = PreparedReadGuard(
 Importing `tmux_observer.mesh_preparation` requires no Mesh installation and
 performs no collection, process, socket or desktop work. Calling the explicit
 factory opts into the installed Mesh dependency. The descriptor binds interface 1,
-the supported Tmux profile and `tmux-observer-0.6.0a8:preparation-v1` semantics.
+the supported Tmux profile and `tmux-observer-0.6.0a9:preparation-v1` semantics.
 
 For an admitted immutable generation, one rule per record preserves the full
 `hostId/serverGeneration/sessionId/createdAt` identity, requires the same
@@ -48,8 +48,10 @@ call Mesh `ReadGuard.current()`. A mechanical PreparedReadGuard replacement
 therefore compiles unused rules and removes neither native document admission
 nor Observer projection. Production keeps `ReadGuard`; there is no new selector.
 
-[Installed/native qualification](evidence/2026-10-14-preparation/README.md)
-certifies the facade and records 40 actual IPC/SSH comparison cases. Timing
+The preceding a8/a18 [installed/native qualification](evidence/2026-10-14-preparation/README.md)
+certifies that checkpoint and records 40 actual IPC/SSH comparison cases.
+The independent a9/a19 installed gate includes the facade tests; its version
+label requires fresh preparation rather than reusing an a8 guard. Timing
 shows no consistent benefit from the diagnostic replacement. Generic repeated
 Mesh-current microbenchmarks remain evidence for their own consumer shape.
 
