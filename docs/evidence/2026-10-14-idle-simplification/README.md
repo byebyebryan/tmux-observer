@@ -91,3 +91,15 @@ retain the same producer/runtime policy with an explicit Mesh a20 pin at `f7bef1
 Installed acceptance passes all 42 Mesh cases. The preceding a9/a19 wheels and
 timing evidence remain immutable; only corrected a20/a10 is the handoff candidate.
 No live selection, action implementation or native collection changes occur.
+
+Mesh's corrected a20/a10 installed-wheel screen completes without changing
+required work: empty Fleet CPU 2.4625 -> 1.9292% of one core (21.7% reduction),
+active updates 3.0958 -> 2.5792% (16.7%). Same 12 snapshots/11 proofs and byte/frame
+totals accompany approximately half the Mesh loop turns. These are serial
+controlled-fixture Fleet figures, not managed/live or whole-machine savings.
+The [owning Mesh evidence](https://github.com/byebyebryan/mesh-plus/blob/idle-profile-20261014/docs/evidence/2026-10-14-idle-simplification/README.md)
+retains final corrected-wheel raw records, distinct a19 long runs, package gates,
+remaining operational limits and complete runtime/dependency parity checks.
+No native-document cache or command consolidation is adopted. Corrected a10/a20
+are ready for independent review/adoption; release and managed selection remain
+separate. Agent, Plus frontends and dotfiles are unchanged by this pass.
