@@ -14,10 +14,16 @@ from .mesh import _parse_snapshot
 
 
 class MeshFleetPublisher(FleetPublisher):
-    def __init__(self, host_id, *, source="tmux_default", authority=None, **kwargs):
+    def __init__(
+        self, host_id, *, source="tmux_default", authority=None, view_feed=False, **kwargs
+    ):
         super().__init__(host_id, **kwargs)
         self.worker = MeshWorker(
-            host_id, owner_path=self.owner_path, source=source, authority=authority
+            host_id,
+            owner_path=self.owner_path,
+            source=source,
+            authority=authority,
+            view_feed=view_feed,
         )
         self.mesh_reader = None
         self.control_executor = None

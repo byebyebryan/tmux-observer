@@ -76,6 +76,11 @@ def main(argv=None):
         default="tmux_default",
         help="fixed Mesh source selector configured on each owner host",
     )
+    fleet.add_argument(
+        "--view-feed",
+        action="store_true",
+        help="explicitly require the Mesh view feed from every selected owner",
+    )
     snapshot = commands.add_parser("snapshot")
     snapshot.add_argument("--access", choices=("direct", "cached"), required=True)
     snapshot.add_argument("--host", action="append", default=[])
@@ -95,6 +100,8 @@ def main(argv=None):
         if operation == "refresh_status":
             selected.add_argument("--ticket-id", required=True)
     args = parser.parse_args(argv)
+    if args.command == "fleet" and args.view_feed and args.transport != "mesh":
+        parser.error("--view-feed requires --transport mesh")
     if args.command == "snapshot" and args.access == "direct":
         return direct(args)
     try:
@@ -122,7 +129,7 @@ def main(argv=None):
                     raise ValueError(
                         "Mesh backend requires the optional mesh dependencies"
                     ) from error
-                options = {"source": args.mesh_source}
+                options = {"source": args.mesh_source, "view_feed": args.view_feed}
             else:
                 from .fleet import FleetPublisher
 

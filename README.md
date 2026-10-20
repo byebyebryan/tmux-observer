@@ -1,5 +1,11 @@
 # Tmux Observer
 
+The **0.6.0a9 source/private candidate** adds an explicit
+[complete-view feed pilot](docs/view-feed-pilot.md) with experimental Mesh
+**0.1.0a24**. `fleet --transport mesh --view-feed` selects it; the ordinary
+full-view Mesh route remains the default. Candidate qualification and the
+measured cost decision are separate from managed selection.
+
 The **0.6.0a8 source/private candidate** adds an optional
 [owner preparation facade](docs/mesh-preparation.md) for Mesh a18.
 [Actual IPC/SSH qualification](docs/evidence/2026-10-14-preparation/README.md)

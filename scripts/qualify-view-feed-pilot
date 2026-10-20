@@ -1,0 +1,423 @@
+#!/usr/bin/env python3
+"""Bounded native IPC + fixed SSH comparison, including ordinary Reader work.
+
+Run each mode in a fresh process. Metrics include cold setup, full read/proof,
+watch wakeups, one planned reconnect and deterministic domain projection. This
+uses only public Mesh APIs; no feed ledger is presented as physical memory.
+"""
+
+import argparse
+import asyncio
+import contextlib
+import gc
+import hashlib
+import importlib.metadata
+import json
+import os
+import resource
+import sys
+import threading
+import time
+from pathlib import Path
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(ROOT / "tests"), str(ROOT / "tests_mesh")]
+from mesh_plus.api import Bridge, ReadGuard, configured_reader
+from mesh_plus.transport import IPCServer
+from mesh_plus.view_feed import ViewFeedBridge
+from mesh_plus.view_feed import configured_reader as feed_reader
+from native_fixture import NativeFixture
+from test_fleet_mesh import Authority
+
+from tmux_observer._clock import boottime_ms, domain
+from tmux_observer._mesh_source import TmuxCachedSource
+from tmux_observer.mesh_profile import TmuxMeshProfile
+from tmux_observer.mesh_publisher import make_publisher
+from tmux_observer.public import SERVICE_PROTOCOL, encode_document
+from tmux_observer_client._mesh_projection import MeshOwnerState
+
+
+def runtime_inputs(installed):
+    import tmux_observer
+    import tmux_observer_client
+
+    packages = {}
+    for module in (tmux_observer, tmux_observer_client):
+        location = Path(module.__file__).resolve().parent
+        if installed and location == ROOT / "src" / module.__name__:
+            raise ValueError("installed qualification imported checkout runtime")
+        packages[module.__name__] = {
+            "location": str(location),
+            "files": {
+                path.relative_to(location).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+                for path in sorted(location.rglob("*.py"))
+            },
+        }
+    return {"observerVersion": tmux_observer.__version__, "packages": packages}
+
+
+def cpu_usage():
+    own = resource.getrusage(resource.RUSAGE_SELF)
+    child = resource.getrusage(resource.RUSAGE_CHILDREN)
+    return own.ru_utime + own.ru_stime + child.ru_utime + child.ru_stime
+
+
+class ProcessSampler:
+    """Sample whole owned tree RSS plus explicitly registered daemonized tmux.
+
+    RSS sums count shared pages repeatedly. Short-lived subprocess RSS can be
+    missed; this is a measured peak, never a hard physical capacity bound.
+    """
+
+    def __init__(self):
+        self.roots = {os.getpid()}
+        self.peak = self.samples = 0
+        self.daemon_ticks = {}
+        self.stopping = threading.Event()
+        self.thread = threading.Thread(target=self.run, name="pilot-process-sampler")
+
+    def sample(self):
+        entries = {}
+        for path in Path("/proc").glob("[0-9]*/stat"):
+            try:
+                raw = path.read_text()
+                fields = raw[raw.rindex(")") + 2 :].split()
+                entries[int(path.parent.name)] = (
+                    int(fields[1]),
+                    int(fields[11]) + int(fields[12]),
+                    int(fields[21]),
+                )
+            except (OSError, ValueError, IndexError):
+                continue
+        selected = set(self.roots)
+        while True:
+            new = {pid for pid, (ppid, _, _) in entries.items() if ppid in selected}
+            if new <= selected:
+                break
+            selected.update(new)
+        page = os.sysconf("SC_PAGE_SIZE")
+        self.peak = max(self.peak, sum(entries[p][2] * page for p in selected if p in entries))
+        for pid in self.roots - {os.getpid()}:
+            if pid in entries:
+                self.daemon_ticks[pid] = max(self.daemon_ticks.get(pid, 0), entries[pid][1])
+        self.samples += 1
+
+    def run(self):
+        while not self.stopping.wait(0.02):
+            self.sample()
+
+    def close(self):
+        self.stopping.set()
+        self.thread.join()
+        self.sample()
+
+
+def native_meter(original, counters):
+    async def frames(source, operation):
+        # Exactly one fixed native request precedes this iterator. Count each
+        # completed frame once at this edge; LF is part of encode_document.
+        request = {
+            "protocol": SERVICE_PROTOCOL,
+            "schemaVersion": 1,
+            "operation": operation,
+            "requestId": "0" * 32,
+            "expectedHost": source.host,
+        }
+        counters["requests"] += 1
+        counters["requestBytes"] += len(encode_document(request))
+        iterator = original(source, operation)
+        try:
+            async for value in iterator:
+                counters["frames"] += 1
+                counters["frameBytes"] += len(encode_document(value))
+                yield value
+        finally:
+            await iterator.aclose()
+
+    return frames
+
+
+def meter_remote(fixture):
+    # The launcher is an owned disposable fixture file, before the first SSH
+    # client starts. Add the same native-edge counters in that remote process.
+    launcher = fixture.root / "publisher-launcher.py"
+    source = launcher.read_text()
+    instrumentation = (
+        "import atexit\n"
+        "from tmux_observer._mesh_source import TmuxCachedSource\n"
+        "from tmux_observer.public import encode_document\n"
+        "counts = dict(requests=0,requestBytes=0,frames=0,frameBytes=0)\n"
+        "original = TmuxCachedSource.frames\n"
+        "async def measured(self, operation):\n"
+        " request=dict(protocol='tmux-observer.service.v1',schemaVersion=1,operation=operation,requestId='0'*32,expectedHost=self.host)\n"
+        " counts['requests']+=1; counts['requestBytes']+=len(encode_document(request))\n"
+        " iterator=original(self,operation)\n"
+        " try:\n"
+        "  async for value in iterator:\n"
+        "   counts['frames']+=1; counts['frameBytes']+=len(encode_document(value)); yield value\n"
+        " finally: await iterator.aclose()\n"
+        "TmuxCachedSource.frames=measured\n"
+        "def save():\n"
+        " with pathlib.Path("
+        + repr(str(fixture.root / "native-counts.jsonl"))
+        + ").open('a') as stream: stream.write(json.dumps(counts)+'\\n')\n"
+        "atexit.register(save)\n"
+    )
+    assert "raise SystemExit(main(" in source
+    launcher.write_text(
+        source.replace("raise SystemExit(main(", instrumentation + "raise SystemExit(main(")
+    )
+
+
+async def qualify(args, report, sampler):
+    fixture = NativeFixture()
+    counters = {"requests": 0, "requestBytes": 0, "frames": 0, "frameBytes": 0}
+    original = TmuxCachedSource.frames
+    stack = contextlib.ExitStack()
+    stack.enter_context(patch.object(TmuxCachedSource, "frames", native_meter(original, counters)))
+    observer_outputs, proof_nonces, inspections = [], set(), []
+    failures, snapshots = [], []
+    profile = TmuxMeshProfile()
+    states = {
+        "fixture-" + role: MeshOwnerState(
+            "fixture-" + role, local_clock=domain() if role == "local" else None
+        )
+        for role in ("local", "remote")
+    }
+    server = consumer = None
+    try:
+        before = {}
+        for role in ("local", "remote"):
+            for index in range(args.sessions):
+                fixture.native(role, "new-session", "-d", "-s", f"pilot-{index:03d}-0", "sleep 300")
+            sampler.roots.add(int(fixture.native(role, "display-message", "-p", "#{pid}")))
+            before[role] = {
+                "identity": fixture.native(
+                    role,
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}|#{session_created}|#{session_attached}",
+                ),
+                "hooks": fixture.native(role, "show-hooks"),
+                "options": fixture.native(role, "show-options", "-g"),
+            }
+            fixture.start_owner(role)
+        fixture.start_ssh()
+        meter_remote(fixture)
+        authority = Authority()
+        authority.payload["sshPolicy"]["executable"] = str(fixture.bin / "ssh")
+        authority.payload["hosts"].append(
+            {
+                "id": "fixture-remote",
+                "display": "remote",
+                "local": False,
+                "aliases": [],
+                "routes": [
+                    {
+                        "destination": "fixture-remote",
+                        "configuredIndex": 0,
+                        "lastReachableAt": None,
+                        "lastUnreachableAt": None,
+                    }
+                ],
+            }
+        )
+        adapter = make_publisher("fixture-local", "tmux_default", fixture.local / "owner.sock")
+        bridge = (
+            ViewFeedBridge(adapter, profile=profile) if args.mode == "feed" else Bridge(adapter)
+        )
+        path = fixture.local / "bridge.sock"
+        server = await IPCServer(path, bridge.serve).start()
+        factory = feed_reader if args.mode == "feed" else configured_reader
+
+        async def new_reader():
+            return await factory(
+                "tmux", source="tmux_default", socket=path, authority=authority, profile=profile
+            )
+
+        async def consume(reader):
+            guard = ReadGuard("tmux", "a" * 32, host_ids=list(states), profile=profile)
+            iterator = reader.watch(request_id="a" * 32)
+            try:
+                async for frame in iterator:
+                    guard.accept(frame)
+                    if "mesh" not in frame:
+                        raise AssertionError("Reader terminal error")
+                    if frame["mesh"]["kind"] in {"gap", "heartbeat"}:
+                        continue
+                    for host in frame["mesh"]["hosts"]:
+                        rows = [r for r in frame["sessions"] if r["hostId"] == host["hostId"]]
+                        states[host["hostId"]].accept_mesh(
+                            host,
+                            rows,
+                            reader_id=frame["mesh"]["reader"]["id"],
+                            reader_clock=frame["mesh"]["reader"]["clock"],
+                            now=boottime_ms(),
+                            selected_route=None if host["local"] else "fixture-remote",
+                        )
+                        proof = host["delivery"]["proof"]
+                        if proof:
+                            proof_nonces.add(proof["nonce"])
+                    observer_outputs.append(len(frame["sessions"]))
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:  # noqa: BLE001 - owned consumer failure is evidence
+                failures.append(type(error).__name__ + ": " + str(error))
+            finally:
+                guard.disconnect()
+                await iterator.aclose()
+
+        reader = await new_reader()
+        consumer = asyncio.create_task(consume(reader))
+        expected = {f"pilot-{i:03d}-0" for i in range(args.sessions)}
+        for stage in range(args.stages + 1):
+            if stage:
+                changed = range(args.sessions) if args.workload == "all-changing" else range(1)
+                for role in ("local", "remote"):
+                    for index in changed:
+                        fixture.native(
+                            role,
+                            "rename-session",
+                            "-t",
+                            f"pilot-{index:03d}-{stage - 1}",
+                            f"pilot-{index:03d}-{stage}",
+                        )
+                expected = {
+                    f"pilot-{i:03d}-{stage if args.workload == 'all-changing' or i == 0 else 0}"
+                    for i in range(args.sessions)
+                }
+            # Fixed actor windows, not a mode-dependent readiness polling loop.
+            await asyncio.sleep(2.5)
+            if failures:
+                raise AssertionError(failures)
+            for role in ("local", "remote"):
+                state = states["fixture-" + role]
+                assert state.expiry > boottime_ms(), (
+                    "missing current native evidence",
+                    role,
+                    state.project_header(),
+                    reader.inspect(),
+                    (fixture.root / "mesh.log").read_text()
+                    if (fixture.root / "mesh.log").exists()
+                    else "no remote log",
+                )
+                assert {r["name"] for r in state.confirmed["snapshot"]["sessions"]} == expected
+                independent = fixture.native(role, "list-sessions", "-F", "#{session_name}")
+                assert set(independent.decode().splitlines()) == expected
+            snapshots.append({"stage": stage, "names": sorted(expected), "rows": 2 * args.sessions})
+            if stage == args.stages // 2:
+                # Count full reconnect/setup/baseline/proof work as part of trial.
+                consumer.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await consumer
+                inspections.append(reader.inspect())
+                reader = await new_reader()
+                consumer = asyncio.create_task(consume(reader))
+        consumer.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await consumer
+        consumer = None
+        inspections.append(reader.inspect())
+        assert len(proof_nonces) >= 2, "recovery lacks fresh full proof"
+        for role in ("local", "remote"):
+            assert (
+                fixture.native(
+                    role,
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}|#{session_created}|#{session_attached}",
+                )
+                == before[role]["identity"]
+            )
+            assert fixture.native(role, "show-hooks") == before[role]["hooks"]
+            assert fixture.native(role, "show-options", "-g") == before[role]["options"]
+            assert fixture.native(role, "list-clients", "-F", "#{client_pid}") == b""
+        remote_rows = [
+            json.loads(line)
+            for line in (fixture.root / "native-counts.jsonl").read_text().splitlines()
+        ]
+        report.update(
+            nativeLocal=counters.copy(),
+            nativeRemote=remote_rows,
+            readerMetrics=inspections,
+            freshProofNonces=len(proof_nonces),
+            projectedFrames=len(observer_outputs),
+            usefulOutputs=snapshots,
+            nativePassivity=True,
+            plannedReconnects=1,
+        )
+        report["meshBytes"] = sum(r["sentBytes"] + r["receivedBytes"] for r in inspections)
+        report["nativeBytes"] = sum(
+            r["requestBytes"] + r["frameBytes"] for r in [counters, *remote_rows]
+        )
+        report["totalCompletedJsonBytes"] = report["meshBytes"] + report["nativeBytes"]
+    finally:
+        if consumer is not None:
+            consumer.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await consumer
+        if server is not None:
+            await server.close()
+        # Capture daemon CPU before kill; the sampler does not own ordinary PIDs.
+        sampler.sample()
+        fixture.close()
+        stack.close()
+    report["cleanup"] = True
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--mode", choices=("legacy", "feed"), required=True)
+    parser.add_argument("--workload", choices=("mostly-static", "all-changing"), required=True)
+    parser.add_argument("--sessions", type=int, default=16)
+    parser.add_argument("--stages", type=int, default=3)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--installed", action="store_true", help="refuse checkout runtime imports")
+    args = parser.parse_args()
+    if not 1 <= args.sessions <= 256 or not 2 <= args.stages <= 6:
+        parser.error("bounded pilot: 1..256 sessions and 2..6 stages")
+    gc.disable()
+    report = {
+        "state": "running",
+        "mode": args.mode,
+        "workload": args.workload,
+        "sessionsPerOwner": args.sessions,
+        "stages": args.stages,
+        "gcEnabled": gc.isenabled(),
+        "python": sys.version,
+        "meshVersion": importlib.metadata.version("mesh-plus"),
+        "modeOfQualification": "installed" if args.installed else "source",
+        "inputs": runtime_inputs(args.installed),
+        "harnessSha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "accounting": {
+            "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+            "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+            "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap",
+        },
+    }
+    sampler = ProcessSampler()
+    sampler.thread.start()
+    started, cpu = time.perf_counter(), cpu_usage()
+    try:
+        asyncio.run(qualify(args, report, sampler))
+        report["state"] = "passed"
+    except BaseException as error:
+        report.update(state="failed", error=type(error).__name__ + ": " + str(error))
+        raise
+    finally:
+        sampler.close()
+        report.update(
+            wallSeconds=time.perf_counter() - started,
+            cpuSeconds=cpu_usage()
+            - cpu
+            + sum(sampler.daemon_ticks.values()) / os.sysconf("SC_CLK_TCK"),
+            sampledSummedRssPeakBytes=sampler.peak,
+            memorySamples=sampler.samples,
+        )
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+
+
+if __name__ == "__main__":
+    main()

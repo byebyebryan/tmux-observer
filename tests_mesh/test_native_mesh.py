@@ -19,6 +19,12 @@ class NativeMeshTests(unittest.TestCase):
     read = test_fleet_mesh.MeshFleetTests.read
 
     def test_two_hosts_passivity_refresh_restart_empty_and_cleanup(self):
+        self._run_two_hosts_passivity_refresh_restart_empty_and_cleanup()
+
+    def test_view_feed_two_hosts_passivity_refresh_restart_empty_and_cleanup(self):
+        self._run_two_hosts_passivity_refresh_restart_empty_and_cleanup(view_feed=True)
+
+    def _run_two_hosts_passivity_refresh_restart_empty_and_cleanup(self, *, view_feed=False):
         fixture = NativeFixture()
         self.addCleanup(fixture.close)
         factories = []
@@ -32,7 +38,8 @@ class NativeMeshTests(unittest.TestCase):
         factory_patch.start()
         self.addCleanup(factory_patch.stop)
         for role in ("local", "remote"):
-            fixture.native(role, "new-session", "-d", "-s", "mesh-owned-" + role, "sleep 120")
+            if not (view_feed and role == "remote"):
+                fixture.native(role, "new-session", "-d", "-s", "mesh-owned-" + role, "sleep 120")
         before = {
             role: {
                 "sessions": fixture.native(
@@ -40,9 +47,14 @@ class NativeMeshTests(unittest.TestCase):
                     "list-sessions",
                     "-F",
                     "#{session_id}|#{session_created}|#{session_attached}",
+                    ok=not (view_feed and role == "remote"),
                 ),
-                "hooks": fixture.native(role, "show-hooks"),
-                "options": fixture.native(role, "show-options", "-g"),
+                "hooks": None
+                if view_feed and role == "remote"
+                else fixture.native(role, "show-hooks"),
+                "options": None
+                if view_feed and role == "remote"
+                else fixture.native(role, "show-options", "-g"),
             }
             for role in ("local", "remote")
         }
@@ -79,6 +91,7 @@ class NativeMeshTests(unittest.TestCase):
             authority=authority,
             scanner=False,
             remote_exec=str(fixture.bin / "tmux-observer"),
+            view_feed=view_feed,
         )
         errors = []
 
@@ -125,6 +138,24 @@ class NativeMeshTests(unittest.TestCase):
         self.assertIsNotNone(first["snapshot"]["hosts"][1]["owner"]["proof"])
         self.assertEqual(factories, [("fixture-local", "tmux_default")])
         if fixture.publisher_mode == "owned":
+            commands = [
+                json.loads(line)
+                for line in (fixture.root / "mesh-commands.jsonl").read_text().splitlines()
+            ]
+            remote_commands = [
+                command
+                for command in commands
+                if command and command[0] in {"bridge", "view-feed-bridge"}
+            ]
+            expected_command = "view-feed-bridge" if view_feed else "bridge"
+            self.assertTrue(remote_commands)
+            self.assertTrue(
+                all(
+                    command[0] == expected_command and "--stdio" in command
+                    for command in remote_commands
+                ),
+                remote_commands,
+            )
             remote_factories = [
                 json.loads(line)
                 for line in (fixture.root / "factory.jsonl").read_text().splitlines()
@@ -136,6 +167,97 @@ class NativeMeshTests(unittest.TestCase):
                     for row in remote_factories
                 )
             )
+        if view_feed:
+            initial_remote = first["snapshot"]["hosts"][1]
+            initial_rows = initial_remote["sessions"]
+            self.assertEqual(initial_rows, [])
+            initial_proof = initial_remote["owner"]["proof"]["sentAt"]
+            initial_expiry = initial_remote["owner"]["localExpiry"]
+
+            def renewed_without_session_change():
+                frame = self.read(fleet)
+                remote = frame["snapshot"]["hosts"][1]
+                return (
+                    frame
+                    if remote["sessions"] == initial_rows
+                    and remote["owner"]["proof"]["sentAt"] > initial_proof
+                    and remote["owner"]["localExpiry"] > initial_expiry
+                    else None
+                )
+
+            self.wait(renewed_without_session_change, budget=7)
+            fixture.native("remote", "new-session", "-d", "-s", "mesh-owned-remote", "sleep 120")
+            initial_id = (
+                fixture.native(
+                    "remote", "display-message", "-p", "-t", "mesh-owned-remote", "#{session_id}"
+                )
+                .decode()
+                .strip()
+            )
+
+            def seeded():
+                frame = self.read(fleet)
+                rows = frame["snapshot"]["hosts"][1]["sessions"]
+                return frame if [row["sessionId"] for row in rows] == [initial_id] else None
+
+            seeded_frame = self.wait(seeded, budget=7)
+            initial_rows = seeded_frame["snapshot"]["hosts"][1]["sessions"]
+            before["remote"].update(
+                sessions=fixture.native(
+                    "remote",
+                    "list-sessions",
+                    "-F",
+                    "#{session_id}|#{session_created}|#{session_attached}",
+                ),
+                hooks=fixture.native("remote", "show-hooks"),
+                options=fixture.native("remote", "show-options", "-g"),
+            )
+            for name in ("mesh-feed-z", "mesh-feed-a"):
+                fixture.native("remote", "new-session", "-d", "-s", name, "sleep 120")
+            native_order = fixture.native("remote", "list-sessions", "-F", "#{session_id}")
+            native_order = native_order.decode().splitlines()
+            renamed_id = (
+                fixture.native(
+                    "remote", "display-message", "-p", "-t", "mesh-feed-a", "#{session_id}"
+                )
+                .decode()
+                .strip()
+            )
+
+            def inserted():
+                frame = self.read(fleet)
+                rows = frame["snapshot"]["hosts"][1]["sessions"]
+                return frame if [row["sessionId"] for row in rows] == native_order else None
+
+            inserted_frame = self.wait(inserted, budget=7)
+            inserted_rows = inserted_frame["snapshot"]["hosts"][1]["sessions"]
+            self.assertEqual(
+                sorted(row["name"] for row in inserted_rows),
+                ["mesh-feed-a", "mesh-feed-z", "mesh-owned-remote"],
+            )
+            fixture.native("remote", "rename-session", "-t", "mesh-feed-a", "mesh-feed-renamed")
+
+            def metadata_changed():
+                frame = self.read(fleet)
+                rows = frame["snapshot"]["hosts"][1]["sessions"]
+                return (
+                    frame
+                    if [row["sessionId"] for row in rows] == native_order
+                    and next(row for row in rows if row["sessionId"] == renamed_id)["name"]
+                    == "mesh-feed-renamed"
+                    else None
+                )
+
+            self.wait(metadata_changed, budget=7)
+            fixture.native("remote", "kill-session", "-t", "mesh-feed-z")
+            fixture.native("remote", "kill-session", "-t", "mesh-feed-renamed")
+
+            def removed():
+                frame = self.read(fleet)
+                rows = frame["snapshot"]["hosts"][1]["sessions"]
+                return frame if rows == initial_rows else None
+
+            self.wait(removed, budget=7)
         for _ in range(10):
             self.read(fleet)
         for role in ("local", "remote"):
@@ -175,7 +297,14 @@ class NativeMeshTests(unittest.TestCase):
         def unavailable():
             frame = self.read(fleet)
             host = frame["snapshot"]["hosts"][1]
-            return frame if host["owner"]["localExpiry"] == 0 and host["sessions"] else None
+            local = frame["snapshot"]["hosts"][0]
+            return (
+                frame
+                if host["owner"]["localExpiry"] == 0
+                and host["sessions"]
+                and local["owner"]["localExpiry"] > boottime_ms()
+                else None
+            )
 
         self.wait(unavailable, budget=5)
         fixture.start_owner("remote")
@@ -189,6 +318,8 @@ class NativeMeshTests(unittest.TestCase):
             )
 
         self.wait(restarted, budget=8)
+        current = self.read(fleet)
+        old_generation = current["snapshot"]["hosts"][1]["owner"]["serverGeneration"]
         fixture.native("remote", "kill-server")
 
         def empty():
@@ -202,4 +333,18 @@ class NativeMeshTests(unittest.TestCase):
 
         self.wait(empty, budget=6)
         self.assertEqual(fixture.native("remote", "list-sessions", ok=False), b"")
+        fixture.native("remote", "new-session", "-d", "-s", "mesh-feed-reborn", "sleep 120")
+
+        def reborn():
+            frame = ready()
+            host = frame["snapshot"]["hosts"][1] if frame else None
+            return (
+                frame
+                if host
+                and host["owner"]["serverGeneration"] != old_generation
+                and len(host["sessions"]) == 1
+                else None
+            )
+
+        self.wait(reborn, budget=8)
         self.assertIsNone(local_owner.poll())

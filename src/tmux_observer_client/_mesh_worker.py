@@ -46,12 +46,17 @@ class CapturedAuthority:
 
 
 class MeshWorker:
-    def __init__(self, host_id, *, owner_path=None, source="tmux_default", authority=None):
-        if __version__ != "0.1.0a18":
-            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a18 SDK")
+    def __init__(
+        self, host_id, *, owner_path=None, source="tmux_default", authority=None, view_feed=False
+    ):
+        if __version__ != "0.1.0a24":
+            raise ValueError("Mesh backend requires the reviewed mesh-plus 0.1.0a24 SDK")
+        if type(view_feed) is not bool:
+            raise ValueError("Mesh view-feed selection must be a boolean")
         self.host_id = host_id
         self.owner_path = owner_socket() if owner_path is None else owner_path
         self.source = source
+        self.view_feed = view_feed
         self.profile = TmuxMeshProfile()
         self.owns_authority = authority is None
         if authority is None:
@@ -91,7 +96,11 @@ class MeshWorker:
 
     async def watch(self, bridge_path):
         authority = CapturedAuthority(self.authority)
-        reader = await configured_reader(
+        reader_factory = configured_reader
+        if self.view_feed:
+            from mesh_plus.view_feed import configured_reader as reader_factory
+
+        reader = await reader_factory(
             "tmux",
             source=self.source,
             socket=bridge_path,
@@ -130,7 +139,12 @@ class MeshWorker:
         self.root_task = asyncio.current_task()
         with tempfile.TemporaryDirectory(prefix="tmux-mesh-") as temporary:
             adapter = make_publisher(self.host_id, self.source, self.owner_path)
-            bridge = Bridge(adapter)
+            if self.view_feed:
+                from mesh_plus.view_feed import ViewFeedBridge
+
+                bridge = ViewFeedBridge(adapter, profile=self.profile)
+            else:
+                bridge = Bridge(adapter)
             path = Path(temporary) / "bridge.sock"
             # One active Reader plus one retiring handler. Client socket closure
             # does not imply the publisher has finished bounded cleanup.

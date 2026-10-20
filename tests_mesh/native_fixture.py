@@ -126,6 +126,9 @@ class NativeFixture:
             + "  if fullname.startswith(('mesh_plus.observer','tmux_observer.collector','tmux_observer.owner','tmux_observer_actions')):\n"
             + "   raise ImportError('owned fixture bridge imported reference/native implementation')\n"
             + "sys.meta_path.insert(0,Fence())\n"
+            + "with pathlib.Path("
+            + repr(str(self.root / "mesh-commands.jsonl"))
+            + ").open('a') as trace: trace.write(json.dumps(sys.argv[1:])+'\\n')\n"
             + "from mesh_plus.cli import main\n"
             + "def factory(host,source,socket):\n"
             + " from tmux_observer.mesh_publisher import make_publisher\n"

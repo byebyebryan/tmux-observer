@@ -49,3 +49,6 @@ ruff format --check scripts/qualify-mesh-preparation
 
 ruff check scripts/compare-mesh-preparation
 ruff format --check scripts/compare-mesh-preparation
+
+ruff check scripts/qualify-view-feed-pilot
+ruff format --check scripts/qualify-view-feed-pilot

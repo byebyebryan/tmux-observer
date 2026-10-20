@@ -23,6 +23,18 @@ class ClientCLITests(unittest.TestCase):
     def command(self, *args):
         return [sys.executable, "-m", "tmux_observer_client.cli", *map(str, args)]
 
+    def test_view_feed_requires_explicit_mesh_transport(self):
+        for transport in ((), ("--transport", "legacy")):
+            with self.subTest(transport=transport):
+                result = subprocess.run(
+                    self.command("fleet", "--host-id", "fixture-local", *transport, "--view-feed"),
+                    capture_output=True,
+                    timeout=3,
+                    check=False,
+                )
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(b"--view-feed requires --transport mesh", result.stderr)
+
     def test_missing_cached_service_and_invalid_scope_never_activate_or_collect(self):
         with tempfile.TemporaryDirectory(prefix="tmux-observer-client-cli-") as temporary:
             path = Path(temporary) / "absent.sock"
