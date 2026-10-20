@@ -1,0 +1,3169 @@
+{
+  "decision": "Retain legacy full-view default; no consistent end-to-end benefit for this ordinary Reader workload",
+  "summary": {
+    "all-changing": {
+      "cpuSeconds": {
+        "feedChangePercent": 4.999258227903303,
+        "feedMedian": 4.9613945,
+        "legacyMedian": 4.725171
+      },
+      "sampledSummedRssPeakBytes": {
+        "feedChangePercent": 0.5415631143588451,
+        "feedMedian": 222044160.0,
+        "legacyMedian": 220848128.0
+      },
+      "totalCompletedJsonBytes": {
+        "feedChangePercent": 6.015164371342174,
+        "feedMedian": 584733.0,
+        "legacyMedian": 551556.0
+      }
+    },
+    "mostly-static": {
+      "cpuSeconds": {
+        "feedChangePercent": 2.788390733503787,
+        "feedMedian": 4.709688,
+        "legacyMedian": 4.581925999999999
+      },
+      "sampledSummedRssPeakBytes": {
+        "feedChangePercent": -0.375134957088219,
+        "feedMedian": 222994432.0,
+        "legacyMedian": 223834112.0
+      },
+      "totalCompletedJsonBytes": {
+        "feedChangePercent": -3.1374519869332707,
+        "feedMedian": 526168.5,
+        "legacyMedian": 543211.5
+      }
+    }
+  },
+  "trials": [
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.967002,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 328,
+      "meshBytes": 281289,
+      "meshVersion": "0.1.0a24",
+      "mode": "feed",
+      "modeOfQualification": "installed",
+      "nativeBytes": 303444,
+      "nativeLocal": {
+        "frameBytes": 149834,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 83574,
+          "frames": 10,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 47012,
+                "frames": 4
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73655,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3018,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 3,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37147,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 122656,
+          "receivedFrames": 20,
+          "rotations": 0,
+          "sentBytes": 6015,
+          "sentFrames": 22,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 70493,
+                "frames": 6
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73659,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3020,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 3,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36509,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37150,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 146141,
+          "receivedFrames": 22,
+          "rotations": 0,
+          "sentBytes": 6477,
+          "sentFrames": 24,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 220168192,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 584733,
+      "trial": "all-changing-feed-1",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-1",
+            "pilot-002-1",
+            "pilot-003-1",
+            "pilot-004-1",
+            "pilot-005-1",
+            "pilot-006-1",
+            "pilot-007-1",
+            "pilot-008-1",
+            "pilot-009-1",
+            "pilot-010-1",
+            "pilot-011-1",
+            "pilot-012-1",
+            "pilot-013-1",
+            "pilot-014-1",
+            "pilot-015-1"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-2",
+            "pilot-002-2",
+            "pilot-003-2",
+            "pilot-004-2",
+            "pilot-005-2",
+            "pilot-006-2",
+            "pilot-007-2",
+            "pilot-008-2",
+            "pilot-009-2",
+            "pilot-010-2",
+            "pilot-011-2",
+            "pilot-012-2",
+            "pilot-013-2",
+            "pilot-014-2",
+            "pilot-015-2"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-3",
+            "pilot-002-3",
+            "pilot-003-3",
+            "pilot-004-3",
+            "pilot-005-3",
+            "pilot-006-3",
+            "pilot-007-3",
+            "pilot-008-3",
+            "pilot-009-3",
+            "pilot-010-3",
+            "pilot-011-3",
+            "pilot-012-3",
+            "pilot-013-3",
+            "pilot-014-3",
+            "pilot-015-3"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.581921243923716,
+      "workload": "all-changing"
+    },
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.955787,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 329,
+      "meshBytes": 281289,
+      "meshVersion": "0.1.0a24",
+      "mode": "feed",
+      "modeOfQualification": "installed",
+      "nativeBytes": 303444,
+      "nativeLocal": {
+        "frameBytes": 149834,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 83574,
+          "frames": 10,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 47012,
+                "frames": 4
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73655,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3018,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37147,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 122656,
+          "receivedFrames": 20,
+          "rotations": 0,
+          "sentBytes": 6015,
+          "sentFrames": 22,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 70493,
+                "frames": 6
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73659,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3020,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 1,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36509,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37150,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 146141,
+          "receivedFrames": 22,
+          "rotations": 0,
+          "sentBytes": 6477,
+          "sentFrames": 24,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 223920128,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 584733,
+      "trial": "all-changing-feed-2",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-1",
+            "pilot-002-1",
+            "pilot-003-1",
+            "pilot-004-1",
+            "pilot-005-1",
+            "pilot-006-1",
+            "pilot-007-1",
+            "pilot-008-1",
+            "pilot-009-1",
+            "pilot-010-1",
+            "pilot-011-1",
+            "pilot-012-1",
+            "pilot-013-1",
+            "pilot-014-1",
+            "pilot-015-1"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-2",
+            "pilot-002-2",
+            "pilot-003-2",
+            "pilot-004-2",
+            "pilot-005-2",
+            "pilot-006-2",
+            "pilot-007-2",
+            "pilot-008-2",
+            "pilot-009-2",
+            "pilot-010-2",
+            "pilot-011-2",
+            "pilot-012-2",
+            "pilot-013-2",
+            "pilot-014-2",
+            "pilot-015-2"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-3",
+            "pilot-002-3",
+            "pilot-003-3",
+            "pilot-004-3",
+            "pilot-005-3",
+            "pilot-006-3",
+            "pilot-007-3",
+            "pilot-008-3",
+            "pilot-009-3",
+            "pilot-010-3",
+            "pilot-011-3",
+            "pilot-012-3",
+            "pilot-013-3",
+            "pilot-014-3",
+            "pilot-015-3"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.588807691936381,
+      "workload": "all-changing"
+    },
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.694169,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 335,
+      "meshBytes": 248112,
+      "meshVersion": "0.1.0a24",
+      "mode": "legacy",
+      "modeOfQualification": "installed",
+      "nativeBytes": 303444,
+      "nativeLocal": {
+        "frameBytes": 149834,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 83574,
+          "frames": 10,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 36236,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72392,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 322,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35884,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 110121,
+          "receivedFrames": 16,
+          "rotations": 0,
+          "sentBytes": 4659,
+          "sentFrames": 18,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 54324,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72394,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35886,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 128211,
+          "receivedFrames": 18,
+          "rotations": 0,
+          "sentBytes": 5121,
+          "sentFrames": 20,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 220516352,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 551556,
+      "trial": "all-changing-legacy-1",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-1",
+            "pilot-002-1",
+            "pilot-003-1",
+            "pilot-004-1",
+            "pilot-005-1",
+            "pilot-006-1",
+            "pilot-007-1",
+            "pilot-008-1",
+            "pilot-009-1",
+            "pilot-010-1",
+            "pilot-011-1",
+            "pilot-012-1",
+            "pilot-013-1",
+            "pilot-014-1",
+            "pilot-015-1"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-2",
+            "pilot-002-2",
+            "pilot-003-2",
+            "pilot-004-2",
+            "pilot-005-2",
+            "pilot-006-2",
+            "pilot-007-2",
+            "pilot-008-2",
+            "pilot-009-2",
+            "pilot-010-2",
+            "pilot-011-2",
+            "pilot-012-2",
+            "pilot-013-2",
+            "pilot-014-2",
+            "pilot-015-2"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-3",
+            "pilot-002-3",
+            "pilot-003-3",
+            "pilot-004-3",
+            "pilot-005-3",
+            "pilot-006-3",
+            "pilot-007-3",
+            "pilot-008-3",
+            "pilot-009-3",
+            "pilot-010-3",
+            "pilot-011-3",
+            "pilot-012-3",
+            "pilot-013-3",
+            "pilot-014-3",
+            "pilot-015-3"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.575028961990029,
+      "workload": "all-changing"
+    },
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.756173,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 338,
+      "meshBytes": 248112,
+      "meshVersion": "0.1.0a24",
+      "mode": "legacy",
+      "modeOfQualification": "installed",
+      "nativeBytes": 303444,
+      "nativeLocal": {
+        "frameBytes": 149834,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 83574,
+          "frames": 10,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 36236,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72392,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 322,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35884,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 110121,
+          "receivedFrames": 16,
+          "rotations": 0,
+          "sentBytes": 4659,
+          "sentFrames": 18,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 54324,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72394,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 1,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35886,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 128211,
+          "receivedFrames": 18,
+          "rotations": 0,
+          "sentBytes": 5121,
+          "sentFrames": 20,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 221179904,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 551556,
+      "trial": "all-changing-legacy-2",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-1",
+            "pilot-002-1",
+            "pilot-003-1",
+            "pilot-004-1",
+            "pilot-005-1",
+            "pilot-006-1",
+            "pilot-007-1",
+            "pilot-008-1",
+            "pilot-009-1",
+            "pilot-010-1",
+            "pilot-011-1",
+            "pilot-012-1",
+            "pilot-013-1",
+            "pilot-014-1",
+            "pilot-015-1"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-2",
+            "pilot-002-2",
+            "pilot-003-2",
+            "pilot-004-2",
+            "pilot-005-2",
+            "pilot-006-2",
+            "pilot-007-2",
+            "pilot-008-2",
+            "pilot-009-2",
+            "pilot-010-2",
+            "pilot-011-2",
+            "pilot-012-2",
+            "pilot-013-2",
+            "pilot-014-2",
+            "pilot-015-2"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-3",
+            "pilot-002-3",
+            "pilot-003-3",
+            "pilot-004-3",
+            "pilot-005-3",
+            "pilot-006-3",
+            "pilot-007-3",
+            "pilot-008-3",
+            "pilot-009-3",
+            "pilot-010-3",
+            "pilot-011-3",
+            "pilot-012-3",
+            "pilot-013-3",
+            "pilot-014-3",
+            "pilot-015-3"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.648543098941445,
+      "workload": "all-changing"
+    },
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.670909999999999,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 328,
+      "meshBytes": 231069,
+      "meshVersion": "0.1.0a24",
+      "mode": "feed",
+      "modeOfQualification": "installed",
+      "nativeBytes": 295099,
+      "nativeLocal": {
+        "frameBytes": 149834,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 75229,
+          "frames": 9,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 30272,
+                "frames": 4
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73655,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3018,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37147,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 105916,
+          "receivedFrames": 20,
+          "rotations": 0,
+          "sentBytes": 6015,
+          "sentFrames": 22,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 37013,
+                "frames": 6
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73659,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3020,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36509,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37150,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 112661,
+          "receivedFrames": 22,
+          "rotations": 0,
+          "sentBytes": 6477,
+          "sentFrames": 24,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 222978048,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 526168,
+      "trial": "mostly-static-feed-1",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.481697142939083,
+      "workload": "mostly-static"
+    },
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.748466,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 326,
+      "meshBytes": 231069,
+      "meshVersion": "0.1.0a24",
+      "mode": "feed",
+      "modeOfQualification": "installed",
+      "nativeBytes": 295100,
+      "nativeLocal": {
+        "frameBytes": 149834,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 75230,
+          "frames": 9,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 30272,
+                "frames": 4
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73655,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3018,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37147,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 105916,
+          "receivedFrames": 20,
+          "rotations": 0,
+          "sentBytes": 6015,
+          "sentFrames": 22,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 37013,
+                "frames": 6
+              },
+              "ended": {
+                "bytes": 496,
+                "frames": 2
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 73659,
+                "frames": 10
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "cancel": {
+                "bytes": 428,
+                "frames": 2
+              },
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 775,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 3020,
+                "frames": 10
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36509,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 6,
+            "snapshotResultBytes": 37150,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 11800,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 6,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 112661,
+          "receivedFrames": 22,
+          "rotations": 0,
+          "sentBytes": 6477,
+          "sentFrames": 24,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 223010816,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 526169,
+      "trial": "mostly-static-feed-2",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.509646645048633,
+      "workload": "mostly-static"
+    },
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.670187999999999,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 328,
+      "meshBytes": 248112,
+      "meshVersion": "0.1.0a24",
+      "mode": "legacy",
+      "modeOfQualification": "installed",
+      "nativeBytes": 295100,
+      "nativeLocal": {
+        "frameBytes": 149835,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 75229,
+          "frames": 9,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 36236,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72392,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 322,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 3,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35884,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 110121,
+          "receivedFrames": 16,
+          "rotations": 0,
+          "sentBytes": 4659,
+          "sentFrames": 18,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 54324,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72394,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 2,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35886,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 128211,
+          "receivedFrames": 18,
+          "rotations": 0,
+          "sentBytes": 5121,
+          "sentFrames": 20,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 225042432,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 543212,
+      "trial": "mostly-static-legacy-1",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.473761557019316,
+      "workload": "mostly-static"
+    },
+    {
+      "accounting": {
+        "bytes": "Completed JSON lines with LF, both directions once per owner-cache and Mesh edge, including cold setup/watch/full snapshots/proofs/reconnect; excludes SSH encryption/framing, failed partial writes and native tmux command output",
+        "cpu": "Coordinator + reaped descendants via getrusage, plus sampled daemonized owned tmux server CPU; includes source owners, bridge, SSH, validation, copies, domain projection, actor/oracle commands, sampler and cleanup. Daemon sleep-shell CPU and subprocesses not reaped through the owned tree are excluded",
+        "memory": "20ms sampled simultaneous summed RSS of coordinator/descendants plus owned tmux daemons and descendants, including source/cache/Reader/profile/runtime; shared pages counted repeatedly, transient peaks can be missed; not a reservation or hard physical cap"
+      },
+      "cleanup": true,
+      "cpuSeconds": 4.493664,
+      "freshProofNonces": 8,
+      "gcEnabled": false,
+      "harnessSha256": "fcc37847c185db15e71147913a2de3fea401cded1ea413f4865f4fd779fbe7a6",
+      "inputs": {
+        "observerVersion": "0.6.0a9",
+        "packages": {
+          "tmux_observer": {
+            "files": {
+              "__init__.py": "57c4f08aa6a704fcf107c3f7174361f4c65671d9cd30b0957dd96be12e363d89",
+              "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+              "_attachment_state.py": "8103965c24877ef5073c5648c28b2890b6d79644dbd8e7ed5073654022e4a8ef",
+              "_clock.py": "ba64e80360cab121704ab0918b9f03fc2537de3cf6bf31d21a3f5a62b1739d80",
+              "_delivery_validation.py": "97b1b391378cb2438339b17382d88eb9c141b20d7451484a104f12c46b5f3be1",
+              "_hub.py": "1783e54d411fa7d8d1a05b4b018024b79e18a4a32eb8b5a8b240912b4a9b0a58",
+              "_ipc.py": "ebe7fb35f8091ec7daafbe1ef5d624c141f27c837e1ff6b2de635937899530f0",
+              "_mesh_source.py": "c0502ad2caa780ab9ac8af5f7ca433ce031d5b9fdc80d2caf8cf27c6416ce902",
+              "_models.py": "f2eddb94d3202264ce77d03790905e2a9cbef9ad3df14ce61887e87ed05dc3bd",
+              "_native_validation.py": "333d58fac4c74963d29907702c9502750fad21590b933bd71e7efd1b4485b5c1",
+              "_owner_state.py": "bcbed868f3e10b66739cfbe331d8dad695151ca696e534c2c75ba84390c101ff",
+              "_process.py": "01328d4ad72f8d460e513ea6b4f360448ed8c5a5b90f752c8301a620e3cf6575",
+              "_request_validation.py": "5eb978288c734d7ced1333c678a650f4d9d3fb31dd35210e9ac154313bb4be9b",
+              "_stream.py": "0576b3390e6a03b64ca211068b84eac55248d78c0b412a0e5aa223eaf308e3f8",
+              "_tickets.py": "88f2b5747fbb4db8ce341a18e3b967320f932fb93dfbffeed47884f379e66c76",
+              "_tmux_wire.py": "4bf673d6952ace4d9e5520cd74695a8133703bd91c10ebb9e87274c1d64a4ec4",
+              "_validation.py": "92d6340cacc8f31ba60b606fb853f16bf67647722629bed0b6d8c39460894584",
+              "_validation_common.py": "fcf0a77924e35b4c924e7cfc6d52806dcb53e0e4f1f124963734af369df93019",
+              "_wire.py": "69b9ebeb228f356a7f444740471a32e209aa4b0c342b76a7b9404400d57850fd",
+              "annotations.py": "70e9260bb0dfd0c16408bf9a4f6b259d351235b754f0880e3f9a09c7eba6d226",
+              "attachment_collector.py": "60cda9b59483cd47bcd7f08ac7da9bc701830fc3bb18b686b99713ab5f2ce841",
+              "attachments.py": "1a8b55a18c0497c1d4e9384ebb64f4a5c9c11e844bf91a60fbc92a00135628b4",
+              "cli.py": "f206349d79a67139700519b3cb57950e7e92c4be0110017b748daaab853a97c9",
+              "collector.py": "b3840897512d5fa895df381dfa7bb54716538695a37bafe4e71f332dd4860ed9",
+              "delivery.py": "c2973812beec07377e10e7b6a342a97d9149ad718ff828841e1ae8a29b67b8ff",
+              "mesh.py": "4704aa43466f632ba48c4cfda021fac39b78ff9cca517282cc0226c8b97e262f",
+              "mesh_preparation.py": "6b826db84bdd502f2be1f29a6d3bd33c9decd1a8c244d545cb361afc3ca8ad01",
+              "mesh_profile.py": "359b4d3c2ea3d1005c430416f53a0537822d6156c9becf3a67ac24dddcc4b64b",
+              "mesh_publisher.py": "6d07b4cfd41acce4f2ef22b45d769fdafaf27d8f5875d28d1327df7953b859de",
+              "native.py": "2e9fb95f21c2e386049393342834ca29f5ea63dc09efa42829c3e96ed15a6286",
+              "owner.py": "1494c0a0929a6fff019d83ef0ae361710ca423f8184c06af357b0a4d891cd5fd",
+              "public.py": "a2b5002e830ef95b1c31f9f8d959149b43cd58153f0c5e1db72bdb1ca427a19e"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer"
+          },
+          "tmux_observer_client": {
+            "files": {
+              "__init__.py": "14ab80d96104b342ef7c016526f413f896b2c43a5d3309162aad0451275bbaa0",
+              "_binding_projection.py": "3a6281bb84f3c7fb06baa8cbdd728fd1fc0cc737f986dba2020b812e2518f6aa",
+              "_command.py": "d747531e5b09ce15d7cb616ad86078d6f20a2043d7208668a72d0f5ff81856f7",
+              "_context.py": "954673fda3a9addb7cd8c690c234c292ccbb80c06adc7479f97fd5f489965b1e",
+              "_contract_validation.py": "1f89cf45e288694956976a4526c08c9e9cd51d80e87f27708075db85fb4aa7ec",
+              "_desktop_context.py": "b4c7fc71089dc8e93976e86c9f18ac2b5d7bb8413aca5cf4c1d8462671926c88",
+              "_desktop_input.py": "742d68717b456f395da355ccff2d15620b085fc7cf1b87cd886795b59c9af988",
+              "_desktop_matching.py": "f53a32670592fdac274c0e28f76d4312864874d7f1d0afeb41b2e51e6e21051c",
+              "_desktop_scan.py": "aecf56f094bef0235112ef554ac4d1a8b09a9258dc62b80dad2aacb19d79c77b",
+              "_desktop_types.py": "c9dc984d6652d04f6c06e29d6e7f2f005500e22626867da4adbe425ea7bb4060",
+              "_errors.py": "28b7a21340e9eb06b9106e80a41aaeaef411f23260138b8cc6a7a48f4ada3089",
+              "_fleet_state.py": "98f36d4d5972c65cbf9e7aa03b6e15e6a0d702934d1de416c640058992b6ed2b",
+              "_fleet_tickets.py": "33212a787bc3a469bb37a02ad8bd65dda685280ef83ff2b66e5396ae8959e147",
+              "_fresh_desktop.py": "845c975366ae31e459b64bac7037fd8e8e7bec2e15b3a2fe0115c376afdc45fb",
+              "_local_bindings.py": "5a51bee86bef5efa62447e3945799aa17a9d922eb26cda794601b76cade41531",
+              "_local_stream.py": "ed524440369568f5266946240066e003d4c0ff9d11a8827675efd0fc61fdc257",
+              "_mesh_control.py": "ba90c7ec6bc1d13ecd950c0161edfa139490389740b43a8805ecc126c2ba2087",
+              "_mesh_projection.py": "dc0479477f555e9e6af3a095d11fdd52513c067620c5d7a350475c3d01199922",
+              "_mesh_worker.py": "f2d46c8a2b39cfb903572624cce41dd898137353174cd1e055cebcbf1ea0e276",
+              "_niri_observation.py": "728029d4c516bfb2c6853c2bc7c3d312d46dc6fe76cce1531c329541dc662656",
+              "_owner_document.py": "16da2d1c696c351c5384a346fc1fee8c9ae3d173108d83977af4a18f23e54725",
+              "_process_evidence.py": "4893ee592e69849b420ee3048b0d8fdd820eac7b614fe411706d3d0b3c34491d",
+              "_remote_state.py": "7c919fc514d0c5840eecc58877efd009e8410c7cfd0919fd2fb561c1803ee51f",
+              "_watch.py": "017d1c467696de8038d8e4a26940f1b23a87c3796c2834b62f35c9f3cf55d3cd",
+              "attachments.py": "585b362181c37a75f6289ccfb85b6ab218ae59cfee9b0ae28652a470b1265448",
+              "bindings_contract.py": "eed9d91d97834bced7f0838c8733745f20ce985ca4d89de5edcae9a240356044",
+              "cli.py": "d74e1942b8fee726162ed2eeb134fd65037ef834069427f3936d9666403fafa2",
+              "contract.py": "c26cd3b598b8ed1815523efd79360817220c6c619614f526a002006850c4ed85",
+              "desktop.py": "f33fa86827c38cf296750b0cf359762d3bd984517c867c6d0f2ea63d05d2faf5",
+              "desktop_contract.py": "8b156a921a89d254c634ac3e89fb3d8ed5747a8207720b0e5e41078f00f21f4c",
+              "direct.py": "f3b912753011d3c447455ae4f9aa3de4eaaa39d420c585ecd449cfc0a1f14535",
+              "fleet.py": "073ee59800d960d027a4a09677ea6ce018fe95f1843de2237a132d58eebff802",
+              "mesh.py": "ea17cbc2904c042f312288cd2d9c485507a56d268b412fa527024cd184991523",
+              "mesh_fleet.py": "a2b1b678d82c3641843cf5ba4a2e587e8f781199997f4b4f7ed60c807a2b565b",
+              "public.py": "b4c8cff48d443faa13e96a9082e0b0ac632fa218e48fbd410719c63a281ace4b",
+              "ssh.py": "ffc60fbb3c19fe97208acb317a2792c4a66a2161ac8bc4f6bb724065d39382cd"
+            },
+            "location": "/home/bryan/code/tmux-observer-view-feed-20261020/.cache/view-feed-pilot/py311/lib/python3.11/site-packages/tmux_observer_client"
+          }
+        }
+      },
+      "memorySamples": 335,
+      "meshBytes": 248112,
+      "meshVersion": "0.1.0a24",
+      "mode": "legacy",
+      "modeOfQualification": "installed",
+      "nativeBytes": 295099,
+      "nativeLocal": {
+        "frameBytes": 149834,
+        "frames": 18,
+        "requestBytes": 1568,
+        "requests": 10
+      },
+      "nativePassivity": true,
+      "nativeRemote": [
+        {
+          "frameBytes": 66890,
+          "frames": 8,
+          "requestBytes": 789,
+          "requests": 5
+        },
+        {
+          "frameBytes": 75229,
+          "frames": 9,
+          "requestBytes": 789,
+          "requests": 5
+        }
+      ],
+      "plannedReconnects": 1,
+      "projectedFrames": 18,
+      "python": "3.11.17 (main, Oct  9 2026, 15:21:28) [Clang 22.1.3 ]",
+      "readerMetrics": [
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 36236,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72392,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 322,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 920,
+                "frames": 4
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 3,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35884,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 110121,
+          "receivedFrames": 16,
+          "rotations": 0,
+          "sentBytes": 4659,
+          "sentFrames": 18,
+          "uninstrumentedConnections": 0
+        },
+        {
+          "activeConnections": 0,
+          "byKind": {
+            "received": {
+              "data": {
+                "bytes": 54324,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 849,
+                "frames": 2
+              },
+              "result": {
+                "bytes": 72394,
+                "frames": 8
+              },
+              "subscribed": {
+                "bytes": 644,
+                "frames": 2
+              }
+            },
+            "sent": {
+              "close": {
+                "bytes": 324,
+                "frames": 2
+              },
+              "credit": {
+                "bytes": 1380,
+                "frames": 6
+              },
+              "hello": {
+                "bytes": 767,
+                "frames": 2
+              },
+              "request": {
+                "bytes": 2100,
+                "frames": 8
+              },
+              "subscribe": {
+                "bytes": 550,
+                "frames": 2
+              }
+            }
+          },
+          "byteScope": "completed-json-lines",
+          "catalogCheckMs": 1,
+          "catalogChecks": 2,
+          "cleanupFailures": 0,
+          "connectionAttempts": 2,
+          "connectionFailures": 0,
+          "connectionsClosed": 2,
+          "connectionsOpened": 2,
+          "domain": "tmux",
+          "format": "mesh-plus.reader-metrics.v1",
+          "instrumentedConnections": 2,
+          "operations": {
+            "otherResultBytes": 0,
+            "proofRequests": 4,
+            "proofResultBytes": 36508,
+            "requestCancellations": 0,
+            "requestTimeouts": 0,
+            "rotationRejections": 0,
+            "snapshotRequests": 4,
+            "snapshotResultBytes": 35886,
+            "unprocessedResultBytes": 0
+          },
+          "partial": false,
+          "peakClientBufferedBytes": 9092,
+          "peakClientBufferedControlBytes": 0,
+          "peakConnections": 2,
+          "peakRetainedHandles": 5,
+          "peakSubscriptionQueueFrames": 1,
+          "receivedBytes": 128211,
+          "receivedFrames": 18,
+          "rotations": 0,
+          "sentBytes": 5121,
+          "sentFrames": 20,
+          "uninstrumentedConnections": 0
+        }
+      ],
+      "sampledSummedRssPeakBytes": 222625792,
+      "sessionsPerOwner": 16,
+      "stages": 3,
+      "state": "passed",
+      "totalCompletedJsonBytes": 543211,
+      "trial": "mostly-static-legacy-2",
+      "usefulOutputs": [
+        {
+          "names": [
+            "pilot-000-0",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 0
+        },
+        {
+          "names": [
+            "pilot-000-1",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 1
+        },
+        {
+          "names": [
+            "pilot-000-2",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 2
+        },
+        {
+          "names": [
+            "pilot-000-3",
+            "pilot-001-0",
+            "pilot-002-0",
+            "pilot-003-0",
+            "pilot-004-0",
+            "pilot-005-0",
+            "pilot-006-0",
+            "pilot-007-0",
+            "pilot-008-0",
+            "pilot-009-0",
+            "pilot-010-0",
+            "pilot-011-0",
+            "pilot-012-0",
+            "pilot-013-0",
+            "pilot-014-0",
+            "pilot-015-0"
+          ],
+          "rows": 32,
+          "stage": 3
+        }
+      ],
+      "wallSeconds": 10.496528008021414,
+      "workload": "mostly-static"
+    }
+  ]
+}
