@@ -1,5 +1,13 @@
 # Tmux Observer
 
+## Current selection
+
+Snap and Starship now select the **2026-10-20 private full-view cohort**:
+Observer **0.6.0a9**, Tmux Plus **0.12.0a8** and Tmux Mesh reader/bridge
+**0.1.0a24**, with delta delivery disabled. The
+[managed update record](docs/evidence/2026-10-20-mesh-a24-full-view/README.md)
+binds exact deployed bytes, frontend guards and recovered desktop readers.
+
 The **0.6.0a9 source/private candidate** adds an explicit
 [complete-view feed pilot](docs/view-feed-pilot.md) with experimental Mesh
 **0.1.0a24**. `fleet --transport mesh --view-feed` selects it; the ordinary
@@ -25,7 +33,7 @@ A separate fleet reader uses Mesh Plus for state delivery and adds observations
 from the viewing desktop. [Tmux Plus](https://github.com/byebyebryan/rofi-tmux-plus)
 consumes those views and sends explicit intent to a separate action client.
 
-## Current selection
+## Previous accepted selection
 
 As recorded on **2026-10-12**, Snap and Starship select:
 

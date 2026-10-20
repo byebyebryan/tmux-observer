@@ -1,5 +1,14 @@
 # Mesh state delivery integration
 
+Current managed update, **2026-10-20**: qualified private Observer **0.6.0a9** /
+Plus **0.12.0a8**, with Mesh **0.1.0a24** for the Tmux reader and dedicated
+bridge. Full views remain selected; view-feed and semantic delta are disabled.
+The shared launcher dispatches `tmux_default` to its Tmux-only a24 launcher,
+preserving default/Agent SDK roots. See the
+[installed/recovery record](evidence/2026-10-20-mesh-a24-full-view/README.md).
+The a15 topology below is the previous accepted selection retained for history
+and rollback; canonical current controls are in chezmoi's deployment manifest.
+
 Started 2026-10-09. The user authorized the migration goal loop after review of
 Mesh Plus's [handoff](https://github.com/byebyebryan/mesh-plus/blob/fd40916/docs/handoff.md)
 and frozen state boundary. This ledger owns the candidate implementation and
