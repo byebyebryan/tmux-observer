@@ -26,6 +26,7 @@ are separate from released and managed selections.
 | [Service contexts](service-contexts.md) | Explicit startup, captured desktop environment and context teardown |
 | [Mesh integration](mesh-integration.md) | Source configuration, state delivery, separate refresh control and rollout history |
 | [Candidate artifacts](candidate-artifacts.md) | Frozen committed-source builds and package verification |
+| [Public delivery preparation](evidence/2026-10-23-public-delivery/README.md) | Exact a9 prerelease assets and separate build/qualification/source provenance |
 | [Managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md) | Exact installed tuple, managed controls and rollback |
 
 ## Selection and acceptance

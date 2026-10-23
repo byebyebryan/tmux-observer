@@ -14,6 +14,11 @@ The **0.6.0a9 source/private candidate** adds an explicit
 full-view Mesh route remains the default. Candidate qualification and the
 measured cost decision are separate from managed selection.
 
+The exact a9 prerelease inputs are prepared in the
+[public supply record](docs/evidence/2026-10-23-public-delivery/README.md).
+The wheel build source, its qualification source and the source release tip
+are recorded separately.
+
 The **0.6.0a8 source/private candidate** adds an optional
 [owner preparation facade](docs/mesh-preparation.md) for Mesh a18.
 [Actual IPC/SSH qualification](docs/evidence/2026-10-14-preparation/README.md)
