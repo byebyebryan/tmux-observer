@@ -183,8 +183,10 @@ contains UI and client-facing action intent, not copied lifecycle internals.
 
 New observer, service and fleet contracts use distinct version identifiers and
 explicit cached access. Existing live inventory is not silently mapped to a
-retained service snapshot. Agent Plus continues using the old facade until a
-separate consumer migration. Agent Observer is not modified by this extraction.
+retained service snapshot. The original extraction kept Agent Plus on the old
+facade pending a separate migration. Current Agent Plus instead opens native
+provider managers directly and no longer consumes this facade. Generic Tmux
+clients remain supported. Agent Observer is independent of this extraction.
 
 ## Operational model
 

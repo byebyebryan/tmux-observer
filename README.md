@@ -33,6 +33,11 @@ A separate fleet reader uses Mesh Plus for state delivery and adds observations
 from the viewing desktop. [Tmux Plus](https://github.com/byebyebryan/rofi-tmux-plus)
 consumes those views and sends explicit intent to a separate action client.
 
+This is maintained generic tmux tooling. Agent Plus now opens native provider
+managers directly and has no Tmux runtime dependency. New work here needs a
+concrete tmux workflow or consumer; lower agent-runtime relevance does not
+establish that existing owners, fleet readers or action clients are unused.
+
 ## Previous accepted selection
 
 As recorded on **2026-10-12**, Snap and Starship select:

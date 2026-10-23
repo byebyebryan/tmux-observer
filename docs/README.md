@@ -1,9 +1,12 @@
 # Tmux Observer documentation
 
 Start with the [project overview](../README.md) and [current runtime architecture](runtime-architecture.md).
-The recorded current selection is Observer **0.6.0a7** / Tmux Plus **0.12.0a7**,
-with Mesh reader SDK/shared bridge CLI **0.1.0a15** and the Observer-owned cached
-publisher factory on Snap and Starship, as of 2026-10-12. The
+The managed full-view cohort is Observer **0.6.0a9** / Tmux Plus **0.12.0a8**,
+with Tmux Mesh reader/bridge **0.1.0a24**; generic shared CLI selection remains
+independent at a15. The
+[2026-10-20 update](evidence/2026-10-20-mesh-a24-full-view/README.md) binds its
+Snap/Starship acceptance; current host selection belongs to deployment manifests.
+Feed/delta remain off. The earlier a7/a7/a15
 [publisher integration plan](publisher-integration-plan.md) records completed
 implementation and independent acceptance gates. The earlier
 [Mesh SDK integration plan](mesh-sdk-integration-plan.md) and
@@ -27,9 +30,11 @@ are separate from released and managed selections.
 
 ## Selection and acceptance
 
-[Current publisher integration](evidence/2026-10-12-publisher-integration/README.md)
-is the front door for the selected artifacts' source, native, headless, resource
-and installed recovery/rollback evidence. [Implementation status](implementation-status.md)
+[Current full-view update](evidence/2026-10-20-mesh-a24-full-view/README.md)
+records the newer managed cohort; the
+[publisher integration](evidence/2026-10-12-publisher-integration/README.md)
+retains its original source, native, headless, resource and recovery scope.
+[Implementation status](implementation-status.md)
 keeps the original A–E checkpoint history. Acceptance belongs to the exact
 artifact, endpoint and scope recorded by each report.
 

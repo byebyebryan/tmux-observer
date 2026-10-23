@@ -27,12 +27,14 @@ see [runtime architecture](runtime-architecture.md).
 
 Prepared Mesh browsing requires a compatible catalog authority, the selected
 Mesh SDK/runtime dependencies, native Tmux facades available to its bridge, and
-an already running owner on each participating host. The Observer client and
-shared bridge launchers expose SDK a15 from
-`~/.local/share/mesh-plus/0.1.0a15/python`. The bridge injects the static lazy
-`tmux_observer.mesh_publisher.make_publisher` factory. Agent's subsequent,
-independently accepted a20 publisher adoption adds its own factory to the shared
-map; its collector, reader and bridge selections retain their separate ownership.
+an already running owner on each participating host. The Tmux fleet Reader SDK
+and dedicated `mesh-plus-tmux` bridge expose a24 from
+`~/.local/share/mesh-plus/0.1.0a24/python`. The generic shared CLI independently
+retains a15; it dispatches `tmux_default` serve/bridge requests to that dedicated
+Tmux launcher before loading a domain SDK. The bridge injects the static lazy
+`tmux_observer.mesh_publisher.make_publisher` factory. Agent full, active and
+working-set routes use their own selected launchers/artifacts; their collector,
+reader and publisher selections retain separate ownership.
 Prior versioned roots remain
 available for their recorded rollback checkpoints. Exact roots, payloads and
 controls are recorded in

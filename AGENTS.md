@@ -2,9 +2,14 @@
 
 ## Scope and starting point
 
-- The current user request sets authorized scope. The implementation goal covers
-  Deliveries A–E in `docs/implementation-backlog.md`, with reviewed commits as
-  work progresses. Runtime/deployment acceptance must pass its evidence gates.
+- This repository serves generic tmux observation/management through Tmux Plus
+  and direct clients. Agent Plus's native-manager entry path no longer depends
+  on Tmux. Preserve the supported tmux workflows; new features need an actual
+  tmux consumer. Reduced agent-runtime relevance grants no retirement authority.
+- The current user request sets authorized scope. Deliveries A–E in
+  `docs/implementation-backlog.md` are the original implementation baseline;
+  they do not schedule new implementation. Runtime/deployment acceptance must
+  pass the owning evidence gates.
 - Read `README.md`, `docs/architecture.md`, `docs/observation-contract.md`,
   `docs/service-and-networking.md`, `docs/implementation-plan.md` and
   `docs/design-review.md` before implementation.

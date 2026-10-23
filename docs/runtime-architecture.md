@@ -1,11 +1,17 @@
 # Runtime architecture
 
-Updated 2026-10-12. Snap and Starship select Observer 0.6.0a7 / Tmux Plus
-0.12.0a7, with Mesh SDK/shared CLI 0.1.0a15 and the Observer-owned cached
-publisher factory. [Publisher integration](publisher-integration-plan.md) and the
-[accepted artifact/managed evidence](evidence/2026-10-12-publisher-integration/README.md)
-bind the separate source, package, resource and operational gates. This is the
-current component overview. The [original architecture](architecture.md) and
+The managed full-view cohort selects Observer 0.6.0a9 / Tmux Plus 0.12.0a8 and
+Mesh 0.1.0a24 for the Tmux Reader SDK and dedicated bridge. The generic shared
+Mesh CLI retains its independent a15 selection. The
+[2026-10-20 record](evidence/2026-10-20-mesh-a24-full-view/README.md) binds its
+Snap/Starship installed/recovery scope; [managed operations](managed-operations.md)
+and deployment owner manifests determine later selection. Feed/delta remain off.
+
+This is generic tmux tooling with its own clients. Agent Plus independently
+opens native provider managers and consumes neither these views nor actions.
+The earlier [publisher integration](publisher-integration-plan.md) and
+[a7/a7/a15 acceptance](evidence/2026-10-12-publisher-integration/README.md)
+retain their dated scope. The [original architecture](architecture.md) and
 [boundary design](component-boundaries.md) retain the extraction history.
 [Managed operations](managed-operations.md) owns selection and recovery.
 
