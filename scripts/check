@@ -3,6 +3,8 @@ set -euo pipefail
 
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd -- "$repo_root"
+
+python3 -B scripts/check-docs
 export PYTHONPATH="$repo_root/src${PYTHONPATH:+:$PYTHONPATH}"
 export PYTHONDONTWRITEBYTECODE=1
 python3 - <<'PY'
@@ -30,16 +32,6 @@ ruff format --check src tests scripts/read-contract scripts/check-contracts scri
 git diff --check
 git diff --cached --check
 
-python3 - <<'PY_EVIDENCE'
-import hashlib
-import json
-from pathlib import Path
-manifest = json.loads(Path("docs/evidence/dotfiles-transfer.json").read_text())
-for record in manifest["records"]:
-    path = Path(record["destinationPath"])
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == record["sha256"], path
-print(f"[ok] {len(manifest['records'])} immutable transferred evidence files")
-PY_EVIDENCE
 
 ruff check scripts/tmux-observer-operations
 ruff format --check scripts/tmux-observer-operations

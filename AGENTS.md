@@ -6,14 +6,10 @@
   and direct clients. Agent Plus's native-manager entry path no longer depends
   on Tmux. Preserve the supported tmux workflows; new features need an actual
   tmux consumer. Reduced agent-runtime relevance grants no retirement authority.
-- The current user request sets authorized scope. Deliveries A–E in
-  `docs/history/design/implementation-backlog.md` are the original implementation baseline;
-  they do not schedule new implementation. Runtime/deployment acceptance must
-  pass the owning evidence gates.
-- Read `README.md`, `docs/README.md`, `docs/runtime-architecture.md`,
-  `docs/wire-v1.md`, `docs/boundary-wire-v1.md` and
-  `docs/mesh-integration.md` before implementation. Original design/planning
-  documents live under `docs/history/` and retain their dated scope.
+- The current user request sets authorized scope.
+- Read `README.md`, `docs/README.md`, `docs/reference/architecture.md`,
+  `docs/reference/read-contracts.md`, `docs/reference/action-contracts.md` and
+  `docs/guides/mesh-integration.md` before implementation.
 - Follow the applicable workspace instructions. On this workstation shell
   commands use the RTK wrapper described in `/home/bryan/.codex/RTK.md`.
 - Keep work primary-led. Do not start sub-agents unless the user or applicable
@@ -25,7 +21,7 @@
 
 - Core is host-local and passive. It imports no Rofi, SSH routing, terminal
   launcher or lifecycle client. Explicit direct reads do not start a service.
-- Observe only the configured default tmux server in the first delivery.
+- Observe only the configured default tmux server for the supported native scope.
   Do not auto-create a server/session, attach a control client, install hooks,
   repair configuration or change native options to improve observation.
 - Preserve complete identities: host scope, server generation, session ID and
@@ -59,7 +55,8 @@
 - Do not publish or promote an artifact merely because a design gate passes.
   User authorization and the concrete task determine when to commit/deploy.
 
-Keep maintained guides separate from completed plans and dated evidence. New
-current guidance belongs in the documentation index, not forwarding pages.
-Preserve frozen contract and evidence bytes; archive old ledgers rather than
-appending them to README or runtime architecture.
+Only README/getting-started belong at the docs root. Use lowercase kebab-case
+names in shallow guides/reference/maintenance folders. Cut obsolete plans and
+ad-hoc receipts; recover older records from Git instead of retaining archives
+or forwarding pages. Keep machine fixtures under tests. Preserve canonical
+contract/schema and fixture bytes; run scripts/check-docs and the source gate.

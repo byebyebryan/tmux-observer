@@ -70,9 +70,9 @@ uv run tmux-observer-client refresh_status --publisher-id UUID --ticket-id UUID 
 ```
 
 Package installation does not install or enable user units. Deployment captures
-desktop context and starts services explicitly; see [service contexts](service-contexts.md)
-and [current Mesh source configuration](mesh-integration.md#current-configuration).
+desktop context and starts services explicitly; see [service contexts](guides/service-contexts.md)
+and [current Mesh source configuration](guides/mesh-integration.md#current-configuration).
 
-For current transport/source setup use [Mesh integration](mesh-integration.md).
-For development use [the source guide](development.md); the
+For current transport/source setup use [Mesh integration](guides/mesh-integration.md).
+For development use [the source guide](maintenance/development.md); the
 [documentation index](README.md) separates contracts from dated records.

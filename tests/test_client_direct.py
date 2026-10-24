@@ -23,7 +23,9 @@ ROOT = Path(__file__).resolve().parent.parent
 def legacy_validator():
     directory = ROOT / "tests/fixtures/legacy-tmux-session-v1"
     sums = (directory / "SHA256SUMS").read_bytes()
-    manifest = json.loads((ROOT / "docs/extraction-manifest.json").read_text())
+    manifest = json.loads(
+        (ROOT / "tests/fixtures/legacy-tmux-session-v1/extraction-manifest.json").read_text()
+    )
     assert hashlib.sha256(sums).hexdigest() == manifest["contractBundles"]["tmux-session-v1"]
     expected = {
         name: digest

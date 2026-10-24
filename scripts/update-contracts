@@ -611,7 +611,7 @@ def main():
         (directory / "contract.md").write_text(
             "# "
             + bundle
-            + "\n\nVersion 1 schema/fixture boundary. Runtime acceptance is separate.\n\nUse structural validation and the semantic rules in `docs/wire-v1.md`\ntogether. Unknown fields are bounded extensions, never source/action authority.\nBundle SHA256SUMS covers every file except itself; dependency digests bind the\nother canonical bundles. All fixture hosts and paths are synthetic.\n"
+            + "\n\nVersion 1 schema/fixture boundary. Runtime acceptance is separate.\n\nUse structural validation and the semantic rules in `docs/reference/read-contracts.md`\ntogether. Unknown fields are bounded extensions, never source/action authority.\nBundle SHA256SUMS covers every file except itself; dependency digests bind the\nother canonical bundles. All fixture hosts and paths are synthetic.\n"
         )
         digest[bundle] = sums(directory)
     print("Updated three explicit schema/fixture bundles and dependency digests")

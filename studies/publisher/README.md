@@ -1,7 +1,7 @@
 # Isolated cached publisher study
 
 This directory implements the design candidate in
-[the publisher plan](../../docs/history/design/publisher-extraction-plan.md), outside `src`,
+[the publisher plan](https://github.com/byebyebryan/tmux-observer/blob/526a4de472674c8c8ed97d9a68410d05e621cfae/docs/history/design/publisher-extraction-plan.md), outside `src`,
 normal entry points and package discovery. It is research code, not SDK adoption.
 
 `generic_publisher.py` represents proposed Mesh-owned generic envelope/proof
@@ -25,9 +25,9 @@ key/UID/clock binding. Trace files contain fixture events only.
 Feasibility does not accept a new SDK, certify performance ceilings or alter
 managed services, package selection, preferences, Agent, WSS or ordinary sessions.
 
-The [accepted evidence](../../docs/evidence/2026-10-11-publisher-feasibility/README.md)
+The [accepted evidence](https://github.com/byebyebryan/tmux-observer/blob/526a4de472674c8c8ed97d9a68410d05e621cfae/docs/evidence/2026-10-11-publisher-feasibility/README.md)
 records 17 study checks and six independent profile cases. The
-[review and backlog](../../docs/history/design/publisher-extraction-review.md) define the next
+[review and backlog](https://github.com/byebyebryan/tmux-observer/blob/526a4de472674c8c8ed97d9a68410d05e621cfae/docs/history/design/publisher-extraction-review.md) define the next
 producer-first pass.
 
 To replay, install the exact Observer a6 and dependency wheels into two private

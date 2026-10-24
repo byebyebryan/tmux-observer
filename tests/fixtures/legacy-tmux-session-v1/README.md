@@ -5,7 +5,7 @@ These three schema files are copied unchanged from Rofi Tmux Plus source
 test dependency for the fresh direct facade, not an Observer contract bundle.
 
 `SHA256SUMS` is the original complete legacy bundle manifest. Its SHA256 must
-match `docs/extraction-manifest.json`, and every copied schema must match its
+match `tests/fixtures/legacy-tmux-session-v1/extraction-manifest.json`, and every copied schema must match its
 listed digest. This directory deliberately contains only the schemas needed for
 inventory/error validation; it does not claim complete legacy bundle coverage.
 Native acceptance separately verifies the complete bundle in the unchanged

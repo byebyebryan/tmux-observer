@@ -596,7 +596,7 @@ def main():
         (ROOT / bundle / "contract.md").write_text(
             "# "
             + bundle
-            + "\n\nVersion 1 executable boundary. See `docs/boundary-wire-v1.md` for semantic\nrules, legacy mappings and transport restrictions. This accepts no runtime.\nAll fixture identities and paths are synthetic; SHA256SUMS covers the full bundle.\n"
+            + "\n\nVersion 1 executable boundary. See `docs/reference/action-contracts.md` for semantic\nrules, legacy mappings and transport restrictions. This accepts no runtime.\nAll fixture identities and paths are synthetic; SHA256SUMS covers the full bundle.\n"
         )
         checksum(bundle)
     print("Updated three new boundary bundles; original accepted bundles untouched")

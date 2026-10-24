@@ -44,7 +44,9 @@ def legacy_reader():
     directory = CONSUMER / "contracts/tmux-session-v1"
     sums = (directory / "SHA256SUMS").read_bytes()
     digest = hashlib.sha256(sums).hexdigest()
-    manifest = json.loads((ROOT / "docs/extraction-manifest.json").read_text())
+    manifest = json.loads(
+        (ROOT / "tests/fixtures/legacy-tmux-session-v1/extraction-manifest.json").read_text()
+    )
     assert digest == manifest["contractBundles"]["tmux-session-v1"]
     for line in sums.decode().splitlines():
         expected, name = line.split("  ", 1)
