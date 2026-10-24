@@ -1,19 +1,14 @@
 # Runtime architecture
 
-The managed full-view cohort selects Observer 0.6.0a9 / Tmux Plus 0.12.0a8 and
-Mesh 0.1.0a24 for the Tmux Reader SDK and dedicated bridge. The generic shared
-Mesh CLI retains its independent a15 selection. The
-[2026-10-20 record](evidence/2026-10-20-mesh-a24-full-view/README.md) binds its
-Snap/Starship installed/recovery scope; [managed operations](managed-operations.md)
-and deployment owner manifests determine later selection. Feed/delta remain off.
+Tmux Observer serves generic tmux workflows through passive facts, shared
+prepared views and independent explicit action clients. Agent Plus opens
+native provider managers without consuming these views or actions.
 
-This is generic tmux tooling with its own clients. Agent Plus independently
-opens native provider managers and consumes neither these views nor actions.
-The earlier [publisher integration](publisher-integration-plan.md) and
-[a7/a7/a15 acceptance](evidence/2026-10-12-publisher-integration/README.md)
-retain their dated scope. The [original architecture](architecture.md) and
-[boundary design](component-boundaries.md) retain the extraction history.
-[Managed operations](managed-operations.md) owns selection and recovery.
+Use [getting started](getting-started.md) for explicit local/cached setup,
+[Mesh integration](mesh-integration.md) for source configuration and
+[managed operations](managed-operations.md) for independent artifact/role
+selection. This architecture does not select a deployed tuple. Earlier
+extraction and integration ledgers are grouped in [history](history/README.md).
 
 ## Who owns what
 
@@ -90,7 +85,7 @@ collection and returns an incarnation-bound ticket. Mesh's frozen state surface
 has snapshot, proof and subscribe; it has no refresh or lifecycle capability.
 Observer therefore keeps refresh on a separate bounded owner control path.
 Fresh inventory and action routing also retain their independent accepted paths.
-See the [Mesh integration ledger](mesh-integration.md#scope-and-decisions).
+See the [Mesh integration ledger](mesh-integration.md#failure-and-authority).
 
 The generic fleet command and packaged unit default to the `legacy` backend.
 Current managed controls explicitly select `mesh` and source `tmux_default`.
@@ -157,12 +152,12 @@ RSS is sampled and Mesh byte/proof counters remain unmeasured.
 
 Observer-owned cached publication is implemented and selected through Mesh's
 public a15 helper and trusted factory seam. The
-[integration plan](publisher-integration-plan.md) records completed I1-I5 and
+[integration plan](history/design/publisher-integration-plan.md) records completed I1-I5 and
 R1-R2 checkpoints, including local/fixed-SSH publication, old/new compatibility,
 exact artifacts/resources, public releases and managed recovery/paired rollback.
 The legacy `TmuxMeshCodec` keeps its pure reference-codec compatibility; the
 dedicated runtime publisher factory imports no reference adapter. The
-[feasibility review](publisher-extraction-review.md) preserves the earlier study
+[feasibility review](history/design/publisher-extraction-review.md) preserves the earlier study
 and its original acceptance limits.
 
 Optional native control-mode events need an independent passivity and benefit

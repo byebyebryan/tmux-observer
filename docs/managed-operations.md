@@ -1,12 +1,17 @@
 # Managed Tmux Observer operations
 
-The current **2026-10-20** cohort selects qualified private Observer **0.6.0a9**
+The **2026-10-20 acceptance record** selected qualified private Observer **0.6.0a9**
 and Plus **0.12.0a8**, with Mesh **0.1.0a24** for the Tmux reader/bridge and
 full-view delivery only. Both hosts passed desktop-scope installed/recovery
 verification. The [full-view update](evidence/2026-10-20-mesh-a24-full-view/README.md)
 records exact artifacts and limits. Private content-addressed package inputs
 must remain available on both hosts for the pinned `file://` externals. The
 shared dispatcher's default/Agent SDK roots retain their independent pins.
+
+The same Observer a9 and Plus a8 release assets were subsequently published;
+see the [public supply preparation](evidence/2026-10-23-public-delivery/README.md)
+and [publication closeout](https://github.com/byebyebryan/mesh-plus/blob/b306d44c329c6289781cc4db14f939ed2a4d20c2/docs/evidence/2026-10-23-public-delivery/README.md).
+The earlier private staging details retain their recorded recovery scope.
 
 The configuration repository owns the selected pair and host controls in
 [deployments/tmux-observer.json](https://github.com/byebyebryan/dotfiles/blob/main/deployments/tmux-observer.json).

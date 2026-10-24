@@ -2,7 +2,6 @@
 
 These implemented interfaces originated in the first-delivery candidate.
 Current selection and installed evidence are recorded in
-[implementation status](implementation-status.md) and
 [managed operations](https://github.com/byebyebryan/tmux-observer/blob/main/docs/managed-operations.md).
 The generic fleet unit defaults to legacy transport; selected managed controls
 explicitly pass Mesh transport and source `tmux_default`.

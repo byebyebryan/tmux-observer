@@ -1,10 +1,12 @@
 # Optional Mesh preparation
 
-Source/private candidate **Tmux Observer 0.6.0a8** supports Mesh SDK 1 and
-optional preparation interface 1 with the reviewed **Mesh 0.1.0a18** source
-`c1b6820a0d92f53cd1b728689ce5f8c39253715f`. This is an additive local
-Python facade; Observation, Service, Fleet and Mesh wire bytes are unchanged.
-Released/managed Observer a7 / Mesh a15 retain their separate acceptance.
+The optional pure Python preparation facade is retained in Observer a9 with
+SDK 1. It was introduced by the a8/a18 qualification; those original package
+and native results remain bounded to their receipt. Observation, Service, Fleet
+and Mesh wire meanings are unchanged. This facade does not automatically replace
+the fleet consumer's independently selected guard or transport.
+
+Current selection belongs to [managed operations](managed-operations.md).
 
 ## Supported owner facade
 

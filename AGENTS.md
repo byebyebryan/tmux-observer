@@ -7,12 +7,13 @@
   on Tmux. Preserve the supported tmux workflows; new features need an actual
   tmux consumer. Reduced agent-runtime relevance grants no retirement authority.
 - The current user request sets authorized scope. Deliveries A–E in
-  `docs/implementation-backlog.md` are the original implementation baseline;
+  `docs/history/design/implementation-backlog.md` are the original implementation baseline;
   they do not schedule new implementation. Runtime/deployment acceptance must
   pass the owning evidence gates.
-- Read `README.md`, `docs/architecture.md`, `docs/observation-contract.md`,
-  `docs/service-and-networking.md`, `docs/implementation-plan.md` and
-  `docs/design-review.md` before implementation.
+- Read `README.md`, `docs/README.md`, `docs/runtime-architecture.md`,
+  `docs/wire-v1.md`, `docs/boundary-wire-v1.md` and
+  `docs/mesh-integration.md` before implementation. Original design/planning
+  documents live under `docs/history/` and retain their dated scope.
 - Follow the applicable workspace instructions. On this workstation shell
   commands use the RTK wrapper described in `/home/bryan/.codex/RTK.md`.
 - Keep work primary-led. Do not start sub-agents unless the user or applicable
@@ -57,3 +58,8 @@
   changes check links/examples, whitespace, decisions and source attribution.
 - Do not publish or promote an artifact merely because a design gate passes.
   User authorization and the concrete task determine when to commit/deploy.
+
+Keep maintained guides separate from completed plans and dated evidence. New
+current guidance belongs in the documentation index, not forwarding pages.
+Preserve frozen contract and evidence bytes; archive old ledgers rather than
+appending them to README or runtime architecture.

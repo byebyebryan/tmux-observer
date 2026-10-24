@@ -2,8 +2,8 @@
 
 Frozen for implementation: 2026-10-08. These schemas and pure validators accept
 contract inputs; they do not accept a native source, action executor or deployment.
-The [design](component-boundaries.md) and [review](component-boundaries-review.md)
-remain the authority for scope. [Execution status](boundary-implementation.md)
+The [design](history/design/component-boundaries.md) and [review](history/design/component-boundaries-review.md)
+remain the authority for scope. [Execution status](history/design/boundary-implementation.md)
 records subsequent gates.
 
 Existing Observation 1, Service 1, Fleet 1 and Tmux Session v1 files retain their
