@@ -47,7 +47,7 @@ class ProfileTests(unittest.TestCase):
 
     def test_fixed_oracle_roundtrips_and_effective_selections(self):
         baseline = json.loads(
-            (ROOT / "docs/evidence/2026-10-11-mesh-sdk-research/baseline.json").read_text()
+            (ROOT / "tests/fixtures/mesh-inputs/profile-baseline.json").read_text()
         )
         expected = {sample["fixture"]: sample for sample in baseline["samples"]}
         checksums = (FIXTURES / "SHA256SUMS").read_text().splitlines()

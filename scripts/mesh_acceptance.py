@@ -8,7 +8,10 @@ from pathlib import Path
 def stage_mesh(directory, source, evidence, *, tuple_path=None):
     """Check every frozen dependency against the reviewed tuple before copying."""
     if tuple_path is None:
-        tuple_path = Path(__file__).resolve().parents[1] / "tests/fixtures/mesh-sdk-v1/tuple.json"
+        tuple_path = (
+            Path(__file__).resolve().parents[1]
+            / "tests/fixtures/mesh-inputs/qualification-tuple.json"
+        )
     selected = json.loads(tuple_path.read_text())
     expected = [
         {"file": selected["mesh"]["wheel"], "sha256": selected["mesh"]["wheelSha256"]},
