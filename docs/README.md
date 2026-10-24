@@ -1,7 +1,7 @@
 # Tmux Observer documentation
 
 Start with the [project overview](../README.md) and [current runtime architecture](runtime-architecture.md).
-The managed full-view cohort is Observer **0.6.0a9** / Tmux Plus **0.12.0a8**,
+The publicly released managed full-view cohort is Observer **0.6.0a9** / Tmux Plus **0.12.0a8**,
 with Tmux Mesh reader/bridge **0.1.0a24**; generic shared CLI selection remains
 independent at a15. The
 [2026-10-20 update](evidence/2026-10-20-mesh-a24-full-view/README.md) binds its
@@ -15,6 +15,12 @@ implementation and independent acceptance gates. The earlier
 The [optional Mesh preparation facade](mesh-preparation.md) and its
 [private a8/a18 qualification](evidence/2026-10-14-preparation/README.md)
 are separate from released and managed selections.
+
+The [a9 release](https://github.com/byebyebryan/tmux-observer/releases/tag/v0.6.0a9)
+and [Fleet Plus product guide](https://dev.byebyebryan.com/fleet-plus/projects/tmux-observer/)
+provide the public entry points. Preparation records below retain their original
+prepublication scope; subsequent publication is recorded in the shared
+[delivery closeout](https://github.com/byebyebryan/mesh-plus/blob/b306d44c329c6289781cc4db14f939ed2a4d20c2/docs/evidence/2026-10-23-public-delivery/README.md).
 
 ## Current interfaces and operation
 
